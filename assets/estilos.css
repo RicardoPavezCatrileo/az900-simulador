@@ -19,6 +19,7 @@
 body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.5}
 a{color:var(--accent)}
 .wrap{max-width:1080px;margin:0 auto;padding-block:28px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:22px}
+.wrap>*,.controls>*{min-width:0}
 .volver{font-family:var(--f-mono);font-size:.8rem;text-decoration:none}
 .volver:hover{text-decoration:underline}
 header h1{font-family:var(--f-display);font-weight:800;font-size:clamp(1.6rem,4vw,2.3rem);margin:0;letter-spacing:-.01em;text-wrap:balance}
@@ -30,13 +31,14 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-off
 /* Controles segmentados (elegir opción / simular falla) */
 .controls{display:grid;gap:14px;grid-template-columns:1fr 1fr}
 @media (max-width:760px){.controls{grid-template-columns:1fr}}
-.ctl{display:grid;gap:8px}
+.ctl{display:grid;gap:8px;align-content:start}
 .ctl label{font-family:var(--f-mono);font-size:.75rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
 .seg{display:flex;flex-wrap:wrap;gap:6px}
 .seg button{font:inherit;font-family:var(--f-mono);font-size:.85rem;padding:7px 12px;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:6px;cursor:pointer}
 .seg button:hover{border-color:var(--accent)}
 .seg button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
 .seg.fail button[aria-pressed="true"]{background:var(--bad);border-color:var(--bad)}
+.seg.fail button[aria-pressed="true"][data-k="none"]{background:var(--accent);border-color:var(--accent)}
 
 /* Estado, ficha técnica, nota */
 .status{display:flex;gap:12px;align-items:flex-start;padding:14px 16px;border-radius:10px;border:1px solid var(--line);background:var(--surface)}

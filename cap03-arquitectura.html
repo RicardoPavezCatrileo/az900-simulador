@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Simulador Arquitectura Azure</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="assets/estilos.css">
+<style>
+.bloque{display:grid;gap:14px}
+.controls.tres{grid-template-columns:repeat(3,1fr)}
+@media (max-width:860px){.controls.tres{grid-template-columns:1fr}}
+
+/* Mapa de regiones y centros de datos */
+.regs{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media (max-width:760px){.regs{grid-template-columns:1fr}}
+.reg{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px;display:grid;gap:10px;align-content:start}
+.reg.down{border-color:var(--bad)}
+.reg h3{margin:0;font-family:var(--f-display);font-size:1.05rem}
+.reg .sub{font-family:var(--f-mono);font-size:.75rem;color:var(--muted)}
+.dcs{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.dc{background:var(--zone);border:1px dashed var(--line);border-radius:8px;padding:10px;display:grid;gap:8px;min-height:96px;align-content:start;transition:background .25s}
+.dc.down{background:color-mix(in srgb,var(--bad) 14%,transparent);border-color:var(--bad)}
+.dc .zt{font-family:var(--f-mono);font-size:.72rem;color:var(--muted)}
+.app{display:inline-flex;align-items:center;gap:6px;background:var(--accent);color:#fff;border-radius:6px;padding:5px 9px;font-family:var(--f-mono);font-size:.78rem;width:max-content}
+.app.off{background:var(--muted);text-decoration:line-through;opacity:.6}
+.app.sirve{box-shadow:0 0 0 3px color-mix(in srgb,var(--ok) 60%,transparent)}
+.empty{font-size:.8rem;color:var(--muted);font-style:italic}
+.retos{display:grid;gap:6px;margin:0;padding:0;list-style:none}
+.retos li{display:flex;gap:10px;align-items:flex-start;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px 12px;font-size:.9rem}
+.retos .ic{font-family:var(--f-mono);font-weight:600;flex:none;width:1.2em;text-align:center}
+.retos .si{color:var(--ok)} .retos .no{color:var(--bad)}
+
+/* Jerarquía */
+.arbol{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px;overflow-x:auto}
+.arbol ul{list-style:none;margin:0;padding-left:22px;border-left:1px dashed var(--line);display:grid;gap:4px}
+.arbol>ul{padding-left:0;border-left:0}
+.arbol li{display:grid;gap:4px}
+.nodo{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font:inherit;text-align:left;background:transparent;border:1px solid transparent;border-radius:6px;padding:5px 8px;color:var(--ink);cursor:pointer;width:max-content;max-width:100%}
+.nodo:hover{border-color:var(--line)}
+.nodo.sel{border-color:var(--accent);background:var(--accent-soft)}
+.nodo.afect{background:var(--accent-soft)}
+.nodo.borrado{text-decoration:line-through;color:var(--muted)}
+.nivel{font-family:var(--f-mono);font-size:.68rem;letter-spacing:.04em;text-transform:uppercase;padding:2px 7px;border-radius:99px;border:1px solid var(--line);color:var(--muted)}
+.tag{font-family:var(--f-mono);font-size:.72rem;padding:2px 7px;border-radius:99px;color:#fff}
+.tag.pol{background:var(--geo)} .tag.rol{background:var(--accent)} .tag.del{background:var(--bad)}
+.acciones{display:flex;flex-wrap:wrap;gap:6px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="volver" href="index.html">← Todos los capítulos</a>
+  <header>
+    <div class="eyebrow">AZ-900 · Capítulo 3 · Arquitectura y servicios</div>
+    <h1>Infraestructura global y organización de recursos</h1>
+    <p>Azure tiene más de 60 regiones en el mundo. Decide dónde desplegar tu aplicación y provoca fallas para ver qué resuelve cada diseño. Después, organiza recursos en la jerarquía de Azure y mira cómo se heredan políticas y permisos.</p>
+  </header>
+
+  <!-- Simulador 1 -->
+  <section class="bloque">
+    <h2 class="h">1 · Diseña tu despliegue</h2>
+    <div class="controls tres">
+      <div class="ctl"><label>Despliegue</label><div class="seg" id="desp"></div></div>
+      <div class="ctl"><label>Simular un evento</label><div class="seg fail" id="evento"></div></div>
+      <div class="ctl"><label>Dónde está el usuario</label><div class="seg" id="usuario"></div></div>
+    </div>
+    <div class="status" id="statusD"></div>
+    <div class="facts" id="factsD"></div>
+    <div class="regs" id="regs"></div>
+    <ul class="retos" id="retos"></ul>
+  </section>
+
+  <!-- Simulador 2 -->
+  <section class="bloque">
+    <h2 class="h">2 · Jerarquía: grupos de administración, suscripciones y grupos de recursos</h2>
+    <p class="fb" style="margin:0">Haz clic en un elemento del árbol y luego elige una acción.</p>
+    <div class="acciones" id="acciones"></div>
+    <div class="status" id="statusJ"></div>
+    <div class="facts" id="factsJ"></div>
+    <div class="arbol" id="arbol"></div>
+  </section>
+
+  <section>
+    <h2 class="h">Conceptos clave del capítulo</h2>
+    <div class="cards">
+      <div class="card"><h3>Regiones</h3><ul>
+        <li>Ubicación geográfica específica para alojar tus recursos; más de 60 en el mundo.</li>
+        <li>Aportan <b>alta disponibilidad</b>, <b>baja latencia</b> y <b>cumplimiento</b> de regulaciones.</li>
+        <li>Cómo elegir: <b>requisitos legales</b> (los datos no salen sin tu permiso), <b>proximidad</b> a clientes, <b>servicios disponibles</b> y <b>precios</b>.</li>
+      </ul></div>
+      <div class="card"><h3>Regiones emparejadas</h3><ul>
+        <li>Cada región se empareja con otra del <b>mismo límite geopolítico</b>.</li>
+        <li>Objetivo: resiliencia, continuidad del negocio y recuperación ante desastres.</li>
+        <li>Separación geográfica, <b>actualizaciones secuenciales</b> y opción de replicar datos entre ellas.</li>
+      </ul></div>
+      <div class="card"><h3>Regiones soberanas</h3><ul>
+        <li>Diseñadas para cumplir la regulación de una nación; datos y operación dentro de sus fronteras.</li>
+        <li>No siempre las administra Microsoft; pueden estar restringidas a ciertos clientes.</li>
+        <li>Ej.: <b>Azure Government</b> (EE. UU.), <b>Azure China 21Vianet</b>.</li>
+      </ul></div>
+      <div class="card"><h3>Zonas de disponibilidad</h3><ul>
+        <li>Uno o varios centros de datos con alimentación, red y conectividad <b>redundantes</b>.</li>
+        <li>Separadas entre sí y unidas por un enlace de baja latencia, dentro de <b>la misma región</b>.</li>
+        <li><b>No todas las regiones</b> tienen zonas. Ejemplos con 3: Este de EE. UU., Oeste de Europa, Sudeste Asiático, Sur de Brasil.</li>
+      </ul></div>
+      <div class="card"><h3>Puntos de presencia (PoP)</h3><ul>
+        <li>Punto físico de interconexión entre redes para entregar contenido rápido y confiable.</li>
+        <li>Menos latencia y alcance global: entregan desde un punto cercano al usuario.</li>
+      </ul></div>
+      <div class="card"><h3>Servicios globales y regionales</h3><ul>
+        <li><b>Globales:</b> Microsoft Entra ID (antes Azure Active Directory), Azure Traffic Manager.</li>
+        <li><b>Regionales</b> (la mayoría): Virtual Machines, App Service, Functions.</li>
+      </ul></div>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="h">Preguntas tipo examen</h2>
+    <div class="score" id="score"></div>
+    <div class="quiz" id="quiz"></div>
+  </section>
+</div>
+
+<script src="assets/progreso.js"></script>
+<script src="assets/quiz.js"></script>
+<script>
+function seg(id,obj,get,set,fn){
+  const el=document.getElementById(id);el.innerHTML="";
+  Object.keys(obj).forEach(k=>{const b=document.createElement("button");b.type="button";b.textContent=obj[k];b.dataset.k=k;
+    b.setAttribute("aria-pressed",String(get()===k));b.onclick=()=>{set(k);fn()};el.appendChild(b)});
+}
+function facts(id,rows){document.getElementById(id).innerHTML=rows.map(([k,v])=>`<div class="fact"><div class="k">${k}</div><div class="v">${v}</div></div>`).join("")}
+function status(id,lvl,t,d){
+  const col={ok:"var(--ok)",warn:"var(--warn)",bad:"var(--bad)",info:"var(--accent)"}[lvl],ico={ok:"✓",warn:"!",bad:"✕",info:"i"}[lvl];
+  document.getElementById(id).innerHTML=`<span class="dot" style="background:${col}" aria-hidden="true"></span><div><b>${ico} ${t}</b><p>${d}</p></div>`;
+}
+
+/* ---------- 1 · Despliegue (págs. 38–40 del curso) ---------- */
+const DESP={uno:"1 centro de datos",dos:"2 centros de datos",multi:"Londres + Mumbai"};
+const EV={none:"Normal",dc:"Falla un centro de datos",region:"Cae la región Londres"};
+const US={uk:"Londres",in:"India"};
+const DCS={L1:["Londres","Centro de datos 1"],L2:["Londres","Centro de datos 2"],M1:["Mumbai","Centro de datos 1"],M2:["Mumbai","Centro de datos 2"]};
+const EN={uno:["L1"],dos:["L1","L2"],multi:["L1","L2","M1","M2"]};
+let desp="uno",ev="none",us="in";
+
+function renderD(){
+  seg("desp",DESP,()=>desp,k=>desp=k,renderD);
+  seg("evento",EV,()=>ev,k=>ev=k,renderD);
+  seg("usuario",US,()=>us,k=>us=k,renderD);
+  const caidos=ev==="dc"?["L1"]:ev==="region"?["L1","L2"]:[];
+  const vivos=EN[desp].filter(d=>!caidos.includes(d));
+  const local=us==="uk"?"L":"M";
+  const sirve=vivos.find(d=>d[0]===local)||vivos[0];
+  const lat=!sirve?"—":sirve[0]===local?"Baja":"Alta";
+
+  if(!sirve)status("statusD","bad","La aplicación está caída",ev==="region"?"Toda la región de Londres no está disponible y no hay otra región donde corra la app.":"La app vivía en un solo centro de datos y ese centro falló.");
+  else if(lat==="Alta")status("statusD","warn","Disponible, pero lenta para este usuario",`La app responde desde ${DCS[sirve][0]}, lejos del usuario en ${US[us]}: alta latencia.`);
+  else status("statusD","ok","Disponible y rápida",`La app responde desde ${DCS[sirve][0]}, cerca del usuario en ${US[us]}.`);
+
+  facts("factsD",[["Centros de datos",EN[desp].length],["Regiones",desp==="multi"?2:1],["Sirve desde",sirve?DCS[sirve][0]:"—"],["Latencia",lat]]);
+
+  const regs=document.getElementById("regs");regs.innerHTML="";
+  [["L","Región Londres","Reino Unido"],["M","Región Mumbai","India"]].forEach(([r,t,s])=>{
+    const down=r==="L"&&ev==="region";
+    const d=document.createElement("div");d.className="reg"+(down?" down":"");
+    d.innerHTML=`<div><h3>${t}${down?" · caída":""}</h3><div class="sub">${s}</div></div><div class="dcs">`+
+      [r+"1",r+"2"].map(id=>{const cae=caidos.includes(id),hay=EN[desp].includes(id);
+        return`<div class="dc${cae?" down":""}"><div class="zt">${DCS[id][1]}${cae?" · falla":""}</div>${hay?`<span class="app${cae?" off":""}${id===sirve?" sirve":""}">App${id===sirve?" · responde":""}</span>`:'<span class="empty">Sin despliegue</span>'}</div>`}).join("")+`</div>`;
+    regs.appendChild(d);
+  });
+
+  const retos=[
+    [desp==="multi","Usuarios en otras partes del mundo","Se resuelve desplegando la app en otras regiones, cerca de los usuarios."],
+    [desp!=="uno","Falla un centro de datos","Con dos o más centros de datos (por ejemplo, zonas de disponibilidad), la app sigue en línea."],
+    [desp==="multi","Cae toda la región","Solo otra región (Mumbai) mantiene la app disponible."]
+  ];
+  document.getElementById("retos").innerHTML=retos.map(([ok,t,d])=>`<li><span class="ic ${ok?"si":"no"}">${ok?"✓":"✕"}</span><span><b>${t}:</b> ${ok?"resuelto. ":"sin resolver. "}${d}</span></li>`).join("");
+}
+
+/* ---------- 2 · Jerarquía ---------- */
+const ARBOL={id:"raiz",n:"Grupo de administración raíz",t:"Grupo de administración",h:[
+  {id:"mgp",n:"Producción",t:"Grupo de administración",h:[
+    {id:"sp",n:"Suscripción Prod-Ventas",t:"Suscripción",h:[
+      {id:"rgw",n:"rg-tienda-web",t:"Grupo de recursos",h:[
+        {id:"vm",n:"vm-web-01",t:"Máquina virtual"},
+        {id:"app",n:"app-tienda",t:"App Service"},
+        {id:"sql",n:"sql-pedidos",t:"Base de datos SQL"}]},
+      {id:"rgf",n:"rg-funciones",t:"Grupo de recursos",h:[
+        {id:"fn",n:"fn-correos",t:"Azure Functions"}]}]}]},
+  {id:"mgd",n:"Desarrollo",t:"Grupo de administración",h:[
+    {id:"sd",n:"Suscripción Dev-Pruebas",t:"Suscripción",h:[
+      {id:"rgd",n:"rg-dev",t:"Grupo de recursos",h:[
+        {id:"vmd",n:"vm-dev-01",t:"Máquina virtual"}]}]}]}]};
+const ACC={pol:"Asignar política (Azure Policy)",rol:"Asignar rol (RBAC)",del:"Eliminar"};
+let sel="mgp",accion=null,borrados=new Set();
+
+const nodos={},padre={};
+(function idx(n,p){nodos[n.id]=n;padre[n.id]=p;(n.h||[]).forEach(h=>idx(h,n.id))})(ARBOL,null);
+const desc=id=>{const out=[];(function r(n){(n.h||[]).forEach(h=>{out.push(h.id);r(h)})})(nodos[id]);return out};
+function suscripcion(id){for(let x=id;x;x=padre[x])if(nodos[x].t==="Suscripción")return nodos[x].n.replace("Suscripción ","");return null}
+
+function renderJ(){
+  const acc=document.getElementById("acciones");acc.innerHTML="";
+  Object.keys(ACC).forEach(k=>{const b=document.createElement("button");b.type="button";b.className="btn";b.textContent=ACC[k];
+    b.onclick=()=>{accion=k;if(k==="del"&&puedeBorrar(sel))[sel,...desc(sel)].forEach(x=>borrados.add(x));renderJ()};acc.appendChild(b)});
+  if(borrados.size){const b=document.createElement("button");b.type="button";b.className="btn";b.textContent="Restaurar todo";b.onclick=()=>{borrados.clear();accion=null;renderJ()};acc.appendChild(b)}
+
+  const n=nodos[sel],afect=accion?[sel,...desc(sel)]:[];
+  if(!accion)status("statusJ","info",`${n.t}: ${n.n}`,ayuda(n.t));
+  else if(accion==="del"&&!puedeBorrar(sel))status("statusJ","warn","En este simulador solo se eliminan grupos de recursos o recursos","Eliminar un grupo de recursos borra todo lo que contiene: por eso se agrupan recursos con el mismo ciclo de vida.");
+  else if(accion==="del")status("statusJ","bad",`Eliminado: ${n.n}`,n.t==="Grupo de recursos"?`Se borraron también sus ${desc(sel).length} recursos. Recursos con el mismo ciclo de vida se crean, actualizan y eliminan juntos.`:"Se eliminó solo este recurso.");
+  else status("statusJ","ok",`${accion==="pol"?"Política":"Rol"} asignado en ${n.n}`,`Se hereda hacia abajo: afecta a ${afect.length} elemento(s), incluido el seleccionado. Lo que está por encima o en ramas vecinas no cambia.`);
+
+  facts("factsJ",[["Nivel",n.t],["Elementos afectados",accion&&!(accion==="del"&&!puedeBorrar(sel))?afect.length:0],["Se factura en",suscripcion(sel)||"Cada suscripción hija"],["Herencia","Hacia abajo"]]);
+
+  const tag=accion==="pol"?'<span class="tag pol">política heredada</span>':accion==="rol"?'<span class="tag rol">rol heredado</span>':"";
+  function li(x){
+    const b=borrados.has(x.id),af=afect.includes(x.id)&&accion!=="del";
+    return`<li><button type="button" class="nodo${x.id===sel?" sel":""}${af?" afect":""}${b?" borrado":""}" data-id="${x.id}"><span class="nivel">${x.t}</span><span>${x.n}</span>${af?tag:""}${b?'<span class="tag del">eliminado</span>':""}</button>${x.h?`<ul>${x.h.map(li).join("")}</ul>`:""}</li>`;
+  }
+  const ar=document.getElementById("arbol");ar.innerHTML=`<ul>${li(ARBOL)}</ul>`;
+  ar.querySelectorAll(".nodo").forEach(b=>b.onclick=()=>{sel=b.dataset.id;accion=null;renderJ()});
+}
+function puedeBorrar(id){const t=nodos[id].t;return t!=="Grupo de administración"&&t!=="Suscripción"}
+function ayuda(t){return{
+  "Grupo de administración":"Organiza suscripciones en árbol y aplica políticas, iniciativas y roles a todas las suscripciones que contiene. Útil para departamentos o entornos (prod, dev, test).",
+  "Suscripción":"Organiza y controla acceso, costos y facturación. Tiene límites de cantidad y tipo de recursos. Una cuenta de Azure puede tener varias.",
+  "Grupo de recursos":"Contenedor de recursos relacionados de una solución. Guarda metadatos de los recursos. Agrupa lo que comparte ciclo de vida."
+}[t]||"Un recurso es un elemento administrable de Azure: VMs, aplicaciones web, bases de datos, redes virtuales…"}
+
+renderD();renderJ();iniciarQuiz("cap03");
+</script>
+</body>
+</html>

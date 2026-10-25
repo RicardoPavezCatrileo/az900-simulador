@@ -1,0 +1,98 @@
+[
+  {
+    "pregunta": "¿Cuál de estos NO es un criterio para elegir una región de Azure?",
+    "opciones": ["Proximidad a los clientes", "Servicios disponibles en la región", "Precios de la región", "Cantidad de suscripciones de tu cuenta"],
+    "correcta": 3,
+    "explicacion": "Se elige región por cumplimiento legal y gobernanza de datos, proximidad a los clientes (latencia), servicios disponibles y precios."
+  },
+  {
+    "pregunta": "Una ley exige que los datos de tus clientes no salgan del país. ¿Qué característica de las regiones te ayuda?",
+    "opciones": ["Los datos nunca salen de una región sin tu permiso explícito", "Las regiones emparejadas replican todo automáticamente a otro continente", "Los PoP guardan una copia de los datos", "Las suscripciones cifran los datos"],
+    "correcta": 0,
+    "explicacion": "Cumplimiento de requisitos legales y de gobernanza de datos: los datos no salen de la región que elijas sin tu permiso explícito."
+  },
+  {
+    "pregunta": "Cada región de Azure está emparejada con otra región…",
+    "opciones": ["En otro continente, para máxima distancia", "Dentro del mismo límite geopolítico", "Elegida por el cliente al crear la suscripción", "Solo si la región tiene zonas de disponibilidad"],
+    "correcta": 1,
+    "explicacion": "Las regiones emparejadas están en el mismo límite geopolítico y separadas geográficamente para resistir un error catastrófico."
+  },
+  {
+    "pregunta": "¿Qué característica tienen las regiones emparejadas para minimizar interrupciones?",
+    "opciones": ["Se actualizan al mismo tiempo", "Actualizaciones secuenciales", "Comparten el mismo centro de datos", "No reciben actualizaciones"],
+    "correcta": 1,
+    "explicacion": "Las actualizaciones se aplican de forma secuencial: primero una región del par y después la otra."
+  },
+  {
+    "pregunta": "Azure Government (EE. UU.) y Azure China 21Vianet son ejemplos de…",
+    "opciones": ["Regiones emparejadas", "Zonas de disponibilidad", "Regiones soberanas", "Puntos de presencia"],
+    "correcta": 2,
+    "explicacion": "Las regiones soberanas cumplen requisitos regulatorios de una nación; no siempre las administra Microsoft y pueden estar restringidas a ciertos clientes."
+  },
+  {
+    "pregunta": "¿Qué es una zona de disponibilidad?",
+    "opciones": ["Una región completa de respaldo", "Uno o varios centros de datos con alimentación, red y conectividad redundantes dentro de una región", "Un punto de interconexión de redes para entregar contenido", "Un grupo de suscripciones"],
+    "correcta": 1,
+    "explicacion": "Las zonas están separadas entre sí dentro de la misma región, conectadas por un enlace de baja latencia y aisladas de catástrofes."
+  },
+  {
+    "pregunta": "¿Todas las regiones de Azure tienen zonas de disponibilidad?",
+    "opciones": ["Sí, siempre 3", "Sí, al menos 2", "No, no todas las regiones las tienen", "Solo las regiones soberanas"],
+    "correcta": 2,
+    "explicacion": "No todas las regiones tienen zonas de disponibilidad. Las que sí, como Este de EE. UU., Oeste de Europa o Sur de Brasil, tienen 3."
+  },
+  {
+    "pregunta": "Quieres alta disponibilidad para tu app ante la falla de un centro de datos, sin salir de la región. ¿Qué usas?",
+    "opciones": ["Regiones emparejadas", "Zonas de disponibilidad", "Un punto de presencia", "Otra suscripción"],
+    "correcta": 1,
+    "explicacion": "Las zonas de disponibilidad dan alta disponibilidad dentro de la misma región: si una zona falla, las otras siguen."
+  },
+  {
+    "pregunta": "Tu app está en 2 centros de datos de Londres y se cae toda la región de Londres. ¿Qué la habría mantenido en línea?",
+    "opciones": ["Un tercer centro de datos en Londres", "Desplegarla también en otra región, por ejemplo Mumbai", "Un grupo de recursos adicional", "Más memoria en las VMs"],
+    "correcta": 1,
+    "explicacion": "Varios centros de datos protegen contra la falla de uno, pero no contra la caída de toda la región. Para eso necesitas múltiples regiones."
+  },
+  {
+    "pregunta": "Una empresa en América Latina tiene usuarios en China y quiere entregarles contenido con menos latencia. ¿Qué parte de la infraestructura de Azure ayuda?",
+    "opciones": ["Puntos de presencia (PoP)", "Grupos de administración", "Regiones emparejadas", "Grupos de recursos"],
+    "correcta": 0,
+    "explicacion": "Un PoP es un punto físico de interconexión de redes que entrega contenido desde una ubicación cercana al usuario."
+  },
+  {
+    "pregunta": "¿Qué recursos conviene poner en el mismo grupo de recursos?",
+    "opciones": ["Todos los de la empresa", "Los que comparten el mismo ciclo de vida", "Solo los de la misma región", "Solo los del mismo tipo (por ejemplo, todas las VMs)"],
+    "correcta": 1,
+    "explicacion": "Recursos con el mismo ciclo de vida se implementan, actualizan y eliminan juntos como grupo."
+  },
+  {
+    "pregunta": "¿Qué almacena un grupo de recursos?",
+    "opciones": ["Los datos de las aplicaciones", "Metadatos acerca de los recursos", "Copias de seguridad de las VMs", "Las facturas"],
+    "correcta": 1,
+    "explicacion": "El grupo de recursos es un contenedor lógico y guarda metadatos sobre los recursos que contiene."
+  },
+  {
+    "pregunta": "Necesitas separar los costos de los entornos prod, dev y test y controlar quién accede a cada uno. ¿Qué usas?",
+    "opciones": ["Zonas de disponibilidad", "Varias suscripciones", "Puntos de presencia", "Regiones soberanas"],
+    "correcta": 1,
+    "explicacion": "Las suscripciones organizan acceso, costos y facturación; se factura por suscripción. Una cuenta puede tener varias."
+  },
+  {
+    "pregunta": "Quieres aplicar la misma política a 12 suscripciones de distintos departamentos. ¿Qué usas?",
+    "opciones": ["Un grupo de recursos", "Un grupo de administración", "Una región emparejada", "Azure Advisor"],
+    "correcta": 1,
+    "explicacion": "Los grupos de administración organizan suscripciones en árbol y aplican políticas, iniciativas y roles a todas las que contienen."
+  },
+  {
+    "pregunta": "¿Cuál es el orden correcto de la jerarquía, de mayor a menor?",
+    "opciones": ["Suscripción → grupo de administración → grupo de recursos → recurso", "Grupo de administración → suscripción → grupo de recursos → recurso", "Grupo de recursos → suscripción → grupo de administración → recurso", "Grupo de administración → grupo de recursos → suscripción → recurso"],
+    "correcta": 1,
+    "explicacion": "Grupos de administración contienen suscripciones, que contienen grupos de recursos, que contienen recursos. Políticas y roles se heredan hacia abajo."
+  },
+  {
+    "pregunta": "¿Cuál de estos es un servicio GLOBAL de Azure (no regional)?",
+    "opciones": ["Azure Virtual Machines", "Azure App Service", "Azure Traffic Manager", "Azure Functions"],
+    "correcta": 2,
+    "explicacion": "Traffic Manager (balanceo por DNS) y Microsoft Entra ID (antes Azure Active Directory) son globales. VMs, App Service y Functions son regionales."
+  }
+]

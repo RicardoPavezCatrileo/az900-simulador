@@ -71,6 +71,16 @@ Ya adaptado a la estructura compartida (CSS común en `assets/`, preguntas en `d
 - Simulador de capacidad: centro de datos propio (servidores fijos, slider) vs cloud (capacidad = demanda +10%), gráfico SVG mensual con demanda atendida, sin atender y capacidad ociosa.
 - Tarjetas de conceptos (despliegue, 5 características, 6 ventajas, pilares, precios, IaaS/PaaS/SaaS) y 15 preguntas en `data/preguntas-cap02.json`.
 
+## Lo que ya existe: cap03-arquitectura.html (PDF págs. 30–47)
+- Simulador de despliegue (ejemplo Londres/Mumbai del curso): 1 centro de datos / 2 centros de datos / 2 regiones × evento (falla de centro de datos, caída de región) × ubicación del usuario → disponibilidad y latencia, con los 3 desafíos del curso marcados como resueltos o no.
+- Simulador de jerarquía: árbol grupo de administración → suscripción → grupo de recursos → recurso; asignar política o rol muestra la herencia hacia abajo; eliminar un grupo de recursos borra su contenido.
+- Tarjetas (regiones, emparejadas, soberanas, zonas, PoP, servicios globales vs regionales) y 16 preguntas en `data/preguntas-cap03.json`.
+- El curso nombra "Azure Active Directory"; en el sitio se usa "Microsoft Entra ID (antes Azure Active Directory)".
+
+## Convenciones de los simuladores
+- `seg()` pone `data-k` en cada botón; en un `.seg.fail` la opción con clave `none` se pinta azul (no roja).
+- Para probar: `python -m http.server` en la carpeta y captura con Chrome headless (`--screenshot`). Chrome headless no baja de ~500 px de ancho; usar un `--user-data-dir` limpio para no ver CSS en caché.
+
 ## Leer el PDF
 Las diapositivas son casi todo imágenes: `pdftotext` (disponible en Git Bash) saca poco texto. Para leerlas, renderizar páginas a PNG con PyMuPDF en un venv temporal y abrir las imágenes.
 
@@ -81,5 +91,5 @@ Las diapositivas son casi todo imágenes: `pdftotext` (disponible en Git Bash) s
 
 ## Próximos pasos
 1. ~~Crear `index.html`, `assets/` y adaptar cap07~~ (hecho).
-2. PDF ya copiado en `docs/`. Capítulo 2 hecho; seguir con el capítulo 3 (Arquitectura y servicios, desde la pág. 30).
+2. PDF ya copiado en `docs/`. Capítulos 2 y 3 hechos; seguir con el capítulo 4 (Fundamentos de herramientas, desde la pág. 48).
 3. ~~Repo git propio~~ (hecho): rama `main`, remoto `origin` = https://github.com/rpavez2026-debug/az900-simulador. Hacer commit y push al terminar cada avance.

@@ -96,7 +96,7 @@ let red="LRS",fail="none";
 
 function seg(id,obj,get,set){
   const el=document.getElementById(id);el.innerHTML="";
-  Object.keys(obj).forEach(k=>{const b=document.createElement("button");b.type="button";b.textContent=typeof obj[k]==="string"?obj[k]:obj[k].name;
+  Object.keys(obj).forEach(k=>{const b=document.createElement("button");b.type="button";b.textContent=typeof obj[k]==="string"?obj[k]:obj[k].name;b.dataset.k=k;
     b.setAttribute("aria-pressed",String(get()===k));b.onclick=()=>{set(k);render()};el.appendChild(b)});
 }
 function copies(n,cls,lostIdx){let h="";for(let i=0;i<n;i++)h+=`<div class="copy ${cls} ${i===lostIdx?"lost":""}" title="Copia de datos">${i+1}</div>`;return h}
