@@ -74,6 +74,13 @@ td.y{color:var(--ok);font-weight:600} td.n{color:var(--muted)}
 .btn{font:inherit;font-family:var(--f-mono);font-size:.8rem;padding:5px 10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:6px;cursor:pointer}
 .btn:hover{border-color:var(--accent)}
 
+/* Tarjetas de conceptos */
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+.card h3{margin:0 0 6px;font-family:var(--f-display);font-size:1rem}
+.card ul{margin:0;padding-left:18px;display:grid;gap:4px;font-size:.9rem}
+.card li b{font-weight:600}
+
 /* Barra de progreso */
 .bar{height:8px;border-radius:99px;background:var(--line);overflow:hidden}
 .bar span{display:block;height:100%;background:var(--accent);border-radius:99px;transition:width .3s}

@@ -1,0 +1,92 @@
+[
+  {
+    "pregunta": "En el modelo de responsabilidad compartida, ¿qué es SIEMPRE responsabilidad del cliente, sin importar si usa SaaS, PaaS o IaaS?",
+    "opciones": ["El sistema operativo", "La información y los datos", "La red física", "Los hosts físicos"],
+    "correcta": 1,
+    "explicacion": "Información y datos, dispositivos (móviles y PCs) e identidades y cuentas son siempre del cliente, en todos los modelos."
+  },
+  {
+    "pregunta": "Despliegas una Azure Virtual Machine. ¿Quién debe instalar los parches del sistema operativo?",
+    "opciones": ["Microsoft", "El cliente", "Es compartido", "Nadie, Azure no usa sistema operativo"],
+    "correcta": 1,
+    "explicacion": "Una VM es IaaS: Microsoft gestiona el hardware, la red y el centro de datos físico; el sistema operativo y lo que está encima es tuyo."
+  },
+  {
+    "pregunta": "En PaaS, ¿quién es responsable del sistema operativo?",
+    "opciones": ["El cliente", "Es compartido", "Microsoft", "Depende de la región"],
+    "correcta": 2,
+    "explicacion": "PaaS elimina la necesidad de gestionar la infraestructura subyacente: el sistema operativo lo gestiona Microsoft y tú te centras en tu aplicación."
+  },
+  {
+    "pregunta": "¿Qué capa es responsabilidad COMPARTIDA en PaaS?",
+    "opciones": ["Información y datos", "Centro de datos físico", "Controles de red", "Sistema operativo"],
+    "correcta": 2,
+    "explicacion": "En PaaS son compartidas: identidad e infraestructura de directorios, aplicaciones y controles de red."
+  },
+  {
+    "pregunta": "Azure App Service es un ejemplo de…",
+    "opciones": ["IaaS", "PaaS", "SaaS", "Cloud privado"],
+    "correcta": 1,
+    "explicacion": "App Service es PaaS, igual que Elastic Beanstalk (AWS), Heroku y Google App Engine."
+  },
+  {
+    "pregunta": "Microsoft 365, Gmail, Dropbox y Zoom son ejemplos de…",
+    "opciones": ["IaaS", "PaaS", "SaaS", "Cloud híbrido"],
+    "correcta": 2,
+    "explicacion": "SaaS es un producto completo ejecutado y gestionado por el proveedor; tú solo lo usas."
+  },
+  {
+    "pregunta": "¿Qué modelo de servicio ofrece el MÁXIMO nivel de flexibilidad y control sobre la infraestructura?",
+    "opciones": ["SaaS", "PaaS", "IaaS", "Serverless"],
+    "correcta": 2,
+    "explicacion": "IaaS entrega bloques de construcción (redes, servidores, almacenamiento) y es lo más parecido a la IT tradicional en las instalaciones."
+  },
+  {
+    "pregunta": "Un banco quiere mantener los datos sensibles en sus propios servidores, pero usar Azure para cargas que necesitan crecer rápido. ¿Qué modelo de despliegue es?",
+    "opciones": ["Cloud público", "Cloud privado", "Cloud híbrido", "Multi-región"],
+    "correcta": 2,
+    "explicacion": "El cloud híbrido mantiene servidores en las instalaciones (control de activos sensibles) y extiende capacidades al cloud público (flexibilidad y rentabilidad)."
+  },
+  {
+    "pregunta": "Servicios de cloud usados por una sola organización y no expuestos al público corresponden a…",
+    "opciones": ["Cloud privado", "Cloud público", "Cloud híbrido", "Cloud comunitario"],
+    "correcta": 0,
+    "explicacion": "El cloud privado da control total y seguridad para aplicaciones sensibles. Ejemplo típico: VMware en un centro de datos propio."
+  },
+  {
+    "pregunta": "Pasar de comprar servidores a pagar solo por lo que usas cada mes significa…",
+    "opciones": ["Cambiar OPEX por CAPEX", "Cambiar CAPEX por OPEX", "Aumentar el gasto de capital", "Comprar reservas a 3 años"],
+    "correcta": 1,
+    "explicacion": "Cambias el gasto de capital (CAPEX, comprar hardware) por gasto operativo (OPEX, pagar bajo demanda sin poseer el hardware)."
+  },
+  {
+    "pregunta": "Una tienda online agrega servidores automáticamente en Black Friday y los quita después. ¿Qué característica del cloud aprovecha?",
+    "opciones": ["Amplio acceso a la red", "Alquiler múltiple", "Elasticidad y escalabilidad", "Servicio medido"],
+    "correcta": 2,
+    "explicacion": "Elasticidad y escalabilidad: escalar rápida y fácilmente en función de la demanda. Por eso dejas de adivinar la capacidad."
+  },
+  {
+    "pregunta": "\"El uso se mide y los usuarios pagan correctamente por lo que han utilizado\" describe…",
+    "opciones": ["Servicio medido", "Autoservicio bajo demanda", "Economías de escala", "Gobernanza"],
+    "correcta": 0,
+    "explicacion": "Es la característica de servicio medido, base del modelo de pago por uso."
+  },
+  {
+    "pregunta": "Varios clientes comparten la misma infraestructura física con seguridad y privacidad. ¿Qué característica es?",
+    "opciones": ["Amplio acceso a la red", "Alquiler múltiple y agrupación de recursos", "Elasticidad", "Confiabilidad"],
+    "correcta": 1,
+    "explicacion": "Alquiler múltiple (multi-tenancy) y agrupación de recursos: muchos clientes en la misma infraestructura, aislados entre sí."
+  },
+  {
+    "pregunta": "En los precios de Azure, ¿qué es gratuito?",
+    "opciones": ["El tiempo de computación", "Los datos almacenados", "La transferencia de datos hacia adentro del cloud", "La transferencia de datos fuera del cloud"],
+    "correcta": 2,
+    "explicacion": "Pagas computación, almacenamiento y transferencia de datos FUERA del cloud. La entrada de datos es gratuita."
+  },
+  {
+    "pregunta": "¿Qué pilar del cloud se refiere a herramientas y prácticas para supervisar recursos y asegurar el cumplimiento de políticas y estándares?",
+    "opciones": ["Previsibilidad", "Gobernanza", "Manejabilidad", "Confiabilidad"],
+    "correcta": 1,
+    "explicacion": "Gobernanza. Confiabilidad es funcionamiento estable; previsibilidad es anticipar comportamiento y costos; manejabilidad es monitoreo y administración sencillos."
+  }
+]

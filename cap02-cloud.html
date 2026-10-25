@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Simulador Cloud Computing</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="assets/estilos.css">
+<style>
+/* Colores del gráfico de capacidad (validados para claro y oscuro) */
+:root{--c-dem:#0a6fc2;--c-falta:#c2352b}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--c-dem:#3592dc;--c-falta:#e0564b}}
+:root[data-theme="dark"]{--c-dem:#3592dc;--c-falta:#e0564b}
+
+/* Responsabilidad compartida: pila de capas */
+.pila{display:grid;gap:14px}
+.grupo{display:grid;gap:6px}
+.grupo .gt{font-family:var(--f-mono);font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.capa{display:flex;justify-content:space-between;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--line);border-left:6px solid var(--line);border-radius:8px;padding:8px 12px;transition:border-color .25s}
+.capa.C{border-left-color:var(--accent)}
+.capa.S{border-left-color:var(--warn)}
+.capa.M{border-left-color:var(--geo)}
+.quien{font-family:var(--f-mono);font-size:.78rem;padding:3px 9px;border-radius:99px;white-space:nowrap;color:#fff}
+.quien.C{background:var(--accent)}
+.quien.S{background:linear-gradient(135deg,var(--accent) 50%,var(--geo) 50%)}
+.quien.M{background:var(--geo)}
+td.mC,td.mS,td.mM{font-family:var(--f-mono);font-size:.8rem}
+td.mC{color:var(--accent)} td.mS{color:var(--warn)} td.mM{color:var(--geo)}
+th.sel,td.sel{background:var(--accent-soft)}
+
+/* Capacidad: gráfico */
+.chart{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 12px 6px;position:relative}
+.chart svg{display:block;width:100%;height:auto}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:.82rem;color:var(--muted);margin:0 0 8px 4px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.sw{width:12px;height:12px;border-radius:3px;display:inline-block}
+.sw.line{height:2px;border-radius:0;background:var(--ink)}
+.sw.idle{background:var(--accent-soft);border:1px dashed var(--muted)}
+.tip{position:absolute;pointer-events:none;background:var(--ink);color:var(--bg);font-size:.8rem;padding:6px 9px;border-radius:6px;white-space:nowrap;opacity:0;transition:opacity .12s;font-variant-numeric:tabular-nums}
+.tip.on{opacity:1}
+.slider{display:flex;align-items:center;gap:10px;font-family:var(--f-mono);font-size:.85rem}
+.slider input{flex:1;max-width:320px;accent-color:var(--accent)}
+.slider[hidden]{display:none}
+.aviso{font-size:.8rem;color:var(--muted);margin:0}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="volver" href="index.html">← Todos los capítulos</a>
+  <header>
+    <div class="eyebrow">AZ-900 · Capítulo 2 · Cloud computing</div>
+    <h1>Cloud computing: quién hace qué y cuánto pagas</h1>
+    <p>Cloud computing es el suministro bajo demanda de potencia de cálculo, almacenamiento, aplicaciones y otros recursos, con precios de pago por uso. Explora quién es responsable de cada capa según el modelo de servicio, y qué pasa con la capacidad cuando la demanda cambia.</p>
+  </header>
+
+  <!-- Simulador 1 -->
+  <section class="pila">
+    <h2 class="h">1 · Modelo de responsabilidad compartida</h2>
+    <div class="ctl">
+      <label>Modelo de servicio</label>
+      <div class="seg" id="modelo"></div>
+    </div>
+    <div class="facts" id="factsR"></div>
+    <div class="note" id="noteR"></div>
+    <div id="pila" class="pila"></div>
+    <div class="tbl"><table>
+      <thead id="theadR"></thead>
+      <tbody id="tbodyR"></tbody>
+    </table></div>
+  </section>
+
+  <!-- Simulador 2 -->
+  <section class="pila">
+    <h2 class="h">2 · Capacidad: centro de datos propio vs cloud</h2>
+    <div class="controls">
+      <div class="ctl">
+        <label>Dónde corre la tienda online</label>
+        <div class="seg" id="donde"></div>
+      </div>
+      <div class="ctl">
+        <label for="cap">Servidores comprados</label>
+        <div class="slider" id="sliderBox"><input type="range" id="cap" min="40" max="130" step="10"><span id="capVal"></span></div>
+        <p class="aviso" id="capCloud" hidden>En el cloud no compras servidores: la capacidad se ajusta sola cada mes.</p>
+      </div>
+    </div>
+    <div class="status" id="statusC"></div>
+    <div class="facts" id="factsC"></div>
+    <div class="chart" id="chart">
+      <div class="legend">
+        <span><i class="sw" style="background:var(--c-dem)"></i>Demanda atendida</span>
+        <span><i class="sw" style="background:var(--c-falta)"></i>Demanda sin atender</span>
+        <span><i class="sw idle"></i>Capacidad ociosa</span>
+        <span><i class="sw line"></i>Capacidad disponible</span>
+      </div>
+      <svg id="svg" viewBox="0 0 720 260" role="img" aria-label="Demanda mensual de servidores frente a la capacidad disponible"></svg>
+      <div class="tip" id="tip"></div>
+    </div>
+    <p class="aviso">Números ilustrativos: una tienda online con peaks en noviembre (Black Friday) y diciembre (Navidad).</p>
+  </section>
+
+  <section>
+    <h2 class="h">Conceptos clave del capítulo</h2>
+    <div class="cards">
+      <div class="card"><h3>Modelos de despliegue</h3><ul>
+        <li><b>Privado:</b> lo usa una sola organización, no expuesto al público. Control total, seguridad para apps sensibles (ej. VMware).</li>
+        <li><b>Público:</b> recursos del proveedor, operados por él y entregados por Internet (Azure, AWS, Google Cloud).</li>
+        <li><b>Híbrido:</b> servidores propios + capacidades extendidas al cloud. Control de lo sensible y flexibilidad del público.</li>
+      </ul></div>
+      <div class="card"><h3>Cinco características</h3><ul>
+        <li><b>Autoservicio bajo demanda:</b> aprovisionas sin intervención humana del proveedor.</li>
+        <li><b>Amplio acceso a la red:</b> disponible por la red desde diversas plataformas.</li>
+        <li><b>Alquiler múltiple y agrupación de recursos:</b> varios clientes comparten infraestructura con seguridad y privacidad.</li>
+        <li><b>Elasticidad y escalabilidad:</b> escalas rápido según la demanda.</li>
+        <li><b>Servicio medido:</b> pagas por lo que usaste.</li>
+      </ul></div>
+      <div class="card"><h3>Seis ventajas</h3><ul>
+        <li>Cambiar <b>CAPEX por OPEX</b>: pagar bajo demanda, sin poseer hardware.</li>
+        <li>Aumentar la <b>velocidad y agilidad</b>.</li>
+        <li><b>Economías de escala</b> masivas: precios más bajos.</li>
+        <li><b>Dejar de adivinar la capacidad</b>.</li>
+        <li>Dejar de gastar en <b>operar y mantener centros de datos</b>.</li>
+        <li>Ser <b>global en minutos</b>.</li>
+      </ul></div>
+      <div class="card"><h3>Pilares fundamentales</h3><ul>
+        <li><b>Gobernanza:</b> supervisar recursos y cumplir políticas y estándares.</li>
+        <li><b>Confiabilidad:</b> funcionamiento estable, menos fallos, más tiempo activo.</li>
+        <li><b>Previsibilidad:</b> anticipar comportamiento y planificar recursos.</li>
+        <li><b>Manejabilidad:</b> monitoreo y administración con herramientas simples.</li>
+        <li><b>Seguridad:</b> protección integral de datos, apps y redes.</li>
+      </ul></div>
+      <div class="card"><h3>Precios: 3 fundamentos</h3><ul>
+        <li><b>Computación:</b> pagas por el tiempo de cómputo.</li>
+        <li><b>Almacenamiento:</b> pagas por los datos almacenados.</li>
+        <li><b>Transferencia FUERA del cloud:</b> se cobra. La <b>entrada</b> de datos es gratuita.</li>
+      </ul></div>
+      <div class="card"><h3>IaaS · PaaS · SaaS</h3><ul>
+        <li><b>IaaS:</b> redes, servidores y almacenamiento; máxima flexibilidad. Ej.: Azure Virtual Machines.</li>
+        <li><b>PaaS:</b> sin gestionar infraestructura; te centras en tu app. Ej.: Azure App Service.</li>
+        <li><b>SaaS:</b> producto completo gestionado por el proveedor. Ej.: Microsoft 365, Gmail, Zoom.</li>
+      </ul></div>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="h">Preguntas tipo examen</h2>
+    <div class="score" id="score"></div>
+    <div class="quiz" id="quiz"></div>
+  </section>
+</div>
+
+<script src="assets/progreso.js"></script>
+<script src="assets/quiz.js"></script>
+<script>
+function seg(id,obj,get,set,fn){
+  const el=document.getElementById(id);el.innerHTML="";
+  Object.keys(obj).forEach(k=>{const b=document.createElement("button");b.type="button";b.textContent=typeof obj[k]==="string"?obj[k]:obj[k].name;
+    b.setAttribute("aria-pressed",String(get()===k));b.onclick=()=>{set(k);fn()};el.appendChild(b)});
+}
+
+/* ---------- 1 · Responsabilidad compartida ---------- */
+// C = cliente, S = compartida, M = Microsoft. Orden de columnas: local, iaas, paas, saas
+const MOD={
+ local:{name:"Local (on-premises)",ej:"Tu propio centro de datos. Compras los servidores y pagas el alquiler, la electricidad, la refrigeración y un equipo 24/7. Todo es tuyo, incluido qué hacer ante un terremoto, un apagón o un incendio."},
+ iaas:{name:"IaaS",ej:"Ej.: Azure Virtual Machines (también Amazon EC2, GCP, DigitalOcean). Microsoft pone el hardware, la red física y el centro de datos; tú instalas, parchas y aseguras el sistema operativo y todo lo de arriba. Máxima flexibilidad."},
+ paas:{name:"PaaS",ej:"Ej.: Azure App Service (también Elastic Beanstalk, Heroku, Google App Engine). Microsoft gestiona también el sistema operativo; tú te centras en desplegar y gestionar tu aplicación. Aplicaciones, controles de red e identidad pasan a ser compartidos."},
+ saas:{name:"SaaS",ej:"Ej.: Microsoft 365, Gmail, Dropbox, Zoom. Producto completo ejecutado y gestionado por el proveedor. Tú solo respondes por tus datos, dispositivos y cuentas (y compartes la identidad de directorio)."}
+};
+const CAPAS=[
+ {g:"Siempre del cliente",n:"Información y datos",r:"CCCC"},
+ {g:"Siempre del cliente",n:"Dispositivos (móviles y PCs)",r:"CCCC"},
+ {g:"Siempre del cliente",n:"Identidades y cuentas",r:"CCCC"},
+ {g:"Varía según el modelo",n:"Identidad e infraestructura de directorios",r:"CCSS"},
+ {g:"Varía según el modelo",n:"Aplicaciones",r:"CCSM"},
+ {g:"Varía según el modelo",n:"Controles de red",r:"CCSM"},
+ {g:"Varía según el modelo",n:"Sistema operativo",r:"CCMM"},
+ {g:"Microsoft en todo el cloud",n:"Hosts físicos",r:"CMMM"},
+ {g:"Microsoft en todo el cloud",n:"Red física",r:"CMMM"},
+ {g:"Microsoft en todo el cloud",n:"Centro de datos físico",r:"CMMM"}
+];
+const ORDEN=Object.keys(MOD),QUIEN={C:"Tú (cliente)",S:"Compartida",M:"Microsoft"};
+let modelo="iaas";
+
+function renderR(){
+  seg("modelo",MOD,()=>modelo,k=>modelo=k,renderR);
+  const col=ORDEN.indexOf(modelo),m=MOD[modelo];
+  const cuenta={C:0,S:0,M:0};CAPAS.forEach(c=>cuenta[c.r[col]]++);
+  document.getElementById("factsR").innerHTML=[
+    ["Capas tuyas",cuenta.C],["Compartidas",cuenta.S],["De Microsoft",cuenta.M],["Gasto típico",modelo==="local"?"CAPEX":"OPEX"]
+  ].map(([k,v])=>`<div class="fact"><div class="k">${k}</div><div class="v">${v}</div></div>`).join("");
+  document.getElementById("noteR").innerHTML=`<h3>${m.name}</h3><p>${m.ej}</p>`;
+  const pila=document.getElementById("pila");pila.innerHTML="";
+  [...new Set(CAPAS.map(c=>c.g))].forEach(g=>{
+    const d=document.createElement("div");d.className="grupo";
+    d.innerHTML=`<div class="gt">${g}</div>`+CAPAS.filter(c=>c.g===g).map(c=>{const w=c.r[col];
+      return`<div class="capa ${w}"><span>${c.n}</span><span class="quien ${w}">${QUIEN[w]}</span></div>`}).join("");
+    pila.appendChild(d);
+  });
+  document.getElementById("theadR").innerHTML=`<tr><th>Capa</th>${ORDEN.map((k,i)=>`<th class="${i===col?"sel":""}">${MOD[k].name.split(" ")[0]}</th>`).join("")}</tr>`;
+  document.getElementById("tbodyR").innerHTML=CAPAS.map(c=>`<tr><td>${c.n}</td>${[...c.r].map((w,i)=>`<td class="m${w} ${i===col?"sel":""}">${QUIEN[w].replace(" (cliente)","")}</td>`).join("")}</tr>`).join("");
+}
+
+/* ---------- 2 · Capacidad ---------- */
+const MESES=["Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"];
+const DEM=[42,45,48,46,52,58,55,50,54,62,88,118];
+const LUG={local:"Centro de datos propio",cloud:"Cloud (Azure)"};
+let donde="local",capFija=80;
+const capInput=document.getElementById("cap");capInput.value=capFija;
+capInput.oninput=()=>{capFija=+capInput.value;renderC()};
+
+function capacidad(){return donde==="local"?DEM.map(()=>capFija):DEM.map(d=>Math.ceil(d*1.1))}
+
+function renderC(){
+  seg("donde",LUG,()=>donde,k=>donde=k,renderC);
+  document.getElementById("sliderBox").hidden=donde!=="local";
+  document.getElementById("capCloud").hidden=donde==="local";
+  document.getElementById("capVal").textContent=capFija;
+  const cap=capacidad();
+  const falta=DEM.map((d,i)=>Math.max(0,d-cap[i])),ocio=DEM.map((d,i)=>Math.max(0,cap[i]-d));
+  const sum=a=>a.reduce((x,y)=>x+y,0);
+  const pagada=sum(cap),sinAt=sum(falta),pctOcio=Math.round(100*sum(ocio)/pagada),mesesFalta=falta.filter(x=>x>0).length;
+
+  let st;
+  if(donde==="cloud")st=["ok","La capacidad sigue a la demanda","Elasticidad: Azure agrega servidores en noviembre y diciembre y los quita en enero. Pagas solo por lo usado (servicio medido) y dejas de adivinar la capacidad."];
+  else if(mesesFalta)st=["bad",`${mesesFalta} ${mesesFalta>1?"meses":"mes"} con clientes sin servicio`,`Compraste ${capFija} servidores y no alcanzan en ${MESES.filter((m,i)=>falta[i]>0).join(" y ")}. Comprar más toma semanas: el escalado tradicional es limitado.`];
+  else st=["warn","Sin cortes, pero pagas por servidores ociosos",`El ${pctOcio}% de la capacidad que mantienes durante el año no se usa. Es dinero de capital (CAPEX) inmovilizado, más electricidad, refrigeración y mantenimiento.`];
+  const col={ok:"var(--ok)",warn:"var(--warn)",bad:"var(--bad)"}[st[0]];
+  const ico={ok:"✓",warn:"!",bad:"✕"}[st[0]];
+  document.getElementById("statusC").innerHTML=`<span class="dot" style="background:${col}" aria-hidden="true"></span><div><b>${ico} ${st[1]}</b><p>${st[2]}</p></div>`;
+  document.getElementById("factsC").innerHTML=[
+    ["Servidores-mes pagados",pagada],["Demanda sin atender",sinAt],["Capacidad ociosa",pctOcio+"%"],["Tipo de gasto",donde==="local"?"CAPEX":"OPEX"]
+  ].map(([k,v])=>`<div class="fact"><div class="k">${k}</div><div class="v">${v}</div></div>`).join("");
+  dibujar(cap,falta);
+}
+
+function dibujar(cap,falta){
+  const W=720,H=260,L=40,R=8,T=12,B=26,pw=W-L-R,ph=H-T-B,ymax=140;
+  const y=v=>T+ph-(v/ymax)*ph,band=pw/12,bw=band*0.62;
+  const barra=(x,y0,y1,w,r)=>{const h=y0-y1;if(h<=0)return"";r=Math.min(r,h,w/2);
+    return`M${x},${y0}V${y1+r}Q${x},${y1} ${x+r},${y1}H${x+w-r}Q${x+w},${y1} ${x+w},${y1+r}V${y0}Z`};
+  let s="";
+  [0,40,80,120].forEach(v=>{s+=`<line x1="${L}" x2="${W-R}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)" stroke-width="1"/><text x="${L-6}" y="${y(v)+4}" text-anchor="end" font-size="11" fill="var(--muted)" font-family="var(--f-mono)">${v}</text>`});
+  DEM.forEach((d,i)=>{
+    const x=L+i*band+(band-bw)/2,c=cap[i],at=Math.min(d,c);
+    if(c>d)s+=`<rect x="${x}" y="${y(c)}" width="${bw}" height="${y(d)-y(c)}" fill="var(--accent-soft)" stroke="var(--muted)" stroke-dasharray="3 3" stroke-width="1" rx="3"/>`;
+    s+=`<path d="${barra(x,y(0),y(at),bw,falta[i]?0:4)}" fill="var(--c-dem)"/>`;
+    if(falta[i])s+=`<path d="${barra(x,y(at)-2,y(d),bw,4)}" fill="var(--c-falta)"/>`;
+    s+=`<text x="${L+i*band+band/2}" y="${H-8}" text-anchor="middle" font-size="11" fill="var(--muted)" font-family="var(--f-mono)">${MESES[i]}</text>`;
+  });
+  // línea de capacidad (escalonada)
+  let p="";cap.forEach((c,i)=>{const x0=L+i*band,x1=x0+band;p+=(i?`L${x0},${y(c)}`:`M${x0},${y(c)}`)+`L${x1},${y(c)}`});
+  s+=`<path d="${p}" fill="none" stroke="var(--ink)" stroke-width="2"/>`;
+  DEM.forEach((d,i)=>{s+=`<rect class="hit" data-i="${i}" x="${L+i*band}" y="${T}" width="${band}" height="${ph}" fill="transparent"/>`});
+  const svg=document.getElementById("svg");svg.innerHTML=s;
+  const tip=document.getElementById("tip"),box=document.getElementById("chart");
+  svg.querySelectorAll(".hit").forEach(h=>{
+    const show=()=>{const i=+h.dataset.i;
+      tip.innerHTML=`<b>${MESES[i]}</b> · demanda ${DEM[i]} · capacidad ${cap[i]}${falta[i]?` · <b>faltan ${falta[i]}</b>`:` · ociosos ${cap[i]-DEM[i]}`}`;
+      const r=h.getBoundingClientRect(),b=box.getBoundingClientRect();
+      tip.classList.add("on");
+      const left=Math.min(Math.max(r.left-b.left+r.width/2-tip.offsetWidth/2,4),b.width-tip.offsetWidth-4);
+      tip.style.left=left+"px";tip.style.top="34px"};
+    h.addEventListener("mouseenter",show);h.addEventListener("click",show);
+    h.addEventListener("mouseleave",()=>tip.classList.remove("on"));
+  });
+}
+
+renderR();renderC();iniciarQuiz("cap02");
+</script>
+</body>
+</html>

@@ -66,6 +66,14 @@ Simulador de redundancia de Azure Storage:
 - Tabla comparativa y 5 preguntas tipo examen.
 Ya adaptado a la estructura compartida (CSS común en `assets/`, preguntas en `data/preguntas-cap07.json`, puntaje conectado).
 
+## Lo que ya existe: cap02-cloud.html (PDF págs. 9–29)
+- Simulador de responsabilidad compartida: Local/IaaS/PaaS/SaaS sobre 10 capas (cliente / compartida / Microsoft) + tabla comparativa.
+- Simulador de capacidad: centro de datos propio (servidores fijos, slider) vs cloud (capacidad = demanda +10%), gráfico SVG mensual con demanda atendida, sin atender y capacidad ociosa.
+- Tarjetas de conceptos (despliegue, 5 características, 6 ventajas, pilares, precios, IaaS/PaaS/SaaS) y 15 preguntas en `data/preguntas-cap02.json`.
+
+## Leer el PDF
+Las diapositivas son casi todo imágenes: `pdftotext` (disponible en Git Bash) saca poco texto. Para leerlas, renderizar páginas a PNG con PyMuPDF en un venv temporal y abrir las imágenes.
+
 ## Conceptos ya repasados (para preguntas)
 - **Storage:** LRS (3 copias, 1 datacenter, 11 nueves), ZRS (3 zonas, 12 nueves), GRS = LRS primaria + LRS secundaria (6 copias, 16 nueves), GZRS = ZRS primaria + LRS secundaria. Variantes RA- permiten leer la secundaria (endpoint -secondary). Replicación geo asíncrona. Brazil South se empareja con South Central US, pero no es recíproco (South Central US se empareja con North Central US).
 - **Balanceo:** Application Gateway = regional, capa 7, WAF. Traffic Manager = global, solo DNS (no es capa 7, no hace proxy; no requiere GRS). Front Door = global, capa 7, WAF, CDN.
@@ -73,5 +81,5 @@ Ya adaptado a la estructura compartida (CSS común en `assets/`, preguntas en `d
 
 ## Próximos pasos
 1. ~~Crear `index.html`, `assets/` y adaptar cap07~~ (hecho).
-2. Copiar el PDF a `docs/` y leerlo capítulo por capítulo para generar simulador + preguntas de cada uno.
+2. PDF ya copiado en `docs/`. Capítulo 2 hecho; seguir con el capítulo 3 (Arquitectura y servicios, desde la pág. 30).
 3. ~~Repo git propio~~ (hecho): rama `main`, remoto `origin` = https://github.com/rpavez2026-debug/az900-simulador- (ojo: el nombre termina en guion). Hacer commit y push al terminar cada avance.
