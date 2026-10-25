@@ -94,5 +94,11 @@
     "opciones": ["El rendimiento y la latencia", "La durabilidad: cuántas copias se guardan y dónde", "El tipo de disco de las VMs", "El nivel de acceso de los blobs"],
     "correcta": 1,
     "explicacion": "La redundancia define durabilidad y resiliencia, no rendimiento. El rendimiento lo define el tipo de cuenta (Standard o Premium)."
+  },
+  {
+    "pregunta": "Una app en Azure App Service necesita almacenamiento persistente montado como carpeta. ¿Qué usas?",
+    "opciones": ["Azure Disks", "Azure Files", "Queue Storage", "Table Storage"],
+    "correcta": 1,
+    "explicacion": "Azure Disks solo se conecta a VMs (directamente o vía AKS, Scale Sets, etc.). Servicios que no son VMs, como App Service o Container Instances, montan Azure Files por SMB/NFS."
   }
 ]
