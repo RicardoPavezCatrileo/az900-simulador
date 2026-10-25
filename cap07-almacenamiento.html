@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Simulador Redundancia Azure</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="assets/estilos.css">
+<style>
+/* Propio de este simulador: mapa de dos regiones con zonas y copias de datos */
+.map{display:grid;grid-template-columns:3fr 1.25fr;gap:14px;align-items:stretch}
+@media (max-width:760px){.map{grid-template-columns:1fr}}
+.region{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px;display:grid;gap:10px;position:relative;align-content:start}
+.region.down{border-color:var(--bad)}
+.region h2{margin:0;font-family:var(--f-display);font-size:1.05rem;font-weight:700}
+.region .sub{font-family:var(--f-mono);font-size:.75rem;color:var(--muted)}
+.zones{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.zone{background:var(--zone);border:1px dashed var(--line);border-radius:8px;padding:10px 8px;display:grid;gap:8px;min-height:120px;align-content:start;transition:background .25s}
+.zone.down{background:color-mix(in srgb,var(--bad) 14%,transparent);border-color:var(--bad)}
+.zone .zt{font-family:var(--f-mono);font-size:.72rem;color:var(--muted)}
+.copies{display:flex;flex-wrap:wrap;gap:6px}
+.copy{width:30px;height:36px;border-radius:5px 5px 8px 8px;background:var(--accent);position:relative;display:grid;place-items:center;color:#fff;font-family:var(--f-mono);font-size:.7rem;transition:opacity .25s,transform .25s}
+.copy.geo{background:var(--geo)}
+.copy.lost{opacity:.28;transform:scale(.9)}
+.copy.lost::after{content:"";position:absolute;inset:-2px;background:linear-gradient(45deg,transparent 46%,var(--bad) 46% 54%,transparent 54%)}
+.copy.read{box-shadow:0 0 0 3px color-mix(in srgb,var(--ok) 55%,transparent)}
+.arrow{font-family:var(--f-mono);font-size:.75rem;color:var(--geo);text-align:center}
+.empty{font-size:.8rem;color:var(--muted);font-style:italic}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="volver" href="index.html">← Todos los capítulos</a>
+  <header>
+    <div class="eyebrow">AZ-900 · Capítulo 7 · Almacenamiento</div>
+    <h1>Simulador de redundancia de Azure Storage</h1>
+    <p>Elige un tipo de redundancia y provoca una falla. Verás dónde viven las copias de tus datos, cuáles se pierden y si la aplicación puede seguir leyendo o escribiendo.</p>
+  </header>
+
+  <div class="controls">
+    <div class="ctl">
+      <label>1 · Redundancia de la cuenta</label>
+      <div class="seg" id="red"></div>
+    </div>
+    <div class="ctl">
+      <label>2 · Simular una falla</label>
+      <div class="seg fail" id="fail"></div>
+    </div>
+  </div>
+
+  <div class="map">
+    <div class="region" id="prim">
+      <div><h2>Brazil South · región primaria</h2><div class="sub">Escrituras siempre aquí · 3 zonas de disponibilidad</div></div>
+      <div class="zones" id="zones"></div>
+    </div>
+    <div class="region" id="sec">
+      <div><h2>South Central US · secundaria</h2><div class="sub">Región emparejada · 1 datacenter (LRS)</div></div>
+      <div class="arrow" id="arrow"></div>
+      <div class="zone" id="secz"><div class="zt">Datacenter</div><div class="copies" id="secc"></div></div>
+    </div>
+  </div>
+
+  <div class="status" id="status"></div>
+  <div class="facts" id="facts"></div>
+  <div class="note" id="note"></div>
+
+  <section>
+    <h2 class="h">Comparación rápida</h2>
+    <div class="tbl"><table>
+      <thead><tr><th>Tipo</th><th>Copias</th><th>Protege contra</th><th>Durabilidad / año</th><th>Lectura en secundaria</th></tr></thead>
+      <tbody id="tbody"></tbody>
+    </table></div>
+  </section>
+
+  <section>
+    <h2 class="h">Preguntas tipo examen</h2>
+    <div class="score" id="score"></div>
+    <div class="quiz" id="quiz"></div>
+  </section>
+</div>
+
+<script src="assets/progreso.js"></script>
+<script src="assets/quiz.js"></script>
+<script>
+const R={
+ LRS:{name:"LRS",full:"Locally Redundant Storage",prim:[3,0,0],geo:false,ra:false,dur:"11 nueves",protects:"Falla de disco o rack",note:"Tres copias síncronas dentro de un solo datacenter. Es la opción más barata. Úsala en DEV, datos que puedes recrear o cuando la ley exige que los datos no salgan de la región."},
+ ZRS:{name:"ZRS",full:"Zone-Redundant Storage",prim:[1,1,1],geo:false,ra:false,dur:"12 nueves",protects:"Caída de un datacenter / zona",note:"Una copia síncrona en cada zona de disponibilidad. Si se cae una zona, sigues leyendo y escribiendo sin cortes. Ideal para alta disponibilidad dentro de la misma región."},
+ GRS:{name:"GRS",full:"Geo-Redundant Storage",prim:[3,0,0],geo:true,ra:false,dur:"16 nueves",protects:"Desastre regional",note:"LRS en la primaria más copia asíncrona a la región emparejada, donde también queda como LRS. La secundaria no se puede leer hasta que se ejecuta un failover."},
+ "RA-GRS":{name:"RA-GRS",full:"Read-Access GRS",prim:[3,0,0],geo:true,ra:true,dur:"16 nueves",protects:"Desastre regional + lectura continua",note:"Igual que GRS, pero la secundaria se puede leer en todo momento por un endpoint propio (nombrecuenta-secondary). Útil para reportes o para seguir sirviendo lecturas durante una caída."},
+ GZRS:{name:"GZRS",full:"Geo-Zone-Redundant Storage",prim:[1,1,1],geo:true,ra:false,dur:"16 nueves",protects:"Caída de zona + desastre regional",note:"ZRS en la primaria más copia asíncrona LRS en la emparejada. Combina alta disponibilidad en la región con recuperación ante desastres."},
+ "RA-GZRS":{name:"RA-GZRS",full:"Read-Access GZRS",prim:[1,1,1],geo:true,ra:true,dur:"16 nueves",protects:"Máxima protección",note:"La opción más completa: ZRS en la primaria, copia geo y lectura permanente en la secundaria. También es la más cara."}
+};
+const F={none:"Sin falla",disk:"Disco / rack",zone:"Cae la Zona 1",region:"Cae Brazil South"};
+let red="LRS",fail="none";
+
+function seg(id,obj,get,set){
+  const el=document.getElementById(id);el.innerHTML="";
+  Object.keys(obj).forEach(k=>{const b=document.createElement("button");b.type="button";b.textContent=typeof obj[k]==="string"?obj[k]:obj[k].name;
+    b.setAttribute("aria-pressed",String(get()===k));b.onclick=()=>{set(k);render()};el.appendChild(b)});
+}
+function copies(n,cls,lostIdx){let h="";for(let i=0;i<n;i++)h+=`<div class="copy ${cls} ${i===lostIdx?"lost":""}" title="Copia de datos">${i+1}</div>`;return h}
+
+function outcome(r){
+  const zr=r.prim[1]>0;
+  if(fail==="none")return["ok","Lectura y escritura normales","Todo funciona desde la región primaria."];
+  if(fail==="disk")return["ok","Sin impacto","Azure detecta el disco dañado y reconstruye la copia automáticamente. Todas las redundancias cubren este caso."];
+  if(fail==="zone"&&zr)return["ok","Sin impacto para la aplicación","Las copias de las Zonas 2 y 3 siguen activas. La cuenta sigue aceptando lecturas y escrituras."];
+  const regional=fail==="region";
+  if(!r.geo)return["bad",regional?"Sin acceso a los datos":"Sin acceso, posible pérdida de datos",regional?"Todas las copias están en la región caída. Debes esperar que Microsoft la recupere.":"Las tres copias estaban en el datacenter de la zona caída. No hay otra copia en ningún lugar."];
+  if(r.ra)return["warn","Solo lectura desde la secundaria","La app puede leer por el endpoint -secondary. Para volver a escribir hay que ejecutar un failover a South Central US."];
+  return["warn","Datos a salvo, sin acceso hasta el failover","Las copias en South Central US existen, pero no se pueden leer hasta ejecutar un failover. La replicación es asíncrona: los últimos minutos de escrituras pueden perderse."];
+}
+
+function render(){
+  seg("red",R,()=>red,k=>red=k);seg("fail",F,()=>fail,k=>fail=k);
+  const r=R[red];
+  const zonesEl=document.getElementById("zones");zonesEl.innerHTML="";
+  r.prim.forEach((n,i)=>{
+    const down=fail==="region"||(fail==="zone"&&i===0);
+    const lostDisk=fail==="disk"&&n>0&&(r.prim[1]===0?i===0:i===1)?0:-1;
+    const z=document.createElement("div");z.className="zone"+(down?" down":"");
+    z.innerHTML=`<div class="zt">Zona ${i+1}${down?" · caída":""}</div><div class="copies">${n?copies(n,down?"lost-all":"",down?-2:lostDisk):'<span class="empty">Sin copias</span>'}</div>`;
+    if(down)z.querySelectorAll(".copy").forEach(c=>c.classList.add("lost"));
+    zonesEl.appendChild(z);
+  });
+  document.getElementById("prim").classList.toggle("down",fail==="region");
+  const secc=document.getElementById("secc"),arrow=document.getElementById("arrow");
+  if(r.geo){
+    secc.innerHTML=copies(3,"geo",-1);
+    if(r.ra&&fail!=="none"&&fail!=="disk"&&!(fail==="zone"&&r.prim[1]>0))secc.querySelectorAll(".copy").forEach(c=>c.classList.add("read"));
+    arrow.textContent="◀ réplica asíncrona desde la primaria";
+  }else{secc.innerHTML='<span class="empty">Sin copias: esta redundancia no sale de la región</span>';arrow.textContent=""}
+
+  const [lvl,t,d]=outcome(r);
+  const col={ok:"var(--ok)",warn:"var(--warn)",bad:"var(--bad)"}[lvl];
+  document.getElementById("status").innerHTML=`<span class="dot" style="background:${col}"></span><div><b>${t}</b><p>${d}</p></div>`;
+  const total=r.prim.reduce((a,b)=>a+b,0)+(r.geo?3:0);
+  document.getElementById("facts").innerHTML=[
+    ["Copias totales",total],["Regiones",r.geo?2:1],["Durabilidad",r.dur],["Lee secundaria",r.ra?"Sí":"No"]
+  ].map(([k,v])=>`<div class="fact"><div class="k">${k}</div><div class="v">${v}</div></div>`).join("");
+  document.getElementById("note").innerHTML=`<h3>${r.name} · ${r.full}</h3><p>${r.note}</p>`;
+  document.getElementById("tbody").innerHTML=Object.keys(R).map(k=>{const x=R[k];const c=x.prim.reduce((a,b)=>a+b,0)+(x.geo?3:0);
+    return`<tr class="${k===red?"sel":""}"><td><b>${x.name}</b></td><td>${c}</td><td>${x.protects}</td><td>${x.dur}</td><td class="${x.ra?"y":"n"}">${x.ra?"Sí":"No"}</td></tr>`}).join("");
+}
+
+render();iniciarQuiz("cap07");
+</script>
+</body>
+</html>

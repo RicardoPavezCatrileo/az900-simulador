@@ -1,0 +1,32 @@
+[
+  {
+    "pregunta": "Necesitas que tu app siga escribiendo aunque se caiga un datacenter de la región, sin pagar por otra región. ¿Qué eliges?",
+    "opciones": ["LRS", "ZRS", "GRS", "RA-GRS"],
+    "correcta": 1,
+    "explicacion": "ZRS reparte copias síncronas en 3 zonas. GRS no ayuda: su primaria es LRS, dentro de un solo datacenter."
+  },
+  {
+    "pregunta": "¿Cuántas copias de tus datos mantiene una cuenta GRS?",
+    "opciones": ["3", "4", "6", "9"],
+    "correcta": 2,
+    "explicacion": "3 en la primaria (LRS) y 3 en la región emparejada (LRS)."
+  },
+  {
+    "pregunta": "Quieres leer los datos desde otra región mientras la primaria está caída, sin hacer failover. ¿Qué opción lo permite?",
+    "opciones": ["GRS", "GZRS", "RA-GZRS", "ZRS"],
+    "correcta": 2,
+    "explicacion": "Solo las variantes RA- (RA-GRS y RA-GZRS) exponen un endpoint de lectura en la secundaria."
+  },
+  {
+    "pregunta": "La replicación hacia la región secundaria en GRS es…",
+    "opciones": ["Síncrona", "Asíncrona", "Manual", "Diaria"],
+    "correcta": 1,
+    "explicacion": "Es asíncrona. Por eso un failover puede perder las escrituras más recientes que aún no se replicaban."
+  },
+  {
+    "pregunta": "¿Cuál es la opción más económica?",
+    "opciones": ["ZRS", "GRS", "LRS", "GZRS"],
+    "correcta": 2,
+    "explicacion": "LRS es la más barata: 3 copias en un solo datacenter y ninguna protección ante la caída de la zona."
+  }
+]
