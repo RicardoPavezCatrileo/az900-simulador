@@ -93,6 +93,20 @@
     <div class="facts" id="factsS"></div>
     <div class="note" id="noteS"></div>
     <div id="extraS"></div>
+    <div class="card">
+      <h3>Truco para recordar: Disks se conecta, Files se monta, y Blob, Queue y Table se llaman por API REST</h3>
+      <div class="tbl" style="border:0;margin-top:8px"><table>
+        <thead><tr><th>Servicio</th><th>Cómo se usa</th><th>Piénsalo como…</th></tr></thead>
+        <tbody>
+          <tr><td><b>Disks</b></td><td>Se conecta a <b>una VM</b></td><td>El disco duro de la VM (C:, discos de datos)</td></tr>
+          <tr><td><b>Files</b></td><td>Se <b>monta por SMB/NFS</b>: VMs <b>o</b> PCs y servidores on-premises</td><td>Una unidad de red compartida (Z:)</td></tr>
+          <tr><td><b>Blob</b></td><td><b>API REST</b> (HTTP/S)</td><td>Archivos sueltos: fotos, videos, respaldos</td></tr>
+          <tr><td><b>Queue</b></td><td><b>API REST</b></td><td>Mensajes entre aplicaciones</td></tr>
+          <tr><td><b>Table</b></td><td><b>API REST</b></td><td>Datos NoSQL clave/valor</td></tr>
+        </tbody>
+      </table></div>
+      <p class="fb" style="margin:8px 0 0">Ojo: Files no es solo para VMs. Si en el examen piden "una carpeta compartida en la nube para los usuarios de la oficina", la respuesta es Files aunque no haya ninguna VM.</p>
+    </div>
   </section>
 
   <!-- 3 · Niveles de acceso -->
