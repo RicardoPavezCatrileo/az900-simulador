@@ -1,0 +1,110 @@
+[
+  {
+    "pregunta": "Demostrar que eres quien dices ser es…",
+    "opciones": ["Autorización", "Autenticación", "Auditoría", "Cifrado"],
+    "correcta": 1,
+    "explicacion": "Autenticación = verificar la identidad. Autorización = qué puede hacer y a qué puede acceder la identidad ya autenticada."
+  },
+  {
+    "pregunta": "Después de iniciar sesión, el sistema decide que puedes leer un archivo pero no borrarlo. Eso es…",
+    "opciones": ["Autenticación", "Autorización", "MFA", "SSO"],
+    "correcta": 1,
+    "explicacion": "La autorización concede permisos a una parte ya autenticada: a qué datos accede y qué puede hacer con ellos."
+  },
+  {
+    "pregunta": "¿Qué es Microsoft Entra ID?",
+    "opciones": ["El Active Directory tradicional instalado en servidores locales", "El servicio de gestión de identidades y acceso en la nube de Microsoft (antes Azure Active Directory)", "Un firewall de red", "Un servicio de almacenamiento"],
+    "correcta": 1,
+    "explicacion": "Entra ID es identidad en la nube. NO es lo mismo que Active Directory (AD DS), que corre en servidores locales."
+  },
+  {
+    "pregunta": "¿Qué es un inquilino (tenant) de Microsoft Entra?",
+    "opciones": ["Una suscripción de Azure", "Una instancia dedicada de Entra ID que representa a una organización", "Un grupo de recursos", "Una región de Azure"],
+    "correcta": 1,
+    "explicacion": "Cada tenant es independiente de los demás. Un usuario suele pertenecer a un tenant, pero puede ser invitado (guest) en otros."
+  },
+  {
+    "pregunta": "Quieres que los usuarios del Active Directory local usen las mismas cuentas en Microsoft 365 y Azure. ¿Qué usas?",
+    "opciones": ["Microsoft Entra Connect", "Microsoft Entra Domain Services", "Azure Advisor", "VPN Gateway"],
+    "correcta": 0,
+    "explicacion": "Entra Connect (antes Azure AD Connect) se instala en local y sincroniza el directorio con Entra ID para lograr identidad híbrida."
+  },
+  {
+    "pregunta": "¿Qué herramienta supervisa la infraestructura de identidad local instalando un agente en cada servidor de identidad?",
+    "opciones": ["Microsoft Entra Connect Health", "Azure Monitor para VMs", "Microsoft Defender for Cloud", "Azure Advisor"],
+    "correcta": 0,
+    "explicacion": "Entra Connect Health ayuda a supervisar y conocer mejor la infraestructura de identidad local."
+  },
+  {
+    "pregunta": "¿Cuál NO es un principio de Confianza cero (Zero Trust)?",
+    "opciones": ["Comprobación explícita", "Acceso con privilegios mínimos", "Asumir que hay brechas", "Confiar en todo lo que está dentro de la red corporativa"],
+    "correcta": 3,
+    "explicacion": "Zero Trust no confía por ubicación: \"no confiar nunca, comprobar siempre\". Es una estrategia, no un producto."
+  },
+  {
+    "pregunta": "Contraseña + PIN, ¿cuenta como autenticación multifactor?",
+    "opciones": ["Sí, son dos factores", "No: ambos son \"algo que sabes\"", "Sí, si el PIN tiene 6 dígitos", "Solo con acceso condicional"],
+    "correcta": 1,
+    "explicacion": "MFA exige factores de categorías distintas: algo que sabes, algo que tienes y algo que eres."
+  },
+  {
+    "pregunta": "Una huella digital es un factor de tipo…",
+    "opciones": ["Algo que sabes", "Algo que tienes", "Algo que eres", "Algo que haces"],
+    "correcta": 2,
+    "explicacion": "La biometría (huella, rostro) es \"algo que forma parte de ti\"."
+  },
+  {
+    "pregunta": "¿Qué es el acceso condicional?",
+    "opciones": ["Un antivirus", "El motor de directivas de Zero Trust de Microsoft, que reúne señales para decidir si permite, bloquea o exige más requisitos", "Un tipo de VPN", "Un plan de precios"],
+    "correcta": 1,
+    "explicacion": "Usa señales como usuario o grupo, ubicación IP, dispositivo, aplicación y riesgo para aplicar las directivas de la organización."
+  },
+  {
+    "pregunta": "¿Cuál es la decisión MÁS restrictiva del acceso condicional?",
+    "opciones": ["Conceder acceso", "Requerir MFA", "Bloquear acceso", "Requerir cambio de contraseña"],
+    "correcta": 2,
+    "explicacion": "Bloquear es la más restrictiva. Conceder es la menos restrictiva y puede exigir MFA, dispositivo compatible, cambio de contraseña, etc."
+  },
+  {
+    "pregunta": "¿Cuál de estas NO es una señal que use el acceso condicional?",
+    "opciones": ["Ubicación de la IP", "Dispositivo", "Riesgo calculado en tiempo real", "El nivel de acceso del blob"],
+    "correcta": 3,
+    "explicacion": "Señales: pertenencia a usuario o grupo, ubicación IP, dispositivo, aplicación, riesgo y Defender for Cloud Apps."
+  },
+  {
+    "pregunta": "¿Cuál de estas es una opción de autenticación sin contraseña integrada con Microsoft Entra ID?",
+    "opciones": ["SMS con contraseña temporal", "Windows Hello", "Preguntas de seguridad", "Contraseña de 20 caracteres"],
+    "correcta": 1,
+    "explicacion": "Las tres opciones sin contraseña son Windows Hello, Microsoft Authenticator y claves de seguridad FIDO2."
+  },
+  {
+    "pregunta": "Un consultor externo debe ayudar con tu entorno de Azure usando su propia cuenta corporativa. ¿Qué haces?",
+    "opciones": ["Crearle una cuenta nueva en tu organización", "Invitarlo como usuario invitado (colaboración B2B)", "Compartirle tu contraseña", "Crearle una suscripción"],
+    "correcta": 1,
+    "explicacion": "Con B2B el invitado usa su cuenta existente; le das permisos con mínimo privilegio y puedes exigirle MFA con acceso condicional."
+  },
+  {
+    "pregunta": "Debes mover a Azure una aplicación antigua que usa Kerberos y NTLM y necesita unirse a un dominio, sin administrar controladores de dominio. ¿Qué usas?",
+    "opciones": ["Microsoft Entra ID solo", "Microsoft Entra Domain Services (antes Azure AD DS)", "Entra Connect Health", "Una VPN punto a sitio"],
+    "correcta": 1,
+    "explicacion": "Domain Services es un dominio administrado (dos controladores de dominio por detrás) compatible con Kerberos y NTLM, para apps heredadas."
+  },
+  {
+    "pregunta": "¿Cómo se sincroniza Microsoft Entra Domain Services?",
+    "opciones": ["En una sola dirección: de Entra ID hacia Domain Services", "En ambas direcciones con Entra ID", "Directamente con cualquier AD local sin pasar por Entra ID", "No se sincroniza"],
+    "correcta": 0,
+    "explicacion": "Sincroniza usuarios, grupos y credenciales en una sola dirección desde Entra ID. Es un dominio independiente, no una extensión del AD local."
+  },
+  {
+    "pregunta": "Los empleados entran a Formación, Recursos humanos y Nóminas con una sola cuenta y un solo inicio de sesión. ¿Qué es?",
+    "opciones": ["MFA", "SSO (inicio de sesión único)", "B2B", "Acceso condicional"],
+    "correcta": 1,
+    "explicacion": "SSO: un conjunto de credenciales para varios sistemas. Reduce riesgos por múltiples contraseñas y centraliza la gestión."
+  },
+  {
+    "pregunta": "¿Dónde administras usuarios, grupos e identidades de Entra ID con una consola moderna?",
+    "opciones": ["Centro de administración de Microsoft Entra (entra.microsoft.com)", "Azure Storage Explorer", "Azure Advisor", "Azure Mobile App únicamente"],
+    "correcta": 0,
+    "explicacion": "El centro de administración de Microsoft Entra es el punto central para gestionar la identidad en Azure y Microsoft 365."
+  }
+]

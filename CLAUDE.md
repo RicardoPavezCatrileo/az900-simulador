@@ -117,5 +117,6 @@ Las diapositivas son casi todo imágenes: `pdftotext` (disponible en Git Bash) s
 
 ## Próximos pasos
 1. ~~Crear `index.html`, `assets/` y adaptar cap07~~ (hecho).
-2. PDF ya copiado en `docs/`. Capítulos 2 a 7 hechos; seguir con el capítulo 8 (Autenticación y autorización, págs. 168–197).
+2. PDF ya copiado en `docs/`. Capítulos 2 a 7 hechos; seguir con los capítulos 8, 9, 10 y 11, en ese orden.
+4. AL FINAL (decisión del usuario): `mapa.html`, un mapa conceptual SVG único enlazado desde la portada y cada capítulo. Nodos por área (global, organización, cómputo, red, almacenamiento, identidad, seguridad, gestión, precios), flechas con significado ("se conecta a", "vive en", "filtra", "reparte entre"…), clic en un nodo → resalta conexiones + explicación + enlace al capítulo, y escenarios que iluminan un camino (web app de 3 niveles, oficina conectada, contenedores, migración, respaldos, inicio de sesión con MFA).
 3. ~~Repo git propio~~ (hecho): rama `main`, remoto `origin` = https://github.com/rpavez2026-debug/az900-simulador. Hacer commit y push al terminar cada avance.

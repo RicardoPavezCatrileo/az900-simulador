@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Simulador Identidad Azure</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="assets/estilos.css">
+<style>
+.bloque{display:grid;gap:14px}
+.bloque>h2.h{margin:0}
+.metodos{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+@media (max-width:760px){.metodos{grid-template-columns:1fr}}
+.cat{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px;display:grid;gap:6px;align-content:start}
+.cat h3{margin:0;font-family:var(--f-mono);font-size:.75rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.cat.on{border-color:var(--accent)}
+.chk{display:flex;gap:8px;align-items:center;font-size:.9rem;cursor:pointer}
+.chk input{accent-color:var(--accent)}
+td.si{color:var(--ok);font-weight:600} td.no{color:var(--muted)}
+td.bloq{color:var(--bad);font-weight:600}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="volver" href="index.html">← Todos los capítulos</a>
+  <header>
+    <div class="eyebrow">AZ-900 · Capítulo 8 · Autenticación y autorización</div>
+    <h1>Identidad: quién eres y qué puedes hacer</h1>
+    <p><b>Autenticación</b> es demostrar que eres quien dices ser. <b>Autorización</b> es lo que se te permite hacer una vez que te identificaste. Prueba combinaciones de inicio de sesión, simula decisiones de acceso condicional y elige el servicio de identidad correcto para cada caso.</p>
+  </header>
+
+  <!-- 1 · MFA -->
+  <section class="bloque">
+    <h2 class="h">1 · ¿Esto es autenticación multifactor?</h2>
+    <p class="fb" style="margin:0">Marca los métodos que se piden al iniciar sesión.</p>
+    <div class="metodos" id="metodos"></div>
+    <div class="status" id="statusM"></div>
+    <div class="facts" id="factsM"></div>
+  </section>
+
+  <!-- 2 · Acceso condicional -->
+  <section class="bloque">
+    <h2 class="h">2 · Acceso condicional: señales → decisión</h2>
+    <div class="controls">
+      <div class="ctl"><label>Usuario</label><div class="seg" id="usr"></div></div>
+      <div class="ctl"><label>Ubicación</label><div class="seg" id="ubi"></div></div>
+    </div>
+    <div class="controls">
+      <div class="ctl"><label>Dispositivo</label><div class="seg" id="disp"></div></div>
+      <div class="ctl"><label>Riesgo calculado del inicio de sesión</label><div class="seg" id="ries"></div></div>
+    </div>
+    <div class="status" id="statusC"></div>
+    <div class="tbl"><table>
+      <thead><tr><th>Directiva de la organización (ejemplo)</th><th>¿Aplica?</th><th>Control</th></tr></thead>
+      <tbody id="tbodyC"></tbody>
+    </table></div>
+    <p class="fb" style="margin:0">Las directivas son ejemplos típicos. Si cualquiera bloquea, gana el bloqueo; si no, se suman todos los requisitos.</p>
+  </section>
+
+  <!-- 3 · Servicios -->
+  <section class="bloque">
+    <h2 class="h">3 · ¿Qué servicio de identidad necesito?</h2>
+    <div class="ctl"><label>Lo que necesitas</label><div class="seg" id="nec"></div></div>
+    <div class="status" id="statusS"></div>
+    <div class="facts" id="factsS"></div>
+    <div class="tbl"><table>
+      <thead><tr><th></th><th>Active Directory (AD DS)</th><th>Microsoft Entra ID</th></tr></thead>
+      <tbody>
+        <tr><td><b>Dónde corre</b></td><td>Servidores locales (controladores de dominio)</td><td>En la nube, como servicio</td></tr>
+        <tr><td><b>Pensado para</b></td><td>Redes corporativas, equipos unidos al dominio</td><td>Aplicaciones web y móviles, Microsoft 365, Azure</td></tr>
+        <tr><td><b>Protocolos típicos</b></td><td>Kerberos, NTLM, LDAP</td><td>Protocolos web (SAML, OAuth, OpenID Connect)</td></tr>
+        <tr><td><b>Cómo se unen</b></td><td colspan="2">Entra Connect sincroniza el AD local con Entra ID (identidad híbrida). Entra Domain Services da un dominio administrado en Azure para apps que necesitan Kerberos/NTLM.</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section>
+    <h2 class="h">Conceptos clave del capítulo</h2>
+    <div class="cards">
+      <div class="card"><h3>Microsoft Entra ID</h3><ul>
+        <li>Identidad y acceso en la nube (antes <b>Azure Active Directory</b>). No es el AD tradicional.</li>
+        <li>Usuarios y grupos, <b>SSO</b>, <b>MFA</b>, integración de apps, plataforma de identidad para desarrolladores, <b>Entra ID Protection</b>.</li>
+        <li>También: B2B y B2C, acceso condicional, gestión de privilegios.</li>
+        <li>Cada cuenta de Azure trae una instancia: el <b>tenant</b> de tu organización.</li>
+      </ul></div>
+      <div class="card"><h3>Confianza cero</h3><ul>
+        <li>Estrategia, no producto: <b>"no confiar nunca, comprobar siempre"</b>.</li>
+        <li><b>Comprobación explícita</b>: autenticar y autorizar siempre.</li>
+        <li><b>Privilegios mínimos</b>: solo el acceso necesario.</li>
+        <li><b>Asumir brechas</b>: minimizar el radio de impacto.</li>
+        <li>Decide por identidad y credenciales, no por la ubicación.</li>
+      </ul></div>
+      <div class="card"><h3>MFA y sin contraseña</h3><ul>
+        <li>Factores: <b>algo que sabes</b> (contraseña, PIN), <b>algo que tienes</b> (teléfono, llave), <b>algo que eres</b> (huella, rostro).</li>
+        <li>Sin contraseña: <b>Windows Hello</b>, <b>Microsoft Authenticator</b>, <b>claves FIDO2</b>.</li>
+        <li>Solo contraseña = baja seguridad. Contraseña + MFA = alta pero incómoda. Sin contraseña = alta y cómoda.</li>
+      </ul></div>
+      <div class="card"><h3>Usuarios externos (B2B)</h3><ul>
+        <li>Invitas al externo como <b>invitado</b>: usa su propia cuenta (Microsoft, Google, Facebook u otro proveedor).</li>
+        <li>Pasos: configurar el proveedor de identidad (si no es Microsoft) → invitar → asignar permisos con <b>mínimo privilegio</b> → opcional: apps y acceso condicional entre inquilinos.</li>
+      </ul></div>
+      <div class="card"><h3>Entra Domain Services</h3><ul>
+        <li>Dominio administrado (antes Azure AD DS): <b>dos controladores de dominio</b> por detrás, sin gestionar el SO.</li>
+        <li>Soporta <b>Kerberos y NTLM</b> para apps heredadas.</li>
+        <li>Sincronización <b>unidireccional</b> desde Entra ID; dominio independiente del AD local.</li>
+        <li>Usos: migrar apps que dependen de AD DS, desarrollo y pruebas.</li>
+      </ul></div>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="h">Preguntas tipo examen</h2>
+    <div class="score" id="score"></div>
+    <div class="quiz" id="quiz"></div>
+  </section>
+</div>
+
+<script src="assets/progreso.js"></script>
+<script src="assets/quiz.js"></script>
+<script>
+function seg(id,obj,get,set,fn){
+  const el=document.getElementById(id);el.innerHTML="";
+  Object.keys(obj).forEach(k=>{const b=document.createElement("button");b.type="button";b.textContent=typeof obj[k]==="string"?obj[k]:obj[k].name;b.dataset.k=k;
+    b.setAttribute("aria-pressed",String(get()===k));b.onclick=()=>{set(k);fn()};el.appendChild(b)});
+}
+function facts(id,rows){document.getElementById(id).innerHTML=rows.map(([k,v])=>`<div class="fact"><div class="k">${k}</div><div class="v">${v}</div></div>`).join("")}
+function status(id,lvl,t,d){
+  const col={ok:"var(--ok)",warn:"var(--warn)",bad:"var(--bad)",info:"var(--accent)"}[lvl],ico={ok:"✓",warn:"!",bad:"✕",info:"i"}[lvl];
+  document.getElementById(id).innerHTML=`<span class="dot" style="background:${col}" aria-hidden="true"></span><div><b>${ico} ${t}</b><p>${d}</p></div>`;
+}
+
+/* ---------- 1 · MFA ---------- */
+const CATS={sabes:"Algo que sabes",tienes:"Algo que tienes",eres:"Algo que eres"};
+const MET=[
+ {id:"pass",n:"Contraseña",c:"sabes"},{id:"pin",n:"PIN",c:"sabes"},{id:"preg",n:"Pregunta de seguridad",c:"sabes"},
+ {id:"app",n:"Aprobar en Microsoft Authenticator (teléfono)",c:"tienes"},{id:"fido",n:"Llave de seguridad FIDO2",c:"tienes"},
+ {id:"huella",n:"Huella digital",c:"eres"},{id:"rostro",n:"Reconocimiento facial (Windows Hello)",c:"eres"}
+];
+const marcados=new Set(["pass","pin"]);
+function renderM(){
+  const cont=document.getElementById("metodos");cont.innerHTML="";
+  Object.keys(CATS).forEach(c=>{
+    const d=document.createElement("div");d.className="cat"+(MET.some(m=>m.c===c&&marcados.has(m.id))?" on":"");
+    d.innerHTML=`<h3>${CATS[c]}</h3>`;
+    MET.filter(m=>m.c===c).forEach(m=>{
+      const l=document.createElement("label");l.className="chk";
+      l.innerHTML=`<input type="checkbox" ${marcados.has(m.id)?"checked":""}> ${m.n}`;
+      l.querySelector("input").onchange=e=>{e.target.checked?marcados.add(m.id):marcados.delete(m.id);renderM()};
+      d.appendChild(l);
+    });
+    cont.appendChild(d);
+  });
+  const cats=new Set(MET.filter(m=>marcados.has(m.id)).map(m=>m.c)),n=cats.size,pass=marcados.has("pass"),mfa=n>=2;
+  if(!marcados.size)status("statusM","info","Elige al menos un método","Marca lo que se pide al iniciar sesión.");
+  else if(!mfa)status("statusM","bad","No es MFA",marcados.size>1?`Usas ${marcados.size} métodos, pero todos son "${CATS[[...cats][0]].toLowerCase()}". MFA exige factores de categorías distintas.`:"Un solo factor. Si es solo contraseña, es la opción de menor seguridad.");
+  else if(pass)status("statusM","warn","Sí es MFA, pero con contraseña","Alta seguridad, aunque incómodo: el usuario debe recordar la contraseña y además usar otro factor.");
+  else status("statusM","ok","MFA sin contraseña","Alta seguridad y cómodo: algo que tienes (teléfono o llave) + algo que eres o sabes en el dispositivo. Así funcionan Windows Hello, Microsoft Authenticator y FIDO2.");
+  facts("factsM",[["Categorías distintas",n],["¿Es MFA?",mfa?"Sí":"No"],["¿Usa contraseña?",pass?"Sí":"No"],["Seguridad / comodidad",!mfa?"Baja":pass?"Alta / incómodo":"Alta / cómodo"]]);
+}
+
+/* ---------- 2 · Acceso condicional ---------- */
+const USR={emp:"Empleado",admin:"Administrador",guest:"Invitado externo (B2B)"};
+const UBI={ofi:"Oficina",casa:"Casa (Chile)",rara:"País no permitido"};
+const DISP={gest:"Gestionado y compatible",pers:"Personal"};
+const RIES={bajo:"Bajo",alto:"Alto"};
+let usr="emp",ubi="casa",disp="pers",ries="bajo";
+const POL=[
+ {n:"Bloquear inicios de sesión de riesgo alto",ap:()=>ries==="alto",ctl:"Bloquear"},
+ {n:"Bloquear países no permitidos",ap:()=>ubi==="rara",ctl:"Bloquear"},
+ {n:"Requerir MFA a los administradores",ap:()=>usr==="admin",ctl:"MFA"},
+ {n:"Requerir MFA a los invitados externos",ap:()=>usr==="guest",ctl:"MFA"},
+ {n:"Requerir MFA fuera de la oficina",ap:()=>ubi!=="ofi",ctl:"MFA"},
+ {n:"Administradores solo desde dispositivos compatibles",ap:()=>usr==="admin",ctl:"Dispositivo compatible"}
+];
+function renderC(){
+  seg("usr",USR,()=>usr,k=>usr=k,renderC);seg("ubi",UBI,()=>ubi,k=>ubi=k,renderC);
+  seg("disp",DISP,()=>disp,k=>disp=k,renderC);seg("ries",RIES,()=>ries,k=>ries=k,renderC);
+  const ap=POL.filter(p=>p.ap()),ctls=new Set(ap.map(p=>p.ctl));
+  if(ctls.has("Bloquear"))status("statusC","bad","Acceso bloqueado","Al menos una directiva bloquea, y bloquear es la decisión más restrictiva: gana sobre cualquier concesión.");
+  else if(ctls.has("Dispositivo compatible")&&disp!=="gest")status("statusC","bad","Sin acceso desde este dispositivo","Se exige un dispositivo marcado como compatible y este es personal. Con un equipo gestionado podría entrar.");
+  else if(ctls.has("MFA"))status("statusC","warn","Acceso concedido con MFA","Conceder es la decisión menos restrictiva, pero aquí exige un segundo factor.");
+  else status("statusC","ok","Acceso concedido","Ninguna directiva pide requisitos extra para esta combinación de señales.");
+  document.getElementById("tbodyC").innerHTML=POL.map(p=>{const a=p.ap();
+    return`<tr class="${a?"sel":""}"><td>${p.n}</td><td class="${a?"si":"no"}">${a?"Sí":"No"}</td><td class="${a&&p.ctl==="Bloquear"?"bloq":""}">${p.ctl==="Bloquear"?"Bloquear acceso":p.ctl==="MFA"?"Conceder, requiriendo MFA":"Conceder, requiriendo dispositivo compatible"}</td></tr>`}).join("");
+}
+
+/* ---------- 3 · Servicios de identidad ---------- */
+const NEC={
+ sync:{name:"Mismas cuentas del AD local en la nube",s:"Microsoft Entra Connect",d:"Aplicación que se instala en local y sincroniza el AD local con Entra ID: identidad híbrida, SSO a apps locales y en la nube, y beneficios como MFA y acceso condicional.",donde:"Servidor local",tipo:"Sincronización",srv:"Sí (se instala en local)"},
+ health:{name:"Vigilar mis servidores de identidad locales",s:"Microsoft Entra Connect Health",d:"Instalas un agente en cada servidor de identidad local y supervisas su estado y confiabilidad.",donde:"Agente local + portal",tipo:"Supervisión",srv:"Sí (agente en cada servidor)"},
+ dom:{name:"App antigua con Kerberos/NTLM en Azure",s:"Microsoft Entra Domain Services",d:"Dominio administrado con dos controladores de dominio por detrás. Apps que dependen de AD DS funcionan en Azure sin cambiar su autenticación y sin que administres servidores.",donde:"Azure (administrado)",tipo:"Dominio administrado",srv:"No"},
+ b2b:{name:"Dar acceso a un consultor externo",s:"Colaboración B2B (usuario invitado)",d:"Invitas al consultor a tu tenant: usa su propia cuenta, le asignas permisos mínimos y puedes exigirle MFA con acceso condicional.",donde:"Entra ID",tipo:"Usuarios externos",srv:"No"},
+ sso:{name:"Una sola cuenta para muchas apps",s:"Inicio de sesión único (SSO)",d:"Con Entra ID, el usuario entra una vez y accede a Formación, RR. HH., Nóminas… Menos contraseñas, menos riesgo y gestión centralizada.",donde:"Entra ID",tipo:"Autenticación",srv:"No"},
+ admin:{name:"Administrar usuarios y grupos",s:"Centro de administración de Microsoft Entra (tenant)",d:"En entra.microsoft.com gestionas los usuarios, grupos y la configuración de identidad de tu tenant, para Azure y Microsoft 365.",donde:"Navegador",tipo:"Administración",srv:"No"}
+};
+let nec="sync";
+function renderS(){
+  seg("nec",NEC,()=>nec,k=>nec=k,renderS);
+  const x=NEC[nec];
+  status("statusS","ok",x.s,x.d);
+  facts("factsS",[["Servicio",x.s.split(" (")[0]],["Dónde corre",x.donde],["Tipo",x.tipo],["Requiere servidores propios",x.srv]]);
+}
+
+renderM();renderC();renderS();iniciarQuiz("cap08");
+</script>
+</body>
+</html>
