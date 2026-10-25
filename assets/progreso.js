@@ -10,7 +10,7 @@ const CAPITULOS=[
  {id:"cap06",num:6, titulo:"Redes",                        archivo:"cap06-redes.html",            listo:true},
  {id:"cap07",num:7, titulo:"Almacenamiento",               archivo:"cap07-almacenamiento.html",   listo:true},
  {id:"cap08",num:8, titulo:"Autenticación y autorización", archivo:"cap08-identidad.html",        listo:true},
- {id:"cap09",num:9, titulo:"Seguridad",                    archivo:"cap09-seguridad.html",        listo:false},
+ {id:"cap09",num:9, titulo:"Seguridad",                    archivo:"cap09-seguridad.html",        listo:true},
  {id:"cap10",num:10,titulo:"Monitorización y gestión",     archivo:"cap10-monitorizacion.html",   listo:false},
  {id:"cap11",num:11,titulo:"Precios",                      archivo:"cap11-precios.html",          listo:false}
 ];

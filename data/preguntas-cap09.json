@@ -1,0 +1,98 @@
+[
+  {
+    "pregunta": "¿Qué es la defensa en profundidad?",
+    "opciones": ["Un firewall muy potente", "Una estrategia de seguridad en varias capas, para que si una falla las demás sigan protegiendo los datos", "Un plan de precios", "Un tipo de cifrado"],
+    "correcta": 1,
+    "explicacion": "Protege en capas sucesivas, desde la seguridad física hasta los datos, que están en el centro."
+  },
+  {
+    "pregunta": "En el modelo de defensa en profundidad, ¿qué está en el centro, como la cámara del tesoro del castillo?",
+    "opciones": ["La red", "Los datos", "El perímetro", "La seguridad física"],
+    "correcta": 1,
+    "explicacion": "Los datos son el activo más valioso y quedan en la capa más interna."
+  },
+  {
+    "pregunta": "Exigir MFA y acceso condicional a todos los usuarios corresponde a la capa de…",
+    "opciones": ["Perímetro", "Identidad y acceso", "Datos", "Seguridad física"],
+    "correcta": 1,
+    "explicacion": "Controlar quién entra y con qué credenciales es la capa de identidad y acceso."
+  },
+  {
+    "pregunta": "Un grupo de seguridad de red (NSG) que limita la comunicación entre subredes protege la capa de…",
+    "opciones": ["Red", "Aplicación", "Datos", "Identidad"],
+    "correcta": 0,
+    "explicacion": "Segmentar y filtrar el tráfico entre recursos es la capa de red."
+  },
+  {
+    "pregunta": "Mantener parcheado el sistema operativo de las VMs protege la capa de…",
+    "opciones": ["Perímetro", "Proceso (hosts)", "Datos", "Seguridad física"],
+    "correcta": 1,
+    "explicacion": "La capa de proceso (hosts) protege las máquinas: parches, puertos cerrados, protección de VMs."
+  },
+  {
+    "pregunta": "Una cuenta de almacenamiento usa un endpoint de servicio. ¿Qué limitación tiene?",
+    "opciones": ["Las VMs de la subred no pueden llegar a ella", "El endpoint público del servicio sigue existiendo y no hay acceso privado desde las instalaciones locales", "Solo funciona con ExpressRoute", "Expone la cuenta a todo Internet"],
+    "correcta": 1,
+    "explicacion": "El endpoint de servicio da acceso privado solo desde la VNet. Desde la oficina se entra por IP pública, y el endpoint público sigue existiendo."
+  },
+  {
+    "pregunta": "Desde la oficina, conectada por VPN a una VNet, necesitas llegar a Azure SQL por una IP privada y desactivar por completo el acceso público. ¿Qué usas?",
+    "opciones": ["Endpoint de servicio", "Endpoint privado", "IP pública con firewall", "Azure Traffic Manager"],
+    "correcta": 1,
+    "explicacion": "El endpoint privado pone una NIC con IP privada en tu VNet. Funciona desde redes conectadas por VPN o ExpressRoute y permite deshabilitar el acceso público."
+  },
+  {
+    "pregunta": "¿Qué recurso de red crea un endpoint privado en tu VNet?",
+    "opciones": ["Una IP pública", "Una interfaz de red administrada (NIC) con IP privada", "Una VPN Gateway", "Un Load Balancer"],
+    "correcta": 1,
+    "explicacion": "El endpoint privado se asocia a una interfaz de red administrada que conecta la VNet con el servicio mediante una IP privada."
+  },
+  {
+    "pregunta": "Una app necesita la contraseña de Azure SQL. ¿Dónde debe guardarse?",
+    "opciones": ["En el código fuente", "En Azure Key Vault, dando acceso a cada aplicación por separado", "En un archivo de texto en Blob Storage", "En el nombre del grupo de recursos"],
+    "correcta": 1,
+    "explicacion": "Key Vault centraliza secretos, claves de cifrado y certificados. Cada aplicación accede solo a sus secretos."
+  },
+  {
+    "pregunta": "¿Qué guarda Azure Key Vault?",
+    "opciones": ["Imágenes de contenedores", "Secretos, claves de cifrado y certificados", "Copias de seguridad de VMs", "Logs de actividad"],
+    "correcta": 1,
+    "explicacion": "Key Vault administra secretos (contraseñas, cadenas de conexión), claves y certificados de forma segura."
+  },
+  {
+    "pregunta": "¿Qué servicio evalúa continuamente la postura de seguridad, da recomendaciones y alertas, y protege también recursos en AWS y Google Cloud?",
+    "opciones": ["Microsoft Defender for Cloud", "Azure Key Vault", "Azure Advisor", "Azure DNS"],
+    "correcta": 0,
+    "explicacion": "Defender for Cloud (antes Azure Security Center) es una plataforma de protección nativa de la nube, híbrida y multinube."
+  },
+  {
+    "pregunta": "¿Cuál es el ciclo de uso de Defender for Cloud que propone el curso?",
+    "opciones": ["Comprar → instalar → olvidar", "Definir políticas → proteger recursos → responder ante alertas (y volver a definir políticas)", "Crear VM → borrar VM", "Solo responder a alertas"],
+    "correcta": 1,
+    "explicacion": "Defines políticas, proteges supervisando sus resultados y respondes a alertas, ajustando luego las políticas."
+  },
+  {
+    "pregunta": "¿Qué tipo de herramienta es Microsoft Sentinel (antes Azure Sentinel)?",
+    "opciones": ["Un antivirus para VMs", "Un SIEM: reúne y analiza información y eventos de seguridad", "Un firewall de aplicaciones web", "Un servicio de copias de seguridad"],
+    "correcta": 1,
+    "explicacion": "Sentinel es un SIEM en la nube: recolecta datos, los agrega y normaliza, detecta amenazas con IA y ayuda a investigarlas."
+  },
+  {
+    "pregunta": "Necesitas reunir los registros de seguridad de toda la empresa (Azure y AWS) y detectar comportamientos inusuales con IA. ¿Qué usas?",
+    "opciones": ["Microsoft Sentinel", "Azure Key Vault", "Endpoint de servicio", "Azure Advisor"],
+    "correcta": 0,
+    "explicacion": "Sentinel usa análisis de comportamiento con IA, escala con la nube y se integra con AWS para una visión multinube."
+  },
+  {
+    "pregunta": "¿Cuál es el alcance de un endpoint de servicio, según el curso?",
+    "opciones": ["Un único recurso, por ejemplo una cuenta de almacenamiento", "El servicio completo, por ejemplo todo Azure Storage", "Solo una VM", "Toda la suscripción"],
+    "correcta": 1,
+    "explicacion": "El endpoint de servicio habilita el acceso al servicio completo; el endpoint privado apunta a un recurso concreto."
+  },
+  {
+    "pregunta": "¿Cuál es la capa más externa de la defensa en profundidad según Microsoft Learn?",
+    "opciones": ["Datos", "Seguridad física", "Aplicación", "Red"],
+    "correcta": 1,
+    "explicacion": "Orden de Microsoft Learn: seguridad física → identidad y acceso → perímetro → red → proceso → aplicación → datos."
+  }
+]

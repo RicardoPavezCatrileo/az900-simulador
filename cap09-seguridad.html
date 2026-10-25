@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Simulador Seguridad Azure</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="assets/estilos.css">
+<style>
+.bloque{display:grid;gap:14px}
+.bloque>h2.h{margin:0}
+.capas{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:14px;align-items:start}
+@media (max-width:760px){.capas{grid-template-columns:1fr}}
+.capa{border:1px solid var(--line);border-radius:12px;padding:8px 8px 8px;background:color-mix(in srgb,var(--accent) 5%,var(--surface));display:grid;gap:6px}
+.capa>button{font:inherit;font-family:var(--f-mono);font-size:.78rem;text-align:left;background:transparent;border:0;color:var(--ink);cursor:pointer;padding:2px 4px;border-radius:4px}
+.capa.sel{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent) inset}
+.capa.ok>button::after{content:"  ✓";color:var(--ok)}
+.juego{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;display:grid;gap:10px}
+.juego p{margin:0}
+.chk{display:flex;gap:8px;align-items:center;font-size:.9rem;cursor:pointer}
+.chk input{accent-color:var(--accent)}
+.chk[hidden]{display:none}
+td.si{color:var(--ok);font-weight:600} td.no{color:var(--bad);font-weight:600} td.med{color:var(--warn);font-weight:600}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="volver" href="index.html">← Todos los capítulos</a>
+  <header>
+    <div class="eyebrow">AZ-900 · Capítulo 9 · Seguridad</div>
+    <h1>Seguridad en capas, endpoints y servicios de protección</h1>
+    <p>Protege tus datos como un castillo protege su tesoro: con varias capas. Clasifica controles de seguridad, compara cómo llegar a un servicio de Azure sin exponerlo a Internet y elige la herramienta de seguridad adecuada.</p>
+  </header>
+
+  <!-- 1 · Defensa en profundidad -->
+  <section class="bloque">
+    <h2 class="h">1 · Defensa en profundidad: ¿a qué capa pertenece?</h2>
+    <div class="capas">
+      <div id="capas"></div>
+      <div class="juego" id="juego"></div>
+    </div>
+    <div class="note" id="noteCapa"></div>
+  </section>
+
+  <!-- 2 · Endpoints -->
+  <section class="bloque">
+    <h2 class="h">2 · Llegar a Azure SQL sin exponerlo: público, endpoint de servicio o endpoint privado</h2>
+    <div class="controls">
+      <div class="ctl"><label>Cómo se expone Azure SQL</label><div class="seg" id="modo"></div></div>
+      <div class="ctl"><label>Desde dónde llega la conexión</label><div class="seg" id="desde"></div></div>
+    </div>
+    <label class="chk" id="pubBox"><input type="checkbox" id="pub"> Deshabilitar por completo el acceso público</label>
+    <div class="status" id="statusE"></div>
+    <div class="facts" id="factsE"></div>
+    <div class="tbl"><table>
+      <thead><tr><th>Desde</th><th>Público</th><th>Endpoint de servicio</th><th>Endpoint privado</th></tr></thead>
+      <tbody id="tbodyE"></tbody>
+    </table></div>
+  </section>
+
+  <!-- 3 · Servicios -->
+  <section class="bloque">
+    <h2 class="h">3 · ¿Qué servicio de seguridad uso?</h2>
+    <div class="ctl"><label>Lo que necesitas</label><div class="seg" id="nec"></div></div>
+    <div class="status" id="statusS"></div>
+    <div class="facts" id="factsS"></div>
+  </section>
+
+  <section>
+    <h2 class="h">Conceptos clave del capítulo</h2>
+    <div class="cards">
+      <div class="card"><h3>Capas: curso vs Microsoft Learn</h3><ul>
+        <li><b>Microsoft Learn (examen):</b> seguridad física → identidad y acceso → perímetro → red → proceso → aplicación → datos.</li>
+        <li><b>El curso (castillo):</b> políticas y procedimientos → física → perímetro → redes → hosts → aplicaciones → datos.</li>
+        <li>Diferencias: el curso agrega "políticas" afuera y no tiene una capa de identidad; "hosts" = "proceso".</li>
+      </ul></div>
+      <div class="card"><h3>Endpoints</h3><ul>
+        <li><b>De servicio:</b> la subred llega al servicio por la red de Microsoft. El endpoint público sigue existiendo, no hay acceso privado desde local y el alcance es el servicio completo.</li>
+        <li><b>Privado:</b> una NIC con IP privada en tu VNet para un recurso concreto. Llega también desde redes conectadas por VPN o ExpressRoute y puedes desactivar el acceso público.</li>
+      </ul></div>
+      <div class="card"><h3>Azure Key Vault</h3><ul>
+        <li>Secretos, claves de cifrado y certificados en un lugar seguro.</li>
+        <li>Seguridad de hardware: ni Microsoft puede ver las claves.</li>
+        <li>Aislamiento: una app no accede a los secretos de otra.</li>
+        <li>No pongas usuario y contraseña de la base de datos en el código.</li>
+      </ul></div>
+      <div class="card"><h3>Microsoft Defender for Cloud</h3><ul>
+        <li>Antes Azure Security Center. Protección nativa de la nube, <b>híbrida y multinube</b> (AWS, Google Cloud).</li>
+        <li>Evaluación continua, recomendaciones, alertas, protección de VMs y cumplimiento regulatorio.</li>
+        <li>Ciclo: definir políticas → proteger → responder a alertas.</li>
+      </ul></div>
+      <div class="card"><h3>Microsoft Sentinel</h3><ul>
+        <li>Antes Azure Sentinel. <b>SIEM</b>: información de seguridad y gestión de eventos.</li>
+        <li>Recolecta → agrega y normaliza → detecta amenazas → investiga.</li>
+        <li>Análisis de comportamiento con IA, escala de la nube e integración con AWS.</li>
+      </ul></div>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="h">Preguntas tipo examen</h2>
+    <div class="score" id="score"></div>
+    <div class="quiz" id="quiz"></div>
+  </section>
+</div>
+
+<script src="assets/progreso.js"></script>
+<script src="assets/quiz.js"></script>
+<script>
+function seg(id,obj,get,set,fn){
+  const el=document.getElementById(id);el.innerHTML="";
+  Object.keys(obj).forEach(k=>{const b=document.createElement("button");b.type="button";b.textContent=typeof obj[k]==="string"?obj[k]:obj[k].name;b.dataset.k=k;
+    b.setAttribute("aria-pressed",String(get()===k));b.onclick=()=>{set(k);fn()};el.appendChild(b)});
+}
+function facts(id,rows){document.getElementById(id).innerHTML=rows.map(([k,v])=>`<div class="fact"><div class="k">${k}</div><div class="v">${v}</div></div>`).join("")}
+function status(id,lvl,t,d){
+  const col={ok:"var(--ok)",warn:"var(--warn)",bad:"var(--bad)",info:"var(--accent)"}[lvl],ico={ok:"✓",warn:"!",bad:"✕",info:"i"}[lvl];
+  document.getElementById(id).innerHTML=`<span class="dot" style="background:${col}" aria-hidden="true"></span><div><b>${ico} ${t}</b><p>${d}</p></div>`;
+}
+
+/* ---------- 1 · Defensa en profundidad ---------- */
+const CAPAS=[
+ {id:"fis",n:"Seguridad física",c:"Castillo y terreno",d:"Proteger el edificio y el hardware del centro de datos. Microsoft se encarga en la nube.",ej:"Acceso con tarjeta y guardias en el centro de datos"},
+ {id:"ide",n:"Identidad y acceso",c:"Guardias que piden credenciales en la entrada",d:"Controlar quién entra y con qué credenciales.",ej:"Entra ID, MFA, SSO, acceso condicional"},
+ {id:"per",n:"Perímetro",c:"Murallas exteriores",d:"Frenar ataques desde Internet antes de que lleguen a tus redes.",ej:"Protección DDoS, firewall perimetral"},
+ {id:"red",n:"Red",c:"Pasadizos entre áreas del castillo",d:"Limitar la comunicación entre recursos y segmentar.",ej:"NSG, subredes, endpoints privados"},
+ {id:"pro",n:"Proceso (hosts)",c:"Sala de estrategias",d:"Proteger las máquinas donde corre todo.",ej:"Parches del SO, puertos cerrados, protección de VMs"},
+ {id:"app",n:"Aplicación",c:"Llaves de cada sala",d:"Aplicaciones seguras y sin vulnerabilidades.",ej:"Secretos en Key Vault, no en el código"},
+ {id:"dat",n:"Datos",c:"Cámara del tesoro",d:"El activo más valioso, en el centro.",ej:"Cifrado, copias de seguridad, control de acceso a los datos"}
+];
+const CTRL=[
+ {t:"Exigir MFA a todos los usuarios",c:"ide"},
+ {t:"Activar protección DDoS en la red pública",c:"per"},
+ {t:"Un NSG que bloquea el puerto 3389 entre subredes",c:"red"},
+ {t:"Aplicar parches al sistema operativo de las VMs",c:"pro"},
+ {t:"Guardar la cadena de conexión en Key Vault en vez del código",c:"app"},
+ {t:"Cifrar la base de datos",c:"dat"},
+ {t:"Tarjeta de acceso y cámaras en el centro de datos",c:"fis"},
+ {t:"Crear un endpoint privado para Azure SQL",c:"red"},
+ {t:"Acceso condicional que bloquea países no permitidos",c:"ide"},
+ {t:"Copias de seguridad de la información",c:"dat"}
+];
+let capaSel="dat",idx=0,resp=null,aciertos=0,hechas=0;
+function renderCapas(){
+  function nido(i){
+    if(i>=CAPAS.length)return"";
+    const c=CAPAS[i];
+    return`<div class="capa${c.id===capaSel?" sel":""}${resp!==null&&CTRL[idx].c===c.id?" ok":""}" data-id="${c.id}"><button type="button" data-id="${c.id}">${i+1} · ${c.n}</button>${nido(i+1)}</div>`;
+  }
+  const box=document.getElementById("capas");box.innerHTML=nido(0);
+  box.querySelectorAll("button").forEach(b=>b.onclick=()=>{capaSel=b.dataset.id;renderCapas()});
+  const c=CAPAS.find(x=>x.id===capaSel);
+  document.getElementById("noteCapa").innerHTML=`<h3>${c.n} · en el castillo: ${c.c}</h3><p>${c.d} Ejemplo: ${c.ej}.</p>`;
+}
+function renderJuego(){
+  const j=document.getElementById("juego"),x=CTRL[idx];
+  if(idx>=CTRL.length){j.innerHTML=`<p><b>Terminaste:</b> ${aciertos} de ${hechas} correctas.</p><div><button type="button" class="btn" id="otra">Jugar otra vez</button></div>`;
+    document.getElementById("otra").onclick=()=>{idx=0;resp=null;aciertos=0;hechas=0;renderJuego();renderCapas()};return}
+  j.innerHTML=`<p class="mono" style="font-family:var(--f-mono);font-size:.78rem;color:var(--muted)">Control ${idx+1} de ${CTRL.length} · ${aciertos} correctas</p><p><b>${x.t}</b></p><div class="opts" id="ops"></div><p class="fb" id="fbj"></p>`;
+  const ops=document.getElementById("ops");
+  CAPAS.forEach(c=>{const b=document.createElement("button");b.type="button";b.textContent=c.n;
+    if(resp!==null){b.disabled=true;if(c.id===x.c)b.className="right";else if(c.id===resp)b.className="wrong"}
+    b.onclick=()=>{resp=c.id;hechas++;if(c.id===x.c)aciertos++;capaSel=x.c;renderJuego();renderCapas()};ops.appendChild(b)});
+  if(resp!==null){
+    const c=CAPAS.find(y=>y.id===x.c);
+    document.getElementById("fbj").innerHTML=`${resp===x.c?"Correcto.":"Incorrecto."} Es la capa de <b>${c.n}</b>. <button type="button" class="btn" id="sig">Siguiente</button>`;
+    document.getElementById("sig").onclick=()=>{idx++;resp=null;renderJuego();renderCapas()};
+  }
+}
+
+/* ---------- 2 · Endpoints ---------- */
+const MODO={pub:"Endpoint público",svc:"Endpoint de servicio",priv:"Endpoint privado"};
+const DESDE={vm:"VM en la subred A",ofi:"Oficina conectada por VPN",inet:"Cualquiera en Internet"};
+let modo="pub",desde="ofi",sinPub=false;
+document.getElementById("pub").onchange=e=>{sinPub=e.target.checked;renderE()};
+function evaluar(m,d){
+  if(m==="pub"){
+    if(d==="inet")return["bad","Accesible desde Internet","La base de datos está expuesta: cualquiera puede intentar conectarse a su endpoint público.","Internet → endpoint público","IP pública"];
+    if(d==="ofi")return["warn","Llega, pero por Internet","La VPN no sirve aquí: la oficina sale por Internet hacia el endpoint público. Los datos sensibles quedan expuestos en el camino.","Internet → endpoint público","IP pública"];
+    return["warn","Llega por el endpoint público","Funciona, pero el servicio sigue expuesto a Internet.","Endpoint público","IP pública"];
+  }
+  if(m==="svc"){
+    if(d==="vm")return["ok","Acceso privado desde la subred","La subred A llega al servicio por la infraestructura privada de Microsoft, y el servicio acepta solo esa subred.","Subred A → red de Microsoft","IP pública del servicio"];
+    if(d==="ofi")return["warn","Sin acceso privado desde local","Los endpoints de servicio solo protegen el acceso desde VNets. Para la oficina habría que permitir su IP pública, y el tráfico iría por Internet.","Internet (si permites la IP de la oficina)","IP pública"];
+    return["warn","Bloqueado por regla, pero el endpoint público existe","El servicio solo acepta la subred A, pero sigue teniendo un endpoint público: no es completamente privado.","Endpoint público (filtrado)","IP pública"];
+  }
+  if(d==="inet")return sinPub?["ok","Sin acceso desde Internet","Deshabilitaste el acceso público: solo se llega por el endpoint privado.","—","—"]:["warn","El endpoint público todavía está activo","Creaste un endpoint privado, pero si no deshabilitas el acceso público el servicio sigue visible.","Endpoint público","IP pública"];
+  if(d==="ofi")return["ok","Acceso privado desde la oficina","La oficina llega por la VPN a la VNet y de ahí a la IP privada del endpoint. Sin pasar por Internet: así se resuelve el caso práctico del curso.","Oficina → VPN → VNet → NIC privada","IP privada (ej. 10.1.0.5)"];
+  return["ok","Acceso privado desde la VNet","La VM usa la IP privada de la interfaz de red del endpoint.","VNet → NIC privada","IP privada (ej. 10.1.0.5)"];
+}
+function renderE(){
+  seg("modo",MODO,()=>modo,k=>modo=k,renderE);seg("desde",DESDE,()=>desde,k=>desde=k,renderE);
+  document.getElementById("pubBox").hidden=modo!=="priv";
+  const [lvl,t,d,ruta,ip]=evaluar(modo,desde);
+  status("statusE",lvl,t,d);
+  facts("factsE",[["Ruta",ruta],["Dirección usada",ip],["Endpoint público existe",modo==="priv"&&sinPub?"No":"Sí"],["Alcance",modo==="svc"?"Servicio completo":modo==="priv"?"Un recurso":"Un recurso (público)"]]);
+  const cls={ok:"si",warn:"med",bad:"no"},txt={ok:"Privado",warn:"Con reparos",bad:"Expuesto"};
+  document.getElementById("tbodyE").innerHTML=Object.keys(DESDE).map(dd=>`<tr class="${dd===desde?"sel":""}"><td>${DESDE[dd]}</td>${Object.keys(MODO).map(mm=>{const l=evaluar(mm,dd)[0];return`<td class="${cls[l]}">${dd==="inet"&&l==="ok"?"Bloqueado":txt[l]}</td>`}).join("")}</tr>`).join("");
+}
+
+/* ---------- 3 · Servicios ---------- */
+const NEC={
+ kv:{name:"Guardar la contraseña de la BD fuera del código",s:"Azure Key Vault",d:"Guarda secretos, claves y certificados. Cada aplicación recibe acceso solo a lo suyo; ni Microsoft puede ver las claves.",tipo:"Secretos",ambito:"Aplicaciones",capa:"Aplicación / datos"},
+ dfc:{name:"Postura de seguridad y alertas de mis recursos (también en AWS)",s:"Microsoft Defender for Cloud",d:"Evalúa continuamente, recomienda mejoras, alerta ante amenazas, protege VMs y ayuda con el cumplimiento normativo. Híbrido y multinube.",tipo:"Protección (CNAPP)",ambito:"Azure, local, AWS, Google Cloud",capa:"Varias"},
+ sen:{name:"Reunir logs de toda la empresa y detectar amenazas con IA",s:"Microsoft Sentinel",d:"SIEM en la nube: recolecta, normaliza, analiza con IA y te ayuda a investigar y validar amenazas en toda la infraestructura.",tipo:"SIEM",ambito:"Multinube",capa:"Varias"},
+ pe:{name:"Conectar la VNet a Azure SQL sin pasar por Internet",s:"Endpoint privado",d:"Una NIC con IP privada en tu VNet para un recurso concreto; funciona desde redes conectadas por VPN o ExpressRoute.",tipo:"Red",ambito:"Un recurso",capa:"Red"},
+ nsg:{name:"Bloquear un puerto entre subredes",s:"Grupo de seguridad de red (NSG)",d:"Reglas de permitir o denegar por prioridad, en una NIC o una subred (capítulo 6).",tipo:"Filtro de tráfico",ambito:"Subred o NIC",capa:"Red"}
+};
+let nec="kv";
+function renderS(){
+  seg("nec",NEC,()=>nec,k=>nec=k,renderS);
+  const x=NEC[nec];
+  status("statusS","ok",x.s,x.d);
+  facts("factsS",[["Servicio",x.s],["Tipo",x.tipo],["Ámbito",x.ambito],["Capa de defensa",x.capa]]);
+}
+
+renderCapas();renderJuego();renderE();renderS();iniciarQuiz("cap09");
+</script>
+</body>
+</html>
