@@ -74,4 +74,4 @@ Ya adaptado a la estructura compartida (CSS común en `assets/`, preguntas en `d
 ## Próximos pasos
 1. ~~Crear `index.html`, `assets/` y adaptar cap07~~ (hecho).
 2. Copiar el PDF a `docs/` y leerlo capítulo por capítulo para generar simulador + preguntas de cada uno.
-3. Inicializar un repo git propio en esta carpeta (hoy git usa el de `C:/Users/ricar`) antes de subir a GitHub.
+3. ~~Repo git propio~~ (hecho): rama `main`, remoto `origin` = https://github.com/rpavez2026-debug/az900-simulador- (ojo: el nombre termina en guion). Hacer commit y push al terminar cada avance.
