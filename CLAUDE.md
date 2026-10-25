@@ -92,6 +92,14 @@ Errores de esa guía que NO se deben copiar: dice que la secundaria de GZRS es Z
 - 20 preguntas en `data/preguntas-cap05.json`.
 - Para probar un estado distinto al inicial: copiar la página a `_prueba.html` con `sed` cambiando las variables `let …` iniciales, capturar y borrar la copia.
 
+## Lo que ya existe: cap06-redes.html (PDF págs. 101–121)
+- Espacio de direcciones: slider de prefijo /16–/29 sobre 10.1.0.0 (total, 5 reservadas por Azure, rango asignable); validador de subred nueva (fuera de la VNet / superpuesta / ok); peering A–B–C con CIDR superpuesto y no transitividad.
+- NSG: origen × puerto contra reglas por prioridad (incluye las por defecto 65000/65001/65500) y regla opcional 150 que le gana a la 300; tabla con "coincide → decide / no se evalúa".
+- Conexión híbrida: oficina / laptop / otra VNet × por Internet o privado → VPN S2S, P2S, ExpressRoute o peering.
+- Balanceo: Load Balancer, Application Gateway, Traffic Manager, Front Door, CDN (TM y FD no están en el PDF; marcado).
+- 18 preguntas en `data/preguntas-cap06.json`.
+- Errores del PDF corregidos en el sitio: una /24 tiene 251 IPs asignables en Azure (no 256); la terminación SSL es de Application Gateway, no de Load Balancer.
+
 ## Convenciones de los simuladores
 - `seg()` pone `data-k` en cada botón; en un `.seg.fail` la opción con clave `none` se pinta azul (no roja).
 - Para probar: `python -m http.server` en la carpeta y captura con Chrome headless (`--screenshot`). Chrome headless no baja de ~500 px de ancho; usar un `--user-data-dir` limpio para no ver CSS en caché.
@@ -109,5 +117,5 @@ Las diapositivas son casi todo imágenes: `pdftotext` (disponible en Git Bash) s
 
 ## Próximos pasos
 1. ~~Crear `index.html`, `assets/` y adaptar cap07~~ (hecho).
-2. PDF ya copiado en `docs/`. Capítulos 2, 3, 4, 5 y 7 hechos; seguir con el capítulo 6 (Redes, págs. 101–121).
+2. PDF ya copiado en `docs/`. Capítulos 2 a 7 hechos; seguir con el capítulo 8 (Autenticación y autorización, págs. 168–197).
 3. ~~Repo git propio~~ (hecho): rama `main`, remoto `origin` = https://github.com/rpavez2026-debug/az900-simulador. Hacer commit y push al terminar cada avance.

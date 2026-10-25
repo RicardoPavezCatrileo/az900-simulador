@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Simulador Redes Azure</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="assets/estilos.css">
+<style>
+.bloque{display:grid;gap:14px}
+.bloque>h2.h{margin:0}
+.bloque>h3{margin:4px 0 0;font-family:var(--f-display);font-size:1.05rem}
+.slider{display:flex;align-items:center;gap:10px;font-family:var(--f-mono);font-size:.85rem}
+.slider input{flex:1;max-width:360px;accent-color:var(--accent)}
+.chk{display:flex;gap:8px;align-items:center;font-size:.9rem;cursor:pointer}
+.chk input{accent-color:var(--accent)}
+.ctl label.chk{text-transform:none;letter-spacing:0;font-family:var(--f-body);font-size:.9rem;color:var(--ink)}
+.mono{font-family:var(--f-mono)}
+.rango{font-family:var(--f-mono);font-size:.85rem;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:10px 12px;display:grid;gap:4px}
+.rango .r{color:var(--bad)} .rango .u{color:var(--ok)}
+.pares{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+@media (max-width:760px){.pares{grid-template-columns:1fr}}
+.par{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:10px 12px;font-size:.9rem;display:flex;justify-content:space-between;gap:8px}
+.par .ok{color:var(--ok);font-weight:600} .par .no{color:var(--bad);font-weight:600}
+tr.gana td{background:var(--accent-soft);font-weight:600}
+tr.salta td{color:var(--muted);opacity:.6}
+td.permitir{color:var(--ok)} td.denegar{color:var(--bad)}
+.diag{display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-family:var(--f-mono);font-size:.82rem}
+.diag .nodo{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px 10px}
+.diag .via{color:var(--muted)}
+.diag .via.priv{color:var(--geo)} .diag .via.inet{color:var(--warn)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="volver" href="index.html">← Todos los capítulos</a>
+  <header>
+    <div class="eyebrow">AZ-900 · Capítulo 6 · Redes</div>
+    <h1>Redes virtuales, seguridad y conectividad</h1>
+    <p>Diseña el espacio de direcciones de una red virtual, empareja redes, decide qué tráfico deja pasar un grupo de seguridad de red y elige cómo conectar tu oficina y cómo repartir el tráfico entre servidores.</p>
+  </header>
+
+  <!-- 1 · Direcciones y peering -->
+  <section class="bloque">
+    <h2 class="h">1 · Espacio de direcciones, subredes y peering</h2>
+    <div class="ctl">
+      <label for="pref">Tamaño de la red (prefijo CIDR) sobre 10.1.0.0</label>
+      <div class="slider"><input type="range" id="pref" min="16" max="29" step="1"><span id="prefVal"></span></div>
+    </div>
+    <div class="facts" id="factsI"></div>
+    <div class="rango" id="rango"></div>
+
+    <h3>Agregar una subred a la VNet A (10.1.0.0/16), que ya tiene la subred A1 10.1.0.0/24</h3>
+    <div class="ctl"><label>Subred nueva</label><div class="seg" id="sub"></div></div>
+    <div class="status" id="statusSub"></div>
+
+    <h3>Emparejar VNets (peering)</h3>
+    <div class="controls">
+      <div class="ctl"><label>Espacio de direcciones de la VNet B</label><div class="seg" id="peer"></div></div>
+      <div class="ctl"><label>VNet C (10.3.0.0/16) está emparejada con B</label>
+        <label class="chk"><input type="checkbox" id="ac"> Crear también el peering A ↔ C</label></div>
+    </div>
+    <div class="status" id="statusP"></div>
+    <div class="pares" id="pares"></div>
+  </section>
+
+  <!-- 2 · NSG -->
+  <section class="bloque">
+    <h2 class="h">2 · Grupo de seguridad de red (NSG): ¿pasa o no pasa?</h2>
+    <div class="controls">
+      <div class="ctl"><label>Origen del tráfico entrante</label><div class="seg" id="ori"></div></div>
+      <div class="ctl"><label>Puerto de destino</label><div class="seg" id="port"></div></div>
+    </div>
+    <label class="chk"><input type="checkbox" id="r150"> Agregar la regla 150: permitir RDP (3389) desde Internet</label>
+    <div class="status" id="statusN"></div>
+    <div class="tbl"><table>
+      <thead><tr><th>Prioridad</th><th>Nombre</th><th>Origen</th><th>Puerto</th><th>Acción</th><th>Resultado</th></tr></thead>
+      <tbody id="tbodyN"></tbody>
+    </table></div>
+    <p class="fb" style="margin:0">Las reglas 65000, 65001 y 65500 vienen por defecto en todo NSG y no se pueden borrar, pero sí ganarles con reglas de menor número.</p>
+  </section>
+
+  <!-- 3 · Conexión híbrida -->
+  <section class="bloque">
+    <h2 class="h">3 · ¿Cómo conecto con mi red de Azure?</h2>
+    <div class="controls">
+      <div class="ctl"><label>Qué quieres conectar a la VNet</label><div class="seg" id="que"></div></div>
+      <div class="ctl"><label>Requisito</label><div class="seg" id="reqH"></div></div>
+    </div>
+    <div class="status" id="statusH"></div>
+    <div class="diag" id="diag"></div>
+    <div class="facts" id="factsH"></div>
+  </section>
+
+  <!-- 4 · Balanceo -->
+  <section class="bloque">
+    <h2 class="h">4 · Repartir y acelerar el tráfico</h2>
+    <div class="ctl"><label>Servicio</label><div class="seg" id="bal"></div></div>
+    <div class="facts" id="factsB"></div>
+    <div class="note" id="noteB"></div>
+    <div class="tbl"><table>
+      <thead><tr><th>Servicio</th><th>Capa</th><th>Alcance</th><th>Qué decide</th><th>WAF</th></tr></thead>
+      <tbody id="tbodyB"></tbody>
+    </table></div>
+  </section>
+
+  <section>
+    <h2 class="h">Conceptos clave del capítulo</h2>
+    <div class="cards">
+      <div class="card"><h3>Azure Virtual Network</h3><ul>
+        <li>Red <b>privada y aislada</b> en la nube, muy configurable.</li>
+        <li>Se divide en <b>subredes</b> (públicas o privadas) con rangos CIDR únicos y sin superposición.</li>
+        <li>Azure asigna IPs automáticamente y <b>reserva 5 por subred</b>.</li>
+      </ul></div>
+      <div class="card"><h3>VNet peering</h3><ul>
+        <li>Conecta VNets de forma privada por la red de Azure, sin Internet.</li>
+        <li>Los CIDR <b>no pueden superponerse</b>.</li>
+        <li><b>No es transitivo</b>: un peering por cada par.</li>
+      </ul></div>
+      <div class="card"><h3>NSG</h3><ul>
+        <li>Reglas para <b>permitir o denegar</b> tráfico entrante y saliente.</li>
+        <li>Se evalúan por <b>prioridad: número más bajo primero</b>; la primera que coincide decide.</li>
+        <li>Combinan origen, puerto de origen, destino, puerto de destino y protocolo.</li>
+        <li>Se aplican a recursos individuales o a subredes completas.</li>
+      </ul></div>
+      <div class="card"><h3>Conectar lo local con Azure</h3><ul>
+        <li><b>VPN S2S:</b> oficina ↔ VNet, túnel cifrado por Internet.</li>
+        <li><b>VPN P2S:</b> un dispositivo ↔ VNet, para trabajo remoto.</li>
+        <li><b>ExpressRoute:</b> conexión privada, <b>no pasa por Internet</b>, alto rendimiento.</li>
+      </ul></div>
+      <div class="card"><h3>Ojo con el PDF</h3><ul>
+        <li>Una /24 tiene 256 IPs, pero en Azure se pueden asignar <b>251</b>.</li>
+        <li>La <b>terminación SSL/HTTPS</b> la hace Application Gateway (capa 7), no Load Balancer (capa 4).</li>
+        <li>Traffic Manager y Front Door no están en el PDF, pero sí aparecen en el examen.</li>
+      </ul></div>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="h">Preguntas tipo examen</h2>
+    <div class="score" id="score"></div>
+    <div class="quiz" id="quiz"></div>
+  </section>
+</div>
+
+<script src="assets/progreso.js"></script>
+<script src="assets/quiz.js"></script>
+<script>
+function seg(id,obj,get,set,fn){
+  const el=document.getElementById(id);el.innerHTML="";
+  Object.keys(obj).forEach(k=>{const b=document.createElement("button");b.type="button";b.textContent=typeof obj[k]==="string"?obj[k]:obj[k].name;b.dataset.k=k;
+    b.setAttribute("aria-pressed",String(get()===k));b.onclick=()=>{set(k);fn()};el.appendChild(b)});
+}
+function facts(id,rows){document.getElementById(id).innerHTML=rows.map(([k,v])=>`<div class="fact"><div class="k">${k}</div><div class="v">${v}</div></div>`).join("")}
+function status(id,lvl,t,d){
+  const col={ok:"var(--ok)",warn:"var(--warn)",bad:"var(--bad)",info:"var(--accent)"}[lvl],ico={ok:"✓",warn:"!",bad:"✕",info:"i"}[lvl];
+  document.getElementById(id).innerHTML=`<span class="dot" style="background:${col}" aria-hidden="true"></span><div><b>${ico} ${t}</b><p>${d}</p></div>`;
+}
+const fmt=n=>n.toLocaleString("es-CL");
+
+/* ---------- 1 · Direcciones ---------- */
+const ip2n=s=>s.split(".").reduce((a,o)=>a*256+ +o,0);
+const n2ip=n=>[24,16,8,0].map(b=>Math.floor(n/2**b)%256).join(".");
+function rango(cidr){const [ip,p]=cidr.split("/");const t=2**(32-p),s=Math.floor(ip2n(ip)/t)*t;return{s,e:s+t-1}}
+const choca=(a,b)=>a.s<=b.e&&b.s<=a.e,dentro=(a,b)=>a.s>=b.s&&a.e<=b.e;
+let pref=24;
+const pIn=document.getElementById("pref");pIn.value=pref;pIn.oninput=()=>{pref=+pIn.value;renderI()};
+function renderI(){
+  const r=rango("10.1.0.0/"+pref),tot=r.e-r.s+1;
+  document.getElementById("prefVal").textContent="10.1.0.0/"+pref;
+  facts("factsI",[["Total de direcciones",fmt(tot)],["Reservadas por Azure","5"],["Asignables en una subred",fmt(tot-5)],["Cálculo","2^(32−"+pref+")"]]);
+  document.getElementById("rango").innerHTML=
+    `<span class="r">${n2ip(r.s)} … ${n2ip(r.s+3)} → reservadas (red, puerta de enlace y 2 para DNS de Azure)</span>`+
+    `<span class="u">${n2ip(r.s+4)} … ${n2ip(r.e-1)} → asignables a tus recursos (${fmt(tot-5)})</span>`+
+    `<span class="r">${n2ip(r.e)} → reservada (difusión)</span>`;
+}
+const VNA="10.1.0.0/16",A1="10.1.0.0/24";
+const SUB={"10.1.1.0/24":"10.1.1.0/24","10.1.0.128/25":"10.1.0.128/25","10.2.0.0/24":"10.2.0.0/24"};
+const PEER={"10.2.0.0/16":"10.2.0.0/16","10.1.0.0/16":"10.1.0.0/16","192.168.0.0/16":"192.168.0.0/16"};
+let sub="10.1.1.0/24",peer="10.2.0.0/16",ac=false;
+document.getElementById("ac").checked=ac;document.getElementById("ac").onchange=e=>{ac=e.target.checked;renderP()};
+function renderSub(){
+  seg("sub",SUB,()=>sub,k=>sub=k,renderSub);
+  const s=rango(sub);
+  if(!dentro(s,rango(VNA)))status("statusSub","bad","No se puede crear",`${sub} está fuera del espacio de direcciones de la VNet (${VNA}).`);
+  else if(choca(s,rango(A1)))status("statusSub","bad","No se puede crear",`${sub} se superpone con la subred A1 (${A1}). Cada subred necesita un rango único.`);
+  else status("statusSub","ok","Subred creada",`${sub} está dentro de ${VNA} y no choca con A1. Tiene ${fmt(rango(sub).e-rango(sub).s+1-5)} direcciones asignables.`);
+}
+function renderP(){
+  seg("peer",PEER,()=>peer,k=>peer=k,renderP);
+  const abOk=!choca(rango(VNA),rango(peer)),bcOk=!choca(rango(peer),rango("10.3.0.0/16"));
+  if(!abOk)status("statusP","bad","El peering A ↔ B falla",`La VNet B (${peer}) se superpone con A (${VNA}). Para emparejar VNets, sus CIDR no pueden superponerse.`);
+  else if(!ac)status("statusP","warn","A no llega a C","A está emparejada con B, y B con C, pero el peering no es transitivo: A y C no se ven hasta que crees el peering A ↔ C.");
+  else status("statusP","ok","Todas se comunican","Con un peering por cada par, el tráfico va por la red de Azure sin pasar por Internet.");
+  const p=(t,ok)=>`<div class="par"><span>${t}</span><span class="${ok?"ok":"no"}">${ok?"✓ conectadas":"✕ sin conexión"}</span></div>`;
+  document.getElementById("pares").innerHTML=p("A ↔ B",abOk)+p("B ↔ C",bcOk)+p("A ↔ C",ac&&!choca(rango(VNA),rango("10.3.0.0/16")));
+}
+
+/* ---------- 2 · NSG ---------- */
+const ORI={Internet:"Internet",VirtualNetwork:"Otra VM de la VNet"};
+const PORT={"443":"443 (HTTPS)","80":"80 (HTTP)","22":"22 (SSH)","3389":"3389 (RDP)"};
+const BASE=[
+ {p:100,n:"Allow-HTTPS",src:"Internet",port:"443",act:"Permitir"},
+ {p:200,n:"Allow-HTTP",src:"Internet",port:"80",act:"Permitir"},
+ {p:300,n:"Deny-RDP-Internet",src:"Internet",port:"3389",act:"Denegar"},
+ {p:65000,n:"AllowVnetInBound",src:"VirtualNetwork",port:"*",act:"Permitir"},
+ {p:65001,n:"AllowAzureLoadBalancerInBound",src:"AzureLoadBalancer",port:"*",act:"Permitir"},
+ {p:65500,n:"DenyAllInBound",src:"*",port:"*",act:"Denegar"}
+];
+const R150={p:150,n:"Allow-RDP-Internet",src:"Internet",port:"3389",act:"Permitir"};
+let ori="Internet",port="443",r150=false;
+document.getElementById("r150").checked=r150;document.getElementById("r150").onchange=e=>{r150=e.target.checked;renderN()};
+function renderN(){
+  seg("ori",ORI,()=>ori,k=>ori=k,renderN);seg("port",PORT,()=>port,k=>port=k,renderN);
+  const reglas=(r150?[...BASE,R150]:BASE).slice().sort((a,b)=>a.p-b.p);
+  const gana=reglas.find(r=>(r.src==="*"||r.src===ori)&&(r.port==="*"||r.port===port));
+  const ok=gana.act==="Permitir";
+  status("statusN",ok?"ok":"bad",ok?"Tráfico permitido":"Tráfico denegado",`Decide la regla ${gana.p} (${gana.n}). Las reglas se revisan de menor a mayor número y se detiene en la primera que coincide.${r150&&port==="3389"&&ori==="Internet"?" La 150 le gana a la 300 porque tiene un número más bajo.":""}`);
+  let visto=false;
+  document.getElementById("tbodyN").innerHTML=reglas.map(r=>{
+    const esta=r===gana;let res;
+    if(visto)res="No se evalúa";else if(esta){res="Coincide → decide";visto=true}else res="No coincide";
+    return`<tr class="${esta?"gana":visto&&!esta?"salta":""}"><td class="mono">${r.p}</td><td class="mono">${r.n}</td><td>${r.src==="*"?"Cualquiera":r.src}</td><td class="mono">${r.port==="*"?"Cualquiera":r.port}</td><td class="${r.act==="Permitir"?"permitir":"denegar"}">${r.act}</td><td>${res}</td></tr>`}).join("");
+}
+
+/* ---------- 3 · Conexión híbrida ---------- */
+const QUE={oficina:"Toda la red de la oficina",persona:"Un empleado desde su laptop",vnet:"Otra VNet de Azure"};
+const REQH={inet:"Puede ir cifrado por Internet",priv:"No puede pasar por Internet"};
+let que="oficina",reqH="inet";
+function renderH(){
+  seg("que",QUE,()=>que,k=>que=k,renderH);seg("reqH",REQH,()=>reqH,k=>reqH=k,renderH);
+  let s,lvl="ok",d,via,izq,cls;
+  if(que==="vnet"){s="VNet peering";d="Las VNets se conectan por la red troncal de Azure, de forma privada y sin Internet, como si fueran la misma red. Recuerda: sin CIDR superpuestos y no transitivo.";via="red de Azure";izq="VNet B";cls="priv"}
+  else if(que==="oficina"&&reqH==="inet"){s="VPN Gateway sitio a sitio (S2S)";d="Un túnel cifrado entre el dispositivo VPN de tu oficina y la VPN Gateway de la VNet, a través de Internet. La oficina y Azure se ven como una sola red.";via="túnel cifrado por Internet";izq="Oficina (dispositivo VPN)";cls="inet"}
+  else if(que==="oficina"){s="Azure ExpressRoute";d="Conexión privada y directa entre tu centro de datos y Azure: no transita por Internet, con alto rendimiento y baja latencia. Ideal para grandes volúmenes de datos.";via="conexión privada (proveedor)";izq="Centro de datos";cls="priv"}
+  else if(reqH==="inet"){s="VPN Gateway punto a sitio (P2S)";d="Cada empleado instala un cliente VPN y recibe una IP de un pool (ej. 172.16.201.0/24). Conexión cifrada y autenticada desde cualquier lugar.";via="túnel cifrado por Internet";izq="Laptop (cliente VPN)";cls="inet"}
+  else{lvl="warn";s="Combina: P2S o ExpressRoute vía la oficina";d="ExpressRoute conecta redes completas, no laptops sueltas. Un empleado remoto usa VPN P2S, o se conecta a la red de la oficina que tiene ExpressRoute.";via="depende";izq="Laptop";cls=""}
+  status("statusH",lvl,s,d);
+  document.getElementById("diag").innerHTML=`<span class="nodo">${izq}</span><span class="via ${cls}">⇄ ${via} ⇄</span>${que!=="vnet"&&s.startsWith("VPN")?'<span class="nodo">VPN Gateway</span><span class="via">→</span>':""}<span class="nodo">VNet A 10.1.0.0/16</span>`;
+  facts("factsH",[["Servicio",s.split(" (")[0]],["Pasa por Internet",cls==="inet"?"Sí, cifrado":cls==="priv"?"No":"—"],["Conecta",que==="persona"?"Un dispositivo":que==="vnet"?"Dos VNets":"Una red completa"],["Cifrado",cls==="inet"?"Sí (túnel VPN)":"Red privada"]]);
+}
+
+/* ---------- 4 · Balanceo ---------- */
+const BAL={
+ lb:{name:"Load Balancer",capa:"4 (TCP/UDP)",alc:"Regional",dec:"IP y puerto",waf:"No",d:"Único punto de contacto que reparte flujos TCP/UDP entre VMs o un Scale Set, según reglas y sondeos de estado. Tráfico interno o externo, alta disponibilidad entre zonas."},
+ agw:{name:"Application Gateway",capa:"7 (HTTP/HTTPS)",alc:"Regional",dec:"URL y encabezados",waf:"Sí",d:"Balanceador de tráfico web: enruta /images a un grupo y /video a otro, redirige HTTP a HTTPS, termina SSL, usa chequeos de salud (ej. /health) y soporta zonas de disponibilidad."},
+ tm:{name:"Traffic Manager",capa:"DNS",alc:"Global",dec:"A qué endpoint ir (respuesta DNS)",waf:"No",d:"Reparte usuarios entre regiones respondiendo por DNS. No es proxy: el tráfico no pasa por él. (No está en el PDF del curso.)"},
+ fd:{name:"Front Door",capa:"7 (HTTP/HTTPS)",alc:"Global",dec:"URL, latencia y salud",waf:"Sí",d:"Punto de entrada global para apps web, con aceleración, caché tipo CDN y WAF. (No está en el PDF del curso.)"},
+ cdn:{name:"CDN",capa:"Caché de contenido",alc:"Global (PoP)",dec:"Desde qué servidor perimetral servir",waf:"Reglas y protección DDoS",d:"Guarda copias del contenido en servidores perimetrales cerca del usuario: mejora la lectura y la experiencia. La primera solicitud va al origen; las siguientes salen de la caché."}
+};
+let bal="lb";
+function renderB(){
+  seg("bal",BAL,()=>bal,k=>bal=k,renderB);
+  const b=BAL[bal];
+  facts("factsB",[["Capa",b.capa],["Alcance",b.alc],["Decide por",b.dec],["WAF",b.waf]]);
+  document.getElementById("noteB").innerHTML=`<h3>Azure ${b.name}</h3><p>${b.d}</p>`;
+  document.getElementById("tbodyB").innerHTML=Object.keys(BAL).map(k=>{const x=BAL[k];
+    return`<tr class="${k===bal?"sel":""}"><td><b>${x.name}</b></td><td>${x.capa}</td><td>${x.alc}</td><td>${x.dec}</td><td>${x.waf}</td></tr>`}).join("");
+}
+
+renderI();renderSub();renderP();renderN();renderH();renderB();iniciarQuiz("cap06");
+</script>
+</body>
+</html>

@@ -1,0 +1,110 @@
+[
+  {
+    "pregunta": "¿Cuál de las siguientes opciones de Azure permite segmentar y aislar recursos de red en la nube?",
+    "opciones": ["Azure Traffic Manager", "Azure Virtual Network (VNet)", "Azure CDN", "Azure Blob Storage"],
+    "correcta": 1,
+    "explicacion": "Azure Virtual Network es una red privada aislada en la nube, que se divide en subredes para organizar y segmentar recursos."
+  },
+  {
+    "pregunta": "¿Cuántas direcciones IP tiene en total un espacio de direcciones /16?",
+    "opciones": ["256", "4.096", "65.536", "16.777.216"],
+    "correcta": 2,
+    "explicacion": "2^(32-16) = 2^16 = 65.536 direcciones."
+  },
+  {
+    "pregunta": "Creas una subred 10.1.0.0/24 en Azure. ¿Cuántas direcciones puedes asignar a tus recursos?",
+    "opciones": ["256", "254", "251", "250"],
+    "correcta": 2,
+    "explicacion": "Una /24 tiene 256 direcciones, pero Azure reserva 5 en cada subred (las 4 primeras y la última). Quedan 251."
+  },
+  {
+    "pregunta": "Tu VNet tiene la subred A 10.1.0.0/24. ¿Cuál de estas puedes crear como subred B en la misma VNet (10.1.0.0/16)?",
+    "opciones": ["10.1.0.128/25", "10.1.1.0/24", "10.2.0.0/24", "10.1.0.0/24"],
+    "correcta": 1,
+    "explicacion": "Las subredes no pueden superponerse y deben estar dentro del espacio de la VNet. 10.1.0.128/25 y 10.1.0.0/24 chocan con A; 10.2.0.0/24 está fuera de 10.1.0.0/16."
+  },
+  {
+    "pregunta": "¿Qué requisito deben cumplir dos VNets para conectarlas con VNet peering?",
+    "opciones": ["Estar en la misma región", "No tener rangos de direcciones IP (CIDR) superpuestos", "Tener una VPN Gateway cada una", "Estar en la misma subred"],
+    "correcta": 1,
+    "explicacion": "Las VNets emparejadas no pueden tener CIDR superpuestos. El tráfico va por la red de Azure, sin pasar por Internet."
+  },
+  {
+    "pregunta": "La VNet A está emparejada con B, y B con C. ¿Puede A comunicarse con C?",
+    "opciones": ["Sí, el peering es transitivo", "No, el peering no es transitivo: hay que emparejar A con C", "Solo si están en la misma región", "Solo con una regla de NSG"],
+    "correcta": 1,
+    "explicacion": "VNet peering no es transitivo: hay que crear un emparejamiento por cada par de VNets que deba comunicarse."
+  },
+  {
+    "pregunta": "En un grupo de seguridad de red (NSG), ¿qué regla se evalúa primero?",
+    "opciones": ["La de número de prioridad más alto", "La de número de prioridad más bajo", "La más reciente", "Las de denegación"],
+    "correcta": 1,
+    "explicacion": "Los números más bajos tienen más prioridad (100 antes que 200). La primera regla que coincide decide y se deja de evaluar."
+  },
+  {
+    "pregunta": "Un NSG tiene la regla 100 \"Denegar 3389 desde Internet\" y la regla 200 \"Permitir 3389 desde Internet\". Llega tráfico RDP desde Internet. ¿Qué pasa?",
+    "opciones": ["Se permite, porque la regla 200 es más alta", "Se deniega, porque la regla 100 se evalúa primero", "Se permite y se registra", "Azure rechaza crear las dos reglas"],
+    "correcta": 1,
+    "explicacion": "Se evalúa primero la prioridad 100; coincide y deniega. La regla 200 nunca llega a evaluarse."
+  },
+  {
+    "pregunta": "¿A qué se puede asociar un grupo de seguridad de red?",
+    "opciones": ["Solo a suscripciones", "A instancias individuales (interfaces de red) y a subredes completas", "Solo a grupos de recursos", "Solo a VPN Gateways"],
+    "correcta": 1,
+    "explicacion": "Un NSG filtra tráfico entrante y saliente y se aplica a recursos individuales o a subredes completas."
+  },
+  {
+    "pregunta": "¿En qué capa del modelo OSI trabaja Azure Load Balancer?",
+    "opciones": ["Capa 3 (red)", "Capa 4 (transporte): TCP y UDP", "Capa 7 (aplicación)", "Capa 2 (enlace)"],
+    "correcta": 1,
+    "explicacion": "Load Balancer es de capa 4: reparte flujos TCP/UDP entre VMs o un Scale Set usando sondeos de estado."
+  },
+  {
+    "pregunta": "Quieres enviar www.ejemplo.com/images a un grupo de servidores y /video a otro, con firewall de aplicaciones web (WAF). ¿Qué usas?",
+    "opciones": ["Azure Load Balancer", "Azure Application Gateway", "VPN Gateway", "Azure DNS"],
+    "correcta": 1,
+    "explicacion": "Application Gateway es un balanceador de capa 7 (HTTP/HTTPS): enruta por URL, redirige HTTP a HTTPS, termina SSL y ofrece WAF."
+  },
+  {
+    "pregunta": "¿Cómo sabe un balanceador de carga a qué servidores puede enviar tráfico?",
+    "opciones": ["Por la región", "Con sondeos o chequeos de estado (por ejemplo, HTTP a /health)", "Por el tamaño de la VM", "Por la etiqueta del recurso"],
+    "correcta": 1,
+    "explicacion": "Los chequeos de salud envían solicitudes periódicas; si un servidor no responde bien, deja de recibir tráfico."
+  },
+  {
+    "pregunta": "La oficina de tu empresa debe conectarse a una VNet de Azure con tráfico cifrado a través de Internet. ¿Qué usas?",
+    "opciones": ["VPN Gateway sitio a sitio (S2S)", "VPN Gateway punto a sitio (P2S)", "VNet peering", "Azure CDN"],
+    "correcta": 0,
+    "explicacion": "S2S conecta una red completa (la oficina) con la VNet mediante un túnel cifrado por Internet."
+  },
+  {
+    "pregunta": "Un trabajador remoto necesita conectarse desde su laptop a las VMs de una VNet. ¿Qué usas?",
+    "opciones": ["VPN sitio a sitio (S2S)", "VPN punto a sitio (P2S)", "ExpressRoute", "Load Balancer"],
+    "correcta": 1,
+    "explicacion": "P2S conecta dispositivos individuales a la VNet con una conexión cifrada y autenticada."
+  },
+  {
+    "pregunta": "Necesitas una conexión entre tu centro de datos y Azure que NO pase por Internet público, con alto rendimiento y baja latencia. ¿Qué usas?",
+    "opciones": ["VPN Gateway", "Azure ExpressRoute", "VNet peering", "Azure CDN"],
+    "correcta": 1,
+    "explicacion": "ExpressRoute es una conexión privada y directa: no transita por Internet. Ideal para grandes volúmenes y apps críticas."
+  },
+  {
+    "pregunta": "¿Qué servicio guarda copias del contenido en servidores perimetrales cerca de los usuarios para entregarlo más rápido?",
+    "opciones": ["Azure Content Delivery Network (CDN)", "Azure ExpressRoute", "Azure Load Balancer", "Network Security Group"],
+    "correcta": 0,
+    "explicacion": "CDN guarda el contenido en caché en puntos de presencia (edge) cerca del usuario y agrega protección DDoS."
+  },
+  {
+    "pregunta": "¿Qué servicio reparte usuarios entre regiones usando solo DNS, sin actuar como proxy del tráfico?",
+    "opciones": ["Azure Traffic Manager", "Azure Application Gateway", "Azure Front Door", "Azure Load Balancer"],
+    "correcta": 0,
+    "explicacion": "Traffic Manager es global y trabaja por DNS: responde a qué endpoint ir, pero el tráfico no pasa por él. Front Door es global y de capa 7 (proxy)."
+  },
+  {
+    "pregunta": "¿Qué servicio permite que VNets de Azure se comuniquen de forma privada por la red de Azure, como si fueran la misma red?",
+    "opciones": ["VNet peering", "VPN punto a sitio", "Azure CDN", "Application Gateway"],
+    "correcta": 0,
+    "explicacion": "VNet peering conecta VNets por la red troncal de Azure, sin atravesar Internet público."
+  }
+]
