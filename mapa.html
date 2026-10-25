@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mapa conceptual AZ-900</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="assets/estilos.css">
+<style>
+/* Un color por área (paleta categórica validada para claro y oscuro) */
+:root{--a0:#2a78d6;--a1:#eb6834;--a2:#1baf7a;--a3:#eda100;--a4:#e87ba4;--a5:#6250d6}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--a0:#3987e5;--a1:#d95926;--a2:#199e70;--a3:#c98500;--a4:#d55181;--a5:#9085e9}}
+:root[data-theme="dark"]{--a0:#3987e5;--a1:#d95926;--a2:#199e70;--a3:#c98500;--a4:#d55181;--a5:#9085e9}
+
+.wrap{max-width:1280px}
+.modos{display:flex;flex-wrap:wrap;gap:6px}
+.lienzo{background:var(--surface);border:1px solid var(--line);border-radius:10px;overflow-x:auto}
+.lienzo svg{display:block;min-width:1080px;width:100%;height:auto}
+.n{cursor:pointer}
+.n rect.caja{fill:var(--bg);stroke:var(--line)}
+.n text{font-family:var(--f-body);font-size:12.5px;fill:var(--ink)}
+.n:focus{outline:none}
+.n:focus-visible rect.caja{stroke:var(--accent);stroke-width:2}
+.n.sel rect.caja{stroke:var(--ink);stroke-width:2}
+.n.dim{opacity:.22}
+.e{fill:none;stroke:var(--muted);stroke-width:1.2;opacity:.16}
+.e.on{opacity:1;stroke-width:2.2}
+.e.dim{opacity:.05}
+.et{font-family:var(--f-body);font-size:11px;fill:var(--ink);paint-order:stroke;stroke:var(--surface);stroke-width:4px;stroke-linejoin:round}
+.col{font-family:var(--f-mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;display:grid;gap:10px}
+.panel h2{margin:0;font-family:var(--f-display);font-size:1.25rem}
+.panel p{margin:0}
+.panel .area{font-family:var(--f-mono);font-size:.75rem;letter-spacing:.06em;text-transform:uppercase}
+.conex{margin:0;padding:0;list-style:none;display:grid;gap:4px;font-size:.9rem}
+.panel button[data-ir]{font:inherit;background:none;border:0;padding:0;color:var(--accent);cursor:pointer;text-decoration:underline}
+.pasos{margin:0;padding-left:22px;display:grid;gap:6px}
+.vs{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:760px){.vs{grid-template-columns:1fr}}
+.vs>div{border:1px solid var(--line);border-radius:8px;padding:10px 12px}
+.vs h3{margin:0 0 4px;font-family:var(--f-display);font-size:1rem}
+.pista{background:var(--accent-soft);border-radius:8px;padding:10px 12px}
+.leyenda{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:.82rem;color:var(--muted)}
+.leyenda span{display:inline-flex;align-items:center;gap:6px}
+.leyenda i{width:12px;height:12px;border-radius:3px;display:inline-block}
+.arriba{display:flex;flex-wrap:wrap;gap:6px 16px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="arriba"><a class="volver" href="index.html">← Todos los capítulos</a></div>
+  <header>
+    <div class="eyebrow">AZ-900 · Mapa conceptual</div>
+    <h1>Cómo se conectan los servicios de Azure</h1>
+    <p>Las preguntas del examen suelen combinar varios servicios. Haz clic en un servicio para ver con qué se conecta y para qué, recorre escenarios completos o compara los pares que más se confunden.</p>
+  </header>
+
+  <div class="ctl"><label>Modo</label><div class="seg" id="modo"></div></div>
+  <div class="modos" id="opciones"></div>
+  <div class="leyenda" id="leyenda"></div>
+  <div class="lienzo"><svg id="svg" role="img" aria-label="Mapa conceptual de servicios de Azure"></svg></div>
+  <div class="panel" id="panel" aria-live="polite"></div>
+</div>
+
+<script>
+const AREAS=[
+ {n:"Identidad",c:"var(--a0)"},{n:"Red",c:"var(--a1)"},{n:"Cómputo",c:"var(--a2)"},
+ {n:"Datos",c:"var(--a3)"},{n:"Seguridad y gestión",c:"var(--a4)"},{n:"Gobierno y costos",c:"var(--a5)"}
+];
+const CAP={2:"cap02-cloud.html",3:"cap03-arquitectura.html",4:"cap04-herramientas.html",5:"cap05-computacion.html",6:"cap06-redes.html",7:"cap07-almacenamiento.html",8:"cap08-identidad.html",9:"cap09-seguridad.html",10:"cap10-monitorizacion.html",11:"cap11-precios.html"};
+// [id, nombre, área, capítulo, qué es]
+const N=[
+ ["usuarios","Usuarios",0,8,"Personas que usan tus apps, desde la oficina, la casa o Internet."],
+ ["adlocal","AD local (AD DS)",0,8,"Active Directory tradicional en servidores locales. Kerberos, NTLM, LDAP. No es lo mismo que Entra ID."],
+ ["connect","Entra Connect",0,8,"Se instala en local y sincroniza el AD local con Entra ID: identidad híbrida."],
+ ["entra","Microsoft Entra ID",0,8,"Identidad y acceso en la nube (antes Azure AD). Cada organización tiene su tenant."],
+ ["mfa","MFA",0,8,"Segundo factor de otra categoría: algo que sabes, que tienes o que eres."],
+ ["ca","Acceso condicional",0,8,"Motor de directivas de Zero Trust: usa señales (usuario, ubicación, dispositivo, riesgo) para bloquear o conceder con requisitos."],
+ ["sso","SSO",0,8,"Una sola cuenta e inicio de sesión para muchas aplicaciones."],
+ ["b2b","Invitados B2B",0,8,"Usuarios externos que entran a tu tenant con su propia cuenta."],
+ ["entrads","Entra Domain Services",0,8,"Dominio administrado (antes Azure AD DS) para apps que necesitan Kerberos/NTLM, sin gestionar controladores de dominio."],
+
+ ["oficina","Oficina / centro de datos",1,6,"Tu red local (on-premises)."],
+ ["vpn","VPN Gateway",1,6,"Túnel cifrado por Internet: S2S (oficina ↔ VNet) o P2S (un dispositivo ↔ VNet)."],
+ ["er","ExpressRoute",1,6,"Conexión privada y directa a Azure que NO pasa por Internet. Alto rendimiento y baja latencia."],
+ ["vnet","Red virtual (VNet)",1,6,"Red privada y aislada en Azure, con su espacio de direcciones (ej. 10.1.0.0/16)."],
+ ["subred","Subred",1,6,"Parte de la VNet con un rango único. Azure reserva 5 IPs por subred."],
+ ["nsg","NSG",1,6,"Reglas de permitir/denegar por prioridad (número más bajo primero), en una subred o NIC."],
+ ["peering","VNet peering",1,6,"Une VNets por la red de Azure. Sin CIDR superpuestos y no es transitivo."],
+ ["lb","Load Balancer",1,6,"Balanceador de capa 4 (TCP/UDP), regional, con sondeos de estado."],
+ ["agw","Application Gateway",1,6,"Balanceador web de capa 7: rutas por URL, terminación SSL y WAF."],
+ ["cdn","CDN",1,6,"Copias del contenido en servidores perimetrales cerca de los usuarios."],
+ ["pe","Endpoint privado",1,9,"Una NIC con IP privada en tu VNet para un recurso concreto. Se puede apagar el acceso público."],
+ ["se","Endpoint de servicio",1,9,"La subred llega al servicio por la red de Microsoft, pero el endpoint público sigue existiendo."],
+
+ ["vm","Máquina virtual",2,5,"IaaS: control total del sistema operativo. Pago por uso, reservada, spot…"],
+ ["vmss","Scale Set",2,5,"VMs idénticas que escalan solas (hasta 100, o 1000). Sin costo extra."],
+ ["appsvc","App Service",2,5,"PaaS para web apps y APIs: solo pones el código; autoescalado incluido."],
+ ["aci","Container Instances",2,5,"Ejecuta un contenedor bajo demanda, sin VMs ni orquestador."],
+ ["aks","AKS",2,5,"Kubernetes administrado: orquesta muchos contenedores."],
+ ["acr","Container Registry",2,5,"Registro privado de imágenes de contenedor."],
+ ["func","Functions",2,5,"Serverless: código que se ejecuta ante un evento. Sin tráfico no pagas."],
+ ["avd","Virtual Desktop",2,5,"Escritorios Windows en la nube desde cualquier dispositivo."],
+
+ ["sa","Storage Account",3,7,"Contenedor de Blob, Files, Queue y Table, con su redundancia (LRS, ZRS, GRS, GZRS)."],
+ ["blob","Blob",3,7,"Objetos no estructurados por API REST: fotos, videos, respaldos. Cuenta → contenedor → blob."],
+ ["niveles","Niveles Hot/Cool/Cold/Archive",3,7,"Más frío = más barato guardar y más caro leer. Archive necesita rehidratar."],
+ ["files","Files",3,7,"Carpeta compartida que se monta por SMB/NFS desde VMs o PCs locales."],
+ ["queue","Queue",3,7,"Mensajes entre componentes: comunicación asíncrona."],
+ ["table","Table",3,7,"NoSQL clave/valor, barato y rápido."],
+ ["disks","Disks",3,7,"Discos administrados que solo se conectan a VMs: HDD, SSD estándar, SSD premium, Ultra."],
+ ["sql","Azure SQL",3,9,"Base de datos relacional administrada."],
+ ["cosmos","Cosmos DB",3,7,"NoSQL PaaS multimodelo con escrituras en varias regiones."],
+ ["migrate","Azure Migrate",3,7,"Descubre, evalúa y migra servidores, bases de datos y apps."],
+ ["databox","Data Box",3,7,"Dispositivo físico para mover muchos datos sin conexión."],
+ ["filesync","File Sync",3,7,"Sincroniza Azure Files con tus servidores de archivos locales."],
+ ["azcopy","AzCopy / Storage Explorer",3,7,"Copiar datos: AzCopy por comandos, Storage Explorer con interfaz gráfica."],
+
+ ["kv","Key Vault",4,9,"Secretos, claves y certificados fuera del código."],
+ ["defender","Defender for Cloud",4,9,"Postura de seguridad, recomendaciones y alertas. Híbrido y multinube."],
+ ["sentinel","Sentinel",4,9,"SIEM: reúne y analiza eventos de seguridad con IA."],
+ ["monitor","Azure Monitor",4,10,"Métricas y registros de Azure y de local, en una sola plataforma."],
+ ["la","Log Analytics",4,10,"Guarda y consulta los registros con KQL."],
+ ["ai","Application Insights",4,10,"Rendimiento y uso de aplicaciones web."],
+ ["alertas","Alertas",4,10,"Regla + grupo de acción (email, SMS, Logic Apps, Functions)."],
+ ["sh","Service Health",4,10,"Incidentes y mantenimiento de Azure que te afectan. Gratis."],
+ ["advisor","Advisor",4,4,"Recomendaciones: costo, seguridad, confiabilidad, excelencia operativa, rendimiento."],
+ ["arc","Azure Arc",4,10,"Gestiona y aplica políticas de Azure a servidores locales y de otras nubes."],
+
+ ["mg","Grupo de administración",5,3,"Agrupa suscripciones en árbol; lo asignado aquí se hereda hacia abajo."],
+ ["sub","Suscripción",5,3,"Límite de facturación y de acceso. Una cuenta puede tener varias."],
+ ["rg","Grupo de recursos",5,3,"Contenedor lógico de recursos con el mismo ciclo de vida."],
+ ["region","Región",5,3,"Ubicación geográfica con uno o más centros de datos."],
+ ["az","Zonas de disponibilidad",5,3,"Centros de datos separados dentro de una región (no todas tienen)."],
+ ["par","Región emparejada",5,3,"Otra región del mismo límite geopolítico, para recuperación ante desastres."],
+ ["policy","Azure Policy",5,10,"Cómo deben ser los recursos: regiones, etiquetas, tamaños. Deny o Audit."],
+ ["rbac","RBAC",5,10,"Quién puede hacer qué y dónde: entidad + rol + ámbito."],
+ ["locks","Locks",5,10,"Impiden borrar (Delete) o modificar (Read-only), incluso al Propietario."],
+ ["tags","Etiquetas",5,11,"Clasifican recursos para saber qué gasta cada proyecto."],
+ ["cost","Cost Management",5,11,"Gasto real, presupuestos con alertas y asignación de costos."],
+ ["calc","Calculadoras (precios / TCO)",5,11,"Precios: estimar lo nuevo. TCO: comparar tu centro de datos con Azure."]
+];
+// [origen, destino, relación]
+const E=[
+ ["adlocal","connect","se sincroniza con"],["connect","entra","sincroniza cuentas a"],["usuarios","entra","inician sesión en"],
+ ["entra","ca","evalúa el acceso con"],["ca","mfa","decide cuándo pedir"],["entra","mfa","puede exigir"],["entra","sso","ofrece"],
+ ["b2b","entra","son invitados del tenant de"],["entra","entrads","sincroniza (en una vía) a"],["entrads","vm","une al dominio a"],
+ ["oficina","vpn","túnel cifrado por Internet (S2S)"],["usuarios","vpn","un dispositivo remoto (P2S)"],["oficina","er","conexión privada, sin Internet"],
+ ["vpn","vnet","conecta con"],["er","vnet","conecta con"],["vnet","subred","se divide en"],["nsg","subred","filtra el tráfico de"],
+ ["peering","vnet","une dos"],["usuarios","cdn","reciben contenido desde"],["usuarios","agw","tráfico web (capa 7, WAF)"],
+ ["agw","vmss","reparte por URL entre"],["lb","vmss","reparte TCP/UDP entre"],["subred","vm","aloja"],
+ ["pe","subred","vive en"],["pe","sql","da IP privada a"],["se","sa","abre acceso desde la subred a"],["cdn","blob","cachea contenido de"],
+ ["vnet","region","existe dentro de una"],
+ ["vmss","vm","grupo de VMs idénticas"],["vm","disks","usa discos"],["vmss","az","se reparte en"],["aks","vm","sus nodos son"],
+ ["acr","aks","entrega imágenes a"],["acr","aci","entrega imágenes a"],["aci","files","monta almacenamiento de"],
+ ["func","queue","se dispara con mensajes de"],["appsvc","sql","guarda datos en"],["avd","vm","sus escritorios corren en"],
+ ["migrate","vm","migra servidores a"],["oficina","migrate","sus servidores los evalúa"],
+ ["sa","blob","contiene"],["sa","files","contiene"],["sa","queue","contiene"],["sa","table","contiene"],["blob","niveles","tiene"],
+ ["sa","az","ZRS copia en"],["sa","par","GRS/GZRS copia a"],["databox","sa","carga datos sin conexión a"],
+ ["filesync","files","sincroniza servidores locales con"],["azcopy","blob","copia datos a"],["cosmos","region","escribe en varias"],
+ ["kv","sql","guarda la contraseña de"],["kv","appsvc","entrega secretos a"],["defender","vm","protege y recomienda para"],
+ ["vm","monitor","envía métricas y registros a"],["monitor","la","guarda registros en"],["monitor","alertas","dispara"],
+ ["sentinel","la","analiza los datos de"],["ai","appsvc","mide el rendimiento de"],["sh","alertas","avisa de incidentes con"],
+ ["advisor","vm","recomienda redimensionar"],["arc","oficina","gestiona servidores de"],
+ ["mg","sub","contiene"],["sub","rg","contiene"],["rg","vm","contiene recursos como"],["policy","mg","se asigna (y hereda) desde"],
+ ["rbac","sub","asigna roles en ámbitos como"],["rbac","entra","da roles a usuarios y grupos de"],["locks","rg","protege"],
+ ["tags","cost","agrupan el gasto en"],["sub","cost","se factura y se ve en"],["region","az","puede tener"],["region","par","se empareja con"],
+ ["calc","oficina","compara costos (TCO) de"]
+];
+const ESC={
+ web:{n:"Web app de 3 niveles",nodos:["usuarios","cdn","agw","vmss","vm","az","subred","nsg","pe","sql","kv","monitor"],
+  ar:[["usuarios","cdn"],["usuarios","agw"],["agw","vmss"],["vmss","vm"],["vmss","az"],["subred","vm"],["nsg","subred"],["pe","subred"],["pe","sql"],["kv","sql"],["vm","monitor"]],
+  pasos:["Los usuarios reciben imágenes y archivos estáticos desde la CDN.","El tráfico web entra por Application Gateway (capa 7, WAF).","Application Gateway reparte entre las VMs de un Scale Set repartido en 3 zonas: alta disponibilidad.","Las VMs viven en una subred; un NSG filtra qué tráfico entra.","La app llega a Azure SQL por un endpoint privado, sin exponer la base de datos a Internet.","La contraseña de la base de datos está en Key Vault, no en el código.","Las VMs envían métricas y registros a Azure Monitor."]},
+ ofi:{n:"Oficina conectada a Azure",nodos:["oficina","vpn","er","vnet","subred","vm","pe","sql","adlocal","connect","entra"],
+  ar:[["oficina","vpn"],["oficina","er"],["vpn","vnet"],["er","vnet"],["vnet","subred"],["subred","vm"],["pe","subred"],["pe","sql"],["adlocal","connect"],["connect","entra"]],
+  pasos:["La oficina se conecta a la VNet con VPN Gateway (cifrado por Internet) o con ExpressRoute (privado, sin Internet).","Desde la VNet llega a las VMs de sus subredes como si fuera su propia red.","Para Azure SQL usa un endpoint privado: llega por la VPN a una IP privada, sin Internet.","En paralelo, Entra Connect sincroniza las cuentas del AD local con Entra ID: los mismos usuarios en ambos lados.","Ojo: la VPN conecta REDES; Entra Connect sincroniza CUENTAS."]},
+ login:{n:"Inicio de sesión seguro",nodos:["usuarios","entra","ca","mfa","sso","b2b","rbac","sub"],
+  ar:[["usuarios","entra"],["entra","ca"],["ca","mfa"],["entra","sso"],["b2b","entra"],["rbac","entra"],["rbac","sub"]],
+  pasos:["El usuario inicia sesión en Microsoft Entra ID (autenticación).","El acceso condicional mira las señales y decide: bloquear, conceder o conceder exigiendo MFA.","Con SSO, ese inicio de sesión sirve para todas las apps conectadas.","Un consultor externo entra como invitado B2B con su propia cuenta.","Ya autenticado, RBAC decide qué puede hacer y en qué ámbito (autorización)."]},
+ cont:{n:"App con contenedores",nodos:["acr","aks","aci","vm","files","monitor"],
+  ar:[["acr","aks"],["acr","aci"],["aks","vm"],["aci","files"],["vm","monitor"]],
+  pasos:["Las imágenes se guardan en Azure Container Registry (privado).","Para muchos contenedores y microservicios, AKS los orquesta; sus nodos son VMs.","Para un contenedor puntual, Container Instances lo ejecuta sin orquestador.","Si un contenedor necesita almacenamiento persistente, monta Azure Files (no Disks).","Todo se supervisa con Azure Monitor."]},
+ mig:{n:"Migrar mi centro de datos",nodos:["calc","oficina","migrate","vm","databox","sa","filesync","files","azcopy","blob"],
+  ar:[["calc","oficina"],["oficina","migrate"],["migrate","vm"],["databox","sa"],["filesync","files"],["azcopy","blob"],["sa","blob"],["sa","files"]],
+  pasos:["La calculadora TCO compara lo que te cuesta hoy tu centro de datos con lo que costaría en Azure.","Azure Migrate descubre tus servidores, ve dependencias, estima costos y los migra a VMs.","Si hay demasiados datos para tu ancho de banda, o no pueden ir por Internet, usas Data Box.","Los servidores de archivos pasan a Azure Files con File Sync.","Para copias puntuales: AzCopy (comandos) o Storage Explorer (interfaz gráfica)."]},
+ resp:{n:"Respaldos baratos de largo plazo",nodos:["azcopy","blob","niveles","sa","par","region"],
+  ar:[["azcopy","blob"],["sa","blob"],["blob","niveles"],["sa","par"],["region","par"]],
+  pasos:["Copias los respaldos a Blob Storage, por ejemplo con AzCopy.","Los dejas en el nivel Archive: el más barato para guardar, pero leer exige rehidratar (horas) y la retención mínima es de 180 días.","Con GRS o GZRS, Azure guarda otra copia en la región emparejada, por si cae toda la región."]},
+ gob:{n:"Gobierno de la empresa",nodos:["mg","sub","rg","vm","policy","rbac","locks","tags","cost","advisor","arc","oficina"],
+  ar:[["mg","sub"],["sub","rg"],["rg","vm"],["policy","mg"],["rbac","sub"],["locks","rg"],["tags","cost"],["sub","cost"],["advisor","vm"],["arc","oficina"]],
+  pasos:["Grupos de administración → suscripciones → grupos de recursos → recursos.","Azure Policy asignada arriba se hereda hacia abajo: define cómo deben ser los recursos.","RBAC define quién puede hacer qué en cada ámbito.","Un lock en el grupo de recursos impide borrar o modificar, incluso al Propietario.","Las etiquetas y la suscripción permiten ver el gasto en Cost Management; Advisor sugiere ahorros.","Azure Arc lleva todo esto a servidores fuera de Azure."]}
+};
+const VS={
+ vpner:{n:"VPN Gateway vs ExpressRoute",a:"vpn",b:"er",ta:"Túnel cifrado que viaja por Internet público. S2S para la oficina, P2S para un dispositivo.",tb:"Conexión privada a través de un proveedor: no pasa por Internet. Más rendimiento y menos latencia.",p:"Si el enunciado dice \"no puede pasar por Internet\" → ExpressRoute. Si dice \"cifrado por Internet\" o \"trabajador remoto\" → VPN."},
+ adentra:{n:"AD local vs Entra ID",a:"adlocal",b:"entra",ta:"Directorio en servidores locales: Kerberos, NTLM, LDAP, equipos unidos al dominio.",tb:"Identidad en la nube para apps web, móviles, Microsoft 365 y Azure.",p:"NO son lo mismo. Se unen con Entra Connect. Para apps antiguas con Kerberos en Azure: Entra Domain Services."},
+ polrbac:{n:"Azure Policy vs RBAC",a:"policy",b:"rbac",ta:"Reglas sobre cómo deben ser los recursos: regiones, etiquetas, tamaños.",tb:"Quién puede hacer qué y dónde: entidad de seguridad + rol + ámbito.",p:"\"Solo se pueden crear recursos en Brazil South\" → Policy. \"Ana solo puede ver\" → RBAC. \"Que nadie pueda borrarlo\" → Lock."},
+ sepe:{n:"Endpoint de servicio vs endpoint privado",a:"se",b:"pe",ta:"La subred llega al servicio por la red de Microsoft, pero el endpoint público sigue existiendo y no sirve desde local.",tb:"IP privada en tu VNet para un recurso; llega también desde la oficina por VPN/ExpressRoute; puedes apagar el acceso público.",p:"\"Acceder desde la oficina por IP privada\" o \"desactivar el acceso público\" → endpoint privado."},
+ fd:{n:"Files vs Disks",a:"files",b:"disks",ta:"Carpeta compartida que se monta por SMB/NFS: VMs, PCs de la oficina, contenedores, App Service.",tb:"Disco administrado que solo se conecta a VMs.",p:"Disks se conecta (a una VM). Files se monta (en cualquier lado)."},
+ lbagw:{n:"Load Balancer vs Application Gateway",a:"lb",b:"agw",ta:"Capa 4 (TCP/UDP): reparte por IP y puerto.",tb:"Capa 7 (HTTP/HTTPS): rutas por URL (/images, /video), terminación SSL y WAF.",p:"Si menciona URL, HTTPS o WAF → Application Gateway."},
+ aciaks:{n:"Container Instances vs AKS",a:"aci",b:"aks",ta:"Un contenedor bajo demanda, lo más simple.",tb:"Orquestación de muchos contenedores con Kubernetes.",p:"\"La forma más simple de ejecutar un contenedor\" → ACI. \"Orquestar\" → AKS. Guardar imágenes → ACR."},
+ defsen:{n:"Defender for Cloud vs Sentinel",a:"defender",b:"sentinel",ta:"Postura de seguridad: evalúa, recomienda y alerta sobre tus recursos.",tb:"SIEM: reúne eventos de toda la empresa y detecta amenazas con IA.",p:"\"Recomendaciones de seguridad\" o \"postura\" → Defender. \"SIEM\" o \"recopilar y analizar eventos\" → Sentinel."},
+ monsh:{n:"Azure Monitor vs Service Health",a:"monitor",b:"sh",ta:"Observa TUS recursos: métricas, registros, alertas.",tb:"Observa la PLATAFORMA Azure: incidentes y mantenimiento que te afectan.",p:"\"¿Azure tiene una caída?\" → Service Health. \"¿Mi VM usa mucha CPU?\" → Monitor."},
+ azpar:{n:"Zonas de disponibilidad vs región emparejada",a:"az",b:"par",ta:"Centros de datos separados DENTRO de la misma región: sobrevives a la caída de uno.",tb:"OTRA región del mismo límite geopolítico: sobrevives a la caída de toda la región.",p:"ZRS = zonas. GRS/GZRS = región emparejada."},
+ calccost:{n:"Calculadoras vs Cost Management",a:"calc",b:"cost",ta:"ANTES: estimar (precios) o comparar con tu centro de datos (TCO).",tb:"DURANTE: gasto real, presupuestos, alertas y asignación de costos.",p:"Estimar → calculadora de precios. Comparar con local → TCO. Controlar el gasto real → Cost Management."}
+};
+
+const MODOS={explorar:"Explorar servicios",escenarios:"Escenarios",comparar:"Comparar confusiones"};
+let modo="explorar",sel=null,esc=null,vs=null;
+const byId=Object.fromEntries(N.map(n=>[n[0],n]));
+const W=176,H=32,COLX=196,X0=12,Y0=48,STEP=44;
+const pos={};
+AREAS.forEach((a,i)=>N.filter(n=>n[2]===i).forEach((n,j)=>pos[n[0]]={x:X0+i*COLX,y:Y0+j*STEP}));
+const alto=Y0+Math.max(...AREAS.map((a,i)=>N.filter(n=>n[2]===i).length))*STEP+10;
+const esc$=s=>s.replace(/&/g,"&amp;").replace(/</g,"&lt;");
+
+function ruta(a,b){
+  const pa=pos[a],pb=pos[b],ca=byId[a][2],cb=byId[b][2];
+  let x1,y1=pa.y+H/2,x2,y2=pb.y+H/2,d;
+  if(ca<cb){x1=pa.x+W;x2=pb.x-2;const k=(x2-x1)/2;d=`M${x1},${y1} C${x1+k},${y1} ${x2-k},${y2} ${x2},${y2}`}
+  else if(ca>cb){x1=pa.x;x2=pb.x+W+2;const k=(x1-x2)/2;d=`M${x1},${y1} C${x1-k},${y1} ${x2+k},${y2} ${x2},${y2}`}
+  else{x1=pa.x+W;x2=pb.x+W+2;const o=28+Math.abs(y2-y1)*.15;d=`M${x1},${y1} C${x1+o},${y1} ${x2+o},${y2} ${x2},${y2}`}
+  return{d,mx:(x1+x2)/2+(ca===cb?24:0),my:(y1+y2)/2};
+}
+
+function dibujar(activos,aristas){
+  const svg=document.getElementById("svg"),Wt=X0+AREAS.length*COLX;
+  svg.setAttribute("viewBox",`0 0 ${Wt} ${alto}`);
+  const hay=activos&&activos.size;
+  const esActiva=(a,b)=>aristas.some(([x,y])=>(x===a&&y===b));
+  let s=`<defs>${AREAS.map((a,i)=>`<marker id="m${i}" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="${a.c}"/></marker>`).join("")}<marker id="mg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--muted)"/></marker></defs>`;
+  s+=AREAS.map((a,i)=>`<text class="col" x="${X0+i*COLX}" y="26" fill="${a.c}">${a.n}</text>`).join("");
+  let etiquetas="";
+  E.forEach(([a,b,l])=>{
+    const r=ruta(a,b),on=hay&&esActiva(a,b),ca=byId[a][2];
+    s+=`<path class="e${on?" on":hay?" dim":""}" d="${r.d}" ${on?`style="stroke:${AREAS[ca].c}" marker-end="url(#m${ca})"`:`marker-end="url(#mg)"`}/>`;
+    if(on&&modo==="explorar")etiquetas+=`<text class="et" x="${r.mx}" y="${r.my-4}" text-anchor="middle">${esc$(l)}</text>`;
+  });
+  N.forEach(([id,n,ar])=>{
+    const p=pos[id],dim=hay&&!activos.has(id);
+    s+=`<g class="n${id===sel?" sel":""}${dim?" dim":""}" data-id="${id}" tabindex="0" role="button" aria-label="${esc$(n)}"><title>${esc$(byId[id][4])}</title><rect class="caja" x="${p.x}" y="${p.y}" width="${W}" height="${H}" rx="6"/><rect x="${p.x}" y="${p.y}" width="5" height="${H}" rx="2" fill="${AREAS[ar].c}"/><text x="${p.x+13}" y="${p.y+H/2+4.5}">${esc$(n)}</text></g>`;
+  });
+  svg.innerHTML=s+etiquetas;
+  svg.querySelectorAll(".n").forEach(g=>{
+    const go=()=>{modo="explorar";sel=g.dataset.id;render()};
+    g.onclick=go;g.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();go()}};
+  });
+}
+
+function linkCap(c){return`<a href="${CAP[c]}">Estudiar en el capítulo ${c} →</a>`}
+function botonNodo(id){return`<button type="button" data-ir="${id}">${esc$(byId[id][1])}</button>`}
+
+function render(){
+  const m=document.getElementById("modo");m.innerHTML="";
+  Object.keys(MODOS).forEach(k=>{const b=document.createElement("button");b.type="button";b.textContent=MODOS[k];b.setAttribute("aria-pressed",String(modo===k));
+    b.onclick=()=>{modo=k;if(k==="escenarios"&&!esc)esc="web";if(k==="comparar"&&!vs)vs="vpner";render()};m.appendChild(b)});
+  const op=document.getElementById("opciones");op.innerHTML="";
+  const lista=modo==="escenarios"?ESC:modo==="comparar"?VS:null;
+  if(lista)Object.keys(lista).forEach(k=>{const b=document.createElement("button");b.type="button";b.className="btn";b.textContent=lista[k].n;
+    b.setAttribute("aria-pressed",String((modo==="escenarios"?esc:vs)===k));
+    if((modo==="escenarios"?esc:vs)===k){b.style.borderColor="var(--accent)";b.style.background="var(--accent-soft)"}
+    b.onclick=()=>{modo==="escenarios"?esc=k:vs=k;render()};op.appendChild(b)});
+  document.getElementById("leyenda").innerHTML=AREAS.map(a=>`<span><i style="background:${a.c}"></i>${a.n}</span>`).join("");
+
+  const panel=document.getElementById("panel");
+  if(modo==="explorar"){
+    if(!sel){dibujar(null,[]);panel.innerHTML=`<h2>Elige un servicio</h2><p>Haz clic en cualquier caja del mapa para ver qué es, con qué se conecta y en qué capítulo se estudia. Las flechas se encienden con su relación.</p>`;}
+    else{
+      const sal=E.filter(e=>e[0]===sel),ent=E.filter(e=>e[1]===sel);
+      const act=new Set([sel,...sal.map(e=>e[1]),...ent.map(e=>e[0])]);
+      dibujar(act,[...sal,...ent].map(e=>[e[0],e[1]]));
+      const n=byId[sel];
+      panel.innerHTML=`<div class="area" style="color:${AREAS[n[2]].c}">${AREAS[n[2]].n}</div><h2>${esc$(n[1])}</h2><p>${esc$(n[4])}</p>`+
+        `<ul class="conex">${sal.map(e=>`<li>${esc$(n[1])} <b>${esc$(e[2])}</b> ${botonNodo(e[1])}</li>`).join("")}${ent.map(e=>`<li>${botonNodo(e[0])} <b>${esc$(e[2])}</b> ${esc$(n[1])}</li>`).join("")}</ul>`+
+        `<p>${linkCap(n[3])} · <button type="button" class="btn" id="limpiar">Ver todo el mapa</button></p>`;
+      document.getElementById("limpiar").onclick=()=>{sel=null;render()};
+    }
+  }else if(modo==="escenarios"){
+    const x=ESC[esc];sel=null;
+    dibujar(new Set(x.nodos),x.ar);
+    panel.innerHTML=`<h2>${x.n}</h2><ol class="pasos">${x.pasos.map(p=>`<li>${p}</li>`).join("")}</ol><p class="fb">Servicios del escenario: ${x.nodos.map(botonNodo).join(", ")}</p>`;
+  }else{
+    const x=VS[vs];sel=null;
+    const aristas=E.filter(e=>[x.a,x.b].includes(e[0])||[x.a,x.b].includes(e[1])).map(e=>[e[0],e[1]]);
+    const act=new Set(aristas.flat());act.add(x.a);act.add(x.b);
+    dibujar(act,aristas);
+    const A=byId[x.a],B=byId[x.b];
+    panel.innerHTML=`<h2>${x.n}</h2><div class="vs"><div><h3 style="color:${AREAS[A[2]].c}">${esc$(A[1])}</h3><p>${x.ta}</p><p style="margin-top:6px">${linkCap(A[3])}</p></div><div><h3 style="color:${AREAS[B[2]].c}">${esc$(B[1])}</h3><p>${x.tb}</p><p style="margin-top:6px">${linkCap(B[3])}</p></div></div><div class="pista"><b>Pista para el examen:</b> ${x.p}</div>`;
+  }
+  panel.querySelectorAll("[data-ir]").forEach(b=>b.onclick=()=>{modo="explorar";sel=b.dataset.ir;render()});
+}
+render();
+</script>
+</body>
+</html>
