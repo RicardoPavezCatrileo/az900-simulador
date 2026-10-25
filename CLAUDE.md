@@ -65,6 +65,8 @@ Simulador de redundancia de Azure Storage:
 - Estado resultante (lectura/escritura OK, solo lectura en secundaria, sin acceso hasta failover, sin acceso/pérdida).
 - Tabla comparativa y 5 preguntas tipo examen.
 Ya adaptado a la estructura compartida (CSS común en `assets/`, preguntas en `data/preguntas-cap07.json`, puntaje conectado).
+Enriquecido con `docs/Guía visual de Azure Storage Account.png` (imagen local, no se sube): secciones de servicios (Blob/Files/Queue/Table/Disks + tipos de blob), niveles de acceso de Blob (Hot/Cool/Cold/Archive con retención mínima 0/30/90/180 días y cargo por eliminación anticipada), tipos de disco (HDD/SSD estándar/SSD premium/Ultra) y 16 preguntas.
+Errores de esa guía que NO se deben copiar: dice que la secundaria de GZRS es ZRS (es LRS); pone Azure Disks dentro de la Storage Account (los discos administrados son un recurso aparte); dice que los niveles de acceso aplican a append blobs (solo block blobs).
 
 ## Lo que ya existe: cap02-cloud.html (PDF págs. 9–29)
 - Simulador de responsabilidad compartida: Local/IaaS/PaaS/SaaS sobre 10 capas (cliente / compartida / Microsoft) + tabla comparativa.

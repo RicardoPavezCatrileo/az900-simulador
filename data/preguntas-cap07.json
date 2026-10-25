@@ -28,5 +28,71 @@
     "opciones": ["ZRS", "GRS", "LRS", "GZRS"],
     "correcta": 2,
     "explicacion": "LRS es la más barata: 3 copias en un solo datacenter y ninguna protección ante la caída de la zona."
+  },
+  {
+    "pregunta": "En GZRS, ¿cómo se guardan las copias en la región secundaria?",
+    "opciones": ["3 copias en 3 zonas (ZRS)", "3 copias en un solo datacenter (LRS)", "1 sola copia", "No hay región secundaria"],
+    "correcta": 1,
+    "explicacion": "GZRS = ZRS en la primaria + LRS en la secundaria. La secundaria nunca usa zonas."
+  },
+  {
+    "pregunta": "Dos componentes de tu aplicación deben comunicarse de forma asíncrona: uno deja tareas y otro las procesa después. ¿Qué servicio usas?",
+    "opciones": ["Blob Storage", "Queue Storage", "Table Storage", "Azure Files"],
+    "correcta": 1,
+    "explicacion": "Queue Storage almacena mensajes y desacopla componentes: ideal para procesamiento en segundo plano."
+  },
+  {
+    "pregunta": "Varias VMs Windows y Linux necesitan compartir una carpeta mediante SMB. ¿Qué servicio usas?",
+    "opciones": ["Azure Files", "Blob Storage", "Queue Storage", "Table Storage"],
+    "correcta": 0,
+    "explicacion": "Azure Files ofrece recursos compartidos de archivos en la nube, accesibles por SMB o NFS."
+  },
+  {
+    "pregunta": "Debes guardar millones de imágenes y videos y servirlos por HTTP. ¿Qué servicio es el adecuado?",
+    "opciones": ["Table Storage", "Queue Storage", "Blob Storage", "Azure Disks"],
+    "correcta": 2,
+    "explicacion": "Blob Storage almacena grandes cantidades de datos no estructurados y se accede por la API REST (HTTP/S)."
+  },
+  {
+    "pregunta": "Necesitas guardar datos NoSQL de clave/valor, como telemetría de dispositivos, a bajo costo. ¿Qué servicio usas?",
+    "opciones": ["Table Storage", "Azure Files", "Queue Storage", "Page blobs"],
+    "correcta": 0,
+    "explicacion": "Table Storage guarda datos NoSQL clave/valor de forma rápida, escalable y económica."
+  },
+  {
+    "pregunta": "¿Qué tipo de blob está optimizado para logs que solo crecen agregando datos al final?",
+    "opciones": ["Block blob", "Append blob", "Page blob", "Archive blob"],
+    "correcta": 1,
+    "explicacion": "Append blob está pensado para registros y auditoría. Block blob es para objetos generales y page blob para discos VHD."
+  },
+  {
+    "pregunta": "Guardas respaldos que casi nunca lees en el nivel Archive. Un día los necesitas con urgencia. ¿Qué pasa?",
+    "opciones": ["Se leen al instante, igual que en Hot", "Hay que rehidratarlos a otro nivel, y eso puede tardar horas", "Se pierden", "Solo se pueden leer desde la región secundaria"],
+    "correcta": 1,
+    "explicacion": "Archive no tiene acceso inmediato: el blob debe rehidratarse a Hot, Cool o Cold antes de leerlo."
+  },
+  {
+    "pregunta": "Mueves un blob al nivel Cool y lo eliminas a los 10 días. ¿Qué ocurre con el costo?",
+    "opciones": ["Nada, solo pagas 10 días", "Pagas un cargo por eliminación anticipada por los 20 días que faltan", "Azure no permite borrarlo", "Se cobra como si fuera Archive"],
+    "correcta": 1,
+    "explicacion": "Cool tiene una retención mínima de 30 días (Cold 90, Archive 180). Si lo eliminas antes, pagas los días restantes."
+  },
+  {
+    "pregunta": "¿Qué tipo de cuenta de almacenamiento es la opción por defecto y soporta Blob, Files, Queues y Tables?",
+    "opciones": ["Premium block blobs", "Standard General-Purpose v2", "Premium file shares", "Premium page blobs"],
+    "correcta": 1,
+    "explicacion": "Standard General-Purpose v2 es la opción por defecto, económica, y soporta todos los servicios y todas las redundancias."
+  },
+  {
+    "pregunta": "Una base de datos con muchísimas transacciones necesita latencia menor a 1 ms. ¿Qué disco eliges?",
+    "opciones": ["HDD estándar", "SSD estándar", "SSD premium", "Ultra Disk"],
+    "correcta": 3,
+    "explicacion": "Ultra Disk ofrece el máximo rendimiento y latencia bajo 1 ms. SSD premium es alto rendimiento, pero no llega a Ultra."
+  },
+  {
+    "pregunta": "¿Qué define la opción de redundancia de una cuenta de almacenamiento?",
+    "opciones": ["El rendimiento y la latencia", "La durabilidad: cuántas copias se guardan y dónde", "El tipo de disco de las VMs", "El nivel de acceso de los blobs"],
+    "correcta": 1,
+    "explicacion": "La redundancia define durabilidad y resiliencia, no rendimiento. El rendimiento lo define el tipo de cuenta (Standard o Premium)."
   }
 ]

@@ -27,6 +27,16 @@
 .copy.read{box-shadow:0 0 0 3px color-mix(in srgb,var(--ok) 55%,transparent)}
 .arrow{font-family:var(--f-mono);font-size:.75rem;color:var(--geo);text-align:center}
 .empty{font-size:.8rem;color:var(--muted);font-style:italic}
+.bloque{display:grid;gap:14px}
+.bloque>h2.h{margin:0}
+.ejemplos{margin:6px 0 0;padding-left:18px}
+.btipos{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+@media (max-width:760px){.btipos{grid-template-columns:1fr}}
+.btipo{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:10px 12px;font-size:.88rem}
+.btipo b{font-family:var(--f-display);display:block}
+.slider{display:flex;align-items:center;gap:10px;font-family:var(--f-mono);font-size:.85rem}
+.slider input{flex:1;max-width:320px;accent-color:var(--accent)}
+.costo{font-family:var(--f-mono);letter-spacing:.05em}
 </style>
 </head>
 <body>
@@ -34,9 +44,11 @@
   <a class="volver" href="index.html">← Todos los capítulos</a>
   <header>
     <div class="eyebrow">AZ-900 · Capítulo 7 · Almacenamiento</div>
-    <h1>Simulador de redundancia de Azure Storage</h1>
-    <p>Elige un tipo de redundancia y provoca una falla. Verás dónde viven las copias de tus datos, cuáles se pierden y si la aplicación puede seguir leyendo o escribiendo.</p>
+    <h1>Azure Storage: redundancia, servicios, niveles y discos</h1>
+    <p>Elige un tipo de redundancia y provoca una falla para ver dónde viven las copias y si la app sigue funcionando. Después explora qué servicio usar para cada tipo de dato, cuánto te cuesta cada nivel de acceso de Blob y qué disco necesita tu VM.</p>
   </header>
+
+  <h2 class="h" style="margin:0">1 · Redundancia (durabilidad)</h2>
 
   <div class="controls">
     <div class="ctl">
@@ -71,6 +83,73 @@
       <thead><tr><th>Tipo</th><th>Copias</th><th>Protege contra</th><th>Durabilidad / año</th><th>Lectura en secundaria</th></tr></thead>
       <tbody id="tbody"></tbody>
     </table></div>
+    <p class="fb">RA = Read Access: RA-GRS y RA-GZRS permiten leer desde la región secundaria en todo momento, con el endpoint <span class="costo">-secondary</span>. La replicación es asíncrona, así que la secundaria puede ir con cierto retraso.</p>
+  </section>
+
+  <!-- 2 · Servicios -->
+  <section class="bloque">
+    <h2 class="h">2 · Servicios de almacenamiento: ¿qué uso para cada dato?</h2>
+    <div class="ctl"><label>Servicio</label><div class="seg" id="srv"></div></div>
+    <div class="facts" id="factsS"></div>
+    <div class="note" id="noteS"></div>
+    <div id="extraS"></div>
+  </section>
+
+  <!-- 3 · Niveles de acceso -->
+  <section class="bloque">
+    <h2 class="h">3 · Niveles de acceso de Blob Storage</h2>
+    <div class="controls">
+      <div class="ctl"><label>Cada cuánto lees los datos</label><div class="seg" id="frec"></div></div>
+      <div class="ctl"><label>Nivel que elegiste</label><div class="seg" id="tier"></div></div>
+    </div>
+    <div class="ctl">
+      <label for="dias">Días que el blob se queda en ese nivel antes de borrarlo o moverlo</label>
+      <div class="slider"><input type="range" id="dias" min="1" max="365" step="1"><span id="diasVal"></span></div>
+    </div>
+    <div class="status" id="statusT"></div>
+    <div class="facts" id="factsT"></div>
+    <div class="tbl"><table>
+      <thead><tr><th>Nivel</th><th>Acceso inmediato</th><th>Uso típico</th><th>Retención mínima</th><th>Costo de almacenar</th><th>Costo de leer</th></tr></thead>
+      <tbody id="tbodyT"></tbody>
+    </table></div>
+    <p class="fb">Regla general: cuanto más frío es el nivel, más barato es guardar y más caro es leer. Los costos son relativos, no precios reales. Los niveles se aplican a los block blobs.</p>
+  </section>
+
+  <!-- 4 · Discos -->
+  <section class="bloque">
+    <h2 class="h">4 · Tipos de disco para máquinas virtuales (Azure Disks)</h2>
+    <div class="ctl"><label>Tipo de disco</label><div class="seg" id="disco"></div></div>
+    <div class="facts" id="factsK"></div>
+    <div class="note" id="noteK"></div>
+    <div class="tbl"><table>
+      <thead><tr><th>Disco</th><th>Tecnología</th><th>Rendimiento</th><th>Latencia</th><th>Tamaño máx.</th><th>Uso recomendado</th></tr></thead>
+      <tbody id="tbodyK"></tbody>
+    </table></div>
+  </section>
+
+  <section>
+    <h2 class="h">Conceptos clave y errores comunes</h2>
+    <div class="cards">
+      <div class="card"><h3>Tipos de cuenta (rendimiento)</h3><ul>
+        <li><b>Standard (General-Purpose v2):</b> opción por defecto. Soporta Blob, Files, Queues y Tables, es la más económica y admite todas las redundancias.</li>
+        <li><b>Premium:</b> baja latencia y alto rendimiento. Eliges el tipo de dato: <b>block blobs</b> (objetos), <b>file shares</b> (archivos) o <b>page blobs</b> (discos VHD).</li>
+      </ul></div>
+      <div class="card"><h3>Redundancia en una línea</h3><ul>
+        <li><b>LRS:</b> 3 copias en 1 centro de datos.</li>
+        <li><b>ZRS:</b> 3 copias en 3 zonas de la misma región.</li>
+        <li><b>GRS:</b> LRS + LRS en la región emparejada (6 copias).</li>
+        <li><b>GZRS:</b> ZRS en la primaria + <b>LRS</b> en la secundaria.</li>
+        <li><b>RA-</b>: además, lectura en la secundaria.</li>
+      </ul></div>
+      <div class="card"><h3>Errores comunes en el AZ-900</h3><ul>
+        <li>Confundir <b>tipo de cuenta</b> (Standard/Premium) con <b>tipo de disco</b>.</li>
+        <li>La <b>redundancia</b> define durabilidad y resiliencia, <b>no rendimiento</b>.</li>
+        <li><b>Archive</b> no tiene acceso inmediato: hay que rehidratar.</li>
+        <li>Mover o borrar antes de la retención mínima genera un <b>cargo por eliminación anticipada</b>.</li>
+        <li>SSD Premium no alcanza el rendimiento de <b>Ultra Disk</b>.</li>
+        <li>Los discos administrados son un recurso aparte, no un servicio dentro de la Storage Account.</li>
+      </ul></div>
+    </div>
   </section>
 
   <section>
@@ -94,11 +173,12 @@ const R={
 const F={none:"Sin falla",disk:"Disco / rack",zone:"Cae la Zona 1",region:"Cae Brazil South"};
 let red="LRS",fail="none";
 
-function seg(id,obj,get,set){
+function seg(id,obj,get,set,fn){
   const el=document.getElementById(id);el.innerHTML="";
   Object.keys(obj).forEach(k=>{const b=document.createElement("button");b.type="button";b.textContent=typeof obj[k]==="string"?obj[k]:obj[k].name;b.dataset.k=k;
-    b.setAttribute("aria-pressed",String(get()===k));b.onclick=()=>{set(k);render()};el.appendChild(b)});
+    b.setAttribute("aria-pressed",String(get()===k));b.onclick=()=>{set(k);(fn||render)()};el.appendChild(b)});
 }
+function facts(id,rows){document.getElementById(id).innerHTML=rows.map(([k,v])=>`<div class="fact"><div class="k">${k}</div><div class="v">${v}</div></div>`).join("")}
 function copies(n,cls,lostIdx){let h="";for(let i=0;i<n;i++)h+=`<div class="copy ${cls} ${i===lostIdx?"lost":""}" title="Copia de datos">${i+1}</div>`;return h}
 
 function outcome(r){
@@ -144,7 +224,78 @@ function render(){
     return`<tr class="${k===red?"sel":""}"><td><b>${x.name}</b></td><td>${c}</td><td>${x.protects}</td><td>${x.dur}</td><td class="${x.ra?"y":"n"}">${x.ra?"Sí":"No"}</td></tr>`}).join("");
 }
 
-render();iniciarQuiz("cap07");
+/* ---------- 2 · Servicios ---------- */
+const SRV={
+ blob:{name:"Blob",full:"Azure Blob Storage",datos:"Objetos y archivos",acceso:"API REST (HTTP/S)",enCuenta:"Sí",prem:"Sí (block blobs)",
+   desc:"Grandes cantidades de datos no estructurados, texto o binarios. Escalable y económico.",ej:["Imágenes y videos","Documentos","Logs","Copias de seguridad"]},
+ files:{name:"Files",full:"Azure Files",datos:"Archivos compartidos",acceso:"SMB / NFS",enCuenta:"Sí",prem:"Sí (file shares)",
+   desc:"Carpetas compartidas en la nube, totalmente administradas. Se montan desde Windows y Linux como un recurso compartido de red.",ej:["Compartir archivos entre VMs","Aplicaciones que requieren SMB","Migrar servidores de archivos","Escenarios híbridos (on-premises + Azure)"]},
+ queue:{name:"Queue",full:"Azure Queue Storage",datos:"Mensajes",acceso:"API REST",enCuenta:"Sí",prem:"No",
+   desc:"Mensajería para comunicación asíncrona: un componente deja mensajes y otro los procesa después. Desacopla las partes de una solución.",ej:["Procesamiento en segundo plano","Notificaciones","Flujos de trabajo distribuidos"]},
+ table:{name:"Table",full:"Azure Table Storage",datos:"NoSQL clave/valor",acceso:"API REST",enCuenta:"Sí",prem:"No",
+   desc:"Datos NoSQL estructurados sin esquema fijo, de acceso rápido y bajo costo.",ej:["Datos de usuario","Telemetría","Información de dispositivos"]},
+ disk:{name:"Disks",full:"Azure Disk Storage",datos:"Bloques para VM",acceso:"Conectado a una VM",enCuenta:"No",prem:"SSD premium / Ultra",
+   desc:"Almacenamiento en bloque, duradero y de alto rendimiento, para máquinas virtuales. Los discos administrados son un recurso propio: no viven dentro de una Storage Account.",ej:["Disco del sistema operativo de una VM","Discos de datos para aplicaciones","Bases de datos y ERP de alto rendimiento"]}
+};
+let srv="blob";
+function renderS(){
+  seg("srv",SRV,()=>srv,k=>srv=k,renderS);
+  const s=SRV[srv];
+  facts("factsS",[["Tipo de dato",s.datos],["Cómo se accede",s.acceso],["Dentro de la Storage Account",s.enCuenta],["Opción Premium",s.prem]]);
+  document.getElementById("noteS").innerHTML=`<h3>${s.full}</h3><p>${s.desc}</p><ul class="ejemplos">${s.ej.map(e=>`<li>${e}</li>`).join("")}</ul>`;
+  document.getElementById("extraS").innerHTML=srv!=="blob"?"":`<div class="btipos">
+    <div class="btipo"><b>Block blob</b>Archivos y objetos generales: imágenes, videos, documentos. Es el tipo más usado y el que admite niveles de acceso.</div>
+    <div class="btipo"><b>Append blob</b>Optimizado para agregar al final: logs y datos de auditoría que solo crecen.</div>
+    <div class="btipo"><b>Page blob</b>Lectura y escritura aleatoria: discos VHD de máquinas virtuales.</div></div>`;
+}
+
+/* ---------- 3 · Niveles de acceso ---------- */
+const TIER={
+ hot:{name:"Hot",min:0,inm:true,uso:"Acceso frecuente",alm:"$$$$",lee:"$"},
+ cool:{name:"Cool",min:30,inm:true,uso:"Acceso ocasional",alm:"$$$",lee:"$$"},
+ cold:{name:"Cold",min:90,inm:true,uso:"Acceso poco frecuente",alm:"$$",lee:"$$$"},
+ archive:{name:"Archive",min:180,inm:false,uso:"Casi nunca; puede esperar horas",alm:"$",lee:"$$$$"}
+};
+const FREC={dia:"Varias veces al día",mes:"Una vez al mes",anio:"Pocas veces al año",nunca:"Casi nunca (puedo esperar horas)"};
+const RECO={dia:"hot",mes:"cool",anio:"cold",nunca:"archive"},ORD=Object.keys(TIER);
+let frec="dia",tier="hot",dias=30;
+const diasIn=document.getElementById("dias");diasIn.value=dias;
+diasIn.oninput=()=>{dias=+diasIn.value;renderT()};
+function renderT(){
+  seg("frec",FREC,()=>frec,k=>frec=k,renderT);
+  seg("tier",TIER,()=>tier,k=>tier=k,renderT);
+  document.getElementById("diasVal").textContent=dias+" días";
+  const t=TIER[tier],reco=RECO[frec],extra=Math.max(0,t.min-dias);
+  let st;
+  if(!t.inm&&frec!=="nunca")st=["bad","No puedes leer cuando lo necesitas","Archive no tiene acceso inmediato: primero hay que rehidratar el blob a Hot, Cool o Cold, y eso puede tardar horas."];
+  else if(extra)st=["warn",`Cargo por eliminación anticipada: ${extra} días`,`${t.name} exige mantener el blob al menos ${t.min} días. Si lo borras o lo mueves a los ${dias} días, pagas igual los ${extra} días que faltan.`];
+  else if(tier!==reco)st=["warn","Funciona, pero no es el nivel más económico",ORD.indexOf(tier)<ORD.indexOf(reco)?`Lees poco, pero pagas el almacenamiento caro de ${t.name}. Para este patrón conviene ${TIER[reco].name}.`:`Lees seguido, y en ${t.name} cada lectura cuesta más. Para este patrón conviene ${TIER[reco].name}.`];
+  else st=["ok","Nivel adecuado",`${t.name} calza con este patrón de acceso${t.min?` y respetas la retención mínima de ${t.min} días`:""}.`];
+  const col={ok:"var(--ok)",warn:"var(--warn)",bad:"var(--bad)"}[st[0]],ico={ok:"✓",warn:"!",bad:"✕"}[st[0]];
+  document.getElementById("statusT").innerHTML=`<span class="dot" style="background:${col}" aria-hidden="true"></span><div><b>${ico} ${st[1]}</b><p>${st[2]}</p></div>`;
+  facts("factsT",[["Nivel recomendado",TIER[reco].name],["Acceso inmediato",t.inm?"Sí":"No (rehidratar)"],["Retención mínima",t.min?t.min+" días":"Sin mínimo"],["Días con cargo extra",extra]]);
+  document.getElementById("tbodyT").innerHTML=Object.keys(TIER).map(k=>{const x=TIER[k];
+    return`<tr class="${k===tier?"sel":""}"><td><b>${x.name}</b></td><td class="${x.inm?"y":"n"}">${x.inm?"Sí":"No"}</td><td>${x.uso}</td><td>${x.min?x.min+" días":"Sin mínimo"}</td><td class="costo">${x.alm}</td><td class="costo">${x.lee}</td></tr>`}).join("");
+}
+
+/* ---------- 4 · Discos ---------- */
+const DISCO={
+ hdd:{name:"HDD estándar",tec:"Disco magnético",rend:"Bajo",lat:"Mayor",max:"32 TiB",uso:"Entornos de prueba, respaldos o cargas que no requieren alto rendimiento."},
+ ssd:{name:"SSD estándar",tec:"SSD",rend:"Moderado",lat:"Baja",max:"32 TiB",uso:"Uso general: servidores web y aplicaciones con requisitos moderados."},
+ prem:{name:"SSD premium",tec:"SSD",rend:"Alto",lat:"Muy baja",max:"32 TiB",uso:"Cargas críticas de producción: bases de datos, ERP."},
+ ultra:{name:"Ultra Disk",tec:"SSD de alto rendimiento",rend:"Muy alto",lat:"< 1 ms",max:"64 TiB",uso:"Cargas extremas (bases de datos con muchas transacciones). Requiere configuración y VMs compatibles."}
+};
+let disco="ssd";
+function renderK(){
+  seg("disco",DISCO,()=>disco,k=>disco=k,renderK);
+  const d=DISCO[disco];
+  facts("factsK",[["Tecnología",d.tec],["Rendimiento",d.rend],["Latencia",d.lat],["Tamaño máx.",d.max]]);
+  document.getElementById("noteK").innerHTML=`<h3>${d.name}</h3><p>${d.uso}</p>`;
+  document.getElementById("tbodyK").innerHTML=Object.keys(DISCO).map(k=>{const x=DISCO[k];
+    return`<tr class="${k===disco?"sel":""}"><td><b>${x.name}</b></td><td>${x.tec}</td><td>${x.rend}</td><td>${x.lat}</td><td>${x.max}</td><td>${x.uso}</td></tr>`}).join("");
+}
+
+render();renderS();renderT();renderK();iniciarQuiz("cap07");
 </script>
 </body>
 </html>
