@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Simulador Herramientas Azure</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="assets/estilos.css">
+<style>
+.bloque{display:grid;gap:14px}
+.bloque>h2.h{margin:0}
+.code{margin:0;background:#0b1520;color:#d8e4ef;border-radius:10px;padding:14px 16px;font-family:var(--f-mono);font-size:.82rem;line-height:1.55;overflow-x:auto;white-space:pre}
+.code .c{color:#7f93a7}
+.pasos{margin:0;padding-left:22px;display:grid;gap:4px}
+
+/* Advisor */
+.problemas{display:grid;gap:6px}
+.prob{display:flex;gap:10px;align-items:flex-start;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:9px 12px;cursor:pointer;font-size:.9rem}
+.prob input{margin-top:3px;accent-color:var(--accent)}
+.prob .cat{font-family:var(--f-mono);font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);display:block}
+.cats{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+@media (max-width:860px){.cats{grid-template-columns:repeat(2,1fr)}}
+.catc{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px;display:grid;gap:8px;align-content:start}
+.catc .k{font-family:var(--f-mono);font-size:.7rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.catc .v{font-family:var(--f-display);font-weight:700;font-size:1.3rem;font-variant-numeric:tabular-nums}
+.catc .n{font-size:.8rem;color:var(--muted)}
+.bar.low span{background:var(--bad)}
+.recs{display:grid;gap:6px;margin:0;padding:0;list-style:none}
+.recs li{background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--warn);border-radius:8px;padding:8px 12px;font-size:.9rem}
+.recs li .cat{font-family:var(--f-mono);font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);display:block}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="volver" href="index.html">← Todos los capítulos</a>
+  <header>
+    <div class="eyebrow">AZ-900 · Capítulo 4 · Fundamentos de herramientas</div>
+    <h1>Herramientas para administrar Azure</h1>
+    <p>Hay varias formas de crear y administrar recursos: con clics, con comandos, con archivos o desde el teléfono. Compara cómo se hace la misma tarea en cada herramienta y juega con el panel de Azure Advisor.</p>
+  </header>
+
+  <!-- Simulador 1 -->
+  <section class="bloque">
+    <h2 class="h">1 · Una tarea, siete herramientas: crear una VM</h2>
+    <div class="ctl"><label>Herramienta</label><div class="seg" id="tool"></div></div>
+    <div class="facts" id="factsH"></div>
+    <div class="note" id="noteH"></div>
+    <div id="ejemplo"></div>
+  </section>
+
+  <!-- Simulador 2 -->
+  <section class="bloque">
+    <h2 class="h">2 · Panel de Azure Advisor</h2>
+    <p class="fb" style="margin:0">Marca los problemas que tienen tus recursos. Advisor analiza la configuración y la telemetría de uso, y te da recomendaciones en 5 categorías. Los puntajes son ilustrativos.</p>
+    <div class="problemas" id="problemas"></div>
+    <div class="status" id="statusA"></div>
+    <div class="cats" id="cats"></div>
+    <ul class="recs" id="recs"></ul>
+  </section>
+
+  <section>
+    <h2 class="h">Conceptos clave del capítulo</h2>
+    <div class="cards">
+      <div class="card"><h3>Azure Portal</h3><ul>
+        <li>Consola web unificada y gráfica (portal.azure.com).</li>
+        <li>Presencia en <b>cada centro de datos</b> de Azure: resiste fallas individuales y queda cerca de los usuarios.</li>
+        <li>Se actualiza <b>sin tiempo de inactividad</b>.</li>
+      </ul></div>
+      <div class="card"><h3>Azure CLI</h3><ul>
+        <li>Línea de comandos multiplataforma (Windows, macOS, Linux), pensada al estilo Bash.</li>
+        <li>Comandos <b>az …</b> con sintaxis simple.</li>
+        <li>Permite <b>scripts</b> para automatizar tareas.</li>
+      </ul></div>
+      <div class="card"><h3>Azure PowerShell</h3><ul>
+        <li>Módulo de PowerShell con cmdlets <b>Verbo-Sustantivo</b> (New-AzVM, Get-AzResourceGroup).</li>
+        <li>PowerShell viene en Windows y también funciona en Linux y macOS.</li>
+        <li>Se integra con la autenticación de Azure; scripting más avanzado.</li>
+      </ul></div>
+      <div class="card"><h3>Azure Cloud Shell</h3><ul>
+        <li>Shell <b>Bash o PowerShell</b> en el navegador, sin instalar nada.</li>
+        <li>Trae Azure CLI y Azure PowerShell listos.</li>
+        <li>Puedes asociar almacenamiento para guardar scripts, plantillas y archivos.</li>
+      </ul></div>
+      <div class="card"><h3>Azure Mobile App</h3><ul>
+        <li>Supervisa recursos y recibe <b>alertas</b>.</li>
+        <li>Diagnostica y soluciona problemas rápido.</li>
+        <li>Administra recursos y abre <b>Cloud Shell</b> desde el teléfono.</li>
+      </ul></div>
+      <div class="card"><h3>Plantillas ARM</h3><ul>
+        <li>Azure Resource Manager gestiona y orquesta recursos de forma centralizada.</li>
+        <li>Plantillas <b>declarativas en JSON</b>: describes qué quieres, no los pasos.</li>
+        <li>Despliegues repetibles y controlados; control de acceso basado en roles; etiquetas para organizar.</li>
+      </ul></div>
+      <div class="card"><h3>Azure Advisor</h3><ul>
+        <li>Consultor personalizado: analiza configuración y telemetría de uso.</li>
+        <li>5 categorías: <b>Costo, Seguridad, Confiabilidad, Excelencia operativa, Rendimiento</b>.</li>
+        <li>Recomienda; no crea ni cambia recursos por sí solo.</li>
+      </ul></div>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="h">Preguntas tipo examen</h2>
+    <div class="score" id="score"></div>
+    <div class="quiz" id="quiz"></div>
+  </section>
+</div>
+
+<script src="assets/progreso.js"></script>
+<script src="assets/quiz.js"></script>
+<script>
+function seg(id,obj,get,set,fn){
+  const el=document.getElementById(id);el.innerHTML="";
+  Object.keys(obj).forEach(k=>{const b=document.createElement("button");b.type="button";b.textContent=typeof obj[k]==="string"?obj[k]:obj[k].name;b.dataset.k=k;
+    b.setAttribute("aria-pressed",String(get()===k));b.onclick=()=>{set(k);fn()};el.appendChild(b)});
+}
+function facts(id,rows){document.getElementById(id).innerHTML=rows.map(([k,v])=>`<div class="fact"><div class="k">${k}</div><div class="v">${v}</div></div>`).join("")}
+function status(id,lvl,t,d){
+  const col={ok:"var(--ok)",warn:"var(--warn)",bad:"var(--bad)"}[lvl],ico={ok:"✓",warn:"!",bad:"✕"}[lvl];
+  document.getElementById(id).innerHTML=`<span class="dot" style="background:${col}" aria-hidden="true"></span><div><b>${ico} ${t}</b><p>${d}</p></div>`;
+}
+
+/* ---------- 1 · Herramientas ---------- */
+const TOOL={
+ portal:{name:"Portal",full:"Azure Portal",tipo:"Interfaz gráfica",donde:"Navegador",inst:"Ninguna",auto:"No (clics)",
+   desc:"Ideal para aprender, explorar y tareas puntuales. Cada vez que repites la tarea, repites los clics.",
+   pasos:["Entra a portal.azure.com e inicia sesión.","Busca \"Máquinas virtuales\" → Crear → Máquina virtual de Azure.","Elige suscripción, grupo de recursos (o crea rg-demo), nombre vm-web y región Brazil South.","Elige imagen Ubuntu, tamaño y usuario administrador con clave SSH.","Revisar y crear → Crear."]},
+ cli:{name:"CLI",full:"Azure CLI",tipo:"Línea de comandos",donde:"Tu terminal (Windows, macOS, Linux)",inst:"Sí",auto:"Sí (scripts)",
+   desc:"Comandos que empiezan con az, con sintaxis simple. Lo guardas en un script y lo repites cuando quieras.",
+   code:`<span class="c"># Iniciar sesión</span>
+az login
+
+<span class="c"># Crear el grupo de recursos y la VM</span>
+az group create --name rg-demo --location brazilsouth
+az vm create --resource-group rg-demo --name vm-web \\
+  --image Ubuntu2204 --admin-username azureuser --generate-ssh-keys`},
+ ps:{name:"PowerShell",full:"Azure PowerShell",tipo:"Línea de comandos",donde:"PowerShell (Windows, macOS, Linux)",inst:"Sí (módulo Az)",auto:"Sí (scripts)",
+   desc:"Cmdlets con formato Verbo-Sustantivo. Hace lo mismo que la CLI; elige según el lenguaje que tu equipo ya conoce.",
+   code:`<span class="c"># Iniciar sesión</span>
+Connect-AzAccount
+
+<span class="c"># Crear el grupo de recursos y la VM</span>
+New-AzResourceGroup -Name rg-demo -Location brazilsouth
+New-AzVM -ResourceGroupName rg-demo -Name vm-web -Location brazilsouth \`
+  -Image Ubuntu2204 -Credential (Get-Credential)`},
+ shell:{name:"Cloud Shell",full:"Azure Cloud Shell",tipo:"Línea de comandos",donde:"Navegador (portal o app móvil)",inst:"Ninguna",auto:"Sí (scripts)",
+   desc:"Los mismos comandos de la CLI o de PowerShell, pero en el navegador: eliges Bash o PowerShell y ya tienes todo instalado y la sesión iniciada.",
+   code:`<span class="c"># Abres Cloud Shell (ícono >_ en el portal) y eliges Bash.</span>
+<span class="c"># No hace falta "az login": ya estás autenticado.</span>
+az group create --name rg-demo --location brazilsouth
+az vm create --resource-group rg-demo --name vm-web \\
+  --image Ubuntu2204 --admin-username azureuser --generate-ssh-keys`},
+ arm:{name:"Plantilla ARM",full:"Plantillas de Azure Resource Manager",tipo:"Archivo declarativo (JSON)",donde:"Archivo + cualquier herramienta para desplegarlo",inst:"No (se despliega con CLI, PowerShell o portal)",auto:"Sí (repetible)",
+   desc:"No escribes pasos: describes cómo debe quedar la infraestructura. Desplegar la misma plantilla en dev, test y prod da exactamente lo mismo.",
+   code:`<span class="c">// vm.json (resumido)</span>
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "resources": [
+    {
+      "type": "Microsoft.Compute/virtualMachines",
+      "apiVersion": "2023-03-01",
+      "name": "vm-web",
+      "location": "[resourceGroup().location]",
+      "properties": { "hardwareProfile": { "vmSize": "Standard_B1s" } }
+    }
+  ]
+}
+
+<span class="c"># Se despliega, por ejemplo, con la CLI:</span>
+az deployment group create --resource-group rg-demo --template-file vm.json`},
+ mobile:{name:"Mobile App",full:"Azure Mobile App",tipo:"App para el teléfono",donde:"iOS y Android",inst:"Sí (la app)",auto:"No",
+   desc:"No es la herramienta para crear una VM nueva: sirve para estar conectado a tus recursos en cualquier momento y lugar.",
+   pasos:["Ver el estado de vm-web y sus métricas.","Recibir una alerta si la VM se cae o la CPU se dispara.","Iniciar, detener o reiniciar la VM.","Abrir Cloud Shell desde el teléfono si necesitas un comando."]},
+ advisor:{name:"Advisor",full:"Azure Advisor",tipo:"Servicio de recomendaciones",donde:"Portal",inst:"Ninguna",auto:"No crea recursos",
+   desc:"No crea la VM. Cuando ya existe, la analiza y te recomienda mejoras. Pruébalo en el panel de abajo.",
+   pasos:["\"vm-web tiene 3% de CPU hace 7 días: redimensiónala o apágala\" (Costo).","\"vm-web no tiene copia de seguridad\" (Confiabilidad).","\"El puerto de administración está abierto a Internet\" (Seguridad)."]}
+};
+let tool="portal";
+function renderH(){
+  seg("tool",TOOL,()=>tool,k=>tool=k,renderH);
+  const t=TOOL[tool];
+  facts("factsH",[["Tipo",t.tipo],["Dónde se usa",t.donde],["Instalación",t.inst],["Automatizable",t.auto]]);
+  document.getElementById("noteH").innerHTML=`<h3>${t.full}</h3><p>${t.desc}</p>`;
+  document.getElementById("ejemplo").innerHTML=t.code?`<pre class="code">${t.code}</pre>`:`<div class="card"><ol class="pasos">${t.pasos.map(p=>`<li>${p}</li>`).join("")}</ol></div>`;
+}
+
+/* ---------- 2 · Advisor ---------- */
+const CATS=["Costo","Seguridad","Confiabilidad","Excelencia operativa","Rendimiento"];
+const PROB=[
+ {id:"idle",c:"Costo",p:"vm-web-02 lleva 7 días con 3% de CPU",r:"Redimensiona o apaga la VM infrautilizada.",i:40},
+ {id:"res",c:"Costo",p:"La VM de base de datos corre 24/7 con pago por uso",r:"Compra una instancia reservada o un plan de ahorro para uso continuo.",i:25},
+ {id:"rdp",c:"Seguridad",p:"El puerto de administración (RDP 3389) está abierto a Internet",r:"Restringe el acceso de administración desde Internet.",i:40},
+ {id:"mfa",c:"Seguridad",p:"Hay cuentas con rol de propietario sin MFA",r:"Activa la autenticación multifactor para las cuentas con privilegios.",i:35},
+ {id:"bkp",c:"Confiabilidad",p:"La VM de producción no tiene copia de seguridad",r:"Habilita Azure Backup en la VM.",i:35},
+ {id:"una",c:"Confiabilidad",p:"La app crítica corre en una sola VM, sin zonas de disponibilidad",r:"Despliega varias VMs repartidas en zonas de disponibilidad.",i:30},
+ {id:"sh",c:"Excelencia operativa",p:"No hay alertas de Service Health configuradas",r:"Crea alertas de Service Health para enterarte de incidentes de Azure.",i:30},
+ {id:"hdd",c:"Rendimiento",p:"La base de datos usa un disco HDD estándar",r:"Cambia a SSD premium para mejorar la latencia y las operaciones de E/S.",i:40}
+];
+const activos=new Set(["idle","rdp"]);
+function renderA(){
+  const box=document.getElementById("problemas");box.innerHTML="";
+  PROB.forEach(x=>{
+    const l=document.createElement("label");l.className="prob";
+    l.innerHTML=`<input type="checkbox" ${activos.has(x.id)?"checked":""}><span><span class="cat">${x.c}</span>${x.p}</span>`;
+    l.querySelector("input").onchange=e=>{e.target.checked?activos.add(x.id):activos.delete(x.id);renderA()};
+    box.appendChild(l);
+  });
+  const act=PROB.filter(x=>activos.has(x.id));
+  const pts=CATS.map(c=>Math.max(0,100-act.filter(x=>x.c===c).reduce((a,x)=>a+x.i,0)));
+  const total=Math.round(pts.reduce((a,b)=>a+b,0)/CATS.length);
+  if(!act.length)status("statusA","ok","Puntuación de Advisor: 100%","No hay recomendaciones activas. Advisor sigue analizando tus recursos; los puntajes se actualizan periódicamente.");
+  else status("statusA",total>=80?"warn":"bad",`Puntuación de Advisor: ${total}%`,`${act.length} recomendación(es) activa(s). Resolverlas sube la puntuación de su categoría.`);
+  document.getElementById("cats").innerHTML=CATS.map((c,i)=>{const n=act.filter(x=>x.c===c).length;
+    return`<div class="catc"><div class="k">${c}</div><div class="v">${pts[i]}%</div><div class="bar${pts[i]===100?" full":pts[i]<60?" low":""}"><span style="width:${pts[i]}%"></span></div><div class="n">${n?n+" recomendación"+(n>1?"es":""):"Sin recomendaciones"}</div></div>`}).join("");
+  document.getElementById("recs").innerHTML=act.map(x=>`<li><span class="cat">${x.c}</span>${x.r}</li>`).join("");
+}
+
+renderH();renderA();iniciarQuiz("cap04");
+</script>
+</body>
+</html>

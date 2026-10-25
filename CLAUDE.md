@@ -79,6 +79,11 @@ Errores de esa guía que NO se deben copiar: dice que la secundaria de GZRS es Z
 - Tarjetas (regiones, emparejadas, soberanas, zonas, PoP, servicios globales vs regionales) y 16 preguntas en `data/preguntas-cap03.json`.
 - El curso nombra "Azure Active Directory"; en el sitio se usa "Microsoft Entra ID (antes Azure Active Directory)".
 
+## Lo que ya existe: cap04-herramientas.html (PDF págs. 48–58)
+- "Una tarea, siete herramientas": crear una VM en Portal (pasos), CLI (`az`), PowerShell (`New-AzVM`), Cloud Shell, plantilla ARM (JSON + `az deployment group create`), Mobile App y Advisor, con ficha de tipo/dónde/instalación/automatizable.
+- Panel de Azure Advisor: checkboxes de problemas → puntaje por las 5 categorías (Costo, Seguridad, Confiabilidad, Excelencia operativa, Rendimiento) y recomendaciones. Puntajes ilustrativos.
+- Tarjetas por herramienta y 15 preguntas en `data/preguntas-cap04.json`.
+
 ## Convenciones de los simuladores
 - `seg()` pone `data-k` en cada botón; en un `.seg.fail` la opción con clave `none` se pinta azul (no roja).
 - Para probar: `python -m http.server` en la carpeta y captura con Chrome headless (`--screenshot`). Chrome headless no baja de ~500 px de ancho; usar un `--user-data-dir` limpio para no ver CSS en caché.
@@ -93,5 +98,5 @@ Las diapositivas son casi todo imágenes: `pdftotext` (disponible en Git Bash) s
 
 ## Próximos pasos
 1. ~~Crear `index.html`, `assets/` y adaptar cap07~~ (hecho).
-2. PDF ya copiado en `docs/`. Capítulos 2 y 3 hechos; seguir con el capítulo 4 (Fundamentos de herramientas, desde la pág. 48).
+2. PDF ya copiado en `docs/`. Capítulos 2, 3 y 4 hechos; seguir con el capítulo 5 (Computación, desde la pág. 59: VMs, opciones de compra, Scale Sets, escalado vertical/horizontal, alta disponibilidad…).
 3. ~~Repo git propio~~ (hecho): rama `main`, remoto `origin` = https://github.com/rpavez2026-debug/az900-simulador. Hacer commit y push al terminar cada avance.

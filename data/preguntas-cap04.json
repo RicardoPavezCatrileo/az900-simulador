@@ -1,0 +1,92 @@
+[
+  {
+    "pregunta": "¿Qué herramienta es una consola web unificada para crear y administrar recursos de Azure con una interfaz gráfica?",
+    "opciones": ["Azure CLI", "Azure Portal", "Azure PowerShell", "Plantillas ARM"],
+    "correcta": 1,
+    "explicacion": "Azure Portal (portal.azure.com) es la interfaz web gráfica para gestionar servicios y recursos."
+  },
+  {
+    "pregunta": "¿Por qué Azure Portal es resistente a la falla de un centro de datos?",
+    "opciones": ["Porque se instala en tu PC", "Porque tiene presencia en cada centro de datos de Azure", "Porque solo funciona en una región", "Porque usa Cloud Shell"],
+    "correcta": 1,
+    "explicacion": "El portal está presente en cada centro de datos de Azure: resiste fallas individuales y queda cerca de los usuarios. Además se actualiza sin tiempo de inactividad."
+  },
+  {
+    "pregunta": "Necesitas ejecutar comandos de Azure desde el navegador de un PC prestado, sin instalar nada. ¿Qué usas?",
+    "opciones": ["Azure Cloud Shell", "Azure CLI instalada localmente", "Azure Mobile App", "Azure Advisor"],
+    "correcta": 0,
+    "explicacion": "Cloud Shell abre una shell directamente en el navegador, sin instalación adicional."
+  },
+  {
+    "pregunta": "¿Qué shells ofrece Azure Cloud Shell?",
+    "opciones": ["Solo Bash", "Solo PowerShell", "Bash y PowerShell", "CMD y Bash"],
+    "correcta": 2,
+    "explicacion": "Cloud Shell permite elegir Bash o PowerShell, y puedes asociar almacenamiento para guardar scripts y archivos."
+  },
+  {
+    "pregunta": "Un administrador escribe scripts con comandos como \"az vm create\" que funcionan en Windows, macOS y Linux. ¿Qué herramienta usa?",
+    "opciones": ["Azure PowerShell", "Azure CLI", "Plantillas ARM", "Azure Portal"],
+    "correcta": 1,
+    "explicacion": "Azure CLI es multiplataforma y usa comandos que empiezan con \"az\", con una sintaxis simple y fácil de leer."
+  },
+  {
+    "pregunta": "Los comandos \"New-AzVM\" y \"New-AzResourceGroup\" pertenecen a…",
+    "opciones": ["Azure CLI", "Azure PowerShell", "Bash", "Plantillas ARM"],
+    "correcta": 1,
+    "explicacion": "Azure PowerShell usa cmdlets con formato Verbo-Sustantivo (New-, Get-, Remove-...). Azure CLI usa \"az\"."
+  },
+  {
+    "pregunta": "¿En qué sistemas operativos funciona PowerShell?",
+    "opciones": ["Solo Windows", "Windows y macOS", "Windows, Linux y macOS", "Solo en Cloud Shell"],
+    "correcta": 2,
+    "explicacion": "PowerShell viene preinstalado en Windows, pero también funciona en Linux y macOS."
+  },
+  {
+    "pregunta": "Quieres desplegar exactamente la misma infraestructura en dev, test y prod, describiéndola en un archivo. ¿Qué usas?",
+    "opciones": ["Azure Portal", "Azure Advisor", "Plantillas de Azure Resource Manager (ARM)", "Azure Mobile App"],
+    "correcta": 2,
+    "explicacion": "Las plantillas ARM describen recursos y configuración de forma declarativa, para desplegarlos de forma repetible y controlada."
+  },
+  {
+    "pregunta": "¿En qué formato se escriben las plantillas ARM?",
+    "opciones": ["YAML", "XML", "JSON", "CSV"],
+    "correcta": 2,
+    "explicacion": "Las plantillas ARM son archivos JSON declarativos: describes QUÉ quieres y Azure se encarga de CÓMO crearlo."
+  },
+  {
+    "pregunta": "¿Qué servicio analiza la configuración y la telemetría de uso de tus recursos y te recomienda cómo reducir costos?",
+    "opciones": ["Azure Advisor", "Azure Portal", "Azure Cloud Shell", "Plantillas ARM"],
+    "correcta": 0,
+    "explicacion": "Azure Advisor es un consultor personalizado que recomienda mejoras de costo, seguridad, confiabilidad, excelencia operativa y rendimiento."
+  },
+  {
+    "pregunta": "¿Cuál de estas NO es una categoría de recomendaciones de Azure Advisor?",
+    "opciones": ["Costo", "Excelencia operativa", "Confiabilidad", "Facturación por suscripción"],
+    "correcta": 3,
+    "explicacion": "Las 5 categorías de Advisor son Costo, Seguridad, Confiabilidad, Excelencia operativa y Rendimiento."
+  },
+  {
+    "pregunta": "Advisor detecta una VM con muy poco uso de CPU durante semanas. ¿En qué categoría aparece la recomendación de redimensionarla o apagarla?",
+    "opciones": ["Seguridad", "Costo", "Confiabilidad", "Rendimiento"],
+    "correcta": 1,
+    "explicacion": "Recursos infrautilizados son una oportunidad de reducir el gasto: categoría Costo."
+  },
+  {
+    "pregunta": "Estás de viaje y quieres revisar el estado de tus recursos y recibir alertas en el teléfono. ¿Qué usas?",
+    "opciones": ["Azure Mobile App", "Plantillas ARM", "Azure CLI", "Azure Advisor"],
+    "correcta": 0,
+    "explicacion": "Azure Mobile App permite supervisar recursos, recibir alertas, diagnosticar problemas y administrar recursos con Cloud Shell desde el teléfono."
+  },
+  {
+    "pregunta": "Además de la consola web, ¿desde dónde puedes abrir Azure Cloud Shell?",
+    "opciones": ["Solo desde Azure Portal", "Desde Azure Portal y desde Azure Mobile App", "Solo desde Visual Studio", "Desde Azure Advisor"],
+    "correcta": 1,
+    "explicacion": "Cloud Shell se abre desde el navegador (portal o shell.azure.com) y también desde Azure Mobile App."
+  },
+  {
+    "pregunta": "¿Qué herramientas te permiten AUTOMATIZAR tareas con scripts?",
+    "opciones": ["Solo Azure Portal", "Azure CLI y Azure PowerShell", "Solo Azure Advisor", "Azure Mobile App"],
+    "correcta": 1,
+    "explicacion": "Azure CLI y Azure PowerShell son de línea de comandos y permiten crear scripts para automatizar procesos. El portal es manual (clics)."
+  }
+]
