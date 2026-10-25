@@ -160,5 +160,11 @@
     "opciones": ["Un servicio separado con sus propias herramientas", "Un nivel de Blob Storage: se usan las mismas herramientas", "Un tipo de disco para VMs", "Una opción de redundancia"],
     "correcta": 1,
     "explicacion": "Archive es un nivel de acceso de Blob Storage: el más barato para guardar datos de largo plazo que casi nunca se leen."
+  },
+  {
+    "pregunta": "Tú y tu equipo interactuáis con Azure Storage. Quieres recomendar una herramienta instalada localmente que proporcione una interfaz GUI de arrastrar y soltar fácil de usar para transferir todos los tipos de almacenamiento. ¿Qué herramienta recomendarías?",
+    "opciones": ["AzCopy", "Azure Storage Explorer", "Azure Portal", "Azure File Sync"],
+    "correcta": 1,
+    "explicacion": "Palabras clave: \"instalada localmente\" descarta el Portal (es web); \"GUI de arrastrar y soltar\" descarta AzCopy (es línea de comandos); \"todos los tipos\" descarta File Sync (solo sincroniza Azure Files). Queda Storage Explorer (PDF pág. 148)."
   }
 ]

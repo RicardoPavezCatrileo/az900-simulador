@@ -115,7 +115,8 @@ const N=[
  ["migrate","Azure Migrate",3,7,"Descubre, evalúa y migra servidores, bases de datos y apps."],
  ["databox","Data Box",3,7,"Dispositivo físico para mover muchos datos sin conexión."],
  ["filesync","File Sync",3,7,"Sincroniza Azure Files con tus servidores de archivos locales."],
- ["azcopy","AzCopy / Storage Explorer",3,7,"Copiar datos: AzCopy por comandos, Storage Explorer con interfaz gráfica."],
+ ["azcopy","AzCopy",3,7,"Herramienta de línea de comandos, instalada localmente, para copiar blobs y archivos y programar transferencias."],
+ ["explorer","Storage Explorer",3,7,"Aplicación con interfaz gráfica (arrastrar y soltar), instalada en Windows, macOS o Linux, para explorar, cargar, descargar, borrar y renombrar datos de cualquier tipo de almacenamiento."],
 
  ["kv","Key Vault",4,9,"Secretos, claves y certificados fuera del código."],
  ["defender","Defender for Cloud",4,9,"Postura de seguridad, recomendaciones y alertas. Híbrido y multinube."],
@@ -158,7 +159,7 @@ const E=[
  ["migrate","vm","migra servidores a"],["oficina","migrate","sus servidores los evalúa"],
  ["sa","blob","contiene"],["sa","files","contiene"],["sa","queue","contiene"],["sa","table","contiene"],["blob","niveles","tiene"],
  ["sa","az","ZRS copia en"],["sa","par","GRS/GZRS copia a"],["databox","sa","carga datos sin conexión a"],
- ["filesync","files","sincroniza servidores locales con"],["azcopy","blob","copia datos a"],["cosmos","region","escribe en varias"],
+ ["filesync","files","sincroniza servidores locales con"],["azcopy","blob","copia datos a"],["explorer","sa","explora, carga y descarga datos de"],["cosmos","region","escribe en varias"],
  ["kv","sql","guarda la contraseña de"],["kv","appsvc","entrega secretos a"],["defender","vm","protege y recomienda para"],
  ["vm","monitor","envía métricas y registros a"],["monitor","la","guarda registros en"],["monitor","alertas","dispara"],
  ["sentinel","la","analiza los datos de"],["ai","appsvc","mide el rendimiento de"],["sh","alertas","avisa de incidentes con"],
@@ -181,8 +182,8 @@ const ESC={
  cont:{n:"App con contenedores",nodos:["acr","aks","aci","vm","files","monitor"],
   ar:[["acr","aks"],["acr","aci"],["aks","vm"],["aci","files"],["vm","monitor"]],
   pasos:["Las imágenes se guardan en Azure Container Registry (privado).","Para muchos contenedores y microservicios, AKS los orquesta; sus nodos son VMs.","Para un contenedor puntual, Container Instances lo ejecuta sin orquestador.","Si un contenedor necesita almacenamiento persistente, monta Azure Files (no Disks).","Todo se supervisa con Azure Monitor."]},
- mig:{n:"Migrar mi centro de datos",nodos:["calc","oficina","migrate","vm","databox","sa","filesync","files","azcopy","blob"],
-  ar:[["calc","oficina"],["oficina","migrate"],["migrate","vm"],["databox","sa"],["filesync","files"],["azcopy","blob"],["sa","blob"],["sa","files"]],
+ mig:{n:"Migrar mi centro de datos",nodos:["calc","oficina","migrate","vm","databox","sa","filesync","files","azcopy","explorer","blob"],
+  ar:[["calc","oficina"],["oficina","migrate"],["migrate","vm"],["databox","sa"],["filesync","files"],["azcopy","blob"],["explorer","sa"],["sa","blob"],["sa","files"]],
   pasos:["La calculadora TCO compara lo que te cuesta hoy tu centro de datos con lo que costaría en Azure.","Azure Migrate descubre tus servidores, ve dependencias, estima costos y los migra a VMs.","Si hay demasiados datos para tu ancho de banda, o no pueden ir por Internet, usas Data Box.","Los servidores de archivos pasan a Azure Files con File Sync.","Para copias puntuales: AzCopy (comandos) o Storage Explorer (interfaz gráfica)."]},
  resp:{n:"Respaldos baratos de largo plazo",nodos:["azcopy","blob","niveles","sa","par","region"],
   ar:[["azcopy","blob"],["sa","blob"],["blob","niveles"],["sa","par"],["region","par"]],
@@ -202,6 +203,7 @@ const VS={
  defsen:{n:"Defender for Cloud vs Sentinel",a:"defender",b:"sentinel",ta:"Postura de seguridad: evalúa, recomienda y alerta sobre tus recursos.",tb:"SIEM: reúne eventos de toda la empresa y detecta amenazas con IA.",p:"\"Recomendaciones de seguridad\" o \"postura\" → Defender. \"SIEM\" o \"recopilar y analizar eventos\" → Sentinel."},
  monsh:{n:"Azure Monitor vs Service Health",a:"monitor",b:"sh",ta:"Observa TUS recursos: métricas, registros, alertas.",tb:"Observa la PLATAFORMA Azure: incidentes y mantenimiento que te afectan.",p:"\"¿Azure tiene una caída?\" → Service Health. \"¿Mi VM usa mucha CPU?\" → Monitor."},
  azpar:{n:"Zonas de disponibilidad vs región emparejada",a:"az",b:"par",ta:"Centros de datos separados DENTRO de la misma región: sobrevives a la caída de uno.",tb:"OTRA región del mismo límite geopolítico: sobrevives a la caída de toda la región.",p:"ZRS = zonas. GRS/GZRS = región emparejada."},
+ azexp:{n:"AzCopy vs Storage Explorer",a:"azcopy",b:"explorer",ta:"Línea de comandos, instalada localmente. Ideal para scripts y para programar transferencias.",tb:"Interfaz gráfica de arrastrar y soltar, instalada localmente (Windows, macOS, Linux), para todos los tipos de almacenamiento.",p:"\"Instalada localmente\" descarta el Portal (web). \"GUI\", \"arrastrar y soltar\" o \"fácil de usar\" → Storage Explorer. \"Comandos\", \"script\" o \"programar\" → AzCopy. \"Sincronizar un servidor de archivos\" → File Sync. Instalada + gráfica = Storage Explorer; instalada + comandos = AzCopy; navegador = Portal o Cloud Shell."},
  calccost:{n:"Calculadoras vs Cost Management",a:"calc",b:"cost",ta:"ANTES: estimar (precios) o comparar con tu centro de datos (TCO).",tb:"DURANTE: gasto real, presupuestos, alertas y asignación de costos.",p:"Estimar → calculadora de precios. Comparar con local → TCO. Controlar el gasto real → Cost Management."}
 };
 
