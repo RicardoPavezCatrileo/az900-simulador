@@ -1,0 +1,122 @@
+[
+  {
+    "pregunta": "Azure Virtual Machines es un ejemplo de…",
+    "opciones": ["SaaS", "PaaS", "IaaS", "Serverless"],
+    "correcta": 2,
+    "explicacion": "Una VM es infraestructura como servicio (IaaS): tú gestionas el sistema operativo y lo que corre encima."
+  },
+  {
+    "pregunta": "Tienes una carga de corta duración e impredecible y no quieres compromisos ni pagos por adelantado. ¿Qué opción de compra usas?",
+    "opciones": ["Instancias reservadas", "Pago por uso (Pay-As-You-Go)", "Plan de ahorro", "Host dedicado"],
+    "correcta": 1,
+    "explicacion": "Pago por uso: facturación por segundo, sin compromiso. Es el precio más alto por hora, pero sin pago adelantado."
+  },
+  {
+    "pregunta": "Una base de datos correrá 24/7 durante los próximos 3 años en la misma VM. ¿Qué opción ofrece un gran descuento?",
+    "opciones": ["Instancias spot", "Pago por uso", "Instancias reservadas", "Reserva de capacidad a petición"],
+    "correcta": 2,
+    "explicacion": "Las instancias reservadas (1 o 3 años) dan un descuento significativo para uso constante, como una base de datos."
+  },
+  {
+    "pregunta": "Te comprometes a gastar una cantidad fija por hora durante 1 o 3 años, pero quieres flexibilidad para cambiar de tamaño o región de VM. ¿Qué opción es?",
+    "opciones": ["Plan de ahorro", "Instancia reservada", "Instancia spot", "Instancia aislada"],
+    "correcta": 0,
+    "explicacion": "El plan de ahorro compromete un gasto por hora, no una VM específica. No se puede cancelar ni reembolsar; al terminar se vuelve a pago por uso."
+  },
+  {
+    "pregunta": "Tienes trabajos por lotes de procesamiento de imágenes que toleran interrupciones y pueden empezar en cualquier momento. ¿Qué opción es la más barata?",
+    "opciones": ["Instancias spot", "Instancias reservadas", "Host dedicado", "Pago por uso"],
+    "correcta": 0,
+    "explicacion": "Spot da los mayores descuentos, pero Azure puede reclamar la VM en cualquier momento. No sirve para cargas críticas ni bases de datos."
+  },
+  {
+    "pregunta": "Por regulación, tu empresa necesita un servidor físico completo solo para sus VMs, con control sobre el hardware. ¿Qué eliges?",
+    "opciones": ["Instancias aisladas", "Azure Dedicated Host", "Instancias spot", "Plan de ahorro"],
+    "correcta": 1,
+    "explicacion": "Dedicated Host entrega servidores físicos dedicados (pueden alojar varias VMs) sin compartir capacidad con otros clientes. Es la opción más cara."
+  },
+  {
+    "pregunta": "Necesitas asegurar capacidad de cómputo en una zona de disponibilidad específica por unas semanas, sin compromiso de 1 o 3 años. ¿Qué usas?",
+    "opciones": ["Instancias reservadas", "Reserva de capacidad a petición", "Instancias spot", "Plan de ahorro"],
+    "correcta": 1,
+    "explicacion": "La reserva de capacidad a petición se crea y elimina cuando quieras, sin permanencia, y se puede combinar con instancias reservadas."
+  },
+  {
+    "pregunta": "Aumentar la RAM y las vCPU de una VM existente es…",
+    "opciones": ["Escalado horizontal", "Escalado vertical", "Elasticidad", "Alta disponibilidad"],
+    "correcta": 1,
+    "explicacion": "Escalado vertical (hacia arriba/abajo): una instancia más grande. Tiene límites y puede ser caro."
+  },
+  {
+    "pregunta": "Agregar más VMs idénticas detrás de un balanceador de carga es…",
+    "opciones": ["Escalado vertical", "Escalado horizontal", "Agilidad", "Redundancia de almacenamiento"],
+    "correcta": 1,
+    "explicacion": "Escalado horizontal (hacia fuera/dentro): más instancias. Se suele preferir porque no tiene el límite del vertical y aumenta la disponibilidad."
+  },
+  {
+    "pregunta": "Según el curso, alta disponibilidad significa ejecutar la aplicación en al menos…",
+    "opciones": ["2 VMs en el mismo centro de datos", "2 zonas de disponibilidad", "2 suscripciones", "2 grupos de recursos"],
+    "correcta": 1,
+    "explicacion": "El objetivo de la alta disponibilidad es sobrevivir a la pérdida de un centro de datos: al menos 2 zonas de disponibilidad."
+  },
+  {
+    "pregunta": "Un sistema escalable que además agrega y quita recursos automáticamente según la carga es…",
+    "opciones": ["Ágil", "Elástico", "Vertical", "Soberano"],
+    "correcta": 1,
+    "explicacion": "Elasticidad = autoescalado según la carga. Agilidad es otra cosa: tener recursos nuevos a un clic, en minutos en vez de semanas."
+  },
+  {
+    "pregunta": "¿Cuánto cuesta usar un conjunto de escalado (VM Scale Set)?",
+    "opciones": ["Una tarifa fija mensual", "Nada extra: pagas solo las VMs, el almacenamiento y la red que usas", "El doble de cada VM", "Depende del número de zonas"],
+    "correcta": 1,
+    "explicacion": "Los Scale Sets no tienen costo adicional; pagas los recursos subyacentes."
+  },
+  {
+    "pregunta": "¿Cuántas VMs puede gestionar un conjunto de escalado?",
+    "opciones": ["Hasta 10", "Hasta 100 por defecto, configurable hasta 1000", "Ilimitadas", "Solo 1 por zona"],
+    "correcta": 1,
+    "explicacion": "Un Scale Set gestiona hasta 100 VMs y puede configurarse para llegar a 1000."
+  },
+  {
+    "pregunta": "Un desarrollador solo quiere desplegar el código de su web app, con balanceo de carga y autoescalado incorporados, sin gestionar el sistema operativo. ¿Qué usa?",
+    "opciones": ["Azure Virtual Machines", "Azure App Service", "Azure Dedicated Host", "Azure Virtual Desktop"],
+    "correcta": 1,
+    "explicacion": "App Service es PaaS: gestiona el SO, la capacidad, el balanceo y el autoescalado. El servicio es gratis; pagas los recursos que consume."
+  },
+  {
+    "pregunta": "¿Cuál es la forma más simple de ejecutar un contenedor en Azure bajo demanda, sin gestionar VMs ni un orquestador?",
+    "opciones": ["Azure Kubernetes Service", "Azure Container Instances", "Azure Container Registry", "VM Scale Sets"],
+    "correcta": 1,
+    "explicacion": "Azure Container Instances (ACI) ejecuta contenedores bajo demanda. AKS es para orquestar muchos contenedores; ACR solo guarda imágenes."
+  },
+  {
+    "pregunta": "¿Dónde guardas de forma privada tus imágenes de contenedor en Azure?",
+    "opciones": ["Docker Hub", "Azure Container Registry (ACR)", "Azure Files", "Azure Container Instances"],
+    "correcta": 1,
+    "explicacion": "ACR es el registro privado de imágenes. Docker Hub es un repositorio público."
+  },
+  {
+    "pregunta": "Necesitas orquestar cientos de contenedores, con despliegue y escalado automático. ¿Qué servicio usas?",
+    "opciones": ["Azure Container Instances", "Azure Kubernetes Service (AKS)", "Azure Functions", "App Service"],
+    "correcta": 1,
+    "explicacion": "AKS es Kubernetes administrado: orquestación de código abierto que despliega y escala contenedores automáticamente."
+  },
+  {
+    "pregunta": "Quieres ejecutar código solo cuando llega un evento y no pagar nada cuando no hay tráfico. ¿Qué usas?",
+    "opciones": ["Azure Functions", "Azure Virtual Machines", "Azure Dedicated Host", "App Service con instancias reservadas"],
+    "correcta": 0,
+    "explicacion": "Azure Functions es serverless: se ejecuta cuando hay datos que procesar y se detiene. Sin tráfico, no pagas."
+  },
+  {
+    "pregunta": "\"Serverless\" significa que…",
+    "opciones": ["No existen servidores", "Los servidores existen, pero tú no los gestionas, aprovisionas ni ves", "Los servidores están en tu oficina", "Solo funciona sin Internet"],
+    "correcta": 1,
+    "explicacion": "Serverless no significa que no haya servidores: Azure los gestiona y tú solo despliegas funciones."
+  },
+  {
+    "pregunta": "Los empleados deben acceder a un escritorio Windows desde cualquier dispositivo y lugar, con experiencia optimizada para Microsoft 365. ¿Qué usas?",
+    "opciones": ["Azure Virtual Desktop", "Azure Functions", "Azure Container Instances", "App Service"],
+    "correcta": 0,
+    "explicacion": "Azure Virtual Desktop (antes Windows Virtual Desktop) virtualiza escritorios y apps; varios usuarios pueden compartir la misma VM."
+  }
+]

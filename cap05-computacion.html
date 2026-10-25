@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Simulador Computación Azure</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="assets/estilos.css">
+<style>
+.bloque{display:grid;gap:14px}
+.bloque>h2.h{margin:0}
+.slider{display:flex;align-items:center;gap:10px;font-family:var(--f-mono);font-size:.85rem}
+.slider input{flex:1;max-width:360px;accent-color:var(--accent)}
+.ctl[hidden]{display:none}
+
+/* Escalado: zonas con VMs */
+.zonas{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+@media (max-width:760px){.zonas{grid-template-columns:1fr}}
+.zona{background:var(--surface);border:1px dashed var(--line);border-radius:10px;padding:12px;display:grid;gap:8px;align-content:start;min-height:120px}
+.zona.down{background:color-mix(in srgb,var(--bad) 12%,transparent);border-color:var(--bad)}
+.zona .zt{font-family:var(--f-mono);font-size:.72rem;color:var(--muted)}
+.vms{display:flex;flex-wrap:wrap;gap:4px;align-items:flex-end}
+.vm{background:var(--accent);border-radius:3px;width:14px;height:14px}
+.vm.big{width:auto;height:auto;padding:8px 10px;color:#fff;font-family:var(--f-mono);font-size:.78rem;border-radius:6px}
+.vm.sat{background:var(--warn)}
+.vm.off{background:var(--muted);opacity:.45}
+.mas{font-family:var(--f-mono);font-size:.75rem;color:var(--muted)}
+.lb{font-family:var(--f-mono);font-size:.78rem;text-align:center;padding:6px;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="volver" href="index.html">← Todos los capítulos</a>
+  <header>
+    <div class="eyebrow">AZ-900 · Capítulo 5 · Computación</div>
+    <h1>Máquinas virtuales, escalado y servicios de cómputo</h1>
+    <p>Elige cómo pagar tus VMs, escala una aplicación cuando crece la carga y sobrevive a la caída de una zona. Después compara los servicios de cómputo: de la VM donde controlas todo a la función serverless donde solo pones código.</p>
+  </header>
+
+  <!-- 1 · Opciones de compra -->
+  <section class="bloque">
+    <h2 class="h">1 · ¿Qué opción de compra me conviene?</h2>
+    <div class="controls">
+      <div class="ctl"><label>¿Cuánto tiempo correrá la carga?</label><div class="seg" id="dur"></div></div>
+      <div class="ctl"><label>¿Se puede interrumpir?</label><div class="seg" id="inter"></div></div>
+    </div>
+    <div class="controls">
+      <div class="ctl"><label>Requisito especial</label><div class="seg" id="req"></div></div>
+      <div class="ctl" id="flexBox"><label>En un compromiso largo, ¿qué prefieres?</label><div class="seg" id="flex"></div></div>
+    </div>
+    <div class="status" id="statusC"></div>
+    <div class="facts" id="factsC"></div>
+    <div class="note" id="noteC"></div>
+    <div class="tbl"><table>
+      <thead><tr><th>Opción</th><th>Descuento aprox.</th><th>Compromiso</th><th>¿Puede interrumpirse?</th><th>Ideal para</th></tr></thead>
+      <tbody id="tbodyC"></tbody>
+    </table></div>
+    <p class="fb" style="margin:0">Los porcentajes son los del curso; Azure los cambia con el tiempo y no se preguntan en el examen.</p>
+  </section>
+
+  <!-- 2 · Escalado -->
+  <section class="bloque">
+    <h2 class="h">2 · Escalado vertical, horizontal y alta disponibilidad</h2>
+    <div class="controls">
+      <div class="ctl"><label>Estrategia</label><div class="seg" id="estr"></div></div>
+      <div class="ctl"><label>Simular un evento</label><div class="seg fail" id="evz"></div></div>
+    </div>
+    <div class="ctl">
+      <label for="carga">Usuarios conectados</label>
+      <div class="slider"><input type="range" id="carga" min="0" max="15" step="1"><span id="cargaVal"></span></div>
+    </div>
+    <div class="status" id="statusE"></div>
+    <div class="facts" id="factsE"></div>
+    <div class="lb" id="lb"></div>
+    <div class="zonas" id="zonas"></div>
+    <p class="fb" style="margin:0">Supuesto ilustrativo: cada vCPU atiende 100 usuarios. En horizontal, cada VM tiene 4 vCPU.</p>
+  </section>
+
+  <!-- 3 · Servicios -->
+  <section class="bloque">
+    <h2 class="h">3 · ¿Qué servicio de cómputo uso?</h2>
+    <div class="ctl"><label>Servicio</label><div class="seg" id="srv"></div></div>
+    <div class="facts" id="factsS"></div>
+    <div class="note" id="noteS"></div>
+  </section>
+
+  <section>
+    <h2 class="h">Conceptos clave del capítulo</h2>
+    <div class="cards">
+      <div class="card"><h3>Escalabilidad, elasticidad y agilidad</h3><ul>
+        <li><b>Vertical</b> (hacia arriba/abajo): una VM más grande, desde 0,5 GB de RAM y 1 vCPU hasta 11,4 TB y 416 vCPU. Tiene límites.</li>
+        <li><b>Horizontal</b> (hacia fuera/dentro): más VMs con Scale Sets + Load Balancer. Se suele preferir.</li>
+        <li><b>Elasticidad:</b> autoescalado según la carga.</li>
+        <li><b>Agilidad:</b> recursos nuevos a un clic, en minutos y no semanas.</li>
+        <li><b>Alta disponibilidad:</b> la app en al menos 2 zonas, para sobrevivir a la pérdida de un centro de datos.</li>
+      </ul></div>
+      <div class="card"><h3>VM Scale Sets</h3><ul>
+        <li>Grupo de VMs <b>idénticas</b>, copiadas de una VM base, gestionadas como una unidad.</li>
+        <li>Escalado manual o automático; hasta <b>100</b> VMs (configurable a <b>1000</b>).</li>
+        <li>Opcional: Load Balancer y reparto en varias zonas.</li>
+        <li><b>Sin costo extra</b>: pagas las VMs, el almacenamiento y la red.</li>
+      </ul></div>
+      <div class="card"><h3>Contenedores</h3><ul>
+        <li><b>Docker:</b> empaqueta la app para que corra igual en cualquier lugar; más ligero que una VM.</li>
+        <li><b>Docker Hub:</b> repositorio público de imágenes. <b>Azure Container Registry (ACR):</b> privado.</li>
+        <li><b>ACI:</b> ejecuta contenedores bajo demanda. <b>AKS:</b> los orquesta con Kubernetes (código abierto).</li>
+      </ul></div>
+      <div class="card"><h3>Arquitectura web de 3 niveles</h3><ul>
+        <li><b>Load Balancer</b> reparte el tráfico.</li>
+        <li><b>VMs en varias zonas</b> (Scale Set multi-AZ) ejecutan la app.</li>
+        <li><b>Azure Cache for Redis</b> guarda sesión y caché; <b>Base de datos SQL</b> guarda los datos.</li>
+        <li>App Service empaqueta este patrón para que el desarrollador solo ponga el código.</li>
+      </ul></div>
+      <div class="card"><h3>Analogía del hotel</h3><ul>
+        <li><b>Pago por uso:</b> llegas sin reserva y pagas tarifa completa.</li>
+        <li><b>Plan de ahorro:</b> paquete vacacional; cualquier habitación.</li>
+        <li><b>Reservada:</b> reserva anticipada de una estadía larga.</li>
+        <li><b>Spot:</b> subasta; te pueden desalojar.</li>
+        <li><b>Host dedicado:</b> un piso o edificio entero para ti.</li>
+        <li><b>Aislada:</b> suite privada separada del resto.</li>
+        <li><b>Reserva de capacidad:</b> pagas para que la habitación esté libre cuando llegues.</li>
+      </ul></div>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="h">Preguntas tipo examen</h2>
+    <div class="score" id="score"></div>
+    <div class="quiz" id="quiz"></div>
+  </section>
+</div>
+
+<script src="assets/progreso.js"></script>
+<script src="assets/quiz.js"></script>
+<script>
+function seg(id,obj,get,set,fn){
+  const el=document.getElementById(id);el.innerHTML="";
+  Object.keys(obj).forEach(k=>{const b=document.createElement("button");b.type="button";b.textContent=typeof obj[k]==="string"?obj[k]:obj[k].name;b.dataset.k=k;
+    b.setAttribute("aria-pressed",String(get()===k));b.onclick=()=>{set(k);fn()};el.appendChild(b)});
+}
+function facts(id,rows){document.getElementById(id).innerHTML=rows.map(([k,v])=>`<div class="fact"><div class="k">${k}</div><div class="v">${v}</div></div>`).join("")}
+function status(id,lvl,t,d){
+  const col={ok:"var(--ok)",warn:"var(--warn)",bad:"var(--bad)",info:"var(--accent)"}[lvl],ico={ok:"✓",warn:"!",bad:"✕",info:"i"}[lvl];
+  document.getElementById(id).innerHTML=`<span class="dot" style="background:${col}" aria-hidden="true"></span><div><b>${ico} ${t}</b><p>${d}</p></div>`;
+}
+
+/* ---------- 1 · Opciones de compra ---------- */
+const OP={
+ payg:{name:"Pago por uso",dto:"Sin descuento",comp:"Ninguno",inter:"No",ideal:"Cargas cortas o impredecibles",
+   d:"Pagas por segundo lo que usas, sin pagar por adelantado. Es el precio por hora más alto.",hotel:"Como llegar a un hotel sin reserva: tarifa completa, pero te quedas el tiempo que quieras."},
+ ahorro:{name:"Plan de ahorro",dto:"Hasta ~65%",comp:"1 o 3 años: gasto fijo por hora",inter:"No",ideal:"Uso continuo, pero cambiando tamaños o regiones",
+   d:"Te comprometes a gastar X USD por hora. No se puede cancelar ni reembolsar; pagas por adelantado o mensual (el total es el mismo). Al terminar, vuelve el pago por uso.",hotel:"Un paquete vacacional: pagas una tarifa fija y usas cualquier habitación disponible."},
+ reserv:{name:"Instancia reservada",dto:"Hasta ~72%",comp:"1 o 3 años: una VM específica",inter:"No",ideal:"Uso constante y estable (piensa en una base de datos)",
+   d:"Reservas atributos concretos: tipo de instancia, región, período. Más años = más descuento. Se puede cancelar pagando una comisión.",hotel:"Una reserva anticipada para una estadía larga: descuento por comprometerte."},
+ spot:{name:"Instancia spot",dto:"Hasta ~90%",comp:"Ninguno",inter:"Sí",ideal:"Trabajos por lotes, análisis, procesamiento de imágenes",
+   d:"Usa capacidad sobrante de Azure al precio más bajo, pero Azure puede reclamar la VM en cualquier momento. No sirve para cargas críticas ni bases de datos.",hotel:"Una subasta: habitación muy barata, pero si el hotel la necesita te desalojan con poco aviso."},
+ host:{name:"Host dedicado",dto:"La opción más cara",comp:"Pago por uso, plan de ahorro o reserva",inter:"No",ideal:"Requisitos fuertes de regulación o cumplimiento",
+   d:"Un servidor físico completo para tu organización, que puede alojar varias VMs. Su capacidad no se comparte con otros clientes y controlas la ubicación y el hardware.",hotel:"Reservas un piso entero o el edificio: privacidad y control total."},
+ aislada:{name:"Instancia aislada",dto:"Según el modelo de pago",comp:"Según el modelo de pago",inter:"No",ideal:"Cumplimiento normativo y apps críticas aisladas",
+   d:"Un tamaño de VM aislado: garantiza que tu VM es la única que corre en ese servidor físico.",hotel:"Una suite privada y segura, aislada del resto del hotel."},
+ capac:{name:"Reserva de capacidad a petición",dto:"Sin descuento propio (combinable con reservas)",comp:"Ninguno: la creas y eliminas cuando quieras",inter:"No",ideal:"Cargas cortas que deben tener capacidad en una región o zona concreta",
+   d:"Garantiza que habrá capacidad de cómputo para ti en una región o zona específica, durante el tiempo que quieras.",hotel:"Pagas para que tu habitación esté libre cuando llegues, aunque no estés todo el tiempo."}
+};
+const DUR={corta:"Horas o días",media:"Semanas o meses",larga:"1 a 3 años, continuo"};
+const INT={no:"No",si:"Sí, tolera fallos"};
+const REQ={none:"Ninguno",zona:"Capacidad garantizada en una zona",host:"Servidor físico solo para mí",aislada:"VM sola en su hardware"};
+const FLEX={fija:"Misma VM fija",var:"Flexibilidad de tamaño y región"};
+let dur="corta",inter="no",req="none",flex="fija";
+function elegir(){
+  if(req==="host")return["host","Un servidor físico completo solo para tu organización."];
+  if(req==="aislada")return["aislada","Necesitas que ninguna otra VM comparta el servidor físico."];
+  if(inter==="si")return["spot","La carga tolera interrupciones: aprovecha el mayor descuento."];
+  if(req==="zona")return["capac",dur==="larga"?"Garantiza la capacidad en la zona; combínala con instancias reservadas para tener descuento.":"Capacidad garantizada en la zona, sin compromiso de permanencia."];
+  if(dur==="larga")return flex==="fija"?["reserv","Uso continuo y predecible en la misma VM: el mayor descuento por compromiso."]:["ahorro","Uso continuo, pero quieres libertad para cambiar de tamaño o región."];
+  return["payg",dur==="corta"?"Carga corta: no vale la pena comprometerse.":"Sin compromiso largo, el pago por uso es lo más flexible."];
+}
+function renderC(){
+  seg("dur",DUR,()=>dur,k=>dur=k,renderC);seg("inter",INT,()=>inter,k=>inter=k,renderC);
+  seg("req",REQ,()=>req,k=>req=k,renderC);seg("flex",FLEX,()=>flex,k=>flex=k,renderC);
+  document.getElementById("flexBox").hidden=dur!=="larga";
+  const [k,porque]=elegir(),o=OP[k];
+  status("statusC","ok",`Te conviene: ${o.name}`,porque);
+  facts("factsC",[["Opción",o.name],["Descuento aprox.",o.dto],["Compromiso",o.comp],["Puede interrumpirse",o.inter]]);
+  document.getElementById("noteC").innerHTML=`<h3>${o.name}</h3><p>${o.d}</p><p style="margin-top:6px"><b>En el hotel:</b> ${o.hotel}</p>`;
+  document.getElementById("tbodyC").innerHTML=Object.keys(OP).map(x=>{const y=OP[x];
+    return`<tr class="${x===k?"sel":""}"><td><b>${y.name}</b></td><td>${y.dto}</td><td>${y.comp}</td><td class="${y.inter==="Sí"?"y":"n"}">${y.inter}</td><td>${y.ideal}</td></tr>`}).join("");
+}
+
+/* ---------- 2 · Escalado ---------- */
+const ESTR={vert:"Vertical (VM más grande)",hor:"Horizontal en 1 zona",multi:"Horizontal en 3 zonas"};
+const EVZ={none:"Normal",zona:"Cae la Zona 1"};
+const CARGAS=[0,200,500,1000,2000,4000,8000,12800,20000,30000,41600,50000,60000,100000,200000,400000];
+const TAMS=[1,2,4,8,16,32,64,128,256,416];
+let estr="vert",evz="none",ci=5;
+const cIn=document.getElementById("carga");cIn.value=ci;cIn.oninput=()=>{ci=+cIn.value;renderE()};
+function renderE(){
+  seg("estr",ESTR,()=>estr,k=>estr=k,renderE);seg("evz",EVZ,()=>evz,k=>evz=k,renderE);
+  const u=CARGAS[ci];document.getElementById("cargaVal").textContent=u.toLocaleString("es-CL")+" usuarios";
+  const necesita=Math.ceil(u/100);
+  const zonas=[[],[],[]];let vms=0,vcpu=0,sat=false,limite="";
+  if(estr==="vert"){
+    const t=TAMS.find(x=>x>=necesita);
+    vcpu=t||416;sat=!t;vms=1;zonas[0].push({big:true,vcpu});
+  }else{
+    vms=Math.max(1,Math.ceil(necesita/4));
+    if(vms>1000){vms=1000;sat=true;limite="Llegaste al máximo de 1000 VMs por conjunto de escalado."}
+    else if(vms>100)limite="Más de 100 VMs: el conjunto de escalado debe configurarse para llegar hasta 1000.";
+    vcpu=vms*4;
+    for(let i=0;i<vms;i++)zonas[estr==="multi"?i%3:0].push({});
+  }
+  const caida=evz==="zona";
+  const vivas=caida?zonas[1].length+zonas[2].length:vms;
+  const lb=estr!=="vert";
+  let lvl,t,d;
+  if(caida&&!vivas){lvl="bad";t="Aplicación caída";d=estr==="vert"?"Toda la app estaba en una sola VM, en la zona que cayó. Escalar hacia arriba no da alta disponibilidad.":"Todas las VMs estaban en la Zona 1. El escalado horizontal en una sola zona no sobrevive a la pérdida del centro de datos."}
+  else if(caida){lvl="warn";t="Sigue funcionando con menos capacidad";d=`Perdiste ${zonas[0].length} VM(s), pero las Zonas 2 y 3 siguen atendiendo: esto es alta disponibilidad. El autoescalado agrega VMs en las zonas que quedan.`}
+  else if(sat){lvl="bad";t="Sin capacidad suficiente";d=estr==="vert"?`Necesitas ${necesita} vCPU, pero la VM más grande tiene 416. El escalado vertical tiene límites: hay que escalar horizontalmente.`:limite}
+  else if(u===0){lvl="info";t="Sin carga";d="Sube los usuarios para ver cómo escala cada estrategia."}
+  else{lvl="ok";t="La app atiende a todos los usuarios";d=estr==="vert"?`Una sola VM de ${vcpu} vCPU. Funciona, pero si esa VM o su zona fallan, se cae todo.`:`${vms} VM(s) idénticas detrás de un balanceador de carga.${limite?" "+limite:""}${estr==="hor"?" Están todas en una zona: no hay alta disponibilidad.":""}`}
+  status("statusE",lvl,t,d);
+  facts("factsE",[["VMs",vms],["vCPU totales",vcpu],["Tipo de escalado",estr==="vert"?"Hacia arriba":"Hacia fuera"],["Alta disponibilidad",estr==="multi"?"Sí (3 zonas)":"No"]]);
+  const lbEl=document.getElementById("lb");lbEl.hidden=!lb;lbEl.textContent="Azure Load Balancer → reparte el tráfico entre las VMs";
+  document.getElementById("zonas").innerHTML=zonas.map((z,i)=>{
+    const down=caida&&i===0,MAX=60;
+    const items=z.slice(0,MAX).map(v=>v.big?`<span class="vm big${down?" off":sat?" sat":""}">VM · ${v.vcpu} vCPU</span>`:`<span class="vm${down?" off":""}"></span>`).join("");
+    return`<div class="zona${down?" down":""}"><div class="zt">Zona ${i+1}${down?" · caída":""} · ${z.length} VM</div><div class="vms">${items||'<span class="mas">Sin VMs</span>'}${z.length>MAX?`<span class="mas">+${z.length-MAX}</span>`:""}</div></div>`}).join("");
+}
+
+/* ---------- 3 · Servicios de cómputo ---------- */
+const SRV={
+ vm:{name:"Virtual Machines",mod:"IaaS",so:"Tú",esc:"Vertical (cambiar tamaño) o con Scale Sets",cob:"Por segundo mientras está encendida",
+   d:"Control total: eliges el sistema operativo e instalas tu software. Ideal para procesamiento de datos, servidores web y apps de alto rendimiento, o para mover servidores tal cual (lift and shift)."},
+ vmss:{name:"Scale Sets",mod:"IaaS",so:"Tú (imagen base)",esc:"Automático, hasta 100 o 1000 VMs",cob:"Solo las VMs que corren; sin costo extra",
+   d:"Muchas VMs idénticas que se agregan y quitan según la demanda, opcionalmente detrás de un Load Balancer y repartidas en zonas."},
+ app:{name:"App Service",mod:"PaaS",so:"Azure",esc:"Balanceo y autoescalado incorporados",cob:"El servicio es gratis; pagas los recursos que consume",
+   d:"Para Web Apps (sitios, blogs, tiendas), Web App para contenedores y API Apps. El único deber del desarrollador es el código."},
+ aci:{name:"Container Instances",mod:"Contenedores (PaaS)",so:"Azure",esc:"Bajo demanda",cob:"Mientras el contenedor se ejecuta",
+   d:"La forma más simple de ejecutar un contenedor: sin VMs ni orquestador. Se maneja desde el portal, la CLI o PowerShell."},
+ aks:{name:"Kubernetes Service",mod:"Contenedores orquestados",so:"Azure gestiona Kubernetes; los nodos son VMs",esc:"Automático de contenedores y nodos",cob:"Los nodos (VMs) del clúster",
+   d:"Kubernetes administrado para muchos contenedores: despliegue y escalado automático. Las imágenes suelen venir de Azure Container Registry."},
+ func:{name:"Functions",mod:"Serverless",so:"Azure (no ves servidores)",esc:"Automático según eventos",cob:"Por ejecución; sin tráfico no pagas",
+   d:"El servicio de cómputo más pequeño: una función que se invoca (por ejemplo, por una URL), se ejecuta y se detiene. Si falla, no afecta a otras instancias."},
+ avd:{name:"Virtual Desktop",mod:"Escritorios virtuales",so:"Azure gestiona la plataforma; las VMs de sesión son tuyas",esc:"Agregas o quitas VMs de sesión",cob:"Las VMs y el almacenamiento que usas",
+   d:"Escritorios y apps Windows en la nube, desde cualquier dispositivo, optimizados para Microsoft 365. Varios usuarios pueden compartir una VM. Usos: trabajo híbrido, desarrollo y pruebas, recuperación ante desastres."}
+};
+let srv="vm";
+function renderS(){
+  seg("srv",SRV,()=>srv,k=>srv=k,renderS);
+  const s=SRV[srv];
+  facts("factsS",[["Modelo",s.mod],["Gestiona el sistema operativo",s.so],["Escalado",s.esc],["Qué pagas",s.cob]]);
+  document.getElementById("noteS").innerHTML=`<h3>Azure ${s.name}</h3><p>${s.d}</p>`;
+}
+
+renderC();renderE();renderS();iniciarQuiz("cap05");
+</script>
+</body>
+</html>

@@ -6,7 +6,7 @@ const CAPITULOS=[
  {id:"cap02",num:2, titulo:"Cloud computing",              archivo:"cap02-cloud.html",            listo:true},
  {id:"cap03",num:3, titulo:"Arquitectura y servicios",     archivo:"cap03-arquitectura.html",     listo:true},
  {id:"cap04",num:4, titulo:"Fundamentos de herramientas",  archivo:"cap04-herramientas.html",     listo:true},
- {id:"cap05",num:5, titulo:"Computación",                  archivo:"cap05-computacion.html",      listo:false},
+ {id:"cap05",num:5, titulo:"Computación",                  archivo:"cap05-computacion.html",      listo:true},
  {id:"cap06",num:6, titulo:"Redes",                        archivo:"cap06-redes.html",            listo:false},
  {id:"cap07",num:7, titulo:"Almacenamiento",               archivo:"cap07-almacenamiento.html",   listo:true},
  {id:"cap08",num:8, titulo:"Autenticación y autorización", archivo:"cap08-identidad.html",        listo:false},

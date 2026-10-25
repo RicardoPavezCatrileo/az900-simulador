@@ -85,6 +85,13 @@ Errores de esa guía que NO se deben copiar: dice que la secundaria de GZRS es Z
 - Panel de Azure Advisor: checkboxes de problemas → puntaje por las 5 categorías (Costo, Seguridad, Confiabilidad, Excelencia operativa, Rendimiento) y recomendaciones. Puntajes ilustrativos.
 - Tarjetas por herramienta y 15 preguntas en `data/preguntas-cap04.json`.
 
+## Lo que ya existe: cap05-computacion.html (PDF págs. 59–100)
+- Opciones de compra: duración × interrumpible × requisito especial (zona, host dedicado, aislada) × flexibilidad → pago por uso / plan de ahorro / reservada / spot / host dedicado / aislada / reserva de capacidad, con analogía del hotel del curso y tabla comparativa. Descuentos del curso (~65/72/90%) marcados como aproximados.
+- Escalado: vertical (tamaños hasta 416 vCPU) vs horizontal en 1 zona vs horizontal en 3 zonas, slider de usuarios (supuesto: 100 usuarios por vCPU, 4 vCPU por VM en horizontal; límite 100/1000 VMs del Scale Set) y caída de la Zona 1.
+- Explorador de servicios: VM, Scale Sets, App Service, ACI, AKS, Functions, Virtual Desktop (modelo, quién gestiona el SO, escalado, qué pagas).
+- 20 preguntas en `data/preguntas-cap05.json`.
+- Para probar un estado distinto al inicial: copiar la página a `_prueba.html` con `sed` cambiando las variables `let …` iniciales, capturar y borrar la copia.
+
 ## Convenciones de los simuladores
 - `seg()` pone `data-k` en cada botón; en un `.seg.fail` la opción con clave `none` se pinta azul (no roja).
 - Para probar: `python -m http.server` en la carpeta y captura con Chrome headless (`--screenshot`). Chrome headless no baja de ~500 px de ancho; usar un `--user-data-dir` limpio para no ver CSS en caché.
@@ -102,5 +109,5 @@ Las diapositivas son casi todo imágenes: `pdftotext` (disponible en Git Bash) s
 
 ## Próximos pasos
 1. ~~Crear `index.html`, `assets/` y adaptar cap07~~ (hecho).
-2. PDF ya copiado en `docs/`. Capítulos 2, 3 y 4 hechos; seguir con el capítulo 5 (Computación, desde la pág. 59: VMs, opciones de compra, Scale Sets, escalado vertical/horizontal, alta disponibilidad…).
+2. PDF ya copiado en `docs/`. Capítulos 2, 3, 4, 5 y 7 hechos; seguir con el capítulo 6 (Redes, págs. 101–121).
 3. ~~Repo git propio~~ (hecho): rama `main`, remoto `origin` = https://github.com/rpavez2026-debug/az900-simulador. Hacer commit y push al terminar cada avance.
