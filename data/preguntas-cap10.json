@@ -1,0 +1,116 @@
+[
+  {
+    "pregunta": "Quieres impedir que se creen recursos fuera de las regiones Brazil South y East US. ¿Qué usas?",
+    "opciones": ["Azure RBAC", "Azure Policy", "Un lock de solo lectura", "Azure Monitor"],
+    "correcta": 1,
+    "explicacion": "Azure Policy aplica los estándares de la organización (regiones permitidas, etiquetas obligatorias, tamaños de VM) y evalúa el cumplimiento a escala."
+  },
+  {
+    "pregunta": "¿Qué controla Azure RBAC?",
+    "opciones": ["Qué propiedades pueden tener los recursos", "Quién tiene acceso a los recursos, qué puede hacer y en qué ámbito", "El costo de los recursos", "La región de los recursos"],
+    "correcta": 1,
+    "explicacion": "RBAC controla quién hace qué y dónde. Azure Policy controla cómo deben ser los recursos."
+  },
+  {
+    "pregunta": "¿Cuáles son los tres elementos de una asignación de roles de Azure?",
+    "opciones": ["Usuario, contraseña y MFA", "Entidad de seguridad, definición de rol y ámbito", "Suscripción, región y zona", "Política, iniciativa y lock"],
+    "correcta": 1,
+    "explicacion": "Quién (entidad de seguridad), qué permisos (definición de rol) y dónde (ámbito)."
+  },
+  {
+    "pregunta": "¿Cuál de estas NO es una entidad de seguridad a la que se pueda asignar un rol?",
+    "opciones": ["Un usuario", "Un grupo", "Una identidad administrada", "Un grupo de recursos"],
+    "correcta": 3,
+    "explicacion": "Entidades de seguridad: usuario, grupo, entidad de servicio e identidad administrada. El grupo de recursos es un ámbito, no una entidad."
+  },
+  {
+    "pregunta": "¿En qué niveles (ámbitos) se puede asignar un rol de Azure RBAC?",
+    "opciones": ["Solo en la suscripción", "Grupo de administración, suscripción, grupo de recursos o recurso", "Solo en el recurso", "Región, zona o centro de datos"],
+    "correcta": 1,
+    "explicacion": "Cuatro niveles. El rol asignado en un nivel se hereda hacia abajo."
+  },
+  {
+    "pregunta": "Ana tiene el rol Lector en la suscripción. ¿Qué puede hacer con una VM de esa suscripción?",
+    "opciones": ["Borrarla", "Reiniciarla", "Solo verla", "Cambiar su tamaño"],
+    "correcta": 2,
+    "explicacion": "Lector solo ve. Colaborador puede crear y administrar recursos. Propietario, además, puede dar acceso a otros."
+  },
+  {
+    "pregunta": "¿Qué rol integrado puede administrar recursos pero NO dar acceso a otros usuarios?",
+    "opciones": ["Propietario", "Colaborador", "Lector", "Administrador de acceso de usuario"],
+    "correcta": 1,
+    "explicacion": "Colaborador (Contributor) gestiona todo excepto el acceso. Propietario (Owner) también gestiona el acceso."
+  },
+  {
+    "pregunta": "Un grupo de recursos tiene un lock de tipo Delete. Un Propietario intenta borrar una VM de ese grupo. ¿Qué pasa?",
+    "opciones": ["Se borra, porque es Propietario", "La operación se bloquea; primero hay que quitar el lock", "Se borra solo la VM, no el grupo", "Se mueve a la papelera"],
+    "correcta": 1,
+    "explicacion": "Los locks protegen incluso de usuarios con permisos. Un lock en un grupo de recursos aplica a todos sus recursos."
+  },
+  {
+    "pregunta": "¿Qué hace un lock de solo lectura (Read-only)?",
+    "opciones": ["Impide solo eliminar", "Impide modificar y eliminar; solo se puede leer", "Impide leer", "Cifra el recurso"],
+    "correcta": 1,
+    "explicacion": "Read-only bloquea modificaciones (y por lo tanto también eliminaciones). Delete solo bloquea eliminar."
+  },
+  {
+    "pregunta": "¿En qué niveles se pueden aplicar locks, según el curso?",
+    "opciones": ["Recurso, grupo de recursos o suscripción", "Solo recurso", "Solo región", "Solo grupo de administración"],
+    "correcta": 0,
+    "explicacion": "Se aplican al recurso, al grupo de recursos o a la suscripción, y se heredan hacia abajo."
+  },
+  {
+    "pregunta": "En la analogía de la ciudad del curso, ¿qué hacían Azure Blueprints frente a ARM?",
+    "opciones": ["Lo mismo que ARM", "ARM construye edificios individuales; Blueprints era el plan maestro: combinaba plantillas ARM, políticas y roles", "Blueprints solo monitoriza", "ARM es solo para redes"],
+    "correcta": 1,
+    "explicacion": "Ojo: Microsoft retiró Azure Blueprints (julio de 2026). Para el examen pon el foco en Azure Policy, RBAC y locks."
+  },
+  {
+    "pregunta": "¿Qué es Microsoft Cloud Adoption Framework?",
+    "opciones": ["Un servicio de monitorización", "Una guía probada con prácticas, documentación y herramientas para adoptar la nube con éxito", "Un tipo de suscripción", "Un firewall"],
+    "correcta": 1,
+    "explicacion": "Incluye fases como Estrategia, Planeamiento, Listo, Migración, y disciplinas de Seguridad, Administración y Gobernanza."
+  },
+  {
+    "pregunta": "¿Qué servicio recopila métricas y registros de casi todos los servicios de Azure y también de recursos locales?",
+    "opciones": ["Azure Monitor", "Azure Key Vault", "Azure Policy", "Azure DNS"],
+    "correcta": 0,
+    "explicacion": "Azure Monitor es la plataforma unificada de telemetría: métricas, registros, análisis, alertas, paneles y automatización."
+  },
+  {
+    "pregunta": "¿Con qué lenguaje se consultan los datos en Log Analytics?",
+    "opciones": ["SQL", "KQL (Kusto Query Language)", "PowerShell", "JSON"],
+    "correcta": 1,
+    "explicacion": "Log Analytics almacena y consulta los registros de Azure Monitor usando KQL."
+  },
+  {
+    "pregunta": "Quieres detectar cuellos de botella de rendimiento de tu aplicación web y ver cómo interactúan los usuarios con ella. ¿Qué usas?",
+    "opciones": ["Application Insights", "Azure Service Health", "Azure Arc", "Azure Policy"],
+    "correcta": 0,
+    "explicacion": "Application Insights se enfoca en apps web: rendimiento, anomalías e interacción de usuarios. Funciona con App Service, VMs y recursos externos."
+  },
+  {
+    "pregunta": "En una alerta de Azure Monitor, ¿qué define las acciones a tomar (email, SMS, Logic Apps, Functions) cuando se activa la regla?",
+    "opciones": ["Un grupo de acción", "Un grupo de recursos", "Un lock", "Una iniciativa de Policy"],
+    "correcta": 0,
+    "explicacion": "El grupo de acción notifica al personal adecuado o lanza flujos automatizados."
+  },
+  {
+    "pregunta": "¿Qué servicio te informa de incidentes de Azure y del mantenimiento programado que afecta a tus recursos, sin costo adicional?",
+    "opciones": ["Azure Service Health", "Application Insights", "Log Analytics", "Microsoft Sentinel"],
+    "correcta": 0,
+    "explicacion": "Service Health tiene un panel personalizable, alertas configurables, seguimiento en vivo y es gratuito."
+  },
+  {
+    "pregunta": "Tienes servidores en tu centro de datos y en AWS, y quieres administrarlos y aplicarles Azure Policy desde el portal de Azure. ¿Qué usas?",
+    "opciones": ["Azure Arc", "Azure Monitor solo", "VPN Gateway", "Azure Migrate"],
+    "correcta": 0,
+    "explicacion": "Azure Arc extiende la gestión y las políticas de Azure a recursos locales y de otras nubes, desde un único panel."
+  },
+  {
+    "pregunta": "Azure Policy vs RBAC: necesitas que nadie pueda crear VMs sin la etiqueta \"centro-de-costo\". ¿Qué usas?",
+    "opciones": ["RBAC", "Azure Policy", "Un lock", "Service Health"],
+    "correcta": 1,
+    "explicacion": "Es una regla sobre cómo deben ser los recursos (sus propiedades): Azure Policy. RBAC decide quién puede actuar, no cómo debe quedar el recurso."
+  }
+]

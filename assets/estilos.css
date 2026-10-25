@@ -33,6 +33,7 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-off
 @media (max-width:760px){.controls{grid-template-columns:1fr}}
 .ctl{display:grid;gap:8px;align-content:start}
 .ctl label{font-family:var(--f-mono);font-size:.75rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.ctl label.chk{font-family:var(--f-body);font-size:.9rem;letter-spacing:0;text-transform:none;color:var(--ink)}
 .seg{display:flex;flex-wrap:wrap;gap:6px}
 .seg button{font:inherit;font-family:var(--f-mono);font-size:.85rem;padding:7px 12px;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:6px;cursor:pointer}
 .seg button:hover{border-color:var(--accent)}

@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Simulador Gobernanza y Monitorización</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="assets/estilos.css">
+<style>
+.bloque{display:grid;gap:14px}
+.bloque>h2.h{margin:0}
+.bloque>h3{margin:4px 0 0;font-family:var(--f-display);font-size:1.05rem}
+.chk{display:flex;gap:8px;align-items:center;font-size:.9rem;cursor:pointer}
+.chk input{accent-color:var(--accent)}
+.chks{display:flex;flex-wrap:wrap;gap:8px 18px}
+td.si{color:var(--ok);font-weight:600} td.no{color:var(--bad);font-weight:600} td.na{color:var(--muted)}
+.pasos{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-family:var(--f-mono);font-size:.8rem}
+.paso{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:7px 10px}
+.paso.ok{border-color:var(--ok)} .paso.no{border-color:var(--bad);color:var(--bad)} .paso.skip{opacity:.45}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="volver" href="index.html">← Todos los capítulos</a>
+  <header>
+    <div class="eyebrow">AZ-900 · Capítulo 10 · Monitorización y gestión</div>
+    <h1>Gobernanza y monitorización</h1>
+    <p>La gobernanza decide <b>quién</b> puede hacer <b>qué</b> (RBAC), <b>cómo deben ser</b> los recursos (Azure Policy) y <b>qué no se puede tocar</b> (locks). La monitorización te dice qué está pasando. Pruébalos aquí.</p>
+  </header>
+
+  <!-- 1 · RBAC + locks -->
+  <section class="bloque">
+    <h2 class="h">1 · RBAC y locks: ¿puede hacerlo?</h2>
+    <div class="controls">
+      <div class="ctl"><label>Entidad de seguridad (quién)</label><div class="seg" id="quien"></div></div>
+      <div class="ctl"><label>Definición de rol (qué permisos)</label><div class="seg" id="rol"></div></div>
+    </div>
+    <div class="controls">
+      <div class="ctl"><label>Ámbito (dónde se asignó el rol)</label><div class="seg" id="amb"></div></div>
+      <div class="ctl"><label>Lock en el grupo rg-web</label><div class="seg" id="lock"></div></div>
+    </div>
+    <div class="controls">
+      <div class="ctl"><label>Recurso</label><div class="seg" id="obj"></div></div>
+      <div class="ctl"><label>Intenta</label><div class="seg" id="acc"></div></div>
+    </div>
+    <div class="pasos" id="pasos"></div>
+    <div class="status" id="statusR"></div>
+    <div class="facts" id="factsR"></div>
+  </section>
+
+  <!-- 2 · Azure Policy -->
+  <section class="bloque">
+    <h2 class="h">2 · Azure Policy: ¿cumplen mis recursos?</h2>
+    <div class="ctl"><label>Políticas asignadas a la suscripción</label><div class="chks" id="pols"></div></div>
+    <div class="ctl"><label>Efecto</label><div class="seg" id="efe"></div></div>
+    <div class="tbl"><table>
+      <thead id="theadP"></thead>
+      <tbody id="tbodyP"></tbody>
+    </table></div>
+    <h3>Crear una VM nueva</h3>
+    <div class="controls">
+      <div class="ctl"><label>Región</label><div class="seg" id="nreg"></div></div>
+      <div class="ctl"><label>Tamaño</label><div class="seg" id="ntam"></div></div>
+    </div>
+    <label class="chk"><input type="checkbox" id="ntag"> Con la etiqueta centro-de-costo</label>
+    <div class="status" id="statusP"></div>
+    <p class="fb" style="margin:0">Los recursos que ya existían no se borran: Azure Policy los marca como no conformes. "Deny" frena la creación o el cambio de recursos que no cumplen; "Audit" los deja crear y los reporta.</p>
+  </section>
+
+  <!-- 3 · Monitorización -->
+  <section class="bloque">
+    <h2 class="h">3 · ¿Qué herramienta de monitorización o gestión uso?</h2>
+    <div class="ctl"><label>Lo que necesitas</label><div class="seg" id="nec"></div></div>
+    <div class="status" id="statusM"></div>
+    <div class="facts" id="factsM"></div>
+    <div class="note" id="noteM"></div>
+  </section>
+
+  <section>
+    <h2 class="h">Conceptos clave del capítulo</h2>
+    <div class="cards">
+      <div class="card"><h3>Policy vs RBAC vs locks</h3><ul>
+        <li><b>RBAC:</b> quién puede hacer qué, y dónde. Roles: Lector, Colaborador, Propietario…</li>
+        <li><b>Azure Policy:</b> cómo deben ser los recursos (regiones, etiquetas, tamaños) y cumplimiento a escala.</li>
+        <li><b>Locks:</b> evitan borrar (Delete) o modificar (Read-only), incluso a quien tiene permisos.</li>
+      </ul></div>
+      <div class="card"><h3>Asignación de roles</h3><ul>
+        <li><b>Entidad de seguridad:</b> usuario, grupo, entidad de servicio o identidad administrada.</li>
+        <li><b>Definición de rol:</b> colección de permisos (leer, escribir, eliminar…).</li>
+        <li><b>Ámbito:</b> grupo de administración, suscripción, grupo de recursos o recurso. Se hereda hacia abajo.</li>
+      </ul></div>
+      <div class="card"><h3>Azure Blueprints (retirado)</h3><ul>
+        <li>El curso lo explica como el "plan maestro de la ciudad": combinaba plantillas ARM, políticas y roles, con versionado.</li>
+        <li>ARM construye "edificios" individuales.</li>
+        <li><b>Microsoft lo retiró en julio de 2026</b>: no le dediques tiempo para el examen.</li>
+      </ul></div>
+      <div class="card"><h3>Cloud Adoption Framework</h3><ul>
+        <li>Guía probada de Microsoft con prácticas, documentación y herramientas para adoptar la nube.</li>
+        <li><b>Estrategia → Planeamiento → Listo → Migración</b>.</li>
+        <li>A lo largo de todo: <b>Seguridad, Administración y Gobernanza</b>.</li>
+      </ul></div>
+      <div class="card"><h3>Azure Monitor y familia</h3><ul>
+        <li><b>Azure Monitor:</b> métricas y registros de Azure y de local; análisis, alertas, paneles y automatización.</li>
+        <li><b>Log Analytics:</b> almacena y consulta registros con <b>KQL</b>.</li>
+        <li><b>Application Insights:</b> rendimiento y uso de apps web.</li>
+        <li><b>Alertas:</b> regla + <b>grupo de acción</b> (email, SMS, Logic Apps, Functions).</li>
+        <li><b>Service Health:</b> incidentes y mantenimiento de Azure; gratis.</li>
+        <li><b>Azure Arc:</b> gestión y políticas de Azure para recursos locales y de otras nubes.</li>
+      </ul></div>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="h">Preguntas tipo examen</h2>
+    <div class="score" id="score"></div>
+    <div class="quiz" id="quiz"></div>
+  </section>
+</div>
+
+<script src="assets/progreso.js"></script>
+<script src="assets/quiz.js"></script>
+<script>
+function seg(id,obj,get,set,fn){
+  const el=document.getElementById(id);el.innerHTML="";
+  Object.keys(obj).forEach(k=>{const b=document.createElement("button");b.type="button";b.textContent=typeof obj[k]==="string"?obj[k]:obj[k].name;b.dataset.k=k;
+    b.setAttribute("aria-pressed",String(get()===k));b.onclick=()=>{set(k);fn()};el.appendChild(b)});
+}
+function facts(id,rows){document.getElementById(id).innerHTML=rows.map(([k,v])=>`<div class="fact"><div class="k">${k}</div><div class="v">${v}</div></div>`).join("")}
+function status(id,lvl,t,d){
+  const col={ok:"var(--ok)",warn:"var(--warn)",bad:"var(--bad)",info:"var(--accent)"}[lvl],ico={ok:"✓",warn:"!",bad:"✕",info:"i"}[lvl];
+  document.getElementById(id).innerHTML=`<span class="dot" style="background:${col}" aria-hidden="true"></span><div><b>${ico} ${t}</b><p>${d}</p></div>`;
+}
+
+/* ---------- 1 · RBAC + locks ---------- */
+const QUIEN={ana:"Ana (usuario)",dev:"Grupo Desarrolladores",app:"App (identidad administrada)"};
+const TIPO={ana:"Usuario",dev:"Grupo",app:"Identidad administrada"};
+const ROL={lector:"Lector",colab:"Colaborador",prop:"Propietario"};
+const AMB={sub:"Suscripción Prod",rgweb:"Grupo rg-web",vm:"Recurso vm-web"};
+const LOCK={none:"Sin lock",ro:"Read-only",del:"Delete"};
+const OBJ={vm:"vm-web (en rg-web)",sql:"sql-datos (en rg-datos)"};
+const ACC={ver:"Ver",reini:"Reiniciar",tam:"Cambiar tamaño",borrar:"Borrar"};
+let quien="ana",rol="colab",amb="rgweb",lock="none",obj="vm",acc="borrar";
+function renderR(){
+  seg("quien",QUIEN,()=>quien,k=>quien=k,renderR);seg("rol",ROL,()=>rol,k=>rol=k,renderR);
+  seg("amb",AMB,()=>amb,k=>amb=k,renderR);seg("lock",LOCK,()=>lock,k=>lock=k,renderR);
+  seg("obj",OBJ,()=>obj,k=>obj=k,renderR);seg("acc",ACC,()=>acc,k=>acc=k,renderR);
+  const cubre=amb==="sub"||obj==="vm";
+  const permite=rol!=="lector"||acc==="ver";
+  const bloqLock=obj==="vm"&&((lock==="ro"&&acc!=="ver")||(lock==="del"&&acc==="borrar"));
+  const p1=cubre,p2=p1&&permite,p3=p2&&!bloqLock;
+  document.getElementById("pasos").innerHTML=
+    `<span class="paso ${p1?"ok":"no"}">1 · ¿El ámbito incluye el recurso? ${p1?"Sí":"No"}</span>→`+
+    `<span class="paso ${!p1?"skip":p2?"ok":"no"}">2 · ¿El rol permite la acción? ${!p1?"—":p2?"Sí":"No"}</span>→`+
+    `<span class="paso ${!p2?"skip":p3?"ok":"no"}">3 · ¿Hay un lock que lo impida? ${!p2?"—":bloqLock?"Sí":"No"}</span>`;
+  const quienTxt=QUIEN[quien].split(" (")[0];
+  if(!cubre)status("statusR","bad","Denegado por RBAC",`El rol está asignado en "${AMB[amb]}", que no incluye ${OBJ[obj].split(" ")[0]}. Los roles solo se heredan hacia abajo desde su ámbito.`);
+  else if(!permite)status("statusR","bad","Denegado por RBAC",`Lector solo puede ver. Para "${ACC[acc].toLowerCase()}" se necesita Colaborador o Propietario.`);
+  else if(bloqLock)status("statusR","bad","Bloqueado por un lock",`El grupo rg-web tiene un lock ${LOCK[lock]}. Aunque ${quienTxt} sea ${ROL[rol]}, la operación se bloquea hasta que alguien quite el lock.`);
+  else status("statusR","ok","Permitido",`${quienTxt} tiene ${ROL[rol]} en "${AMB[amb]}" y nada lo impide.${rol==="prop"?" Como Propietario, además podría dar acceso a otros.":""}`);
+  const hereda={sub:"Todos los grupos y recursos de la suscripción",rgweb:"Todos los recursos de rg-web",vm:"Solo vm-web"}[amb];
+  facts("factsR",[["Entidad de seguridad",TIPO[quien]],["Definición de rol",ROL[rol]],["Ámbito",AMB[amb]],["Alcanza a",hereda]]);
+}
+
+/* ---------- 2 · Azure Policy ---------- */
+const POLS={reg:"Solo regiones Brazil South y East US",tag:"Etiqueta centro-de-costo obligatoria",tam:"VMs solo de la serie B"};
+const activas=new Set(["reg","tag"]);
+const EFE={deny:"Deny (denegar)",audit:"Audit (auditar)"};
+let efe="deny",nreg="westeurope",ntam="B2s",ntag=false;
+const RECS=[
+ {n:"vm-web",t:"VM",reg:"brazilsouth",tag:true,tam:"B2s"},
+ {n:"vm-reportes",t:"VM",reg:"westeurope",tag:false,tam:"D4s"},
+ {n:"st-logs",t:"Storage",reg:"eastus",tag:false,tam:null},
+ {n:"sql-datos",t:"SQL",reg:"brazilsouth",tag:true,tam:null}
+];
+const REGN={brazilsouth:"Brazil South",eastus:"East US",westeurope:"West Europe"};
+function cumple(r,p){if(p==="reg")return r.reg==="brazilsouth"||r.reg==="eastus";if(p==="tag")return r.tag;if(p==="tam")return r.tam===null?null:r.tam.startsWith("B");}
+document.getElementById("ntag").checked=ntag;document.getElementById("ntag").onchange=e=>{ntag=e.target.checked;renderP()};
+function renderP(){
+  const pb=document.getElementById("pols");pb.innerHTML="";
+  Object.keys(POLS).forEach(k=>{const l=document.createElement("label");l.className="chk";
+    l.innerHTML=`<input type="checkbox" ${activas.has(k)?"checked":""}> ${POLS[k]}`;
+    l.querySelector("input").onchange=e=>{e.target.checked?activas.add(k):activas.delete(k);renderP()};pb.appendChild(l)});
+  seg("efe",EFE,()=>efe,k=>efe=k,renderP);
+  seg("nreg",{brazilsouth:"Brazil South",westeurope:"West Europe"},()=>nreg,k=>nreg=k,renderP);
+  seg("ntam",{B2s:"B2s",D4s:"D4s"},()=>ntam,k=>ntam=k,renderP);
+  const act=Object.keys(POLS).filter(k=>activas.has(k));
+  document.getElementById("theadP").innerHTML=`<tr><th>Recurso</th><th>Región</th>${act.map(k=>`<th>${POLS[k]}</th>`).join("")}<th>Estado</th></tr>`;
+  document.getElementById("tbodyP").innerHTML=RECS.map(r=>{
+    const res=act.map(k=>cumple(r,k)),ok=res.every(x=>x!==false);
+    return`<tr><td><b>${r.n}</b> <span class="fb">${r.t}</span></td><td>${REGN[r.reg]}</td>${res.map(x=>`<td class="${x===null?"na":x?"si":"no"}">${x===null?"No aplica":x?"Cumple":"No cumple"}</td>`).join("")}<td class="${ok?"si":"no"}">${ok?"Conforme":"No conforme"}</td></tr>`}).join("");
+  const nueva={reg:nreg,tag:ntag,tam:ntam},fallan=act.filter(k=>cumple(nueva,k)===false);
+  if(!act.length)status("statusP","info","Sin políticas asignadas","La VM se crea sin restricciones.");
+  else if(!fallan.length)status("statusP","ok","VM creada y conforme","Cumple todas las políticas asignadas.");
+  else if(efe==="deny")status("statusP","bad","Creación denegada",`No cumple: ${fallan.map(k=>POLS[k]).join("; ")}. Con efecto Deny, Azure Policy rechaza la solicitud.`);
+  else status("statusP","warn","VM creada, pero no conforme",`No cumple: ${fallan.map(k=>POLS[k]).join("; ")}. Con efecto Audit se crea y queda reportada para revisión.`);
+}
+
+/* ---------- 3 · Monitorización ---------- */
+const NEC={
+ mon:{name:"Ver métricas y registros de todo en un lugar",s:"Azure Monitor",d:"Recibe telemetría de casi todos los servicios de Azure y de recursos locales: métricas, registros, análisis, paneles y acciones automáticas. Una VM le envía métricas de rendimiento, registros de actividad, de diagnóstico, de red, de seguridad y de aplicaciones.",q:"Infraestructura y apps",t:"Plataforma de monitorización"},
+ la:{name:"Consultar registros con un lenguaje de consultas",s:"Log Analytics",d:"Almacena los registros que genera Azure Monitor y te permite consultarlos con KQL (Kusto Query Language) para encontrar patrones y resolver problemas.",q:"Registros",t:"Consulta (KQL)"},
+ ai:{name:"Rendimiento de mi aplicación web",s:"Application Insights",d:"Gestión del rendimiento de apps web: detecta anomalías y cuellos de botella y analiza cómo interactúan los usuarios. Funciona con App Service, VMs (con agente) y recursos externos.",q:"Aplicaciones web",t:"APM"},
+ al:{name:"Que me avisen si el disco de la VM pasa del 80%",s:"Alertas de Azure Monitor",d:"Regla de ejemplo: recurso vm-web, telemetría uso de disco, condición > 80% durante 10 minutos, gravedad crítica. El grupo de acción envía email o SMS al equipo, o ejecuta Logic Apps o Functions.",q:"Condiciones y umbrales",t:"Notificación"},
+ sh:{name:"Saber si Azure tiene un incidente o mantenimiento",s:"Azure Service Health",d:"Informa de incidentes de servicio y del mantenimiento programado que afecta a tus recursos, con panel personalizable, alertas y seguimiento en vivo. Sin costo adicional.",q:"La plataforma Azure",t:"Estado del servicio"},
+ arc:{name:"Gestionar servidores locales y de AWS como si fueran de Azure",s:"Azure Arc",d:"Gestión unificada desde un único panel: aplicas Azure Policy y otras herramientas de gobernanza a recursos fuera de Azure, e incluso despliegas servicios como Azure SQL o AKS en cualquier infraestructura.",q:"Recursos fuera de Azure",t:"Gestión híbrida y multinube"},
+ caf:{name:"Una guía para planificar la adopción de la nube",s:"Microsoft Cloud Adoption Framework",d:"Prácticas recomendadas, documentación y herramientas: Estrategia, Planeamiento, Listo y Migración, más Seguridad, Administración y Gobernanza.",q:"La organización",t:"Marco de adopción"}
+};
+let nec="mon";
+function renderM(){
+  seg("nec",NEC,()=>nec,k=>nec=k,renderM);
+  const x=NEC[nec];
+  status("statusM","ok",x.s,x.d.split(". ")[0]+".");
+  facts("factsM",[["Herramienta",x.s],["Qué observa o gestiona",x.q],["Tipo",x.t],["Costo extra",nec==="sh"?"Gratis":nec==="caf"?"Gratis (es una guía)":"Según uso"]]);
+  document.getElementById("noteM").innerHTML=`<h3>${x.s}</h3><p>${x.d}</p>`;
+}
+
+renderR();renderP();renderM();iniciarQuiz("cap10");
+</script>
+</body>
+</html>
