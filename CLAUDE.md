@@ -82,4 +82,4 @@ Las diapositivas son casi todo imágenes: `pdftotext` (disponible en Git Bash) s
 ## Próximos pasos
 1. ~~Crear `index.html`, `assets/` y adaptar cap07~~ (hecho).
 2. PDF ya copiado en `docs/`. Capítulo 2 hecho; seguir con el capítulo 3 (Arquitectura y servicios, desde la pág. 30).
-3. ~~Repo git propio~~ (hecho): rama `main`, remoto `origin` = https://github.com/rpavez2026-debug/az900-simulador- (ojo: el nombre termina en guion). Hacer commit y push al terminar cada avance.
+3. ~~Repo git propio~~ (hecho): rama `main`, remoto `origin` = https://github.com/rpavez2026-debug/az900-simulador. Hacer commit y push al terminar cada avance.
