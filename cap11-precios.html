@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Simulador Precios Azure</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="assets/estilos.css">
+<style>
+.bloque{display:grid;gap:14px}
+.bloque>h2.h{margin:0}
+.slider{display:flex;align-items:center;gap:10px;font-family:var(--f-mono);font-size:.85rem}
+.slider input{flex:1;max-width:360px;accent-color:var(--accent)}
+td.gratis{color:var(--ok);font-weight:600} td.cobra{color:var(--warn);font-weight:600} td.na{color:var(--muted)}
+.mes{position:relative;height:34px;background:var(--surface);border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.mes .gasto{position:absolute;inset:0 auto 0 0;background:color-mix(in srgb,var(--accent) 35%,transparent)}
+.mes .gasto.over{background:color-mix(in srgb,var(--bad) 35%,transparent)}
+.mes .marca{position:absolute;top:0;bottom:0;width:2px;background:var(--ink)}
+.mes .marca span{position:absolute;top:2px;left:4px;font-family:var(--f-mono);font-size:.7rem;color:var(--ink);white-space:nowrap}
+.leyenda{font-family:var(--f-mono);font-size:.75rem;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="volver" href="index.html">← Todos los capítulos</a>
+  <header>
+    <div class="eyebrow">AZ-900 · Capítulo 11 · Precios</div>
+    <h1>Precios, costos y preparación para el examen</h1>
+    <p>Qué tráfico se cobra, cómo controlar el gasto con presupuestos y límites, y qué herramienta usar para estimar, comparar u optimizar costos. Al final, todo lo que necesitas saber del día del examen.</p>
+  </header>
+
+  <!-- 1 · Tráfico -->
+  <section class="bloque">
+    <h2 class="h">1 · ¿Se cobra este tráfico de datos?</h2>
+    <div class="controls">
+      <div class="ctl"><label>Origen</label><div class="seg" id="ori"></div></div>
+      <div class="ctl"><label>Destino</label><div class="seg" id="des"></div></div>
+    </div>
+    <div class="status" id="statusT"></div>
+    <div class="facts" id="factsT"></div>
+    <div class="tbl"><table>
+      <thead id="theadT"></thead>
+      <tbody id="tbodyT"></tbody>
+    </table></div>
+    <p class="fb" style="margin:0">Brazil South, East US y West Europe están en zonas de facturación distintas, y la tarifa de salida depende de la zona. El PDF dice que el tráfico entre regiones de una misma zona de facturación no se cobra, pero hoy Azure cobra la transferencia entre regiones (más barata dentro del mismo continente). Lo seguro para el examen: <b>entrada gratis, salida se cobra</b>.</p>
+  </section>
+
+  <!-- 2 · Presupuesto -->
+  <section class="bloque">
+    <h2 class="h">2 · Presupuesto con alertas vs límite de gasto</h2>
+    <div class="controls">
+      <div class="ctl"><label for="pres">Monto mensual (USD)</label><div class="slider"><input type="range" id="pres" min="100" max="3000" step="100"><span id="presVal"></span></div></div>
+      <div class="ctl"><label for="dia">Gasto diario de tus recursos (USD)</label><div class="slider"><input type="range" id="dia" min="5" max="150" step="5"><span id="diaVal"></span></div></div>
+    </div>
+    <div class="ctl"><label>Tipo de control</label><div class="seg" id="tipo"></div></div>
+    <div class="mes" id="mes"></div>
+    <div class="leyenda">Barra = gasto proyectado del mes (30 días) · marcas = 50%, 80% y 100% del monto</div>
+    <div class="status" id="statusB"></div>
+    <div class="facts" id="factsB"></div>
+  </section>
+
+  <!-- 3 · Herramientas -->
+  <section class="bloque">
+    <h2 class="h">3 · ¿Qué herramienta de costos uso?</h2>
+    <div class="ctl"><label>Lo que necesitas</label><div class="seg" id="nec"></div></div>
+    <div class="status" id="statusH"></div>
+    <div class="facts" id="factsH"></div>
+  </section>
+
+  <section>
+    <h2 class="h">Conceptos clave del capítulo</h2>
+    <div class="cards">
+      <div class="card"><h3>Factores que afectan el precio</h3><ul>
+        <li><b>Tipo de recurso:</b> cada tipo necesita distinto hardware y complejidad.</li>
+        <li><b>Tamaño:</b> una VM más potente cuesta más.</li>
+        <li><b>Ubicación:</b> cada región tiene precios distintos (tasas de cambio, costos laborales…).</li>
+        <li><b>Ancho de banda:</b> la salida de datos se cobra.</li>
+      </ul></div>
+      <div class="card"><h3>Calculadoras</h3><ul>
+        <li><b>Calculadora de precios:</b> estima el costo de los servicios que vas a usar.</li>
+        <li><b>Calculadora TCO:</b> compara tu infraestructura local con Azure, incluidos costos indirectos (electricidad, mantenimiento).</li>
+      </ul></div>
+      <div class="card"><h3>Azure Cost Management</h3><ul>
+        <li>Monitoriza, controla y optimiza el gasto real.</li>
+        <li>Costos acumulados, <b>presupuestos</b> con alertas, facturas detalladas.</li>
+        <li>Asignación por departamento, exportación, informes de ineficiencias, vistas personalizadas.</li>
+      </ul></div>
+      <div class="card"><h3>Buenas prácticas</h3><ul>
+        <li><b>Límites de gasto:</b> como el límite de una tarjeta de crédito.</li>
+        <li><b>Cuotas:</b> como el guardia del club, que no deja pasar demasiada gente.</li>
+        <li><b>Etiquetas:</b> para saber qué gasta cada proyecto.</li>
+        <li><b>Advisor:</b> recomendaciones para ahorrar.</li>
+        <li><b>Modelo de compra:</b> pago por uso, reservadas, planes de ahorro.</li>
+      </ul></div>
+      <div class="card"><h3>Ojo con el PDF</h3><ul>
+        <li>La <b>reserva de capacidad</b> garantiza disponibilidad, no da descuento por sí sola. Los descuentos por compromiso son de <b>instancias reservadas</b> y <b>planes de ahorro</b>.</li>
+        <li>El tráfico <b>entre regiones</b> se cobra.</li>
+      </ul></div>
+    </div>
+  </section>
+
+  <!-- Examen -->
+  <section class="bloque">
+    <h2 class="h">El día del examen</h2>
+    <div class="facts">
+      <div class="fact"><div class="k">Preguntas</div><div class="v">40 a 60</div></div>
+      <div class="fact"><div class="k">Tiempo</div><div class="v">120 minutos</div></div>
+      <div class="fact"><div class="k">Para aprobar</div><div class="v">700 / 1000</div></div>
+      <div class="fact"><div class="k">Respuesta incorrecta</div><div class="v">Sin penalización</div></div>
+    </div>
+    <div class="cards">
+      <div class="card"><h3>Tipos de preguntas</h3><ul>
+        <li>Sí / No.</li>
+        <li>Arrastrar y soltar.</li>
+        <li>Completar la frase.</li>
+        <li>Opción múltiple: 1 correcta y 3 incorrectas.</li>
+        <li>Respuesta múltiple: 2 o más correctas entre 5 o más. <b>El software no te avisa si marcaste menos</b>, pero el enunciado dice cuántas.</li>
+      </ul></div>
+      <div class="card"><h3>Estrategia</h3><ul>
+        <li>Tienes tiempo: lee con calma.</li>
+        <li>Busca <b>palabras clave</b> en preguntas y respuestas.</li>
+        <li>Descarta primero las respuestas claramente erróneas.</li>
+        <li>Si dudas, <b>marca para revisar</b> y avanza.</li>
+        <li><b>Nunca dejes una en blanco</b>: sin responder cuenta como incorrecta.</li>
+      </ul></div>
+      <div class="card"><h3>Logística</h3><ul>
+        <li>Inscripción en learn.microsoft.com/credentials; el precio depende del país.</li>
+        <li>Documento de identidad; sin notas ni ayuda.</li>
+        <li>Puntaje inmediato o por correo en unos días.</li>
+        <li>Si no apruebas, puedes repetir a las 24 horas.</li>
+        <li>Las certificaciones <b>Fundamentals</b>, como AZ-900, <b>no caducan</b>; las Associate, Expert y Specialty se renuevan cada año gratis en Microsoft Learn.</li>
+      </ul></div>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="h">Preguntas tipo examen</h2>
+    <div class="score" id="score"></div>
+    <div class="quiz" id="quiz"></div>
+  </section>
+</div>
+
+<script src="assets/progreso.js"></script>
+<script src="assets/quiz.js"></script>
+<script>
+function seg(id,obj,get,set,fn){
+  const el=document.getElementById(id);el.innerHTML="";
+  Object.keys(obj).forEach(k=>{const b=document.createElement("button");b.type="button";b.textContent=typeof obj[k]==="string"?obj[k]:obj[k].name;b.dataset.k=k;
+    b.setAttribute("aria-pressed",String(get()===k));b.onclick=()=>{set(k);fn()};el.appendChild(b)});
+}
+function facts(id,rows){document.getElementById(id).innerHTML=rows.map(([k,v])=>`<div class="fact"><div class="k">${k}</div><div class="v">${v}</div></div>`).join("")}
+function status(id,lvl,t,d){
+  const col={ok:"var(--ok)",warn:"var(--warn)",bad:"var(--bad)",info:"var(--accent)"}[lvl],ico={ok:"✓",warn:"!",bad:"✕",info:"i"}[lvl];
+  document.getElementById(id).innerHTML=`<span class="dot" style="background:${col}" aria-hidden="true"></span><div><b>${ico} ${t}</b><p>${d}</p></div>`;
+}
+
+/* ---------- 1 · Tráfico ---------- */
+const LUG={inet:"Internet / tu oficina",br:"VM en Brazil South",br2:"Otra VM en Brazil South",us:"VM en East US",eu:"VM en West Europe"};
+const REG={br:"Brazil South",br2:"Brazil South",us:"East US",eu:"West Europe"};
+let ori="inet",des="br";
+function cobro(o,d){
+  if(o===d)return null;
+  if(o==="inet"&&d==="inet")return null;
+  if(o==="inet")return["gratis","Entrada a Azure","Los datos entrantes a Azure son gratis."];
+  if(d==="inet")return["cobra","Salida de Azure",`Los datos que salen de Azure hacia Internet se cobran, con la tarifa de la zona de facturación de ${REG[o]}.`];
+  if(REG[o]===REG[d])return["gratis","Dentro de la misma región","El tráfico entre recursos de la misma región no se cobra como transferencia entre regiones."];
+  return["cobra","Entre regiones",`Sale de ${REG[o]} hacia ${REG[d]}: la transferencia entre regiones se cobra en el origen; la entrada al destino es gratis.`];
+}
+function renderT(){
+  seg("ori",LUG,()=>ori,k=>ori=k,renderT);seg("des",LUG,()=>des,k=>des=k,renderT);
+  const c=cobro(ori,des);
+  if(!c){status("statusT","info","Elige un origen y un destino distintos","Para ver si la transferencia se cobra.");facts("factsT",[["Dirección","—"],["¿Se cobra?","—"],["Origen",LUG[ori]],["Destino",LUG[des]]])}
+  else{status("statusT",c[0]==="gratis"?"ok":"warn",c[0]==="gratis"?"Gratis":"Se cobra",c[2]);
+    facts("factsT",[["Dirección",c[1]],["¿Se cobra?",c[0]==="gratis"?"No":"Sí"],["Origen",LUG[ori]],["Destino",LUG[des]]])}
+  const ks=Object.keys(LUG);
+  document.getElementById("theadT").innerHTML=`<tr><th>Origen ↓ / Destino →</th>${ks.map(k=>`<th>${LUG[k]}</th>`).join("")}</tr>`;
+  document.getElementById("tbodyT").innerHTML=ks.map(o=>`<tr class="${o===ori?"sel":""}"><td><b>${LUG[o]}</b></td>${ks.map(d=>{const x=cobro(o,d);return`<td class="${!x?"na":x[0]}">${!x?"—":x[0]==="gratis"?"Gratis":"Se cobra"}</td>`}).join("")}</tr>`).join("");
+}
+
+/* ---------- 2 · Presupuesto ---------- */
+const TIPO={pres:"Presupuesto con alertas",lim:"Límite de gasto (cuenta con crédito)"};
+let pres=1000,dia=40,tipo="pres";
+const pIn=document.getElementById("pres"),dIn=document.getElementById("dia");pIn.value=pres;dIn.value=dia;
+pIn.oninput=()=>{pres=+pIn.value;renderB()};dIn.oninput=()=>{dia=+dIn.value;renderB()};
+function renderB(){
+  seg("tipo",TIPO,()=>tipo,k=>tipo=k,renderB);
+  document.getElementById("presVal").textContent="USD "+pres;document.getElementById("diaVal").textContent="USD "+dia+"/día";
+  const proy=dia*30,diaDe=p=>Math.ceil(pres*p/dia),d50=diaDe(.5),d80=diaDe(.8),d100=diaDe(1);
+  const escala=Math.max(proy,pres)*1.05,pct=v=>Math.min(100,100*v/escala);
+  const gastoReal=tipo==="lim"?Math.min(proy,pres):proy,over=proy>pres;
+  document.getElementById("mes").innerHTML=`<div class="gasto${over&&tipo==="pres"?" over":""}" style="width:${pct(gastoReal)}%"></div>`+
+    [.5,.8,1].map(p=>`<div class="marca" style="left:${pct(pres*p)}%"><span>${p*100}%</span></div>`).join("");
+  const enMes=d=>d<=30?"día "+d:"no llega";
+  if(!over)status("statusB","ok","Dentro del monto",`Terminarás el mes en USD ${proy}, por debajo de los USD ${pres}.${d80<=30?` Igual recibirás la alerta del 80% el día ${d80}.`:""}`);
+  else if(tipo==="pres")status("statusB","warn","Te avisa, pero no frena el gasto",`Recibes alertas el día ${d50} (50%), el ${d80} (80%) y el ${d100} (100%), pero los recursos siguen corriendo: terminarás el mes en USD ${proy}. El presupuesto puede disparar un grupo de acción si quieres automatizar algo.`);
+  else status("statusB","bad",`El día ${d100} se detienen los recursos`,`Al llegar al límite se deshabilitan los recursos para no cobrarte más. Solo existe en ciertas ofertas (cuenta gratuita, suscripciones con crédito); no en pago por uso.`);
+  facts("factsB",[["Gasto proyectado (30 días)","USD "+proy],["Alerta 80%",enMes(d80)],["Llega al 100%",enMes(d100)],["Gasto final",tipo==="lim"&&over?"USD "+pres+" (se detiene)":"USD "+proy]]);
+}
+
+/* ---------- 3 · Herramientas ---------- */
+const NEC={
+ calc:{name:"Estimar el costo de una solución nueva",s:"Calculadora de precios",d:"Eliges servicios, ajustas la configuración (tamaño, región, horas) y ves el costo estimado antes de crear nada.",cu:"Antes de desplegar",t:"Estimación"},
+ tco:{name:"Comparar mi centro de datos con Azure",s:"Calculadora TCO",d:"Compara el costo total de tu infraestructura local (servidores, electricidad, mantenimiento) con el de Azure, y genera informes para decidir la migración.",cu:"Antes de migrar",t:"Comparación"},
+ cm:{name:"Ver cuánto llevo gastado y repartirlo",s:"Azure Cost Management",d:"Costos acumulados, asignación por departamento, exportación, informes de ineficiencias, comparativas y vistas personalizadas.",cu:"Durante la operación",t:"Monitorización de costos"},
+ pr:{name:"Recibir un aviso al acercarme a un monto",s:"Presupuestos (Cost Management)",d:"Defines un monto y recibes alertas al acercarte o superarlo. No detienen los recursos por sí solos.",cu:"Durante la operación",t:"Alertas de gasto"},
+ tag:{name:"Saber cuánto gasta cada proyecto",s:"Etiquetas (tags)",d:"Clasificas los recursos (proyecto, centro de costo, entorno) y luego agrupas el gasto por etiqueta en Cost Management.",cu:"Siempre",t:"Organización"},
+ adv:{name:"Que me sugieran cómo ahorrar",s:"Azure Advisor",d:"Detecta recursos infrautilizados, sugiere reservas y otras optimizaciones de costo, además de seguridad, confiabilidad, rendimiento y excelencia operativa.",cu:"Durante la operación",t:"Recomendaciones"},
+ cuo:{name:"Evitar que se creen demasiados recursos",s:"Cuotas",d:"Límites en la cantidad de ciertos recursos (por ejemplo, vCPU por región) que evitan excesos y gastos inesperados.",cu:"Siempre",t:"Límites de uso"},
+ lim:{name:"Que nunca me cobren más de mi crédito",s:"Límite de gasto",d:"Un techo de gasto: al alcanzarlo, se detienen los recursos. Solo en ciertas ofertas, como la cuenta gratuita o suscripciones con crédito.",cu:"Siempre",t:"Freno financiero"}
+};
+let nec="calc";
+function renderH(){
+  seg("nec",NEC,()=>nec,k=>nec=k,renderH);
+  const x=NEC[nec];
+  status("statusH","ok",x.s,x.d);
+  facts("factsH",[["Herramienta",x.s],["Cuándo",x.cu],["Tipo",x.t],["¿Detiene recursos?",nec==="lim"?"Sí":"No"]]);
+}
+
+renderT();renderB();renderH();iniciarQuiz("cap11");
+</script>
+</body>
+</html>

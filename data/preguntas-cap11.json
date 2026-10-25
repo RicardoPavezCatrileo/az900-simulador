@@ -1,0 +1,104 @@
+[
+  {
+    "pregunta": "Vas a lanzar una solución nueva en Azure y quieres estimar cuánto costarán las VMs, el almacenamiento y la red que elegiste. ¿Qué usas?",
+    "opciones": ["Calculadora de precios", "Calculadora del costo total de propiedad (TCO)", "Azure Cost Management", "Azure Monitor"],
+    "correcta": 0,
+    "explicacion": "La calculadora de precios estima el costo de los servicios que seleccionas y configuras."
+  },
+  {
+    "pregunta": "Quieres comparar lo que te cuesta tu centro de datos local (incluida electricidad y mantenimiento) con lo que costaría en Azure. ¿Qué usas?",
+    "opciones": ["Calculadora de precios", "Calculadora TCO", "Azure Advisor", "Azure Policy"],
+    "correcta": 1,
+    "explicacion": "La calculadora del costo total de propiedad (TCO) compara on-premises vs Azure, incluyendo costos indirectos."
+  },
+  {
+    "pregunta": "Necesitas ver cuánto llevas gastado este mes, repartirlo por departamento y recibir alertas al acercarte a un límite. ¿Qué usas?",
+    "opciones": ["Azure Cost Management (con presupuestos)", "Calculadora TCO", "Calculadora de precios", "Azure Service Health"],
+    "correcta": 0,
+    "explicacion": "Cost Management monitoriza, asigna y optimiza el gasto real; los presupuestos avisan al acercarte o superar el límite."
+  },
+  {
+    "pregunta": "¿Qué hace un presupuesto de Azure Cost Management cuando se alcanza el 100%?",
+    "opciones": ["Apaga todos los recursos", "Envía alertas; por sí solo no detiene los recursos", "Borra la suscripción", "Cambia los recursos a un plan gratuito"],
+    "correcta": 1,
+    "explicacion": "Los presupuestos notifican (y pueden disparar grupos de acción). Lo que congela el gasto es un límite de gasto, disponible solo en ciertas ofertas."
+  },
+  {
+    "pregunta": "¿Cuál de estos NO es un factor que afecta el precio de un recurso en Azure?",
+    "opciones": ["El tamaño del recurso", "La ubicación (región)", "El ancho de banda utilizado", "El nombre del grupo de recursos"],
+    "correcta": 3,
+    "explicacion": "Afectan: tipo de recurso, tamaño, ubicación y ancho de banda. El nombre del grupo de recursos no influye."
+  },
+  {
+    "pregunta": "¿Por qué el mismo servicio puede costar distinto en dos regiones?",
+    "opciones": ["No puede: el precio es igual en todo el mundo", "Por factores como tasas de cambio y costos laborales de cada ubicación", "Porque cambia el SLA", "Porque depende del número de suscripciones"],
+    "correcta": 1,
+    "explicacion": "Cada ubicación tiene costos distintos, y eso se refleja en el precio."
+  },
+  {
+    "pregunta": "Subes 2 TB de datos desde tu oficina a una cuenta de almacenamiento en Azure. ¿Cuánto cuesta la transferencia?",
+    "opciones": ["Se cobra por GB", "Es gratis: la entrada de datos no se cobra", "Depende del número de VMs", "Se cobra solo si es Premium"],
+    "correcta": 1,
+    "explicacion": "Los datos entrantes a Azure son gratis. Lo que se cobra es la salida y la transferencia entre regiones."
+  },
+  {
+    "pregunta": "¿Qué es una zona de facturación?",
+    "opciones": ["Una zona de disponibilidad", "Una agrupación geográfica de regiones con el mismo modelo de precios de transferencia de datos", "Un grupo de recursos para facturas", "Una suscripción"],
+    "correcta": 1,
+    "explicacion": "Las tarifas de salida de datos dependen de la zona de facturación. No confundir con las zonas de disponibilidad."
+  },
+  {
+    "pregunta": "¿Cómo funcionan los límites de gasto en Azure?",
+    "opciones": ["Avisan pero nunca detienen nada", "Ponen un techo: al alcanzarlo, se detienen los recursos para evitar más cargos (solo en ciertas ofertas, como cuentas gratuitas o con crédito)", "Bajan el precio de las VMs", "Solo aplican a Storage"],
+    "correcta": 1,
+    "explicacion": "Como el límite de una tarjeta de crédito. No están disponibles en todas las ofertas, por ejemplo no en pago por uso."
+  },
+  {
+    "pregunta": "¿Qué son las cuotas (quotas) en Azure?",
+    "opciones": ["Descuentos por volumen", "Límites en la cantidad de ciertos recursos que puedes usar (por ejemplo, vCPU por región)", "Etiquetas de costo", "Un tipo de factura"],
+    "correcta": 1,
+    "explicacion": "Como el guardia del club: evitan pasarse de capacidad y gastos inesperados, o que alguien monopolice recursos compartidos."
+  },
+  {
+    "pregunta": "Quieres saber cuánto gasta cada proyecto y departamento. ¿Qué aplicas a los recursos?",
+    "opciones": ["Locks", "Etiquetas (tags)", "Cuotas", "Endpoints privados"],
+    "correcta": 1,
+    "explicacion": "Las etiquetas (ej. proyecto=tienda, centro-de-costo=ventas) clasifican recursos y permiten agrupar el gasto en Cost Management."
+  },
+  {
+    "pregunta": "¿Qué servicio te da recomendaciones para reducir costos, como apagar VMs infrautilizadas?",
+    "opciones": ["Azure Advisor", "Calculadora TCO", "Azure Arc", "Microsoft Sentinel"],
+    "correcta": 0,
+    "explicacion": "Advisor recomienda en costo, seguridad, confiabilidad, excelencia operativa y rendimiento."
+  },
+  {
+    "pregunta": "¿Qué modelo da un gran descuento a cambio de comprometerte 1 o 3 años con una VM?",
+    "opciones": ["Pago por uso", "Instancias reservadas", "Reserva de capacidad a petición", "Límite de gasto"],
+    "correcta": 1,
+    "explicacion": "Las instancias reservadas (y los planes de ahorro) dan descuento por compromiso. La reserva de capacidad garantiza disponibilidad; no es un descuento en sí."
+  },
+  {
+    "pregunta": "¿Cuál es la puntuación mínima para aprobar el AZ-900?",
+    "opciones": ["500 de 1000", "600 de 1000", "700 de 1000", "800 de 1000"],
+    "correcta": 2,
+    "explicacion": "Se aprueba con 700 de 1000."
+  },
+  {
+    "pregunta": "En el examen, ¿qué pasa con una pregunta respondida incorrectamente?",
+    "opciones": ["Resta puntos", "No hay penalización: siempre conviene responder", "Anula la sección", "Se repite al final"],
+    "correcta": 1,
+    "explicacion": "No hay penalización por error y las preguntas sin responder cuentan como incorrectas: responde siempre."
+  },
+  {
+    "pregunta": "En una pregunta de respuesta múltiple del examen, ¿el software te avisa si marcaste menos opciones de las requeridas?",
+    "opciones": ["Sí, siempre", "No, pero el enunciado indica cuántas debes elegir", "Solo al final", "Solo en preguntas de Sí/No"],
+    "correcta": 1,
+    "explicacion": "Lee bien el enunciado: dice cuántas respuestas elegir, pero el software no te avisa si te faltó alguna."
+  },
+  {
+    "pregunta": "Tu equipo envía 500 GB al mes desde una VM de Azure hacia usuarios en Internet. ¿Se cobra esa transferencia?",
+    "opciones": ["No, nunca se cobra", "Sí: la salida de datos de Azure se cobra", "Solo si la VM es Premium", "Solo los fines de semana"],
+    "correcta": 1,
+    "explicacion": "La transferencia de datos FUERA de Azure se cobra (con tarifas según la zona de facturación)."
+  }
+]

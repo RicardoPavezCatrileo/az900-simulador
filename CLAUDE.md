@@ -100,6 +100,14 @@ Errores de esa guía que NO se deben copiar: dice que la secundaria de GZRS es Z
 - 18 preguntas en `data/preguntas-cap06.json`.
 - Errores del PDF corregidos en el sitio: una /24 tiene 251 IPs asignables en Azure (no 256); la terminación SSL es de Application Gateway, no de Load Balancer.
 
+## Lo que ya existe: capítulos 8 a 11
+- **cap08-identidad.html** (págs. 168–197): ¿es MFA? (métodos por categoría sabes/tienes/eres; contraseña+PIN no es MFA), acceso condicional (usuario × ubicación × dispositivo × riesgo contra 6 directivas de ejemplo; bloquear gana), elegir servicio de identidad (Entra Connect, Connect Health, Domain Services, B2B, SSO, admin center) y tabla AD DS vs Entra ID. 18 preguntas. Nombres actuales: Microsoft Entra ID / Entra Domain Services (el PDF dice Azure AD DS).
+- **cap09-seguridad.html** (págs. 198–216): defensa en profundidad con las 7 capas de Microsoft Learn (el PDF usa otra lista: políticas, física, perímetro, redes, hosts, aplicaciones, datos) + juego de clasificar 10 controles; endpoints público / de servicio / privado × origen (VM, oficina por VPN, Internet) con opción de deshabilitar el acceso público; elegir servicio (Key Vault, Defender for Cloud, Sentinel, endpoint privado, NSG). 16 preguntas. Sentinel ahora es "Microsoft Sentinel".
+- **cap10-monitorizacion.html** (págs. 217–247): RBAC + locks (entidad × rol × ámbito × lock × recurso × acción, con los 3 pasos de evaluación; el lock le gana incluso al Propietario), Azure Policy (3 políticas, recursos existentes conformes o no, crear VM con Deny/Audit), elegir herramienta (Monitor, Log Analytics/KQL, Application Insights, alertas + grupo de acción, Service Health, Arc, CAF). 19 preguntas. Azure Blueprints marcado como retirado (julio 2026).
+- **cap11-precios.html** (págs. 248–277): matriz de tráfico (entrada gratis, salida e inter-región se cobran), presupuesto con alertas vs límite de gasto (slider monto y gasto diario, marcas 50/80/100%), elegir herramienta de costos, y sección "El día del examen" (40–60 preguntas, 120 min, 700/1000, tipos de preguntas, Fundamentals no caduca). 17 preguntas.
+- Errores del PDF corregidos en cap11: la reserva de capacidad no es un descuento (eso son reservadas y planes de ahorro); el tráfico entre regiones sí se cobra.
+- `.ctl label.chk` en `estilos.css` evita que las casillas dentro de un `.ctl` se vean en mayúsculas.
+
 ## Convenciones de los simuladores
 - `seg()` pone `data-k` en cada botón; en un `.seg.fail` la opción con clave `none` se pinta azul (no roja).
 - Para probar: `python -m http.server` en la carpeta y captura con Chrome headless (`--screenshot`). Chrome headless no baja de ~500 px de ancho; usar un `--user-data-dir` limpio para no ver CSS en caché.
@@ -117,6 +125,6 @@ Las diapositivas son casi todo imágenes: `pdftotext` (disponible en Git Bash) s
 
 ## Próximos pasos
 1. ~~Crear `index.html`, `assets/` y adaptar cap07~~ (hecho).
-2. PDF ya copiado en `docs/`. Capítulos 2 a 7 hechos; seguir con los capítulos 8, 9, 10 y 11, en ese orden.
+2. PDF ya copiado en `docs/`. Los 10 capítulos (2 a 11) están hechos.
 4. AL FINAL (decisión del usuario): `mapa.html`, un mapa conceptual SVG único enlazado desde la portada y cada capítulo. Nodos por área (global, organización, cómputo, red, almacenamiento, identidad, seguridad, gestión, precios), flechas con significado ("se conecta a", "vive en", "filtra", "reparte entre"…), clic en un nodo → resalta conexiones + explicación + enlace al capítulo, y escenarios que iluminan un camino (web app de 3 niveles, oficina conectada, contenedores, migración, respaldos, inicio de sesión con MFA).
 3. ~~Repo git propio~~ (hecho): rama `main`, remoto `origin` = https://github.com/rpavez2026-debug/az900-simulador. Hacer commit y push al terminar cada avance.
