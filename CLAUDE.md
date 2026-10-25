@@ -88,6 +88,9 @@ Errores de esa guía que NO se deben copiar: dice que la secundaria de GZRS es Z
 - `seg()` pone `data-k` en cada botón; en un `.seg.fail` la opción con clave `none` se pinta azul (no roja).
 - Para probar: `python -m http.server` en la carpeta y captura con Chrome headless (`--screenshot`). Chrome headless no baja de ~500 px de ancho; usar un `--user-data-dir` limpio para no ver CSS en caché.
 
+## Páginas de cada capítulo en el PDF
+cap02 9–29 · cap03 30–47 · cap04 48–58 · cap05 59–100 (VMs, Scale Sets, App Service 86, Virtual Desktop 96) · cap06 101–121 (VPN Gateway 112–114, ExpressRoute 120) · cap07 122–167 (incluye migración ~150–167) · cap08 168–197 (arquitectura híbrida con Entra ID 173) · cap09 198–216 · cap10 217–247 · cap11 248–270 · preparación para el examen 271–282.
+
 ## Leer el PDF
 Las diapositivas son casi todo imágenes: `pdftotext` (disponible en Git Bash) saca poco texto. Para leerlas, renderizar páginas a PNG con PyMuPDF en un venv temporal y abrir las imágenes.
 
