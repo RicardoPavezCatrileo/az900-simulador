@@ -100,5 +100,65 @@
     "opciones": ["Azure Disks", "Azure Files", "Queue Storage", "Table Storage"],
     "correcta": 1,
     "explicacion": "Azure Disks solo se conecta a VMs (directamente o vía AKS, Scale Sets, etc.). Servicios que no son VMs, como App Service o Container Instances, montan Azure Files por SMB/NFS."
+  },
+  {
+    "pregunta": "¿Qué herramienta de línea de comandos se usa para copiar blobs y archivos hacia y desde Azure Storage, y permite programar transferencias?",
+    "opciones": ["Azure Storage Explorer", "AzCopy", "Azure File Sync", "Azure Data Box"],
+    "correcta": 1,
+    "explicacion": "AzCopy es la herramienta de línea de comandos (ej.: azcopy cp archivo URL-con-SAS). Storage Explorer es la interfaz gráfica."
+  },
+  {
+    "pregunta": "Un usuario sin experiencia con comandos quiere subir, descargar y renombrar archivos de una cuenta de almacenamiento desde su Mac. ¿Qué usa?",
+    "opciones": ["AzCopy", "Azure Storage Explorer", "Azure Migrate", "Azure CLI"],
+    "correcta": 1,
+    "explicacion": "Storage Explorer es una interfaz gráfica para Windows, macOS y Linux."
+  },
+  {
+    "pregunta": "Quieres que tu servidor de archivos local siga funcionando como caché, pero con los archivos sincronizados en Azure Files. ¿Qué usas?",
+    "opciones": ["Azure File Sync", "AzCopy", "Azure Data Box", "Azure Backup"],
+    "correcta": 0,
+    "explicacion": "Azure File Sync sincroniza Azure Files con servidores de archivos locales: rendimiento local con disponibilidad en la nube."
+  },
+  {
+    "pregunta": "Debes mover 300 TB a Azure y tu conexión a Internet es lenta. ¿Qué solución usas?",
+    "opciones": ["AzCopy", "Azure Storage Explorer", "Azure Data Box", "Azure File Sync"],
+    "correcta": 2,
+    "explicacion": "Data Box es para transferir sin conexión grandes volúmenes que son demasiado para tu ancho de banda: copias los datos a un dispositivo físico cifrado y se envía a Azure."
+  },
+  {
+    "pregunta": "Por normativa, ciertos datos sensibles no pueden enviarse por Internet, pero deben llegar a Azure. ¿Qué usas?",
+    "opciones": ["Azure Data Box", "AzCopy", "VPN Gateway", "Azure Migrate"],
+    "correcta": 0,
+    "explicacion": "Uno de los casos de uso de Data Box es justamente transferir datos sensibles que no pueden viajar por Internet."
+  },
+  {
+    "pregunta": "Necesitas descubrir tus servidores locales, ver sus dependencias y estimar cuánto costaría ejecutarlos en Azure antes de migrar. ¿Qué servicio usas?",
+    "opciones": ["Azure Advisor", "Azure Migrate", "Azure Data Box", "Azure File Sync"],
+    "correcta": 1,
+    "explicacion": "Azure Migrate descubre y evalúa cargas locales, identifica dependencias, estima costos, permite probar y luego migrar."
+  },
+  {
+    "pregunta": "¿Qué opciones de redundancia admiten las cuentas de almacenamiento Premium?",
+    "opciones": ["Todas", "Solo LRS y ZRS", "Solo GRS y GZRS", "Solo RA-GRS"],
+    "correcta": 1,
+    "explicacion": "Premium (block blobs, file shares, page blobs) solo admite LRS y ZRS: sacrificas redundancia geográfica a cambio de rendimiento."
+  },
+  {
+    "pregunta": "¿Cuál es la estructura correcta de Blob Storage?",
+    "opciones": ["Contenedor → cuenta → blob", "Cuenta de almacenamiento → contenedor → blob", "Blob → contenedor → cuenta", "Cuenta → blob → contenedor"],
+    "correcta": 1,
+    "explicacion": "La cuenta es la raíz, el contenedor organiza los blobs como una carpeta, y el blob es el archivo."
+  },
+  {
+    "pregunta": "Necesitas una base de datos NoSQL PaaS, totalmente administrada, con baja latencia global y escrituras en múltiples regiones. ¿Qué eliges?",
+    "opciones": ["Azure Table Storage", "Azure SQL Database", "Azure Cosmos DB", "Azure Files"],
+    "correcta": 2,
+    "explicacion": "Cosmos DB es NoSQL multimodelo (documentos, grafos, clave-valor, familias de columnas), muy escalable y con escrituras multirregión."
+  },
+  {
+    "pregunta": "El almacenamiento Archive es…",
+    "opciones": ["Un servicio separado con sus propias herramientas", "Un nivel de Blob Storage: se usan las mismas herramientas", "Un tipo de disco para VMs", "Una opción de redundancia"],
+    "correcta": 1,
+    "explicacion": "Archive es un nivel de acceso de Blob Storage: el más barato para guardar datos de largo plazo que casi nunca se leen."
   }
 ]

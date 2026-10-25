@@ -44,8 +44,8 @@
   <a class="volver" href="index.html">← Todos los capítulos</a>
   <header>
     <div class="eyebrow">AZ-900 · Capítulo 7 · Almacenamiento</div>
-    <h1>Azure Storage: redundancia, servicios, niveles y discos</h1>
-    <p>Elige un tipo de redundancia y provoca una falla para ver dónde viven las copias y si la app sigue funcionando. Después explora qué servicio usar para cada tipo de dato, cuánto te cuesta cada nivel de acceso de Blob y qué disco necesita tu VM.</p>
+    <h1>Azure Storage: redundancia, servicios, niveles, discos y migración</h1>
+    <p>Elige un tipo de redundancia y provoca una falla para ver dónde viven las copias y si la app sigue funcionando. Después explora qué servicio usar para cada tipo de dato, cuánto te cuesta cada nivel de acceso de Blob, qué disco necesita tu VM y con qué herramienta mover tus datos a Azure.</p>
   </header>
 
   <h2 class="h" style="margin:0">1 · Redundancia (durabilidad)</h2>
@@ -141,12 +141,55 @@
     </table></div>
   </section>
 
+  <!-- 5 · Movimiento de datos y migración -->
+  <section class="bloque">
+    <h2 class="h">5 · Mover datos y migrar a Azure: ¿qué herramienta uso?</h2>
+    <div class="controls">
+      <div class="ctl"><label>Qué necesitas hacer</label><div class="seg" id="mnec"></div></div>
+      <div class="ctl"><label>Ancho de banda hacia Azure</label><div class="seg" id="mbw"></div></div>
+    </div>
+    <div class="controls">
+      <div class="ctl">
+        <label for="mtam">Cantidad de datos</label>
+        <div class="slider"><input type="range" id="mtam" min="0" max="12" step="1"><span id="mtamVal"></span></div>
+      </div>
+      <div class="ctl">
+        <label>Restricción</label>
+        <label class="slider" style="cursor:pointer;text-transform:none;letter-spacing:0;font-family:var(--f-body);font-size:.9rem;color:var(--ink)"><input type="checkbox" id="msens" style="flex:none;max-width:none"> Los datos son sensibles y no pueden viajar por Internet</label>
+      </div>
+    </div>
+    <div class="status" id="statusM"></div>
+    <div class="facts" id="factsM"></div>
+    <div class="note" id="noteM"></div>
+    <p class="fb" style="margin:0">El tiempo por red es una estimación simple (velocidad al 80%). La regla del curso: Data Box cuando los datos son "demasiados para transferir por Internet en relación con tu ancho de banda". Aquí se usa más de 1 semana como referencia.</p>
+  </section>
+
   <section>
     <h2 class="h">Conceptos clave y errores comunes</h2>
     <div class="cards">
       <div class="card"><h3>Tipos de cuenta (rendimiento)</h3><ul>
         <li><b>Standard (General-Purpose v2):</b> opción por defecto. Soporta Blob, Files, Queues y Tables, es la más económica y admite todas las redundancias.</li>
-        <li><b>Premium:</b> baja latencia y alto rendimiento. Eliges el tipo de dato: <b>block blobs</b> (objetos), <b>file shares</b> (archivos) o <b>page blobs</b> (discos VHD).</li>
+        <li><b>Premium:</b> baja latencia y alto rendimiento (SSD). Eliges el tipo de dato: <b>block blobs</b> (IA, IoT), <b>file shares</b> (SMB y NFS) o <b>page blobs</b> (discos no administrados).</li>
+        <li>Premium <b>solo admite LRS y ZRS</b>: sacrificas redundancia geográfica a cambio de rendimiento.</li>
+      </ul></div>
+      <div class="card"><h3>Estructura de Blob Storage</h3><ul>
+        <li><b>Cuenta de almacenamiento</b> → raíz del servicio (ej. storage7173).</li>
+        <li><b>Contenedor</b> → organiza los blobs, como una carpeta (ej. images, movies).</li>
+        <li><b>Blob</b> → el archivo en sí (ej. img1.jpg, video.avi).</li>
+        <li>Archive también es Blob: funcionan las mismas herramientas.</li>
+      </ul></div>
+      <div class="card"><h3>Movimiento de datos y migración</h3><ul>
+        <li><b>AzCopy:</b> línea de comandos para copiar blobs y archivos; permite programar transferencias.</li>
+        <li><b>Storage Explorer:</b> interfaz gráfica (Windows, macOS, Linux) para explorar, cargar, descargar, borrar y renombrar.</li>
+        <li><b>Azure File Sync:</b> sincroniza Azure Files con servidores de archivos locales, que quedan como caché.</li>
+        <li><b>Azure Data Box:</b> dispositivo físico cifrado y robusto para transferir sin conexión.</li>
+        <li><b>Azure Migrate:</b> descubre, evalúa (dependencias y costos) y migra servidores, bases de datos y apps.</li>
+      </ul></div>
+      <div class="card"><h3>Azure Cosmos DB</h3><ul>
+        <li>Base de datos <b>NoSQL PaaS</b>, totalmente administrada y muy escalable.</li>
+        <li><b>Multimodelo:</b> documentos, grafos, clave-valor y familias de columnas, con varias API.</li>
+        <li>Baja latencia y <b>escrituras en múltiples regiones</b>.</li>
+        <li>Usos: IoT, juegos, catálogos de productos, apps web y móviles (la usan Skype, Xbox y Microsoft 365).</li>
       </ul></div>
       <div class="card"><h3>Redundancia en una línea</h3><ul>
         <li><b>LRS:</b> 3 copias en 1 centro de datos.</li>
@@ -309,7 +352,41 @@ function renderK(){
     return`<tr class="${k===disco?"sel":""}"><td><b>${x.name}</b></td><td>${x.tec}</td><td>${x.rend}</td><td>${x.lat}</td><td>${x.max}</td><td>${x.uso}</td></tr>`}).join("");
 }
 
-render();renderS();renderT();renderK();iniciarQuiz("cap07");
+/* ---------- 5 · Movimiento de datos ---------- */
+const NEC={cmd:"Copiar archivos (con comandos)",gui:"Copiar archivos (con interfaz gráfica)",sync:"Sincronizar mi servidor de archivos local",srv:"Migrar servidores y aplicaciones completos"};
+const BW={m10:"10 Mbps",m100:"100 Mbps",g1:"1 Gbps"},MBPS={m10:10,m100:100,g1:1000};
+const TAM=[1,10,50,100,500,1000,5000,10000,50000,100000,200000,500000,1000000]; // en GB
+let mnec="cmd",mbw="m100",mtam=4,msens=false;
+const tamIn=document.getElementById("mtam");tamIn.value=mtam;tamIn.oninput=()=>{mtam=+tamIn.value;renderM()};
+document.getElementById("msens").onchange=e=>{msens=e.target.checked;renderM()};
+const fmtGB=g=>g>=1000?(g/1000)+" TB":g+" GB";
+function fmtT(h){return h<1?Math.max(1,Math.round(h*60))+" min":h<48?Math.round(h)+" h":Math.round(h/24)+" días"}
+const HERR={
+ azcopy:{n:"AzCopy",tipo:"En línea (por red)",ui:"Línea de comandos",d:"Copia blobs y archivos hacia y desde Azure Storage, y permite programar transferencias.",code:'azcopy cp "blockstellart.mp4" "https://mystorageaccount.blob.core.windows.net/my-container/blockstellart.mp4?SAS-token"'},
+ explorer:{n:"Azure Storage Explorer",tipo:"En línea (por red)",ui:"Interfaz gráfica",d:"Aplicación para Windows, macOS y Linux: explorar, cargar, descargar, eliminar y renombrar datos de Azure Storage."},
+ filesync:{n:"Azure File Sync",tipo:"En línea, continua",ui:"Agente en Windows Server",d:"Sincroniza Azure Files con tus servidores de archivos locales: rendimiento local + disponibilidad en la nube. Sirve para respaldar el servidor, sincronizar varias sedes y, al final, pasar a usar solo Azure Files."},
+ databox:{n:"Azure Data Box",tipo:"Sin conexión (envío físico)",ui:"Dispositivo físico",d:"Copias los datos a un dispositivo cifrado y robusto, y se envía a Azure, donde se carga en tu cuenta de almacenamiento. También funciona al revés, para restaurar respaldos en un centro de datos local."},
+ migrate:{n:"Azure Migrate",tipo:"Descubrir, evaluar y migrar",ui:"Portal (panel central)",d:"Descubre los servidores y aplicaciones locales, encuentra dependencias, estima costos, recomienda tamaños, permite probar la migración y luego migrar en oleadas."}
+};
+function renderM(){
+  seg("mnec",NEC,()=>mnec,k=>mnec=k,renderM);
+  seg("mbw",BW,()=>mbw,k=>mbw=k,renderM);
+  const gb=TAM[mtam];document.getElementById("mtamVal").textContent=fmtGB(gb);
+  const horas=gb*8000/(MBPS[mbw]*0.8)/3600,lento=horas>24*7;
+  let h,lvl,t,d;
+  if(mnec==="srv"){h="migrate";lvl="ok";t="Azure Migrate";d="No se trata solo de copiar datos: hay que evaluar los servidores y sus dependencias antes de migrar."}
+  else if(msens){h="databox";lvl="warn";t="Azure Data Box";d="Si los datos no pueden viajar por Internet, se envían en un dispositivo físico cifrado."}
+  else if(lento){h="databox";lvl="warn";t="Azure Data Box";d=`Por red tardarías unos ${fmtT(horas)}: es demasiado para tu ancho de banda. Conviene enviar los datos en un dispositivo físico.`}
+  else if(mnec==="sync"){h="filesync";lvl="ok";t="Azure File Sync";d="Tu servidor local sigue funcionando como caché y Azure Files guarda la copia en la nube."}
+  else{h=mnec==="gui"?"explorer":"azcopy";lvl="ok";t=HERR[h].n;d=`Por red tardarías unos ${fmtT(horas)}: es razonable transferirlo en línea.`}
+  const col={ok:"var(--ok)",warn:"var(--warn)"}[lvl],ico={ok:"✓",warn:"!"}[lvl];
+  document.getElementById("statusM").innerHTML=`<span class="dot" style="background:${col}" aria-hidden="true"></span><div><b>${ico} Usa ${t}</b><p>${d}</p></div>`;
+  const x=HERR[h];
+  facts("factsM",[["Herramienta",x.n],["Tipo de transferencia",x.tipo],["Interfaz",x.ui],["Tiempo por red",fmtT(horas)]]);
+  document.getElementById("noteM").innerHTML=`<h3>${x.n}</h3><p>${x.d}</p>${x.code?`<p style="margin-top:8px"><code class="costo" style="word-break:break-all">${x.code}</code></p>`:""}`;
+}
+
+render();renderS();renderT();renderK();renderM();iniciarQuiz("cap07");
 </script>
 </body>
 </html>
