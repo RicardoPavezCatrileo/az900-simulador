@@ -94,5 +94,11 @@
     "opciones": ["Azure Virtual Machines", "Azure App Service", "Azure Traffic Manager", "Azure Functions"],
     "correcta": 2,
     "explicacion": "Traffic Manager (balanceo por DNS) y Microsoft Entra ID (antes Azure Active Directory) son globales. VMs, App Service y Functions son regionales."
+  },
+  {
+    "pregunta": "¿Cuál de las siguientes funciones NO se realiza utilizando los grupos de administración en Azure dentro de nuestra organización?",
+    "opciones": ["Gestionar políticas", "Gestionar el ciclo de vida de los recursos", "Gestionar el control de acceso", "Implementar políticas a gran escala"],
+    "correcta": 1,
+    "explicacion": "Los grupos de administración organizan suscripciones y aplican Azure Policy y RBAC que se heredan hacia abajo (PDF pág. 45): eso cubre políticas, control de acceso y políticas a gran escala. El ciclo de vida de los recursos (desplegarlos, actualizarlos y borrarlos juntos) es la función de los GRUPOS DE RECURSOS."
   }
 ]
