@@ -19,7 +19,7 @@ az900-simulador/
 ├── index.html                  ← portada: 10 capítulos con % de avance
 ├── cap02-cloud.html
 ├── cap03-arquitectura.html
-├── cap04-herramientas.html
+├── cap04-fundamentos-herramientas.html
 ├── cap05-computacion.html
 ├── cap06-redes.html
 ├── cap07-almacenamiento.html   ← YA EXISTE (simulador de redundancia)
@@ -80,7 +80,7 @@ Errores de esa guía que NO se deben copiar: dice que la secundaria de GZRS es Z
 - Tarjetas (regiones, emparejadas, soberanas, zonas, PoP, servicios globales vs regionales) y 17 preguntas en `data/preguntas-cap03.json`.
 - El curso nombra "Azure Active Directory"; en el sitio se usa "Microsoft Entra ID (antes Azure Active Directory)".
 
-## Lo que ya existe: cap04-herramientas.html (PDF págs. 48–58)
+## Lo que ya existe: cap04-fundamentos-herramientas.html (PDF págs. 48–58)
 - "Una tarea, siete herramientas": crear una VM en Portal (pasos), CLI (`az`), PowerShell (`New-AzVM`), Cloud Shell, plantilla ARM (JSON + `az deployment group create`), Mobile App y Advisor, con ficha de tipo/dónde/instalación/automatizable.
 - Panel de Azure Advisor: checkboxes de problemas → puntaje por las 5 categorías (Costo, Seguridad, Confiabilidad, Excelencia operativa, Rendimiento) y recomendaciones. Puntajes ilustrativos.
 - Tarjetas por herramienta y 15 preguntas en `data/preguntas-cap04.json`.
