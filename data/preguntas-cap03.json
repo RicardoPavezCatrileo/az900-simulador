@@ -100,5 +100,11 @@
     "opciones": ["Gestionar políticas", "Gestionar el ciclo de vida de los recursos", "Gestionar el control de acceso", "Implementar políticas a gran escala"],
     "correcta": 1,
     "explicacion": "Los grupos de administración organizan suscripciones y aplican Azure Policy y RBAC que se heredan hacia abajo (PDF pág. 45): eso cubre políticas, control de acceso y políticas a gran escala. El ciclo de vida de los recursos (desplegarlos, actualizarlos y borrarlos juntos) es la función de los GRUPOS DE RECURSOS."
+  },
+  {
+    "pregunta": "¿Entre cuáles de los siguientes recursos de Azure pueden moverse las máquinas virtuales de Azure? Selecciona TODAS las que correspondan.",
+    "opciones": ["Conjuntos de disponibilidad", "Regiones", "Zonas de disponibilidad", "Grupos de recursos", "Suscripciones"],
+    "correcta": [1, 3, 4],
+    "explicacion": "Grupos de recursos y suscripciones son carpetas lógicas: con \"Mover\" la VM cambia de carpeta (y de permisos, políticas y factura) sin moverse físicamente. Entre regiones se mueve replicándola con Azure Resource Mover o Site Recovery. El conjunto de disponibilidad se define al crear la VM: hay que recrearla. Zonas: la respuesta típica del examen la excluye, aunque hoy Resource Mover permite llevar una VM a una zona. No está en el PDF (la jerarquía sí, págs. 41–45)."
   }
 ]
