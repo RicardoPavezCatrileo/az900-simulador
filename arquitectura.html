@@ -81,6 +81,7 @@
     <div class="ctl"><label>&nbsp;</label><div class="paso"><button type="button" class="btn" id="ant">◀ Anterior</button><button type="button" class="btn" id="sig">Siguiente ▶</button></div></div>
     <div class="ctl"><label>&nbsp;</label><label class="chk"><input type="checkbox" id="resaltar" checked> Resaltar lo que agrega el capítulo</label></div>
   </div>
+  <div class="ctl" id="ctlEntrada"><label>Entrada global (desde el cap. 6)</label><div class="seg" id="entrada"></div></div>
   <div class="ctl" id="ctlRed"><label>Redundancia de la Storage Account (desde el cap. 7)</label><div class="seg" id="red"></div></div>
   <div class="ctl"><label>Recorrido</label><div class="seg" id="flujos"></div></div>
   <div class="leyenda" id="leyenda"></div>
@@ -120,7 +121,7 @@ const EL=[
   p:"La empresa no se muda entera a la nube: mantiene la oficina con su AD, su servidor de archivos y los empleados. Por eso la arquitectura es híbrida."},
  {id:"inet",k:"nodo",a:0,cap:2,x:470,y:36,w:170,h:48,t:"Usuarios de Internet",s:"clientes · navegador",
   q:"Las personas que usan la aplicación web desde cualquier lugar.",
-  p:"Son el origen del tráfico público. Entran por HTTPS a la única puerta expuesta (Front Door; antes del cap. 6, imagina que entran directo a la región)."},
+  p:"Son el origen del tráfico público. Entran por HTTPS a la única puerta expuesta: Front Door, o directo al Application Gateway si la entrada global es Traffic Manager (antes del cap. 6, imagina que entran directo a la región)."},
 
  // Capítulo 3: organización y geografía
  {id:"mg",k:"marco",cap:3,x:262,y:206,w:956,h:632,t:"Grupo de administración · Contoso",
@@ -195,9 +196,12 @@ const EL=[
  {id:"fd",k:"nodo",a:1,cap:6,x:412,y:134,w:160,h:46,t:"Azure Front Door",s:"global · capa 7 · WAF",
   q:"Punto de entrada GLOBAL de capa 7 (HTTP/HTTPS): enruta cada usuario al back-end más cercano y sano, con WAF y caché tipo CDN. No está en el PDF del curso.",
   p:"Es la puerta pública de la app: acelera a usuarios lejanos, cachea contenido estático y frena ataques antes de que lleguen a la región. Si mañana se agrega una segunda región, Front Door reparte entre ambas y hace failover. Application Gateway, en cambio, es regional."},
+ {id:"tm",k:"nodo",a:1,cap:6,x:412,y:134,w:130,h:46,t:"Traffic Manager",s:"global · solo DNS",
+  q:"Balanceador GLOBAL basado en DNS: responde a la consulta DNS con la IP del endpoint más adecuado (por prioridad, rendimiento, ponderación o geografía). El tráfico NO pasa por él: no es capa 7, no hace proxy, no tiene WAF ni caché. No está en el PDF del curso.",
+  p:"Alternativa a Front Door: el navegador le pregunta a Traffic Manager a dónde ir y luego se conecta DIRECTO al Application Gateway. Si hubiera una segunda región, haría failover cambiando la respuesta DNS."},
  {id:"appgw",k:"nodo",a:1,cap:6,x:436,y:380,w:112,h:54,t:"App Gateway",s:"capa 7 · WAF",
   q:"Balanceador regional de capa 7 (HTTP/HTTPS): enruta por URL, hace terminación SSL y puede llevar WAF (firewall de aplicaciones web).",
-  p:"Recibe el tráfico que llega desde Front Door y lo reparte entre las VMs web de la región. Puede llevar su propio WAF regional (en esta arquitectura el WAF principal está en Front Door)."},
+  p:"Recibe el tráfico (desde Front Door, o directo desde Internet si la entrada global es Traffic Manager) y lo reparte entre las VMs web de la región. Puede llevar su propio WAF regional: con Traffic Manager es el único WAF, porque Traffic Manager no filtra nada."},
  {id:"lb",k:"nodo",a:1,cap:6,x:436,y:496,w:112,h:54,t:"Load Balancer",s:"interno · capa 4",
   q:"Balanceador de capa 4 (TCP/UDP): reparte el tráfico entre VMs sanas según IP y puerto. No mira URLs ni hace terminación SSL.",
   p:"Reparte las llamadas de las VMs web (y de la oficina) entre las VMs de aplicación. Es interno: no tiene IP pública."},
@@ -293,6 +297,8 @@ const EL=[
 const AR=[
  {id:"e_inet_fd",cap:6,d:[[492,84],[492,134]],lab:["HTTPS",498,110,"start"],l11:["entrada: gratis · salida: se cobra",540,110,"start"]},
  {id:"e_fd_ag",cap:6,d:[[492,180],[492,380]],lab:["al back-end de la región",498,310,"start"]},
+ {id:"e_inet_tm",cap:6,cls:"rayas",d:[[492,84],[492,134]],lab:["1 · consulta DNS",486,112,"end"]},
+ {id:"e_inet_ag2",cap:6,d:[[556,84],[556,392],[548,392]],lab:["2 · HTTPS directo: no pasa por Traffic Manager",562,150,"start"],l11:["entrada: gratis · salida: se cobra",562,166,"start"]},
  {id:"e_ag_ss",cap:6,d:[[548,407],[560,407]]},
  {id:"e_ss_lb",cap:6,d:[[600,442],[600,465],[492,465],[492,496]]},
  {id:"e_lb_be",cap:6,d:[[548,523],[560,523]]},
@@ -363,6 +369,11 @@ const RED={
  "RA-GZRS":{zonas:true,geo:true,ra:true,copias:6,protege:"la caída de una zona y la de la región, con lectura de la secundaria en cualquier momento",no:"escribir en la secundaria antes del failover",d:"16 nueves"}
 };
 const SOLO_GEO=new Set(["st2","e_st_st2"]);
+// Entrada global: Front Door (proxy capa 7) o Traffic Manager (solo DNS)
+const SOLO_FD=new Set(["edge","fd","e_inet_fd","e_fd_ag"]),SOLO_TM=new Set(["tm","e_inet_tm","e_inet_ag2"]);
+function excluido(id){
+  return (SOLO_GEO.has(id)&&!RED[red].geo)||(SOLO_FD.has(id)&&entrada!=="fd")||(SOLO_TM.has(id)&&entrada!=="tm");
+}
 
 const NS="http://www.w3.org/2000/svg";
 const svg=document.getElementById("svg");
@@ -373,7 +384,8 @@ const capId=n=>"cap"+String(n).padStart(2,"0");
 const archivo=n=>CAPITULOS.find(c=>c.num===n).archivo;
 const tituloCap=n=>CAPITULOS.find(c=>c.num===n).titulo;
 
-let hasta=11,resaltar=true,flujo=null,sel=null,red="GRS";
+let hasta=11,resaltar=true,flujo=null,sel=null,red="GRS",entrada="fd";
+try{const v=localStorage.getItem("az900:arquitectura:entrada");if(v==="fd"||v==="tm")entrada=v}catch(e){}
 try{const v=localStorage.getItem("az900:arquitectura:red");if(RED[v])red=v}catch(e){}
 try{const v=parseInt(localStorage.getItem("az900:arquitectura:cap"),10);if(v>=2&&v<=11)hasta=v}catch(e){}
 
@@ -469,10 +481,10 @@ function pintarCopias(){
 function aplicar(){
   pintarCopias();
   const cap=flujo?11:hasta;
-  const enFlujo=flujo?new Set(FLUJOS.find(f=>f.id===flujo).ids):null;
+  const enFlujo=flujo?new Set(idsFlujo(FLUJOS.find(f=>f.id===flujo))):null;
   svg.querySelectorAll(".el").forEach(g=>{
     const e=POR_ID[g.dataset.id];
-    g.classList.toggle("oculto",e.cap>cap||(SOLO_GEO.has(e.id)&&!RED[red].geo));
+    g.classList.toggle("oculto",e.cap>cap||excluido(e.id));
     g.classList.toggle("nuevo",!flujo&&resaltar&&e.cap===cap&&cap>2);
     g.classList.toggle("viejo",!flujo&&resaltar&&e.cap<cap&&cap>2);
     g.classList.toggle("dim",!!enFlujo&&!enFlujo.has(e.id));
@@ -484,6 +496,9 @@ function aplicar(){
   document.querySelectorAll("#flujos button").forEach(b=>b.setAttribute("aria-pressed",String((flujo||"none")===b.dataset.k)));
   document.querySelectorAll("#red button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.k===red)));
   document.getElementById("ctlRed").hidden=cap<7;
+  document.querySelectorAll("#entrada button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.k===entrada)));
+  document.getElementById("ctlEntrada").hidden=cap<6;
+  try{localStorage.setItem("az900:arquitectura:entrada",entrada)}catch(e){}
   try{localStorage.setItem("az900:arquitectura:red",red)}catch(e){}
   document.getElementById("ant").disabled=hasta<=2;
   document.getElementById("sig").disabled=hasta>=11;
@@ -498,7 +513,7 @@ const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",
 
 function panelCapitulo(){
   const n=hasta;
-  const nuevos=EL.filter(e=>e.cap===n&&e.k!=="nota"&&e.k!=="zona");
+  const nuevos=EL.filter(e=>e.cap===n&&e.k!=="nota"&&e.k!=="zona"&&!excluido(e.id));
   document.getElementById("panel").innerHTML=`
     <div class="area">Capítulo ${n} · PDF págs. ${PAGS[n]}</div>
     <h2>${esc(tituloCap(n))}</h2>
@@ -512,7 +527,7 @@ function panelFlujo(){
   document.getElementById("panel").innerHTML=`
     <div class="area">Recorrido</div>
     <h2>${esc(f.n)}</h2>
-    <ol class="pasos">${f.pasos.map(p=>`<li>${esc(p)}</li>`).join("")}</ol>`;
+    <ol class="pasos">${pasosFlujo(f).map(p=>`<li>${esc(p)}</li>`).join("")}</ol>`;
 }
 function panelElemento(id){
   const e=POR_ID[id];
@@ -542,6 +557,43 @@ for(let n=2;n<=11;n++){
   const b=document.createElement("button");
   b.type="button";b.dataset.k=n;b.textContent=n;b.title=tituloCap(n);
   b.onclick=()=>irA(n);caps.appendChild(b);
+}
+// Recorrido web con Traffic Manager: cambia la entrada y los dos primeros pasos
+const TM_WEB={ids:["tm","e_inet_tm","e_inet_ag2"],pasos:[
+ "El navegador primero consulta el DNS: Traffic Manager responde con la IP pública del Application Gateway de Brazil South (el endpoint sano con mejor prioridad o rendimiento).",
+ "Con esa IP, el navegador se conecta DIRECTO al Application Gateway: el tráfico no pasa por Traffic Manager, que no ve ni filtra las peticiones. La entrada de datos es gratis; la salida se cobra.",
+ "El Application Gateway (regional, capa 7) aplica su WAF y reparte las peticiones entre las VMs web del Scale Set."]};
+function idsFlujo(f){
+  if(f.id!=="web"||entrada!=="tm")return f.ids;
+  return f.ids.filter(i=>!SOLO_FD.has(i)).concat(TM_WEB.ids);
+}
+function pasosFlujo(f){
+  if(f.id!=="web"||entrada!=="tm")return f.pasos;
+  return TM_WEB.pasos.concat(f.pasos.slice(3));
+}
+const eb=document.getElementById("entrada");
+[["fd","Front Door"],["tm","Traffic Manager"]].forEach(([k,n])=>{
+  const b=document.createElement("button");
+  b.type="button";b.dataset.k=k;b.textContent=n;
+  b.onclick=()=>{entrada=k;sel=null;aplicar();flujo?panelFlujo():panelEntrada()};
+  eb.appendChild(b);
+});
+function panelEntrada(){
+  const fd=entrada==="fd";
+  document.getElementById("panel").innerHTML=`
+    <div class="area">Red · Capítulo 6 · no está en el PDF</div>
+    <h2>Entrada global con ${fd?"Azure Front Door":"Traffic Manager"}</h2>
+    <p>${fd?"Front Door es un <b>proxy de capa 7</b>: el usuario se conecta al PoP más cercano y TODO el tráfico pasa por Front Door, que aplica WAF, cachea lo estático y lo lleva por la red de Microsoft hasta la región.":"Traffic Manager es <b>solo DNS</b>: responde a qué IP ir y se aparta. El navegador se conecta directo al Application Gateway, así que no hay WAF global, ni caché, ni aceleración: lo único que hace es elegir el endpoint."}</p>
+    <div class="tbl"><table><tr><th></th><th>Front Door</th><th>Traffic Manager</th></tr>
+      <tr><td>Alcance</td><td>Global</td><td>Global</td></tr>
+      <tr><td>Cómo funciona</td><td>Proxy capa 7 (HTTP/HTTPS)</td><td>Solo DNS: el tráfico no pasa por él</td></tr>
+      <tr><td>WAF · caché · terminación SSL</td><td class="y">Sí</td><td class="n">No</td></tr>
+      <tr><td>Protocolos</td><td>Solo HTTP/HTTPS</td><td>Cualquiera (resuelve un nombre DNS)</td></tr>
+      <tr><td>Failover entre regiones</td><td class="y">Sí, inmediato</td><td class="y">Sí, al expirar el TTL del DNS</td></tr>
+    </table></div>
+    <p>Pista de examen: "DNS" o "tráfico que no es HTTP" → Traffic Manager. "WAF global", "aceleración" o "caché" → Front Door.</p>
+    ${avance(6)}
+    <p><a href="cap06-redes.html">Comparar los balanceadores en el capítulo 6 →</a></p>`;
 }
 const rb=document.getElementById("red");
 Object.keys(RED).forEach(k=>{
