@@ -38,7 +38,7 @@ az900-simulador/
 ## Cómo se arma un capítulo
 - La página carga `assets/estilos.css`, luego `assets/progreso.js` y `assets/quiz.js`, y llama a `iniciarQuiz("capXX")`. Debe tener `<div id="score">` y `<div id="quiz">`.
 - Los estilos propios del simulador van en un `<style>` dentro de la página; lo reutilizable va a `estilos.css`.
-- Formato de pregunta en JSON: `{"pregunta","opciones":[...],"correcta":<índice>,"explicacion"}`.
+- Formato de pregunta en JSON: `{"pregunta","opciones":[...],"correcta":<índice>,"explicacion"}`. Para selección múltiple ("Selecciona TODAS"), `"correcta":[<índice>,...]`: se marcan opciones y se responde con "Comprobar"; solo es correcta si coincide exactamente (las correctas no marcadas se muestran con borde verde punteado).
 - Al publicar un capítulo nuevo, marcar `listo:true` en `CAPITULOS` (`progreso.js`) para que la portada lo enlace.
 - Avance guardado en la clave `az900:progreso:capXX` como `{respuestas, total, mejor}`; el % de la portada es `mejor/total`. Si cambia la cantidad de preguntas del JSON, las respuestas guardadas se descartan (se conserva `mejor`).
 - `fetch` del JSON no funciona abriendo el archivo con doble clic (`file://`): usar Live Server.
@@ -89,7 +89,7 @@ Errores de esa guía que NO se deben copiar: dice que la secundaria de GZRS es Z
 - Opciones de compra: duración × interrumpible × requisito especial (zona, host dedicado, aislada) × flexibilidad → pago por uso / plan de ahorro / reservada / spot / host dedicado / aislada / reserva de capacidad, con analogía del hotel del curso y tabla comparativa. Descuentos del curso (~65/72/90%) marcados como aproximados.
 - Escalado: vertical (tamaños hasta 416 vCPU) vs horizontal en 1 zona vs horizontal en 3 zonas, slider de usuarios (supuesto: 100 usuarios por vCPU, 4 vCPU por VM en horizontal; límite 100/1000 VMs del Scale Set) y caída de la Zona 1.
 - Explorador de servicios: VM, Scale Sets, App Service, ACI, AKS, Functions, Virtual Desktop (modelo, quién gestiona el SO, escalado, qué pagas).
-- 20 preguntas en `data/preguntas-cap05.json`.
+- 21 preguntas en `data/preguntas-cap05.json` (la 21 es de selección múltiple: serverless = Functions, Logic Apps y Event Grid; va más allá del PDF).
 - Para probar un estado distinto al inicial: copiar la página a `_prueba.html` con `sed` cambiando las variables `let …` iniciales, capturar y borrar la copia.
 
 ## Lo que ya existe: cap06-redes.html (PDF págs. 101–121)

@@ -1,5 +1,6 @@
 // Quiz compartido: carga las preguntas de data/preguntas-capXX.json, las muestra y guarda el avance con progreso.js.
 // Formato de cada pregunta: {"pregunta":"...","opciones":["..."],"correcta":<índice>,"explicacion":"..."}
+// Selección múltiple: "correcta":[<índice>,...]; se marcan varias opciones y se responde con "Comprobar".
 // Uso: iniciarQuiz("cap07")  (requiere <div id="score"> y <div id="quiz"> en la página)
 
 async function iniciarQuiz(cap){
@@ -21,7 +22,16 @@ async function iniciarQuiz(cap){
   if(p.total!==Q.length)p={respuestas:{},total:Q.length,mejor:Math.min(p.mejor||0,Q.length)};
   const ans=p.respuestas||{};
 
-  function correctas(){return Object.keys(ans).filter(i=>ans[i]===Q[i].correcta).length}
+  const multi=i=>Array.isArray(Q[i].correcta);
+  // En selección múltiple la respuesta guardada es la lista ordenada de opciones marcadas
+  function acierto(i){
+    if(!multi(i))return ans[i]===Q[i].correcta;
+    const a=[...ans[i]].sort(),c=[...Q[i].correcta].sort();
+    return a.length===c.length&&a.every((v,k)=>v===c[k]);
+  }
+  function correctas(){return Object.keys(ans).filter(i=>acierto(i)).length}
+  const marcadas={};  // selección en curso (sin comprobar) de las preguntas múltiples
+  function responder(i,r){ans[i]=r;p.respuestas=ans;p.mejor=Math.max(p.mejor||0,correctas());Progreso.guardar(cap,p);pintar()}
 
   function pintar(){
     el.innerHTML="";
@@ -30,13 +40,37 @@ async function iniciarQuiz(cap){
       d.innerHTML=`<p></p><div class="opts"></div><div class="fb"></div>`;
       d.querySelector("p").textContent=`${i+1}. ${x.pregunta}`;
       const opts=d.querySelector(".opts");
-      x.opciones.forEach((o,j)=>{
-        const b=document.createElement("button");b.type="button";b.textContent=o;
-        if(i in ans){if(j===x.correcta)b.className="right";else if(j===ans[i])b.className="wrong";b.disabled=true}
-        b.onclick=()=>{ans[i]=j;p.respuestas=ans;p.mejor=Math.max(p.mejor||0,correctas());Progreso.guardar(cap,p);pintar()};
-        opts.appendChild(b);
-      });
-      if(i in ans)d.querySelector(".fb").textContent=(ans[i]===x.correcta?"Correcto. ":"Incorrecto. ")+x.explicacion;
+      if(multi(i)){
+        const m=marcadas[i]||(marcadas[i]=new Set());
+        x.opciones.forEach((o,j)=>{
+          const b=document.createElement("button");b.type="button";b.textContent=o;
+          if(i in ans){
+            if(x.correcta.includes(j))b.className=ans[i].includes(j)?"right":"right missed";
+            else if(ans[i].includes(j))b.className="wrong";
+            b.disabled=true;
+          }else{
+            b.setAttribute("aria-pressed",String(m.has(j)));
+            if(m.has(j))b.className="pick";
+            b.onclick=()=>{m.has(j)?m.delete(j):m.add(j);pintar()};
+          }
+          opts.appendChild(b);
+        });
+        if(!(i in ans)){
+          const c=document.createElement("button");c.type="button";c.className="btn";c.textContent="Comprobar";
+          c.disabled=!m.size;
+          c.onclick=()=>{responder(i,[...m].sort((a,b)=>a-b));delete marcadas[i]};
+          d.querySelector(".fb").textContent="Selección múltiple: marca todas las que correspondan y presiona Comprobar.";
+          d.insertBefore(c,d.querySelector(".fb"));
+        }
+      }else{
+        x.opciones.forEach((o,j)=>{
+          const b=document.createElement("button");b.type="button";b.textContent=o;
+          if(i in ans){if(j===x.correcta)b.className="right";else if(j===ans[i])b.className="wrong";b.disabled=true}
+          b.onclick=()=>responder(i,j);
+          opts.appendChild(b);
+        });
+      }
+      if(i in ans)d.querySelector(".fb").textContent=(acierto(i)?"Correcto. ":"Incorrecto. ")+x.explicacion;
       el.appendChild(d);
     });
 

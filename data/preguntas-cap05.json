@@ -118,5 +118,11 @@
     "opciones": ["Azure Virtual Desktop", "Azure Functions", "Azure Container Instances", "App Service"],
     "correcta": 0,
     "explicacion": "Azure Virtual Desktop (antes Windows Virtual Desktop) virtualiza escritorios y apps; varios usuarios pueden compartir la misma VM."
+  },
+  {
+    "pregunta": "Una empresa tecnológica está explorando servicios en Azure que permitan construir soluciones serverless para minimizar el mantenimiento de servidores físicos y centrarse en la lógica de negocio. ¿Cuáles de los siguientes servicios se consideran verdaderamente serverless en Azure? (Selecciona TODAS las que correspondan)",
+    "opciones": ["Azure Virtual Machines", "Azure App Service", "Azure Event Grid", "Azure Front Door", "Azure Logic Apps", "Azure Functions"],
+    "correcta": [2, 4, 5],
+    "explicacion": "Serverless = no gestionas servidores, escala solo (hasta cero) y pagas por ejecución (PDF pág. 98). Functions (código), Logic Apps (flujos sin código) y Event Grid (eventos) lo son. VMs es IaaS; App Service es PaaS con un plan siempre encendido que pagas aunque no haya tráfico; Front Door es un servicio de red. Va más allá del PDF: el curso solo explica Functions, nombra Logic Apps de pasada (pág. 239) y no menciona Event Grid."
   }
 ]

@@ -73,6 +73,9 @@ td.y{color:var(--ok);font-weight:600} td.n{color:var(--muted)}
 .opts button:not(:disabled):hover{border-color:var(--accent)}
 .opts button.right{background:var(--ok);border-color:var(--ok);color:#fff}
 .opts button.wrong{background:var(--bad);border-color:var(--bad);color:#fff}
+.opts button.pick{background:var(--accent-soft);border-color:var(--accent)}
+.opts button.right.missed{background:var(--bg);color:var(--ok);border:2px dashed var(--ok)}  /* correcta que no se marcó */
+.q>.btn{justify-self:start}
 .fb{font-size:.88rem;color:var(--muted)}
 .score{display:flex;flex-wrap:wrap;gap:10px;align-items:center;font-family:var(--f-mono);font-size:.85rem;color:var(--muted);margin-bottom:10px}
 .btn{font:inherit;font-family:var(--f-mono);font-size:.8rem;padding:5px 10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:6px;cursor:pointer}
