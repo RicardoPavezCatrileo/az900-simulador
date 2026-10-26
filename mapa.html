@@ -109,6 +109,7 @@ const N=[
  ["avd","Virtual Desktop",2,5,"Escritorios Windows en la nube desde cualquier dispositivo."],
 
  ["sa","Storage Account",3,7,"Contenedor de Blob, Files, Queue y Table, con su redundancia (LRS, ZRS, GRS, GZRS)."],
+ ["redund","Redundancia (LRS…GZRS)",3,7,"Cuántas copias guarda la Storage Account y dónde. Se elige al crear la cuenta. Define la durabilidad, no el rendimiento."],
  ["blob","Blob",3,7,"Objetos no estructurados por API REST: fotos, videos, respaldos. Cuenta → contenedor → blob."],
  ["niveles","Niveles Hot/Cool/Cold/Archive",3,7,"Más frío = más barato guardar y más caro leer. Archive necesita rehidratar."],
  ["files","Files",3,7,"Carpeta compartida que se monta por SMB/NFS desde VMs o PCs locales."],
@@ -165,7 +166,7 @@ const E=[
  ["blob","eventgrid","publica eventos (blob creado) en"],["eventgrid","func","dispara"],["eventgrid","logic","dispara"],["servicebus","func","entrega mensajes a"],["alertas","logic","ejecuta (grupo de acción)"],["appsvc","sql","guarda datos en"],["avd","vm","sus escritorios corren en"],
  ["migrate","vm","migra servidores a"],["oficina","migrate","sus servidores los evalúa"],
  ["sa","blob","contiene"],["sa","files","contiene"],["sa","queue","contiene"],["sa","table","contiene"],["blob","niveles","tiene"],
- ["sa","az","ZRS copia en"],["sa","par","GRS/GZRS copia a"],["databox","sa","carga datos sin conexión a"],
+ ["sa","redund","elige su"],["redund","az","ZRS/GZRS reparte copias en 3"],["redund","par","GRS/GZRS copia asíncronamente a"],["databox","sa","carga datos sin conexión a"],
  ["filesync","files","sincroniza servidores locales con"],["azcopy","blob","copia datos a"],["explorer","sa","explora, carga y descarga datos de"],["cosmos","region","escribe en varias"],
  ["kv","sql","guarda la contraseña de"],["kv","appsvc","entrega secretos a"],["defender","vm","protege y recomienda para"],
  ["vm","monitor","envía métricas y registros a"],["monitor","la","guarda registros en"],["monitor","alertas","dispara"],
@@ -192,9 +193,17 @@ const ESC={
  mig:{n:"Migrar mi centro de datos",nodos:["calc","oficina","migrate","vm","databox","sa","filesync","files","azcopy","explorer","blob"],
   ar:[["calc","oficina"],["oficina","migrate"],["migrate","vm"],["databox","sa"],["filesync","files"],["azcopy","blob"],["explorer","sa"],["sa","blob"],["sa","files"]],
   pasos:["La calculadora TCO compara lo que te cuesta hoy tu centro de datos con lo que costaría en Azure.","Azure Migrate descubre tus servidores, ve dependencias, estima costos y los migra a VMs.","Si hay demasiados datos para tu ancho de banda, o no pueden ir por Internet, usas Data Box.","Los servidores de archivos pasan a Azure Files con File Sync.","Para copias puntuales: AzCopy (comandos) o Storage Explorer (interfaz gráfica)."]},
- resp:{n:"Respaldos baratos de largo plazo",nodos:["azcopy","blob","niveles","sa","par","region"],
-  ar:[["azcopy","blob"],["sa","blob"],["blob","niveles"],["sa","par"],["region","par"]],
+ resp:{n:"Respaldos baratos de largo plazo",nodos:["azcopy","blob","niveles","sa","redund","par","region"],
+  ar:[["azcopy","blob"],["sa","blob"],["blob","niveles"],["sa","redund"],["redund","par"],["region","par"]],
   pasos:["Copias los respaldos a Blob Storage, por ejemplo con AzCopy.","Los dejas en el nivel Archive: el más barato para guardar, pero leer exige rehidratar (horas) y la retención mínima es de 180 días.","Con GRS o GZRS, Azure guarda otra copia en la región emparejada, por si cae toda la región."]},
+ dur:{n:"Que mis datos sobrevivan a una caída",nodos:["sa","redund","az","region","par"],
+  ar:[["sa","redund"],["redund","az"],["redund","par"],["region","par"]],
+  pasos:["LRS: 3 copias síncronas en UN centro de datos. La más barata (11 nueves). Sobrevive a un disco o rack, no a la caída del centro de datos.",
+   "ZRS: 3 copias síncronas en 3 zonas de disponibilidad (12 nueves). Sobrevive a la caída de una zona y sigue leyendo y escribiendo.",
+   "GRS: LRS en la primaria + LRS en la región emparejada, copiada de forma asíncrona (6 copias, 16 nueves). Sobrevive a la caída de la región, pero solo tras un failover.",
+   "GZRS: ZRS en la primaria + LRS en la secundaria. Lo mejor de ambos: zonas y otra región.",
+   "RA-GRS / RA-GZRS: lo mismo, pero puedes LEER la secundaria en cualquier momento (endpoint -secondary), sin esperar el failover.",
+   "Premium solo admite LRS y ZRS. Y la secundaria nunca usa zonas: siempre es LRS."]},
  gob:{n:"Gobierno de la empresa",nodos:["mg","sub","rg","vm","policy","rbac","locks","tags","cost","advisor","arc","oficina"],
   ar:[["mg","sub"],["sub","rg"],["rg","vm"],["policy","mg"],["rbac","sub"],["locks","rg"],["tags","cost"],["sub","cost"],["advisor","vm"],["arc","oficina"]],
   pasos:["Grupos de administración → suscripciones → grupos de recursos → recursos.","Azure Policy asignada arriba se hereda hacia abajo: define cómo deben ser los recursos.","RBAC define quién puede hacer qué en cada ámbito.","Un lock en el grupo de recursos impide borrar o modificar, incluso al Propietario.","Las etiquetas y la suscripción permiten ver el gasto en Cost Management; Advisor sugiere ahorros.","Azure Arc lleva todo esto a servidores fuera de Azure."]}
@@ -220,6 +229,16 @@ const VS={
 const MODOS={explorar:"Explorar servicios",escenarios:"Escenarios",comparar:"Comparar confusiones"};
 let modo="explorar",sel=null,esc=null,vs=null;
 const byId=Object.fromEntries(N.map(n=>[n[0],n]));
+const EXTRA={
+ redund:`<div class="tbl"><table><thead><tr><th>Opción</th><th>Primaria</th><th>Secundaria</th><th>Copias</th><th>Sobrevive a</th><th>Leer secundaria</th></tr></thead><tbody>
+<tr><td><b>LRS</b></td><td>1 centro de datos</td><td>—</td><td>3</td><td>falla de disco/rack</td><td class="n">—</td></tr>
+<tr><td><b>ZRS</b></td><td>3 zonas</td><td>—</td><td>3</td><td>caída de una zona</td><td class="n">—</td></tr>
+<tr><td><b>GRS</b></td><td>LRS</td><td>LRS (región emparejada)</td><td>6</td><td>caída de la región (con failover)</td><td class="n">No</td></tr>
+<tr><td><b>RA-GRS</b></td><td>LRS</td><td>LRS</td><td>6</td><td>caída de la región</td><td class="y">Sí, siempre</td></tr>
+<tr><td><b>GZRS</b></td><td>ZRS</td><td>LRS</td><td>6</td><td>zona y región (con failover)</td><td class="n">No</td></tr>
+<tr><td><b>RA-GZRS</b></td><td>ZRS</td><td>LRS</td><td>6</td><td>zona y región</td><td class="y">Sí, siempre</td></tr>
+</tbody></table></div><p class="fb"><b>Pista:</b> "Z" = zonas en la primaria · "G" = otra región · "RA-" = leer la secundaria sin failover. Simulador completo en el capítulo 7.</p>`
+};
 const W=176,H=32,COLX=196,X0=12,Y0=48,STEP=44;
 const pos={};
 AREAS.forEach((a,i)=>N.filter(n=>n[2]===i).forEach((n,j)=>pos[n[0]]={x:X0+i*COLX,y:Y0+j*STEP}));
@@ -282,7 +301,7 @@ function render(){
       const act=new Set([sel,...sal.map(e=>e[1]),...ent.map(e=>e[0])]);
       dibujar(act,[...sal,...ent].map(e=>[e[0],e[1]]));
       const n=byId[sel];
-      panel.innerHTML=`<div class="area" style="color:${AREAS[n[2]].c}">${AREAS[n[2]].n}</div><h2>${esc$(n[1])}</h2><p>${esc$(n[4])}</p>`+
+      panel.innerHTML=`<div class="area" style="color:${AREAS[n[2]].c}">${AREAS[n[2]].n}</div><h2>${esc$(n[1])}</h2><p>${esc$(n[4])}</p>${EXTRA[sel]||""}`+
         `<ul class="conex">${sal.map(e=>`<li>${esc$(n[1])} <b>${esc$(e[2])}</b> ${botonNodo(e[1])}</li>`).join("")}${ent.map(e=>`<li>${botonNodo(e[0])} <b>${esc$(e[2])}</b> ${esc$(n[1])}</li>`).join("")}</ul>`+
         `<p>${linkCap(n[3])} · <button type="button" class="btn" id="limpiar">Ver todo el mapa</button></p>`;
       document.getElementById("limpiar").onclick=()=>{sel=null;render()};
