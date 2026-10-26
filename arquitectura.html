@@ -81,6 +81,7 @@
     <div class="ctl"><label>&nbsp;</label><div class="paso"><button type="button" class="btn" id="ant">◀ Anterior</button><button type="button" class="btn" id="sig">Siguiente ▶</button></div></div>
     <div class="ctl"><label>&nbsp;</label><label class="chk"><input type="checkbox" id="resaltar" checked> Resaltar lo que agrega el capítulo</label></div>
   </div>
+  <div class="ctl" id="ctlRed"><label>Redundancia de la Storage Account (desde el cap. 7)</label><div class="seg" id="red"></div></div>
   <div class="ctl"><label>Recorrido</label><div class="seg" id="flujos"></div></div>
   <div class="leyenda" id="leyenda"></div>
   <div class="lienzo"><svg id="svg" viewBox="0 0 1240 860" role="img" aria-label="Diagrama de arquitectura de una aplicación web de 3 niveles en Azure"></svg></div>
@@ -214,14 +215,14 @@ const EL=[
 
  // Capítulo 7: datos
  {id:"paas",k:"nota",cap:7,x:310,y:722,w:104,h:30,t:"Servicios PaaS|(fuera de la VNet)",q:"",p:""},
- {id:"sql",k:"nodo",a:3,m:"PaaS",cap:7,x:422,y:710,w:140,h:54,t:"Azure SQL Database",s:"base de datos",
+ {id:"sql",k:"nodo",a:3,m:"PaaS",cap:7,x:422,y:700,w:130,h:54,t:"Azure SQL Database",s:"base de datos",
   q:"Base de datos relacional como servicio (PaaS): Microsoft administra el motor, los parches y las copias de seguridad.",
   p:"Guarda los datos de la app. Al ser PaaS no vive en la VNet: se llega a ella por el endpoint privado."},
- {id:"st",k:"nodo",a:3,m:"PaaS",cap:7,x:706,y:710,w:140,h:54,t:"Storage Account",s:"Blob + Files · GRS",
-  q:"Cuenta de almacenamiento: Blob, Files, Queue y Table bajo un nombre único global. GRS = LRS en la primaria + LRS en la región emparejada (6 copias).",
+ {id:"st",k:"nodo",a:3,m:"PaaS",cap:7,x:672,y:700,w:184,h:78,t:"Storage Account",s:"Blob + Files · GRS",
+  q:"Cuenta de almacenamiento: Blob, Files, Queue y Table bajo un nombre único global. Su redundancia define cuántas copias hay y dónde: cámbiala con el selector de arriba.",
   p:"Guarda imágenes y documentos (Blob) y el recurso compartido que sincroniza la oficina (Files)."},
  {id:"st2",k:"nodo",a:3,cap:7,x:924,y:300,w:250,h:50,t:"Copia secundaria",s:"3 copias LRS · asíncrona",
-  q:"La región secundaria de GRS guarda 3 copias más (LRS). La réplica es asíncrona. Con RA-GRS además se puede leer.",
+  q:"La región secundaria de GRS y GZRS guarda 3 copias más, siempre LRS (nunca zonas). La réplica es asíncrona. Con RA-GRS o RA-GZRS además se puede leer sin esperar al failover.",
   p:"Si toda Brazil South se cae, los datos siguen existiendo aquí (tras el failover)."},
  {id:"files",k:"nodo",a:3,cap:7,x:24,y:432,w:198,h:46,t:"Servidor de archivos",s:"Azure File Sync",
   q:"Azure File Sync convierte un servidor de archivos local en caché de Azure Files: rendimiento local con los archivos en la nube.",
@@ -253,7 +254,7 @@ const EL=[
  {id:"pe",k:"nodo",a:4,cap:9,x:436,y:596,w:112,h:54,t:"Endpoint privado",s:"IP 10.1.3.4",
   q:"Interfaz de red con IP privada de tu VNet para un servicio PaaS. Permite deshabilitar el acceso público del servicio.",
   p:"Las VMs llegan a SQL y Storage por IP privada: el tráfico no sale a Internet."},
- {id:"kv",k:"nodo",a:4,cap:9,x:574,y:710,w:120,h:54,t:"Key Vault",s:"secretos",
+ {id:"kv",k:"nodo",a:4,cap:9,x:562,y:700,w:100,h:54,t:"Key Vault",s:"secretos",
   q:"Almacén seguro de secretos, claves de cifrado y certificados.",
   p:"La cadena de conexión de SQL y el certificado HTTPS no quedan en el código: la app los lee de aquí."},
  {id:"defender",k:"nodo",a:4,cap:9,x:916,y:630,w:266,h:46,t:"Defender for Cloud",s:"postura · puntuación segura",
@@ -296,14 +297,14 @@ const AR=[
  {id:"e_ss_lb",cap:6,d:[[600,442],[600,465],[492,465],[492,496]]},
  {id:"e_lb_be",cap:6,d:[[548,523],[560,523]]},
  {id:"e_be_pe",cap:9,d:[[600,556],[600,575],[492,575],[492,596]]},
- {id:"e_pe_sql",cap:9,d:[[492,650],[492,710]]},
- {id:"e_pe_st",cap:9,d:[[548,623],[776,623],[776,710]]},
- {id:"e_be_kv",cap:9,d:[[634,556],[634,710]],lab:["lee secretos",638,695,"start"]},
+ {id:"e_pe_sql",cap:9,d:[[492,650],[492,700]]},
+ {id:"e_pe_st",cap:9,d:[[548,623],[776,623],[776,700]]},
+ {id:"e_be_kv",cap:9,d:[[634,556],[634,700]],lab:["lee secretos",638,676,"start"]},
  {id:"e_vpn",cap:6,d:[[222,523],[330,523]],lab:["VPN S2S · cifrada",228,516,"start"]},
  {id:"e_er",cap:6,cls:"rayas",d:[[222,603],[330,603]],lab:["privada, sin Internet",228,596,"start"]},
  {id:"e_gw_lb",cap:6,d:[[412,523],[436,523]]},
- {id:"e_files_st",cap:7,d:[[222,455],[246,455],[246,810],[776,810],[776,764]],lab:["File Sync",640,805,"start"]},
- {id:"e_st_st2",cap:7,d:[[846,737],[892,737],[892,325],[924,325]],lab:["← réplica asíncrona",924,376,"start"],l11:["transferencia entre regiones: se cobra",924,394,"start"]},
+ {id:"e_files_st",cap:7,d:[[222,455],[246,455],[246,810],[776,810],[776,778]],lab:["File Sync",640,805,"start"]},
+ {id:"e_st_st2",cap:7,d:[[856,737],[892,737],[892,325],[924,325]],lab:["← réplica asíncrona",924,376,"start"],l11:["transferencia entre regiones: se cobra",924,394,"start"]},
  {id:"e_be_mon",cap:10,d:[[840,519],[916,519]],lab:["logs",878,513]},
  {id:"e_ad_con",cap:8,d:[[123,296],[123,274]]},
  {id:"e_con_entra",cap:8,d:[[123,228],[123,82]],lab:["sincroniza",128,120,"start"]},
@@ -339,7 +340,7 @@ const FLUJOS=[
   ids:["files","e_files_st","st","e_st_st2","st2","paired","pe","e_pe_st","e_pe_sql","sql","be","vma1","vma2","vma3","e_be_pe","e_be_kv","kv","paas"],
   pasos:["El servidor de archivos de la oficina se sincroniza con Azure Files mediante Azure File Sync y queda como caché local.",
    "Las VMs app leen y escriben en SQL y en Storage por el endpoint privado, y obtienen las contraseñas desde Key Vault.",
-   "La cuenta es GRS: 3 copias LRS en Brazil South y 3 copias LRS en South Central US, con réplica asíncrona.",
+   "Con GRS hay 3 copias LRS en Brazil South y 3 copias LRS en South Central US, con réplica asíncrona. Prueba el selector de redundancia: LRS y ZRS no tienen copia en otra región.",
    "Si cae toda la región, los datos siguen existiendo en la secundaria tras el failover. Con RA-GRS se podrían leer sin esperar al failover.",
    "SQL Database y Storage son PaaS: Microsoft administra la plataforma; tú, los datos y el acceso."]},
  {id:"gobierno",n:"Gobierno y costos",
@@ -352,6 +353,17 @@ const FLUJOS=[
    "El presupuesto avisa al 80% y al 100% del gasto, pero no detiene nada; Cost Management muestra el gasto real."]}
 ];
 
+// Redundancia de la cuenta: primaria (LRS = 1 centro de datos, ZRS = 3 zonas), copia geo y lectura en la secundaria
+const RED={
+ "LRS":{zonas:false,geo:false,ra:false,copias:3,protege:"falla de disco o rack dentro de un centro de datos",no:"la caída del centro de datos o de la zona, y la de la región",d:"11 nueves"},
+ "ZRS":{zonas:true,geo:false,ra:false,copias:3,protege:"la caída de un centro de datos o de una zona completa",no:"la caída de toda la región",d:"12 nueves"},
+ "GRS":{zonas:false,geo:true,ra:false,copias:6,protege:"la caída de toda la región (tras el failover)",no:"la caída de la zona donde está la primaria: hasta el failover no hay acceso",d:"16 nueves"},
+ "RA-GRS":{zonas:false,geo:true,ra:true,copias:6,protege:"la caída de toda la región, y permite leer la secundaria en cualquier momento",no:"escribir mientras la primaria está caída (hasta el failover)",d:"16 nueves"},
+ "GZRS":{zonas:true,geo:true,ra:false,copias:6,protege:"la caída de una zona (sigue funcionando) y la de toda la región (tras el failover)",no:"leer la secundaria antes del failover",d:"16 nueves"},
+ "RA-GZRS":{zonas:true,geo:true,ra:true,copias:6,protege:"la caída de una zona y la de la región, con lectura de la secundaria en cualquier momento",no:"escribir en la secundaria antes del failover",d:"16 nueves"}
+};
+const SOLO_GEO=new Set(["st2","e_st_st2"]);
+
 const NS="http://www.w3.org/2000/svg";
 const svg=document.getElementById("svg");
 const POR_ID={};
@@ -361,7 +373,8 @@ const capId=n=>"cap"+String(n).padStart(2,"0");
 const archivo=n=>CAPITULOS.find(c=>c.num===n).archivo;
 const tituloCap=n=>CAPITULOS.find(c=>c.num===n).titulo;
 
-let hasta=11,resaltar=true,flujo=null,sel=null;
+let hasta=11,resaltar=true,flujo=null,sel=null,red="GRS";
+try{const v=localStorage.getItem("az900:arquitectura:red");if(RED[v])red=v}catch(e){}
 try{const v=parseInt(localStorage.getItem("az900:arquitectura:cap"),10);if(v>=2&&v<=11)hasta=v}catch(e){}
 
 function mk(tag,attrs,padre){
@@ -435,12 +448,31 @@ function nombre(e){
   return e.t;
 }
 
+// Copias de la cuenta dibujadas dentro del nodo: un centro de datos (LRS) o una por zona (ZRS)
+function pintarCopias(){
+  const st=POR_ID.st,r=RED[red];
+  const g=svg.querySelector('[data-id="st"]');
+  g.querySelector("text.s").textContent="Blob + Files · "+red;
+  svg.querySelector('[data-id="st2"] text.s').textContent="3 copias LRS · "+(r.ra?"lectura: sí":"sin lectura hasta failover");
+  let c=g.querySelector(".copias");if(c)c.remove();
+  c=mk("g",{class:"copias"},g);
+  const y0=st.y+50;
+  const cajas=r.zonas?[["Z1",13,1],["Z2",69,1],["Z3",125,1]]:[["1 centro de datos",13,3]];
+  cajas.forEach(([t,dx,n])=>{
+    const x=st.x+dx,w=r.zonas?50:162;
+    mk("rect",{x,y:y0,width:w,height:18,rx:4,fill:"none",stroke:"var(--muted)","stroke-dasharray":"3 2"},c);
+    for(let i=0;i<n;i++)mk("rect",{x:x+6+i*12,y:y0+5,width:8,height:8,rx:2,fill:AREAS[3].c},c);
+    texto(c,"s",x+10+n*12,y0+13,t);
+  });
+}
+
 function aplicar(){
+  pintarCopias();
   const cap=flujo?11:hasta;
   const enFlujo=flujo?new Set(FLUJOS.find(f=>f.id===flujo).ids):null;
   svg.querySelectorAll(".el").forEach(g=>{
     const e=POR_ID[g.dataset.id];
-    g.classList.toggle("oculto",e.cap>cap);
+    g.classList.toggle("oculto",e.cap>cap||(SOLO_GEO.has(e.id)&&!RED[red].geo));
     g.classList.toggle("nuevo",!flujo&&resaltar&&e.cap===cap&&cap>2);
     g.classList.toggle("viejo",!flujo&&resaltar&&e.cap<cap&&cap>2);
     g.classList.toggle("dim",!!enFlujo&&!enFlujo.has(e.id));
@@ -450,6 +482,9 @@ function aplicar(){
   svg.querySelectorAll("[data-c11]").forEach(t=>t.style.display=cap>=11?"":"none");
   document.querySelectorAll("#caps button").forEach(b=>b.setAttribute("aria-pressed",String(!flujo&&+b.dataset.k===hasta)));
   document.querySelectorAll("#flujos button").forEach(b=>b.setAttribute("aria-pressed",String((flujo||"none")===b.dataset.k)));
+  document.querySelectorAll("#red button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.k===red)));
+  document.getElementById("ctlRed").hidden=cap<7;
+  try{localStorage.setItem("az900:arquitectura:red",red)}catch(e){}
   document.getElementById("ant").disabled=hasta<=2;
   document.getElementById("sig").disabled=hasta>=11;
   try{localStorage.setItem("az900:arquitectura:cap",String(hasta))}catch(e){}
@@ -507,6 +542,24 @@ for(let n=2;n<=11;n++){
   const b=document.createElement("button");
   b.type="button";b.dataset.k=n;b.textContent=n;b.title=tituloCap(n);
   b.onclick=()=>irA(n);caps.appendChild(b);
+}
+const rb=document.getElementById("red");
+Object.keys(RED).forEach(k=>{
+  const b=document.createElement("button");
+  b.type="button";b.dataset.k=k;b.textContent=k;
+  b.onclick=()=>{red=k;sel=null;aplicar();panelRed()};
+  rb.appendChild(b);
+});
+function panelRed(){
+  const r=RED[red];
+  document.getElementById("panel").innerHTML=`
+    <div class="area">Datos · Capítulo 7 · PDF págs. 122–167</div>
+    <h2>Storage Account con ${red}</h2>
+    <p><b>Copias en total: ${r.copias}.</b> ${r.zonas?"3 en la primaria, repartidas en 3 zonas (síncronas)":"3 en la primaria, dentro de un solo centro de datos (síncronas)"}${r.geo?", y 3 más en South Central US, siempre LRS (asíncronas)":""}.</p>
+    <p><b>Protege ante:</b> ${r.protege}. <b>No protege ante:</b> ${r.no}.</p>
+    <p><b>Durabilidad:</b> ${r.d} · <b>Leer la secundaria sin failover:</b> ${r.geo?(r.ra?"sí (endpoint -secondary)":"no"):"no hay secundaria"}.</p>
+    ${avance(7)}
+    <p><a href="cap07-almacenamiento.html">Simular fallas con cada opción en el capítulo 7 →</a></p>`;
 }
 const fl=document.getElementById("flujos");
 [{id:"none",n:"Ninguno"},...FLUJOS].forEach(f=>{
