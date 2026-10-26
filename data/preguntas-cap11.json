@@ -100,5 +100,11 @@
     "opciones": ["No, nunca se cobra", "Sí: la salida de datos de Azure se cobra", "Solo si la VM es Premium", "Solo los fines de semana"],
     "correcta": 1,
     "explicacion": "La transferencia de datos FUERA de Azure se cobra (con tarifas según la zona de facturación)."
+  },
+  {
+    "pregunta": "¿Cuántas suscripciones de prueba gratuitas de Azure puede tener una cuenta de Microsoft?",
+    "opciones": ["Una", "Dos", "Cinco", "Ilimitadas"],
+    "correcta": 0,
+    "explicacion": "La cuenta gratuita (crédito para 30 días + 12 meses de servicios populares + servicios siempre gratis) es una por persona y solo para clientes nuevos; se verifica con teléfono y tarjeta. Ojo: suscripciones de pago sí puede haber varias. No está en el PDF: viene de la documentación de Microsoft (azure.microsoft.com/free)."
   }
 ]
