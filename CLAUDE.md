@@ -77,7 +77,7 @@ Errores de esa guía que NO se deben copiar: dice que la secundaria de GZRS es Z
 ## Lo que ya existe: cap03-arquitectura.html (PDF págs. 30–47)
 - Simulador de despliegue (ejemplo Londres/Mumbai del curso): 1 centro de datos / 2 centros de datos / 2 regiones × evento (falla de centro de datos, caída de región) × ubicación del usuario → disponibilidad y latencia, con los 3 desafíos del curso marcados como resueltos o no.
 - Simulador de jerarquía: árbol grupo de administración → suscripción → grupo de recursos → recurso; asignar política o rol muestra la herencia hacia abajo; eliminar un grupo de recursos borra su contenido.
-- Tarjetas (regiones, emparejadas, soberanas, zonas, PoP, servicios globales vs regionales) y 18 preguntas en `data/preguntas-cap03.json` (la 18 es de selección múltiple: entre qué se puede mover una VM → regiones, grupos de recursos y suscripciones; no viene del PDF).
+- Tarjetas (regiones, emparejadas, soberanas, zonas, PoP, servicios globales vs regionales) y 19 preguntas en `data/preguntas-cap03.json` (la 18 y la 19 son de selección múltiple: entre qué se puede mover una VM → regiones, grupos de recursos y suscripciones, no viene del PDF; y dos afirmaciones correctas sobre zonas de disponibilidad).
 - El curso nombra "Azure Active Directory"; en el sitio se usa "Microsoft Entra ID (antes Azure Active Directory)".
 
 ## Lo que ya existe: cap04-fundamentos-herramientas.html (PDF págs. 48–58)

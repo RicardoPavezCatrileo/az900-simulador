@@ -106,5 +106,11 @@
     "opciones": ["Conjuntos de disponibilidad", "Regiones", "Zonas de disponibilidad", "Grupos de recursos", "Suscripciones"],
     "correcta": [1, 3, 4],
     "explicacion": "Grupos de recursos y suscripciones son carpetas lógicas: con \"Mover\" la VM cambia de carpeta (y de permisos, políticas y factura) sin moverse físicamente. Entre regiones se mueve replicándola con Azure Resource Mover o Site Recovery. El conjunto de disponibilidad se define al crear la VM: hay que recrearla. Zonas: la respuesta típica del examen la excluye, aunque hoy Resource Mover permite llevar una VM a una zona. No está en el PDF (la jerarquía sí, págs. 41–45)."
+  },
+  {
+    "pregunta": "¿Cuál de las siguientes afirmaciones sobre las zonas de disponibilidad en Azure es correcta? Selecciona DOS respuestas.",
+    "opciones": ["Cada zona de disponibilidad cuenta con sus propias instalaciones independientes de alimentación, refrigeración y red", "Las regiones de Azure que admiten zonas de disponibilidad disponen de al menos tres de estas", "Las zonas de disponibilidad garantizan el aislamiento de los recursos de máquinas virtuales entre sí dentro de un centro de datos de Azure", "Todas las zonas de disponibilidad están ubicadas en diferentes geografías de Azure"],
+    "correcta": [0, 1],
+    "explicacion": "Cada zona es uno o varios centros de datos con alimentación, red y conectividad propias (PDF pág. 36), y una región con zonas tiene como mínimo 3. Trampas: aislar VMs \"dentro de un centro de datos\" es un conjunto de disponibilidad, no una zona; y las zonas están en la MISMA región (otra región = región emparejada)."
   }
 ]
