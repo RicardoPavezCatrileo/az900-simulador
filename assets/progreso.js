@@ -11,7 +11,7 @@ const CAPITULOS=[
  {id:"cap07",num:7, titulo:"Almacenamiento",               archivo:"cap07-almacenamiento.html",   listo:true},
  {id:"cap08",num:8, titulo:"Autenticación y autorización", archivo:"cap08-autenticacion-autorizacion.html",        listo:true},
  {id:"cap09",num:9, titulo:"Seguridad",                    archivo:"cap09-seguridad.html",        listo:true},
- {id:"cap10",num:10,titulo:"Monitorización y gestión",     archivo:"cap10-monitorizacion.html",   listo:true},
+ {id:"cap10",num:10,titulo:"Monitorización y gestión",     archivo:"cap10-monitorizacion-gestion.html",   listo:true},
  {id:"cap11",num:11,titulo:"Precios",                      archivo:"cap11-precios.html",          listo:true}
 ];
 
