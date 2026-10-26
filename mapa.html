@@ -65,7 +65,7 @@
 
 <script>
 const AREAS=[
- {n:"Autenticación y autorización",c:"var(--a0)"},{n:"Red",c:"var(--a1)"},{n:"Cómputo",c:"var(--a2)"},
+ {n:"Autenticación y autorización",col:["Autenticación y","autorización"],c:"var(--a0)"},{n:"Red",c:"var(--a1)"},{n:"Cómputo",c:"var(--a2)"},
  {n:"Datos",c:"var(--a3)"},{n:"Seguridad y gestión",c:"var(--a4)"},{n:"Gobierno y costos",c:"var(--a5)"}
 ];
 const CAP={2:"cap02-cloud.html",3:"cap03-arquitectura.html",4:"cap04-fundamentos-herramientas.html",5:"cap05-computacion.html",6:"cap06-redes.html",7:"cap07-almacenamiento.html",8:"cap08-autenticacion-autorizacion.html",9:"cap09-seguridad.html",10:"cap10-monitorizacion-gestion.html",11:"cap11-precios.html"};
@@ -114,7 +114,7 @@ const N=[
  ["cosmos","Cosmos DB",3,7,"NoSQL PaaS multimodelo con escrituras en varias regiones."],
  ["migrate","Azure Migrate",3,7,"Descubre, evalúa y migra servidores, bases de datos y apps."],
  ["databox","Data Box",3,7,"Dispositivo físico para mover muchos datos sin conexión."],
- ["filesync","File Sync",3,7,"Sincroniza Azure Files con tus servidores de archivos locales."],
+ ["filesync","Azure File Sync",3,7,"Sincroniza Azure Files con tus servidores de archivos locales."],
  ["azcopy","AzCopy",3,7,"Herramienta de línea de comandos, instalada localmente, para copiar blobs y archivos y programar transferencias."],
  ["explorer","Storage Explorer",3,7,"Aplicación con interfaz gráfica (arrastrar y soltar), instalada en Windows, macOS o Linux, para explorar, cargar, descargar, borrar y renombrar datos de cualquier tipo de almacenamiento."],
 
@@ -231,7 +231,7 @@ function dibujar(activos,aristas){
   const hay=activos&&activos.size;
   const esActiva=(a,b)=>aristas.some(([x,y])=>(x===a&&y===b));
   let s=`<defs>${AREAS.map((a,i)=>`<marker id="m${i}" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="${a.c}"/></marker>`).join("")}<marker id="mg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--muted)"/></marker></defs>`;
-  s+=AREAS.map((a,i)=>`<text class="col" x="${X0+i*COLX}" y="26" fill="${a.c}">${a.n}</text>`).join("");
+  s+=AREAS.map((a,i)=>`<text class="col" x="${X0+i*COLX}" y="${a.col?13:26}" fill="${a.c}">${(a.col||[a.n]).map((l,k)=>`<tspan x="${X0+i*COLX}" dy="${k?14:0}">${l}</tspan>`).join("")}</text>`).join("");
   let etiquetas="";
   E.forEach(([a,b,l])=>{
     const r=ruta(a,b),on=hay&&esActiva(a,b),ca=byId[a][2];
