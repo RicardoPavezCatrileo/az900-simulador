@@ -124,5 +124,11 @@
     "opciones": ["Azure Virtual Machines", "Azure App Service", "Azure Event Grid", "Azure Front Door", "Azure Logic Apps", "Azure Functions"],
     "correcta": [2, 4, 5],
     "explicacion": "Serverless = no gestionas servidores, escala solo (hasta cero) y pagas por ejecución (PDF pág. 98). Functions (código), Logic Apps (flujos sin código) y Event Grid (eventos) lo son. VMs es IaaS; App Service es PaaS con un plan siempre encendido que pagas aunque no haya tráfico; Front Door es un servicio de red. Va más allá del PDF: el curso solo explica Functions, nombra Logic Apps de pasada (pág. 239) y no menciona Event Grid."
+  },
+  {
+    "pregunta": "¿Qué puede usar para proporcionar a los usuarios de Mac y Android acceso a un entorno de Windows que ejecutará aplicaciones basadas en Windows?",
+    "opciones": ["Azure Blob Storage", "Azure Kubernetes Service (AKS)", "Azure Virtual Desktop", "Microsoft Entra ID"],
+    "correcta": 2,
+    "explicacion": "Palabras clave: \"Mac y Android\" + \"aplicaciones de Windows\" → Azure Virtual Desktop: el escritorio y las apps corren en Azure y te conectas desde cualquier dispositivo (PDF pág. 97). Trampa: Entra ID solo gestiona quién inicia sesión; no entrega un escritorio. AKS orquesta contenedores y Blob solo guarda archivos."
   }
 ]
