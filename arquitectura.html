@@ -49,6 +49,7 @@
 .arista.nuevo path{stroke:var(--accent);stroke-width:2.2}
 .arista.on path{stroke:var(--ink);stroke-width:2.4}
 .et{font-family:var(--f-body);font-size:10.5px;fill:var(--ink);paint-order:stroke;stroke:var(--surface);stroke-width:4px;stroke-linejoin:round;pointer-events:none}
+.escala{font-family:var(--f-mono);font-size:10px;font-weight:600;fill:var(--warn);paint-order:stroke;stroke:var(--surface);stroke-width:4px;stroke-linejoin:round;pointer-events:none}
 .et.precio{fill:var(--a5);font-weight:600}
 .panel{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;display:grid;gap:10px}
 .panel h2{margin:0;font-family:var(--f-display);font-size:1.25rem}
@@ -356,7 +357,18 @@ const FLUJOS=[
    "RBAC da al equipo el rol Colaborador solo en rg-web, y un bloqueo CanNotDelete impide borrarlo, incluso al Propietario.",
    "Azure Monitor recoge métricas y logs de las VMs (consultas KQL en Log Analytics) y lanza alertas; Service Health avisa de incidentes de Azure.",
    "Advisor y Defender for Cloud recomiendan mejoras de costo y de seguridad.",
-   "El presupuesto avisa al 80% y al 100% del gasto, pero no detiene nada; Cost Management muestra el gasto real."]}
+   "El presupuesto avisa al 80% y al 100% del gasto, pero no detiene nada; Cost Management muestra el gasto real."]},
+ {id:"black",n:"Black Friday: escalar",
+  ids:["inet","e_inet_fd","edge","fd","e_fd_ag","appgw","e_ag_ss","ss","vmw1","vmw2","vmw3","z1","z2","z3","e_ss_lb","lb","e_lb_be","be","vma1","vma2","vma3","e_be_pe","pe","e_pe_sql","sql","gov","monitor","advisor","cost","budget"],
+  pasos:["08:00 · Tráfico normal: el Scale Set web tiene 3 VMs, una por zona, al 30% de CPU. Su regla de autoescalado: si la CPU media pasa del 70% durante 10 minutos, agrega VMs (mínimo 3, máximo 12).",
+   "10:00 · Empieza la oferta y el tráfico se triplica. Primera defensa: Front Door entrega imágenes, CSS y JavaScript desde la caché de los PoP y su WAF frena bots. Mucha carga ni siquiera llega a Brazil South.",
+   "Nivel web · ESCALADO HORIZONTAL: Azure Monitor ve la CPU al 85% y el Scale Set agrega VMs: de 3 a 9 (3 por zona). No se reinicia nada: las VMs nuevas pasan el sondeo de estado y el Application Gateway empieza a enviarles tráfico. Más instancias = más capacidad y más disponibilidad.",
+   "Nivel app · las VMs app NO están en un Scale Set, así que no crecen solas. La salida rápida es el ESCALADO VERTICAL: cambiar el tamaño (por ejemplo D4s → D8s, el doble de CPU y RAM). Requiere reiniciar cada VM: se hace de a una zona, mientras el Load Balancer interno reparte entre las otras dos. Lección: este nivel también debería ir en un Scale Set.",
+   "Azure SQL Database (PaaS) · ESCALADO VERTICAL: subes vCores o el nivel de servicio desde el portal, con un corte de conexión de segundos. Microsoft mueve la base a más capacidad; tú no administras servidores.",
+   "Costos · Pagas por segundo solo las VMs extra mientras corren (pago por uso). El presupuesto avisa al 80% y al 100% del gasto previsto, pero no apaga nada.",
+   "23:59 · Termina la oferta: la CPU baja del 30% y el Scale Set quita VMs solo (scale in) hasta volver a 3. Las VMs app hay que volver a achicarlas a mano (otro reinicio); días después, Advisor avisará si alguna quedó sobredimensionada.",
+   "Resumen · HORIZONTAL (scale out/in): más o menos instancias, automático, sin reinicio, mejora la disponibilidad. VERTICAL (scale up/down): una instancia más grande o más chica, normalmente manual, con reinicio y con un tamaño máximo (416 vCPU)."],
+  pasoTM:"10:00 · Empieza la oferta y el tráfico se triplica. Con Traffic Manager no hay caché ni WAF global: solo responde el DNS, así que TODO el tráfico, incluidos imágenes y bots, llega directo al Application Gateway de Brazil South. El Scale Set tendrá que crecer más que con Front Door."}
 ];
 
 // Redundancia de la cuenta: primaria (LRS = 1 centro de datos, ZRS = 3 zonas), copia geo y lectura en la secundaria
@@ -478,8 +490,19 @@ function pintarCopias(){
   });
 }
 
+// Durante el recorrido Black Friday, etiquetas que muestran qué tipo de escalado usa cada nivel
+function pintarEscala(){
+  let c=svg.querySelector(".escala");if(c)c.remove();
+  if(flujo!=="black")return;
+  c=mk("g",{class:"escala"},svg);
+  [[560,455,"⇄ Horizontal: Scale Set 3 → 9 VMs, sin reinicio"],
+   [560,568,"↕ Vertical: D4s → D8s, reinicio de a una zona"],
+   [422,768,"↕ Vertical: más vCores"]].forEach(([x,y,t])=>texto(c,"escala",x,y,t));
+}
+
 function aplicar(){
   pintarCopias();
+  pintarEscala();
   const cap=flujo?11:hasta;
   const enFlujo=flujo?new Set(idsFlujo(FLUJOS.find(f=>f.id===flujo))):null;
   svg.querySelectorAll(".el").forEach(g=>{
@@ -564,10 +587,11 @@ const TM_WEB={ids:["tm","e_inet_tm","e_inet_ag2"],pasos:[
  "Con esa IP, el navegador se conecta DIRECTO al Application Gateway: el tráfico no pasa por Traffic Manager, que no ve ni filtra las peticiones. La entrada de datos es gratis; la salida se cobra.",
  "El Application Gateway (regional, capa 7) aplica su WAF y reparte las peticiones entre las VMs web del Scale Set."]};
 function idsFlujo(f){
-  if(f.id!=="web"||entrada!=="tm")return f.ids;
+  if(f.id!=="web"&&f.id!=="black"||entrada!=="tm")return f.ids;
   return f.ids.filter(i=>!SOLO_FD.has(i)).concat(TM_WEB.ids);
 }
 function pasosFlujo(f){
+  if(f.id==="black")return entrada==="tm"?[f.pasos[0],f.pasoTM,...f.pasos.slice(2)]:f.pasos;
   if(f.id!=="web"||entrada!=="tm")return f.pasos;
   return TM_WEB.pasos.concat(f.pasos.slice(3));
 }
