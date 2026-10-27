@@ -124,5 +124,11 @@
     "opciones": ["Los grupos de administración permiten crear y gestionar entornos totalmente conformes de manera simplificada y directa", "Los grupos de administración facilitan la aplicación de políticas mediante jerarquías flexibles a varias suscripciones simultáneamente", "Los grupos de administración permiten aplicar gestión basada en políticas a todos los servicios de Azure de manera indiscriminada", "Los grupos de administración ofrecen la capacidad de crear dashboards personalizados para visualizar y analizar el uso de recursos en la nube"],
     "correcta": 1,
     "explicacion": "Grupo de administración = organizar suscripciones en jerarquía y heredar políticas y permisos (PDF pág. 45). Trampa: \"crear entornos conformes\" describe Azure Blueprints (págs. 225–227, hoy retirado). No aplica a todo de forma indiscriminada, solo a sus suscripciones; los dashboards son de Azure Monitor o del portal."
+  },
+  {
+    "pregunta": "En tu empresa, cada departamento tiene la responsabilidad de adquirir sus propios equipos y servicios de TI. Se está considerando la implementación de un entorno Azure y es necesario que cada departamento tenga la opción de utilizar métodos de pago distintos para los servicios de Azure que utilice. ¿Qué deberías crear para cada departamento con este propósito?",
+    "opciones": ["Grupos de administración", "Reserva", "Suscripción", "Plan de pago de Azure"],
+    "correcta": 2,
+    "explicacion": "La suscripción es el límite de facturación: cada una tiene su propio método de pago y su factura (PDF pág. 44). Los grupos de administración organizan suscripciones pero no pagan; una reserva es un descuento por compromiso de 1 o 3 años; \"plan de pago\" no es un recurso de Azure."
   }
 ]
