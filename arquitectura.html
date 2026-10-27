@@ -209,7 +209,7 @@ const EL=[
   q:"Gateway que crea túneles cifrados por Internet: sitio a sitio (S2S, oficina ↔ VNet) o punto a sitio (P2S, un equipo ↔ VNet).",
   p:"Termina el túnel desde la oficina: los empleados llegan a la app por IP privada.",pg:"112–114"},
  {id:"ergw",k:"nodo",a:1,cap:6,x:330,y:576,w:82,h:54,t:"ER Gateway",s:"ExpressRoute",
-  q:"Gateway de red virtual para ExpressRoute.",p:"Recibe el circuito ExpressRoute si la empresa elige la conexión privada.",pg:"120"},
+  q:"ExpressRoute Gateway: un gateway de red virtual de tipo ExpressRoute (el VPN Gateway es el de tipo VPN). Es la puerta de entrada en Azure del circuito privado: sin él, el circuito no llega a la VNet. También vive en la GatewaySubnet.",p:"Recibe el circuito ExpressRoute si la empresa elige la conexión privada en vez de la VPN por Internet. Pueden convivir: ExpressRoute como enlace principal y la VPN como respaldo.",pg:"120"},
  {id:"router",k:"nodo",a:1,cap:6,x:24,y:500,w:198,h:46,t:"Dispositivo VPN",s:"IP pública de la oficina",
   q:"Router o firewall local con IP pública que establece el túnel S2S (en Azure se representa como gateway de red local).",
   p:"El otro extremo del túnel VPN.",pg:"112–114"},
