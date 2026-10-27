@@ -27,6 +27,25 @@
 .vm.off{background:var(--muted);opacity:.45}
 .mas{font-family:var(--f-mono);font-size:.75rem;color:var(--muted)}
 .lb{font-family:var(--f-mono);font-size:.78rem;text-align:center;padding:6px;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+
+/* AKS: zonas con nodos y pods */
+.aksTop{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-family:var(--f-mono);font-size:.78rem}
+.aksTop span{padding:6px 10px;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+.aksTop span.ms{border-style:dashed;color:var(--muted)}
+.nodo{border:1px solid var(--line);border-radius:8px;padding:6px 8px;background:var(--bg);display:grid;gap:5px}
+.nodo.nuevo{border-color:var(--ok)}
+.nodo .nt{font-family:var(--f-mono);font-size:.7rem;color:var(--muted)}
+.pods{display:grid;grid-template-columns:repeat(4,18px);gap:4px}
+.pod{width:18px;height:18px;border-radius:5px;background:var(--accent)}
+.pod.movido{background:var(--geo)}
+.pod.vacio{background:none;border:1px dashed var(--line)}
+.pend{display:flex;flex-wrap:wrap;gap:4px;align-items:center;font-family:var(--f-mono);font-size:.75rem;color:var(--warn)}
+.pend .pod{background:var(--warn)}
+.leyA{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:.8rem;color:var(--muted)}
+.leyA i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+.chkA{display:flex;flex-wrap:wrap;gap:8px 18px}
+.chkA label{display:flex;gap:8px;align-items:center;font-size:.9rem;cursor:pointer}
+.chkA input{accent-color:var(--accent)}
 </style>
 </head>
 <body>
@@ -83,6 +102,24 @@
     <div class="ctl"><label>Servicio</label><div class="seg" id="srv"></div></div>
     <div class="facts" id="factsS"></div>
     <div class="note" id="noteS"></div>
+  </section>
+
+  <!-- 4 · AKS por dentro -->
+  <section class="bloque">
+    <h2 class="h">4 · AKS por dentro: clúster, nodos y pods</h2>
+    <p style="margin:0;color:var(--muted);max-width:75ch">Un <b>clúster</b> AKS tiene un <b>plano de control</b> (lo administra Microsoft) y un grupo de <b>nodos</b>: cada nodo es una <b>VM</b> que pagas. Kubernetes reparte los <b>pods</b> (uno o más contenedores) entre los nodos y escala horizontalmente en <b>dos niveles</b>: más pods y, si no caben, más nodos (PDF págs. 93–95). Supuestos: cada pod atiende 100 usuarios y cada nodo admite 4 pods.</p>
+    <div class="slider"><label for="aksCarga">Usuarios</label><input type="range" id="aksCarga" min="100" max="2400" step="100" value="500"><span id="aksCargaV"></span></div>
+    <div class="chkA">
+      <label><input type="checkbox" id="aksHpa" checked><span>Autoescalado de pods (HPA): 2 a 30 pods</span></label>
+      <label><input type="checkbox" id="aksCa" checked><span>Escalador automático del clúster: 3 a 9 nodos</span></label>
+      <label><input type="checkbox" id="aksZ1"><span>Simular caída de la Zona 1</span></label>
+    </div>
+    <div class="aksTop"><span class="ms">Plano de control · Microsoft (sin costo)</span><span>ACR → imagen web:v1</span></div>
+    <div class="zonas" id="aksZonas"></div>
+    <div class="pend" id="aksPend"></div>
+    <div class="leyA"><span><i style="background:var(--accent)"></i>pod en ejecución</span><span><i style="background:var(--geo)"></i>pod recreado tras la caída</span><span><i style="background:var(--warn)"></i>pod pendiente (no cabe)</span><span><i style="border:1px dashed var(--line)"></i>espacio libre en el nodo</span><span><i style="border:1px solid var(--ok)"></i>nodo agregado por el escalador</span></div>
+    <div class="status" id="statusK"></div>
+    <div class="facts" id="factsK"></div>
   </section>
 
   <section>
@@ -252,7 +289,51 @@ function renderS(){
   document.getElementById("noteS").innerHTML=`<h3>Azure ${s.name}</h3><p>${s.d}</p>`;
 }
 
-renderC();renderE();renderS();iniciarQuiz("cap05");
+/* ---------- 4 · AKS ---------- */
+const POD_USU=100,POD_NODO=4,NODOS_MIN=3,NODOS_MAX=9,PODS_MIN=2,PODS_MAX=30,PODS_FIJOS=3;
+const aksCarga=document.getElementById("aksCarga"),aksHpa=document.getElementById("aksHpa"),aksCa=document.getElementById("aksCa"),aksZ1=document.getElementById("aksZ1");
+[aksCarga,aksHpa,aksCa,aksZ1].forEach(e=>e.oninput=e.onchange=renderK);
+function renderK(){
+  const carga=+aksCarga.value;
+  document.getElementById("aksCargaV").textContent=carga+" usuarios";
+  const caida=aksZ1.checked,zonasOk=caida?[2,3]:[1,2,3];
+  const deseados=aksHpa.checked?Math.min(PODS_MAX,Math.max(PODS_MIN,Math.ceil(carga/POD_USU))):PODS_FIJOS;
+  // Nodos: uno por zona (mínimo del grupo); el escalador agrega en la zona sana con menos nodos
+  const nodos={1:caida?0:1,2:1,3:1};
+  const total=()=>zonasOk.reduce((a,z)=>a+nodos[z],0);
+  const agregar=()=>{const z=zonasOk.reduce((a,b)=>nodos[b]<nodos[a]?b:a);nodos[z]++};
+  if(aksCa.checked){
+    while(total()<NODOS_MIN)agregar();  // tras la caída, repone el mínimo en las zonas sanas
+    while(total()*POD_NODO<deseados&&total()<NODOS_MAX)agregar();
+  }
+  // Reparto: cada pod va al nodo con menos pods (Kubernetes los distribuye entre nodos y zonas)
+  const lista=[];zonasOk.forEach(z=>{for(let i=0;i<nodos[z];i++)lista.push({z,i,pods:0,nuevo:i>=1})});
+  let pend=0;
+  for(let p=0;p<deseados;p++){const libre=lista.filter(n=>n.pods<POD_NODO);if(!libre.length){pend++;continue}libre.reduce((a,b)=>b.pods<a.pods?b:a).pods++}
+  const enMarcha=deseados-pend;
+  // Los pods que corrían en la Zona 1 (un tercio) se recrean en las zonas sanas
+  let movidos=caida?Math.min(enMarcha,Math.ceil(deseados/3)):0;
+  document.getElementById("aksZonas").innerHTML=[1,2,3].map(z=>{
+    if(caida&&z===1)return`<div class="zona down"><div class="zt">Zona 1 · caída</div><div class="mas">Su nodo y sus pods se perdieron</div></div>`;
+    const ns=lista.filter(n=>n.z===z).map(n=>{
+      let celdas="";
+      for(let k=0;k<POD_NODO;k++){let c="vacio";if(k<n.pods){c="";if(k===n.pods-1&&movidos>0){c="movido";movidos--}}celdas+=`<div class="pod ${c}"></div>`}
+      return`<div class="nodo${n.nuevo?" nuevo":""}"><div class="nt">Nodo ${z}-${n.i+1} · VM${n.nuevo?" · nuevo":""}</div><div class="pods">${celdas}</div></div>`;
+    }).join("");
+    return`<div class="zona"><div class="zt">Zona ${z}</div>${ns}</div>`;
+  }).join("");
+  document.getElementById("aksPend").innerHTML=pend?`<span>Pendientes:</span>${'<div class="pod"></div>'.repeat(pend)}`:"";
+  const atendidos=Math.min(carga,enMarcha*POD_USU),nTot=total();
+  facts("factsK",[["Pods deseados / en marcha",`${deseados} / ${enMarcha}`],["Nodos (VMs que pagas)",nTot],["Usuarios atendidos",`${atendidos} de ${carga}`],["Plano de control","Microsoft"]]);
+  if(pend&&!aksCa.checked)status("statusK","bad",`${pend} pod${pend>1?"s":""} pendiente${pend>1?"s":""}: no caben en los nodos`,"Kubernetes quiere más pods, pero los nodos están llenos y el escalador automático del clúster está apagado: nadie agrega VMs. Actívalo y verás nodos nuevos.");
+  else if(pend)status("statusK","warn",`Llegaste al máximo de ${NODOS_MAX} nodos: ${pend} pod${pend>1?"s":""} sin lugar`,"El escalador ya agregó todos los nodos permitidos. Habría que subir el máximo del grupo de nodos o usar VMs más grandes (escalado vertical de los nodos).");
+  else if(!aksHpa.checked&&atendidos<carga)status("statusK","bad",`Siempre ${PODS_FIJOS} pods: ${carga-atendidos} usuarios sin atender`,"Sin autoescalado de pods, la cantidad es fija. Hay nodos con espacio libre, pero nadie crea pods nuevos.");
+  else if(caida)status("statusK","ok","Kubernetes recreó los pods de la Zona 1 en las zonas 2 y 3",`Los pods no se "mueven": se vuelven a crear desde la imagen en los nodos que quedan (en violeta).${aksCa.checked?" El escalador agregó nodos en las zonas sanas para reponer la capacidad.":""} Por eso conviene repartir los nodos entre zonas.`);
+  else if(nTot>NODOS_MIN)status("statusK","ok",`Escaló en dos niveles: ${deseados} pods en ${nTot} nodos`,`Primero el HPA pidió más pods (segundos). Como no cabían en los 3 nodos, el escalador del clúster agregó ${nTot-NODOS_MIN} VM${nTot-NODOS_MIN>1?"s":""} (minutos). Los dos son escalado horizontal.`);
+  else status("statusK","ok",`${deseados} pods repartidos en ${nTot} nodos, uno por zona`,"Los pods caben en los nodos actuales. Sube los usuarios para ver crecer primero los pods y después los nodos.");
+}
+
+renderC();renderE();renderS();renderK();iniciarQuiz("cap05");
 </script>
 </body>
 </html>
