@@ -1,0 +1,92 @@
+[
+  {
+    "pregunta": "Quieres que los usuarios entren y salgan de un grupo automáticamente según su departamento. ¿Qué licencia mínima de Microsoft Entra ID necesitas?",
+    "opciones": ["Free", "P1", "P2", "No requiere licencia: viene con Microsoft 365"],
+    "correcta": 1,
+    "explicacion": "Los grupos de pertenencia dinámica requieren Entra ID P1 o P2 (PDF págs. 49 y 60). Con Free solo hay pertenencia asignada."
+  },
+  {
+    "pregunta": "Necesitas acceso condicional basado en el riesgo del inicio de sesión y acceso just-in-time para los administradores. ¿Qué licencia mínima necesitas?",
+    "opciones": ["Free", "P1", "P2", "Microsoft 365 Business Basic"],
+    "correcta": 2,
+    "explicacion": "Entra ID Protection (riesgo) y Privileged Identity Management (just-in-time) son de P2 (págs. 50 y 53). El acceso condicional por dispositivo, grupo o ubicación ya está en P1."
+  },
+  {
+    "pregunta": "Creaste un grupo con pertenencia dinámica y quieres agregar a mano a un usuario que no cumple la regla. ¿Qué pasa?",
+    "opciones": ["Se agrega como excepción a la regla", "No se puede: un grupo dinámico no admite miembros asignados manualmente", "Se agrega, pero sale en la siguiente evaluación", "Solo se puede si el usuario es invitado"],
+    "correcta": 1,
+    "explicacion": "La pertenencia dinámica la calcula Entra ID con la regla; no admite miembros agregados a mano (pág. 60). Si necesitas excepciones, cambia la regla o usa otro grupo asignado."
+  },
+  {
+    "pregunta": "Quieres asignar un rol RBAC sobre una suscripción a un conjunto de usuarios. ¿Qué tipo de grupo de Entra ID creas?",
+    "opciones": ["Grupo de Microsoft 365", "Grupo de seguridad", "Grupo de distribución", "Unidad organizativa (OU)"],
+    "correcta": 1,
+    "explicacion": "Los grupos de seguridad controlan el acceso a recursos (pág. 58). Los de Microsoft 365 son para colaboración: buzón, calendario, SharePoint y Teams. Entra ID no tiene OU."
+  },
+  {
+    "pregunta": "Un usuario fue creado en el Active Directory local y llega a Entra ID mediante Microsoft Entra Connect. ¿Cómo se llama este tipo de identidad?",
+    "opciones": ["Identidad en la nube", "Identidad sincronizada por directorio", "Usuario invitado", "Identidad administrada"],
+    "correcta": 1,
+    "explicacion": "Las identidades sincronizadas vienen del AD local mediante Entra Connect (pág. 56). Sus atributos se editan en el AD local."
+  },
+  {
+    "pregunta": "Asignas licencias de Microsoft 365 a un grupo. Un empleado nuevo entra al grupo y otro sale. ¿Qué ocurre con las licencias?",
+    "opciones": ["Hay que asignarlas y quitarlas a mano con PowerShell", "El nuevo recibe la licencia automáticamente y al que sale se le quita", "Solo el nuevo la recibe; la del otro queda asignada", "Las licencias por grupo solo funcionan con invitados"],
+    "correcta": 1,
+    "explicacion": "Con licencias por grupo, los nuevos miembros las reciben automáticamente y se eliminan al salir del grupo, sin scripts (pág. 54)."
+  },
+  {
+    "pregunta": "El área de RR. HH. quiere que al contratar a alguien se cree su cuenta en Entra ID y al despedirlo se elimine, de forma automática desde su sistema. ¿Qué estándar se usa?",
+    "opciones": ["LDAP", "Kerberos", "SCIM", "SAML"],
+    "correcta": 2,
+    "explicacion": "SCIM es el estándar (API REST) para aprovisionar y desaprovisionar usuarios y grupos automáticamente entre sistemas (págs. 64–65). SAML es para inicio de sesión, no para crear cuentas."
+  },
+  {
+    "pregunta": "Debes migrar a Azure una aplicación antigua que autentica con Kerberos y LDAP, sin desplegar ni administrar controladores de dominio. ¿Qué usas?",
+    "opciones": ["Microsoft Entra ID", "Microsoft Entra Domain Services", "Una VM con AD DS", "Microsoft Entra Connect"],
+    "correcta": 1,
+    "explicacion": "Entra Domain Services (antes Azure AD DS) es un dominio administrado con Kerberos, NTLM y LDAP; Microsoft gestiona dos controladores de dominio (págs. 67–69). Entra ID no habla Kerberos ni LDAP; una VM con AD DS sí, pero la administras tú."
+  },
+  {
+    "pregunta": "¿Cuál es una característica de Microsoft Entra ID y NO del AD DS tradicional?",
+    "opciones": ["Usa unidades organizativas y GPO", "Se administra con LDAP", "Funciona sobre HTTP/HTTPS con API REST y es multiinquilino", "Autentica con Kerberos"],
+    "correcta": 2,
+    "explicacion": "Entra ID es identidad en la nube: HTTP/HTTPS, API REST, estructura plana y multiinquilino. OU, GPO, LDAP y Kerberos son de AD DS (pág. 70)."
+  },
+  {
+    "pregunta": "Una asignación de rol en Azure RBAC se compone de:",
+    "opciones": ["Usuario, contraseña y suscripción", "Entidad de seguridad, definición de rol y ámbito", "Grupo de recursos, política y lock", "Tenant, licencia y grupo"],
+    "correcta": 1,
+    "explicacion": "Quién (entidad de seguridad: usuario, grupo o entidad de servicio), qué (definición de rol) y dónde (ámbito) (págs. 77–80)."
+  },
+  {
+    "pregunta": "El rol Colaborador tiene Actions = \"*\" y NotActions = \"Microsoft.Authorization/*/Write\" y \"Microsoft.Authorization/*/Delete\". ¿Qué NO puede hacer?",
+    "opciones": ["Eliminar una máquina virtual", "Crear una red virtual", "Asignar roles a otros usuarios", "Leer la configuración de los recursos"],
+    "correcta": 2,
+    "explicacion": "Permisos efectivos = Actions − NotActions (pág. 81). Asignar un rol es Microsoft.Authorization/roleAssignments/write, que queda restado. Todo lo demás está permitido."
+  },
+  {
+    "pregunta": "Un usuario tiene en el mismo grupo de recursos los roles Colaborador y Administrador de acceso de usuario. ¿Puede asignar roles a otros?",
+    "opciones": ["No: el NotActions del Colaborador lo impide", "Sí: los permisos de varios roles se combinan", "Solo si también es Propietario de la suscripción", "No: un usuario solo puede tener un rol por ámbito"],
+    "correcta": 1,
+    "explicacion": "Si se asignan varios roles, los permisos se combinan (pág. 81). NotActions solo resta dentro de su propio rol, no es una denegación: el Administrador de acceso de usuario concede Microsoft.Authorization/*."
+  },
+  {
+    "pregunta": "¿Cuántos niveles de grupos de administración se pueden crear debajo del grupo raíz del inquilino?",
+    "opciones": ["2", "4", "6", "Ilimitados"],
+    "correcta": 2,
+    "explicacion": "Hasta 6 niveles de profundidad bajo el grupo raíz, sin contar la raíz ni las suscripciones (pág. 34)."
+  },
+  {
+    "pregunta": "Necesitas evitar que alguien, incluido el Propietario, elimine por accidente un grupo de recursos de producción, pero que sí se puedan modificar sus recursos. ¿Qué aplicas?",
+    "opciones": ["Un lock ReadOnly", "Un lock Delete (CanNotDelete)", "El rol Lector", "Una política de Azure Policy con Audit"],
+    "correcta": 1,
+    "explicacion": "El lock Delete bloquea eliminar pero permite modificar; ReadOnly bloquearía también los cambios (pág. 40). Los locks aplican a todos, incluido el Propietario."
+  },
+  {
+    "pregunta": "¿Qué portal es específico para administrar identidades (usuarios, grupos, roles y acceso condicional) y tiene funciones que no están en el portal de Azure?",
+    "opciones": ["portal.azure.com", "entra.microsoft.com", "admin.microsoft.com", "aka.ms/azureadvisor"],
+    "correcta": 1,
+    "explicacion": "El centro de administración de Microsoft Entra (entra.microsoft.com) está dedicado a identidad y acceso; algunas funciones nuevas, como External ID o Private Access, solo están ahí (pág. 47)."
+  }
+]

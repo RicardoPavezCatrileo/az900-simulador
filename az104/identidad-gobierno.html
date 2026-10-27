@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Identidades y gobierno</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="../assets/estilos.css">
+<style>
+.bloque{display:grid;gap:14px}
+.bloque>h2.h{margin:0}
+.bloque>p.intro{margin:0;color:var(--muted);max-width:75ch}
+.chk{display:flex;gap:8px;align-items:flex-start;font-size:.9rem;cursor:pointer}
+.chk input{accent-color:var(--accent);margin-top:4px}
+.chks{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:8px 18px}
+.chks.fila{display:flex;flex-wrap:wrap}
+.nivel{font-family:var(--f-mono);font-size:.72rem;padding:1px 6px;border-radius:4px;border:1px solid var(--line);color:var(--muted);white-space:nowrap}
+.nivel.free{border-color:var(--ok);color:var(--ok)} .nivel.p1{border-color:var(--accent);color:var(--accent)}
+.nivel.p2{border-color:var(--geo);color:var(--geo)} .nivel.gov{border-color:var(--warn);color:var(--warn)}
+td.si{color:var(--ok);font-weight:600} td.no{color:var(--bad);font-weight:600} td.na{color:var(--muted)}
+.regla{font-family:var(--f-mono);font-size:.85rem;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:10px 12px;overflow-x:auto;white-space:nowrap}
+.cond{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.cond select{font:inherit;font-family:var(--f-mono);font-size:.85rem;padding:6px 8px;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--ink)}
+.json{font-family:var(--f-mono);font-size:.8rem;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin:0;overflow-x:auto;white-space:pre}
+.jsons{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px}
+.mini{font-size:.82rem;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="nav"><a class="volver" href="index.html">← Dominios AZ-104</a><a class="volver" href="../mapa.html">Mapa conceptual →</a><a class="volver" href="../arquitectura.html">Arquitectura →</a></div>
+  <header>
+    <div class="eyebrow">AZ-104 · Dominio 1 · Identidades y gobierno</div>
+    <h1>Identidades y gobierno: cómo se configura</h1>
+    <p>En AZ-900 viste <b>qué es</b> Entra ID, RBAC y la jerarquía de gobierno. Aquí va lo que pregunta AZ-104: <b>qué licencia</b> necesita cada función, cómo se arman los <b>grupos dinámicos</b> y cómo calcula Azure los <b>permisos efectivos</b> de un rol (PDF AZ-104, págs. 25–81).</p>
+  </header>
+
+  <div class="note">
+    <h3>Repaso de la base AZ-900</h3>
+    <p>Jerarquía y herencia: <a href="../az900/cap03-arquitectura.html">cap. 3</a> · Entra ID, MFA, acceso condicional, Entra Connect: <a href="../az900/cap08-autenticacion-autorizacion.html">cap. 8</a> · RBAC + locks + Azure Policy (simulador): <a href="../az900/cap10-monitorizacion-gestion.html">cap. 10</a> · Presupuestos y Cost Management: <a href="../az900/cap11-precios.html">cap. 11</a>.</p>
+  </div>
+
+  <!-- 1 · Licencias -->
+  <section class="bloque">
+    <h2 class="h">1 · ¿Qué licencia de Entra ID necesito?</h2>
+    <p class="intro">Marca las funciones que pide el escenario. La respuesta es la licencia <b>mínima</b> que las cubre todas: cada nivel incluye todo lo del anterior (págs. 48–53).</p>
+    <div class="chks" id="funcs"></div>
+    <div class="status" id="statusL"></div>
+    <div class="tbl"><table>
+      <thead><tr><th>Función marcada</th><th>Licencia mínima</th><th>PDF</th></tr></thead>
+      <tbody id="tbodyL"></tbody>
+    </table></div>
+  </section>
+
+  <!-- 2 · Grupos -->
+  <section class="bloque">
+    <h2 class="h">2 · Grupos: asignados o dinámicos</h2>
+    <p class="intro">Un grupo <b>dinámico</b> calcula sus miembros con una regla sobre los atributos del usuario y se actualiza solo cuando cambian; uno <b>asignado</b> se llena a mano (págs. 57–60).</p>
+    <div class="controls">
+      <div class="ctl"><label>Licencia del tenant</label><div class="seg" id="lic"></div></div>
+      <div class="ctl"><label>Tipo de grupo</label><div class="seg" id="tipoG"></div></div>
+    </div>
+    <div class="ctl"><label>Tipo de pertenencia</label><div class="seg" id="pert"></div></div>
+    <div id="editor" class="bloque"></div>
+    <div class="status" id="statusG"></div>
+    <div class="tbl"><table>
+      <thead><tr><th>Usuario</th><th>Tipo</th><th>Origen</th><th>department</th><th>jobTitle</th><th>country</th><th>¿Miembro?</th></tr></thead>
+      <tbody id="tbodyG"></tbody>
+    </table></div>
+    <div><button type="button" class="btn" id="mover"></button></div>
+  </section>
+
+  <!-- 3 · RBAC por dentro -->
+  <section class="bloque">
+    <h2 class="h">3 · RBAC por dentro: Actions − NotActions</h2>
+    <p class="intro">Una asignación de rol junta <b>quién</b> (entidad de seguridad), <b>qué</b> (definición de rol) y <b>dónde</b> (ámbito). La definición trae <code>Actions</code> y <code>NotActions</code>: permisos efectivos = Actions − NotActions. Si tienes varios roles, <b>se suman</b> (págs. 77–81). Marca los roles que tiene el usuario en el mismo ámbito.</p>
+    <div class="chks fila" id="roles"></div>
+    <div class="jsons" id="jsons"></div>
+    <div class="status" id="statusR"></div>
+    <div class="tbl"><table>
+      <thead id="theadR"></thead>
+      <tbody id="tbodyR"></tbody>
+    </table></div>
+    <p class="mini">Definiciones simplificadas: las reales tienen más entradas (por ejemplo, el Colaborador también niega algunas acciones de Blueprints y Purview). El mecanismo es el mismo.</p>
+  </section>
+
+  <!-- 4 · Tarjetas -->
+  <section>
+    <h2 class="h">4 · Lo que más pregunta AZ-104 de este dominio</h2>
+    <div class="cards">
+      <div class="card"><h3>Tipos de usuario (pág. 56)</h3><ul>
+        <li><b>Nube:</b> existen solo en Entra ID (creados a mano, administradores).</li>
+        <li><b>Sincronizados:</b> vienen del AD local con <b>Entra Connect</b>; se editan en el AD local, no en Entra.</li>
+        <li><b>Invitados (B2B):</b> cuentas externas con <code>userType = Guest</code>.</li>
+      </ul></div>
+      <div class="card"><h3>Tipos de grupo (pág. 58)</h3><ul>
+        <li><b>Seguridad:</b> dar acceso a recursos (apps, VMs, roles RBAC). Pueden tener usuarios y dispositivos.</li>
+        <li><b>Microsoft 365:</b> colaboración: buzón y calendario compartidos, SharePoint, Teams. Admiten invitados.</li>
+        <li>"Dar permisos sobre recursos de Azure" → grupo de <b>seguridad</b>.</li>
+      </ul></div>
+      <div class="card"><h3>Pertenencia (pág. 60)</h3><ul>
+        <li><b>Asignada:</b> manual, en todas las ediciones (Free incluida).</li>
+        <li><b>Dinámica:</b> regla sobre atributos (departamento, cargo, ubicación). <b>Requiere P1 o P2.</b></li>
+        <li>Un grupo dinámico <b>no admite miembros agregados a mano</b>.</li>
+        <li>Las <b>licencias por grupo</b> se heredan: quien entra al grupo recibe la licencia y quien sale la pierde (pág. 54).</li>
+      </ul></div>
+      <div class="card"><h3>Atributos de seguridad personalizados (págs. 61–62)</h3><ul>
+        <li>Pares <b>clave-valor</b> (ej. <code>CostCenter = 1002</code>) agrupados en conjuntos.</li>
+        <li>Se asignan a usuarios, apps y recursos para clasificar y para <b>controlar el acceso</b>.</li>
+      </ul></div>
+      <div class="card"><h3>SCIM (págs. 63–65)</h3><ul>
+        <li>Estándar (API REST) para <b>aprovisionar y desaprovisionar</b> usuarios y grupos automáticamente entre sistemas.</li>
+        <li>Caso típico: el sistema de RR. HH. crea la cuenta en Entra ID al contratar y la elimina al salir.</li>
+      </ul></div>
+      <div class="card"><h3>Portales (pág. 47)</h3><ul>
+        <li><b>portal.azure.com:</b> todos los servicios de Azure.</li>
+        <li><b>entra.microsoft.com:</b> solo identidad (usuarios, grupos, roles, acceso condicional). Algunas funciones nuevas están solo aquí.</li>
+      </ul></div>
+      <div class="card"><h3>Niveles de gobernanza (pág. 34)</h3><ul>
+        <li><b>Grupo raíz del inquilino</b> → grupos de administración (<b>hasta 6 niveles</b> bajo la raíz) → suscripciones → grupos de recursos → recursos.</li>
+        <li>Políticas y roles se <b>heredan hacia abajo</b>.</li>
+        <li>La suscripción es el límite de <b>facturación</b> y de <b>cuotas</b> de recursos (pág. 30).</li>
+      </ul></div>
+      <div class="card"><h3>Gobernanza en la nube (pág. 27)</h3><ul>
+        <li>Política corporativa: riesgo empresarial → política y cumplimiento → proceso de monitoreo.</li>
+        <li>5 disciplinas: <b>gestión de costos</b>, <b>línea base de seguridad</b>, <b>consistencia de recursos</b>, <b>línea base de identidad</b>, <b>aceleración de despliegue</b>.</li>
+      </ul></div>
+      <div class="card"><h3>Cost Management (págs. 35–39)</h3><ul>
+        <li>Análisis de costos acumulados, <b>asignación</b> por departamento, <b>exportación</b> de datos, recursos infrautilizados.</li>
+        <li><b>Presupuestos:</b> alertan al acercarse o pasar el límite; no detienen recursos.</li>
+        <li>Facturas con el desglose del período.</li>
+      </ul></div>
+      <div class="card"><h3>Locks (pág. 40)</h3><ul>
+        <li><b>ReadOnly</b> bloquea cambios; <b>Delete</b> bloquea eliminar.</li>
+        <li>Se ponen en recurso, grupo de recursos o suscripción y se heredan.</li>
+        <li>Se aplican incluso al <b>Propietario</b>: primero hay que quitar el lock.</li>
+      </ul></div>
+    </div>
+  </section>
+
+  <!-- 5 · AD DS vs Entra ID vs Entra Domain Services -->
+  <section class="bloque">
+    <h2 class="h">5 · AD DS vs Entra ID vs Entra Domain Services</h2>
+    <div class="tbl"><table>
+      <thead><tr><th></th><th>AD DS (local)</th><th>Microsoft Entra ID</th><th>Entra Domain Services (antes Azure AD DS)</th></tr></thead>
+      <tbody>
+        <tr><td><b>Qué es</b></td><td>Directorio tradicional en servidores Windows</td><td>Identidad en la nube, multiinquilino</td><td>Dominio <b>administrado</b> en Azure: Microsoft gestiona 2 controladores de dominio</td></tr>
+        <tr><td><b>Protocolos</b></td><td>Kerberos, NTLM, LDAP</td><td>HTTP/HTTPS, API REST (OAuth, SAML, OpenID)</td><td>Kerberos, NTLM, LDAP</td></tr>
+        <tr><td><b>Estructura</b></td><td>Jerárquica: OU y GPO</td><td>Plana: sin OU ni GPO</td><td>OU y GPO básicas</td></tr>
+        <tr><td><b>Sincronización</b></td><td>Hacia Entra ID con Entra Connect</td><td>Bidireccional con el AD local (vía Connect)</td><td><b>Unidireccional</b> desde Entra ID</td></tr>
+        <tr><td><b>Úsalo cuando</b></td><td>Tienes servidores locales</td><td>Apps web, móviles, M365, Azure</td><td>Migras apps <b>legacy</b> que necesitan Kerberos/LDAP sin montar controladores de dominio</td></tr>
+      </tbody>
+    </table></div>
+    <p class="mini">PDF AZ-104 págs. 66–70. El dominio de Entra Domain Services es independiente: no es una extensión del dominio del AD local.</p>
+  </section>
+
+  <section>
+    <h2 class="h">Preguntas tipo examen</h2>
+    <div class="score" id="score"></div>
+    <div class="quiz" id="quiz"></div>
+  </section>
+</div>
+
+<script src="../assets/progreso.js"></script>
+<script src="../assets/quiz.js"></script>
+<script>
+function seg(id,obj,get,set,fn){
+  const el=document.getElementById(id);el.innerHTML="";
+  Object.keys(obj).forEach(k=>{const b=document.createElement("button");b.type="button";b.textContent=typeof obj[k]==="string"?obj[k]:obj[k].name;b.dataset.k=k;
+    b.setAttribute("aria-pressed",String(get()===k));b.onclick=()=>{set(k);fn()};el.appendChild(b)});
+}
+function status(id,lvl,t,d){
+  const col={ok:"var(--ok)",warn:"var(--warn)",bad:"var(--bad)",info:"var(--accent)"}[lvl],ico={ok:"✓",warn:"!",bad:"✕",info:"i"}[lvl];
+  document.getElementById(id).innerHTML=`<span class="dot" style="background:${col}" aria-hidden="true"></span><div><b>${ico} ${t}</b><p>${d}</p></div>`;
+}
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"})[c]);
+
+/* ---------- 1 · Licencias ---------- */
+const NIV={free:{n:"Free",o:0},p1:{n:"P1",o:1},p2:{n:"P2",o:2},gov:{n:"ID Governance",o:3}};
+const FUNCS=[
+ {id:"usr",t:"Administrar usuarios y grupos",l:"free",pg:"49"},
+ {id:"sync",t:"Sincronizar el AD local con Entra Connect",l:"free",pg:"49"},
+ {id:"sso",t:"SSO a Azure, Microsoft 365 y apps SaaS",l:"free",pg:"49"},
+ {id:"mfa0",t:"MFA con los valores predeterminados de seguridad",l:"free",pg:"no está en el PDF"},
+ {id:"dyn",t:"Grupos de pertenencia dinámica",l:"p1",pg:"49, 60"},
+ {id:"self",t:"Autoservicio de grupos (los usuarios crean o piden unirse)",l:"p1",pg:"49, 52"},
+ {id:"sspr",t:"Restablecer contraseña con escritura diferida al AD local",l:"p1",pg:"49, 52"},
+ {id:"ca",t:"Acceso condicional por dispositivo, grupo o ubicación",l:"p1",pg:"52"},
+ {id:"health",t:"Entra Connect Health (supervisar la sincronización)",l:"p1",pg:"52"},
+ {id:"cad",t:"Cloud App Discovery (apps no autorizadas)",l:"p1",pg:"52"},
+ {id:"grplic",t:"Asignar licencias por grupo",l:"p1",pg:"54 (el nivel no está en el PDF)"},
+ {id:"risk",t:"Acceso condicional según el RIESGO (Entra ID Protection)",l:"p2",pg:"50, 53"},
+ {id:"pim",t:"Acceso just-in-time a roles de administrador (PIM)",l:"p2",pg:"50, 53"},
+ {id:"lcm",t:"Gestión avanzada del ciclo de vida de identidades",l:"gov",pg:"50"}
+];
+const marcadas=new Set(["dyn"]);
+document.getElementById("funcs").innerHTML=FUNCS.map(f=>`<label class="chk"><input type="checkbox" data-f="${f.id}"${marcadas.has(f.id)?" checked":""}><span>${f.t}</span></label>`).join("");
+document.querySelectorAll("#funcs input").forEach(i=>i.onchange=()=>{i.checked?marcadas.add(i.dataset.f):marcadas.delete(i.dataset.f);renderL()});
+function renderL(){
+  const sel=FUNCS.filter(f=>marcadas.has(f.id));
+  document.getElementById("tbodyL").innerHTML=sel.length?sel.map(f=>`<tr><td>${f.t}</td><td><span class="nivel ${f.l}">${NIV[f.l].n}</span></td><td class="na">${f.pg}</td></tr>`).join(""):`<tr><td colspan="3" class="na">Marca al menos una función.</td></tr>`;
+  if(!sel.length){status("statusL","info","Sin funciones marcadas","Con solo crear usuarios y grupos basta la edición Free, incluida con cualquier suscripción de Azure.");return}
+  const max=sel.reduce((a,f)=>NIV[f.l].o>NIV[a].o?f.l:a,"free");
+  const porque=sel.filter(f=>f.l===max).map(f=>f.t.toLowerCase()).join("; ");
+  const txt={
+    free:"Todo lo marcado viene en la edición gratuita.",
+    p1:`Lo que exige P1: ${porque}. P1 incluye todo lo de Free.`,
+    p2:`Lo que exige P2: ${porque}. P2 incluye todo lo de P1 y Free. Palabras clave: "riesgo", "just-in-time", "PIM".`,
+    gov:`Microsoft Entra ID Governance es un complemento para clientes con P1 o P2: ${porque}.`
+  }[max];
+  status("statusL",max==="free"?"ok":"info",`Licencia mínima: ${NIV[max].n}`,txt+" Se compra por usuario: cada usuario que use la función necesita su licencia (individual, por grupo o dentro de Enterprise Mobility + Security, pág. 51).");
+}
+
+/* ---------- 2 · Grupos ---------- */
+const USR=[
+ {n:"Ana Rojas",     tipo:"Miembro", origen:"Nube",              department:"Ventas",   jobTitle:"Ejecutiva",     country:"Chile"},
+ {n:"Bruno Díaz",    tipo:"Miembro", origen:"Sincronizado (AD)", department:"Ventas",   jobTitle:"Gerente",       country:"Perú"},
+ {n:"Carla Soto",    tipo:"Miembro", origen:"Sincronizado (AD)", department:"TI",       jobTitle:"Administradora",country:"Chile"},
+ {n:"Diego Paz",     tipo:"Miembro", origen:"Nube",              department:"TI",       jobTitle:"Desarrollador", country:"México"},
+ {n:"Elena Ruiz",    tipo:"Miembro", origen:"Sincronizado (AD)", department:"Finanzas", jobTitle:"Gerente",       country:"Chile"},
+ {n:"Felipe Mora",   tipo:"Miembro", origen:"Nube",              department:"Marketing",jobTitle:"Analista",      country:"Perú"},
+ {n:"partner@contoso.com",tipo:"Invitado",origen:"Invitado B2B", department:"",         jobTitle:"Consultor",     country:"España"}
+];
+USR.forEach(u=>u.userType=u.tipo==="Invitado"?"Guest":"Member");
+const ATR={department:"department",jobTitle:"jobTitle",country:"country",userType:"userType"};
+const OPS={"-eq":"-eq","-ne":"-ne","-startsWith":"-startsWith","-contains":"-contains"};
+const LIC={free:"Free",p1:"P1",p2:"P2"},TIPOG={seg:"Seguridad",m365:"Microsoft 365"},PERT={asig:"Asignada",din:"Dinámica"};
+let lic="p1",tipoG="seg",pert="din",felipe=false;
+let c1={a:"department",o:"-eq",v:"Ventas"},c2={on:false,j:"-and",a:"country",o:"-eq",v:"Chile"};
+const manual=new Set(["Ana Rojas","Carla Soto"]);
+const valores=a=>[...new Set(USR.map(u=>u[a]).filter(Boolean))].sort();
+function cumple(u,c){
+  const x=(u[c.a]||"").toLowerCase(),v=c.v.toLowerCase();
+  return {"-eq":x===v,"-ne":x!==v,"-startsWith":x.startsWith(v),"-contains":x.includes(v)}[c.o];
+}
+function miembro(u){
+  if(pert==="asig")return manual.has(u.n);
+  if(lic==="free")return false;
+  const r1=cumple(u,c1);
+  if(!c2.on)return r1;
+  return c2.j==="-and"?r1&&cumple(u,c2):r1||cumple(u,c2);
+}
+function selHTML(id,opts,val){return`<select id="${id}">${opts.map(o=>`<option${o===val?" selected":""}>${esc(o)}</option>`).join("")}</select>`}
+function txtCond(c){return`(user.${c.a} ${c.o} "${c.v}")`}
+function renderEditor(){
+  const ed=document.getElementById("editor");
+  if(pert==="asig"){ed.innerHTML=`<p class="mini">Pertenencia asignada: marca a mano quién entra en la columna "¿Miembro?" de la tabla.</p>`;return}
+  if(!valores(c1.a).includes(c1.v))c1.v=valores(c1.a)[0];
+  if(!valores(c2.a).includes(c2.v))c2.v=valores(c2.a)[0];
+  ed.innerHTML=`<div class="cond"><span class="mini">Regla:</span>${selHTML("a1",Object.keys(ATR),c1.a)}${selHTML("o1",Object.keys(OPS),c1.o)}${selHTML("v1",valores(c1.a),c1.v)}</div>
+    <div class="cond"><label class="chk"><input type="checkbox" id="on2"${c2.on?" checked":""}><span>Agregar otra condición</span></label>${c2.on?selHTML("j2",["-and","-or"],c2.j)+selHTML("a2",Object.keys(ATR),c2.a)+selHTML("o2",Object.keys(OPS),c2.o)+selHTML("v2",valores(c2.a),c2.v):""}</div>
+    <div class="regla">${esc(txtCond(c1)+(c2.on?` ${c2.j} `+txtCond(c2):""))}</div>`;
+  const on=(id,f)=>{const e=document.getElementById(id);if(e)e.onchange=()=>{f(e.value??e.checked);renderG()}};
+  on("a1",v=>c1.a=v);on("o1",v=>c1.o=v);on("v1",v=>c1.v=v);on("j2",v=>c2.j=v);on("a2",v=>c2.a=v);on("o2",v=>c2.o=v);on("v2",v=>c2.v=v);
+  const k=document.getElementById("on2");k.onchange=()=>{c2.on=k.checked;renderG()};
+}
+function renderG(){
+  seg("lic",LIC,()=>lic,v=>lic=v,renderG);
+  seg("tipoG",TIPOG,()=>tipoG,v=>tipoG=v,renderG);
+  seg("pert",PERT,()=>pert,v=>pert=v,renderG);
+  USR[5].department=felipe?"Ventas":"Marketing";
+  renderEditor();
+  const tb=document.getElementById("tbodyG");
+  tb.innerHTML=USR.map((u,i)=>{
+    const m=miembro(u);
+    const celda=pert==="asig"?`<td><label class="chk"><input type="checkbox" data-u="${i}"${m?" checked":""}><span>${m?"Sí":"No"}</span></label></td>`:`<td class="${m?"si":"na"}">${m?"✓ Sí":"—"}</td>`;
+    return`<tr${m?' class="sel"':""}><td>${esc(u.n)}</td><td>${u.tipo}</td><td>${u.origen}</td><td>${esc(u.department||"(vacío)")}</td><td>${esc(u.jobTitle)}</td><td>${esc(u.country)}</td>${celda}</tr>`;
+  }).join("");
+  tb.querySelectorAll("input[data-u]").forEach(i=>i.onchange=()=>{const n=USR[+i.dataset.u].n;i.checked?manual.add(n):manual.delete(n);renderG()});
+  const mv=document.getElementById("mover");
+  mv.textContent=felipe?"Deshacer: Felipe vuelve a Marketing":"Simular: Felipe Mora se cambia al departamento de Ventas";
+  mv.onclick=()=>{felipe=!felipe;renderG()};
+  const n=USR.filter(miembro).length,inv=USR.filter(u=>miembro(u)&&u.tipo==="Invitado").length;
+  const notaInv=inv?(tipoG==="m365"?" Incluye un invitado: los grupos de Microsoft 365 admiten usuarios externos.":" Incluye un invitado (B2B): recuerda que tendrá los permisos que le des al grupo."):"";
+  if(pert==="din"&&lic==="free"){status("statusG","bad","No se puede crear: la pertenencia dinámica requiere P1 o P2","Con la edición Free solo hay grupos asignados (pág. 60). Cambia la licencia a P1 o la pertenencia a Asignada.");return}
+  if(pert==="din")status("statusG","ok",`Grupo dinámico de ${TIPOG[tipoG].toLowerCase()} · ${n} miembro${n===1?"":"s"}`,`Entra ID evalúa la regla y mantiene la lista sola.${felipe?" Felipe cambió de departamento y su pertenencia se recalculó sin que nadie lo tocara.":" Prueba el botón de abajo: cambia un atributo y mira cómo se actualiza."} No puedes agregar miembros a mano en un grupo dinámico.${notaInv}`);
+  else status("statusG","info",`Grupo asignado de ${TIPOG[tipoG].toLowerCase()} · ${n} miembro${n===1?"":"s"}`,`Funciona en cualquier edición, Free incluida. Si alguien cambia de departamento, nadie lo saca ni lo agrega: hay que hacerlo a mano.${notaInv}`);
+}
+
+/* ---------- 3 · RBAC por dentro ---------- */
+const ROLES={
+ owner:{name:"Propietario",a:["*"],n:[]},
+ contrib:{name:"Colaborador",a:["*"],n:["Microsoft.Authorization/*/Delete","Microsoft.Authorization/*/Write","Microsoft.Authorization/elevateAccess/Action"]},
+ reader:{name:"Lector",a:["*/read"],n:[]},
+ uaa:{name:"Administrador de acceso de usuario",a:["*/read","Microsoft.Authorization/*","Microsoft.Support/*"],n:[]},
+ vmc:{name:"Colaborador de máquinas virtuales",a:["Microsoft.Compute/virtualMachines/*","Microsoft.Network/networkInterfaces/*","Microsoft.Network/virtualNetworks/read","Microsoft.Network/virtualNetworks/subnets/join/action","Microsoft.Resources/subscriptions/resourceGroups/read"],n:[]}
+};
+const OPER=[
+ {t:"Ver una VM",op:"Microsoft.Compute/virtualMachines/read"},
+ {t:"Reiniciar una VM",op:"Microsoft.Compute/virtualMachines/restart/action"},
+ {t:"Eliminar una VM",op:"Microsoft.Compute/virtualMachines/delete"},
+ {t:"Crear una red virtual",op:"Microsoft.Network/virtualNetworks/write"},
+ {t:"Eliminar una cuenta de almacenamiento",op:"Microsoft.Storage/storageAccounts/delete"},
+ {t:"Dar un rol a otro usuario",op:"Microsoft.Authorization/roleAssignments/write"},
+ {t:"Quitar una asignación de rol",op:"Microsoft.Authorization/roleAssignments/delete"}
+];
+const asignados=new Set(["contrib"]);
+const coincide=(pat,op)=>new RegExp("^"+pat.split("*").map(s=>s.replace(/[.+?^${}()|[\]\\]/g,"\\$&")).join(".*")+"$","i").test(op);
+function evalua(r,op){
+  const R=ROLES[r],a=R.a.find(p=>coincide(p,op));
+  if(!a)return{ok:false,por:"no está en Actions"};
+  const n=R.n.find(p=>coincide(p,op));
+  if(n)return{ok:false,por:"NotActions: "+n};
+  return{ok:true,por:"Actions: "+a};
+}
+document.getElementById("roles").innerHTML=Object.keys(ROLES).map(k=>`<label class="chk"><input type="checkbox" data-r="${k}"${asignados.has(k)?" checked":""}><span>${ROLES[k].name}</span></label>`).join("");
+document.querySelectorAll("#roles input").forEach(i=>i.onchange=()=>{i.checked?asignados.add(i.dataset.r):asignados.delete(i.dataset.r);renderR()});
+function renderR(){
+  const rs=Object.keys(ROLES).filter(k=>asignados.has(k));
+  document.getElementById("jsons").innerHTML=rs.map(k=>`<pre class="json">${esc(JSON.stringify({roleName:ROLES[k].name,Actions:ROLES[k].a,NotActions:ROLES[k].n},null,2))}</pre>`).join("");
+  document.getElementById("theadR").innerHTML=`<tr><th>Operación</th>${rs.map(k=>`<th>${ROLES[k].name}</th>`).join("")}<th>Efectivo (suma de roles)</th></tr>`;
+  document.getElementById("tbodyR").innerHTML=OPER.map(o=>{
+    const ev=rs.map(k=>evalua(k,o.op)),fin=ev.some(e=>e.ok);
+    return`<tr><td>${o.t}<div class="mini"><code>${o.op}</code></div></td>${ev.map(e=>`<td class="${e.ok?"si":"no"}" title="${esc(e.por)}">${e.ok?"✓":"✕"}<div class="mini">${esc(e.por)}</div></td>`).join("")}<td class="${fin?"si":"no"}">${fin?"✓ Permitido":"✕ Denegado"}</td></tr>`;
+  }).join("");
+  if(!rs.length){status("statusR","bad","Sin roles: no puede hacer nada","Sin una asignación de rol, Azure deniega todo por defecto.");return}
+  const todo=OPER.every(o=>rs.some(k=>evalua(k,o.op).ok));
+  if(rs.includes("contrib")&&rs.includes("uaa")&&!rs.includes("owner"))status("statusR","warn","Colaborador + Administrador de acceso de usuario ≈ Propietario","Los permisos se suman: lo que el NotActions del Colaborador quita (gestionar roles), el otro rol lo concede. NotActions no es una denegación: solo resta dentro de ESE rol.");
+  else if(rs.length===1&&rs[0]==="contrib")status("statusR","info","Colaborador: todo menos gestionar el acceso","Actions = * (todo) y NotActions quita Microsoft.Authorization/*/Write y /Delete: puede crear y borrar recursos, pero no dar ni quitar roles. Agrega un segundo rol y mira cómo se suman.");
+  else status("statusR",todo?"ok":"info",todo?"Puede hacer todas las operaciones de la tabla":"Permisos efectivos combinados",`Cada columna aplica Actions − NotActions de un rol; la última junta todos los roles (unión). Pasa el mouse por cada ✓ o ✕ para ver qué entrada decidió.`);
+}
+
+renderL();renderG();renderR();iniciarQuiz("identidad","az104");
+</script>
+</body>
+</html>

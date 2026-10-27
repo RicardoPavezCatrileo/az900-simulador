@@ -19,7 +19,7 @@ const CAPITULOS=[
 
 // AZ-104: un tema por dominio oficial del examen. pdf = páginas del PDF del curso AZ-104; base = capítulos de AZ-900 que repasar antes.
 const AZ104=[
- {id:"identidad",     num:1,titulo:"Identidades y gobierno",          archivo:"identidad-gobierno.html", pdf:"25–81",   base:[3,8,10,11],listo:false},
+ {id:"identidad",     num:1,titulo:"Identidades y gobierno",          archivo:"identidad-gobierno.html", pdf:"25–81",   base:[3,8,10,11],listo:true},
  {id:"almacenamiento",num:2,titulo:"Almacenamiento",                  archivo:"almacenamiento.html",     pdf:"82–112",  base:[7],        listo:false},
  {id:"computo",       num:3,titulo:"Cómputo",                         archivo:"computo.html",            pdf:"113–155", base:[4,5],      listo:false},
  {id:"redes",         num:4,titulo:"Redes virtuales",                 archivo:"redes.html",              pdf:"156–189", base:[6,9],      listo:false},
