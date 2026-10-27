@@ -106,5 +106,11 @@
     "opciones": ["VNet peering", "VPN punto a sitio", "Azure CDN", "Application Gateway"],
     "correcta": 0,
     "explicacion": "VNet peering conecta VNets por la red troncal de Azure, sin atravesar Internet público."
+  },
+  {
+    "pregunta": "Necesitas establecer una conexión segura y privada entre recursos de Azure ubicados en dos regiones diferentes, utilizando exclusivamente la red troncal privada de Azure. ¿Qué servicios de Azure deberías implementar para conseguirlo?",
+    "opciones": ["Crea una red virtual en cada región y enlaza ambas redes con una conexión VPN Gateway", "Crea una red virtual en cada región y vincula ambas redes utilizando Azure Virtual Network Peering", "Crea una única Azure Virtual Network que se extienda por ambas regiones, permitiendo que todos los recursos dentro de esta red se comuniquen mediante conexiones privadas", "Crea una red virtual en cada región y conecta ambas redes mediante una conexión websocket"],
+    "correcta": 1,
+    "explicacion": "VNet ↔ VNet por la red troncal de Microsoft, sin gateways → peering (global, entre regiones) (PDF pág. 104). La VPN necesita gateways con IP pública y un túnel IPsec: más latencia y costo; se usa para oficina ↔ VNet. Una VNet pertenece a una sola región: no puede abarcar dos."
   }
 ]

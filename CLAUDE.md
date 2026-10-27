@@ -116,7 +116,7 @@ Errores de esa guía que NO se deben copiar: dice que la secundaria de GZRS es Z
 - NSG: origen × puerto contra reglas por prioridad (incluye las por defecto 65000/65001/65500) y regla opcional 150 que le gana a la 300; tabla con "coincide → decide / no se evalúa".
 - Conexión híbrida: oficina / laptop / otra VNet × por Internet o privado → VPN S2S, P2S, ExpressRoute o peering.
 - Balanceo: Load Balancer, Application Gateway, Traffic Manager, Front Door, CDN (TM y FD no están en el PDF; marcado).
-- 18 preguntas en `data/preguntas-cap06.json`.
+- 19 preguntas en `data/preguntas-cap06.json` (la 19: VNets en dos regiones por la red troncal → peering global, con VPN Gateway de trampa).
 - Errores del PDF corregidos en el sitio: una /24 tiene 251 IPs asignables en Azure (no 256); la terminación SSL es de Application Gateway, no de Load Balancer.
 
 ## Lo que ya existe: capítulos 8 a 11
