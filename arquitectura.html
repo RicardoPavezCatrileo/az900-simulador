@@ -286,6 +286,9 @@ const EL=[
   p:"Si la app cae por un problema de Azure en Brazil South, lo verás aquí."},
 
  // Capítulo 11: precios
+ {id:"tags",k:"pill",a:5,cap:11,x:650,y:289,w:210,h:16,t:"Etiquetas · depto=Ventas · oficina=Stgo",
+  q:"Etiquetas (tags): pares clave=valor que se ponen en cada recurso. Un recurso puede tener varias a la vez (oficina Y departamento), algo que un grupo de recursos no permite.",
+  p:"Cost Management agrupa el gasto por etiqueta (flecha), y Azure Policy puede exigir que todo recurso la tenga.",pg:"266"},
  {id:"budget",k:"pill",a:5,cap:11,x:1010,y:237,w:186,h:16,t:"Presupuesto · alertas 80% / 100%",
   q:"Presupuesto de Cost Management: avisa al llegar a cada umbral, pero NO detiene los recursos (el límite de gasto es otra cosa y solo existe en ciertas suscripciones).",
   p:"El equipo recibe un correo antes de pasarse del gasto mensual previsto.",pg:"263–265"},
@@ -317,6 +320,7 @@ const AR=[
  {id:"e_con_entra",cap:8,d:[[123,228],[123,82]],lab:["sincroniza",128,120,"start"]},
  {id:"e_emp_ca",cap:8,d:[[222,387],[242,387],[242,100],[317,100],[317,82]],lab:["inicia sesión",250,104,"start"]},
  {id:"e_inet_ca",cap:8,d:[[470,60],[392,60]],lab:["inicia sesión",431,54]},
+ {id:"e_tags_cost",cap:11,d:[[860,297],[892,297],[892,773],[916,773]]},
  {id:"e_arm_rg",cap:4,d:[[1162,82],[1162,100],[864,100],[864,258]],lab:["despliega el grupo de recursos",870,126,"start"]}
 ];
 
@@ -351,12 +355,13 @@ const FLUJOS=[
    "Si cae toda la región, los datos siguen existiendo en la secundaria tras el failover. Con RA-GRS se podrían leer sin esperar al failover.",
    "SQL Database y Storage son PaaS: Microsoft administra la plataforma; tú, los datos y el acceso."]},
  {id:"gobierno",n:"Gobierno y costos",
-  ids:["arm","e_arm_rg","tools","rg","mg","sub","policy","rbac","lock","budget","cost","advisor","gov","monitor","logs","e_be_mon","sh","defender","be","vma1","vma2","vma3"],
+  ids:["arm","e_arm_rg","tools","rg","mg","sub","policy","rbac","lock","tags","e_tags_cost","budget","cost","advisor","gov","monitor","logs","e_be_mon","sh","defender","be","vma1","vma2","vma3"],
   pasos:["Una plantilla ARM/Bicep despliega todo el grupo de recursos de forma repetible.",
    "Azure Policy asignada en el grupo de administración se hereda: nadie crea recursos fuera de las regiones permitidas (efecto Deny).",
    "RBAC da al equipo el rol Colaborador solo en rg-web, y un bloqueo CanNotDelete impide borrarlo, incluso al Propietario.",
    "Azure Monitor recoge métricas y logs de las VMs (consultas KQL en Log Analytics) y lanza alertas; Service Health avisa de incidentes de Azure.",
    "Advisor y Defender for Cloud recomiendan mejoras de costo y de seguridad.",
+   "Cada recurso lleva etiquetas (depto=Ventas, oficina=Stgo) y Azure Policy puede exigirlas: así Cost Management muestra el gasto por departamento y por oficina.",
    "El presupuesto avisa al 80% y al 100% del gasto, pero no detiene nada; Cost Management muestra el gasto real."]},
  {id:"black",n:"Black Friday: escalar",
   ids:["inet","e_inet_fd","edge","fd","e_fd_ag","appgw","e_ag_ss","ss","vmw1","vmw2","vmw3","z1","z2","z3","e_ss_lb","lb","e_lb_be","be","vma1","vma2","vma3","e_be_pe","pe","e_pe_sql","sql","gov","monitor","advisor","cost","budget"],
