@@ -1,0 +1,296 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Monitoreo y backup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="../assets/estilos.css">
+<style>
+.bloque{display:grid;gap:14px}
+.bloque>*{min-width:0}
+.bloque>h2.h{margin:0}
+.bloque>p.intro{margin:0;color:var(--muted);max-width:75ch}
+.chk{display:flex;gap:8px;align-items:flex-start;font-size:.9rem;cursor:pointer}
+.chk input{accent-color:var(--accent);margin-top:4px}
+.chks{display:flex;flex-wrap:wrap;gap:8px 18px}
+td.si{color:var(--ok);font-weight:600} td.no{color:var(--bad);font-weight:600} td.na{color:var(--muted)}
+.mini{font-size:.82rem;color:var(--muted)}
+.code{font-family:var(--f-mono);font-size:.82rem;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin:0;overflow-x:auto;white-space:pre;line-height:1.5}
+.linea{display:grid;grid-template-columns:repeat(30,minmax(0,1fr));gap:2px}
+.linea div{height:34px;border-radius:3px;background:var(--line);position:relative}
+.linea div.sobre{background:var(--warn)}
+.linea div.fuego{background:var(--bad)}
+.linea div span{position:absolute;bottom:2px;left:0;right:0;text-align:center;font-family:var(--f-mono);font-size:.6rem;color:var(--ink)}
+.eje{display:flex;justify-content:space-between;font-family:var(--f-mono);font-size:.7rem;color:var(--muted)}
+.ley{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:.8rem;color:var(--muted)}
+.ley i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+.puntos{display:flex;flex-wrap:wrap;gap:4px;font-family:var(--f-mono);font-size:.72rem}
+.puntos span{padding:3px 6px;border-radius:4px;border:1px solid var(--line);background:var(--surface)}
+.puntos span.usa{border-color:var(--ok);color:var(--ok);font-weight:600}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="nav"><a class="volver" href="index.html">← Dominios AZ-104</a><a class="volver" href="../mapa.html">Mapa conceptual →</a><a class="volver" href="../arquitectura.html">Arquitectura →</a></div>
+  <header>
+    <div class="eyebrow">AZ-104 · Dominio 5 · Monitoreo y copias de seguridad</div>
+    <h1>Monitoreo y copias de seguridad: alertar, consultar, recuperar</h1>
+    <p>En AZ-900 viste <b>qué hace</b> cada herramienta de Azure Monitor. AZ-104 pregunta <b>cómo se configura</b>: las partes de una <b>regla de alerta</b>, consultas <b>KQL</b> en Log Analytics y cómo <b>recuperar</b> datos con Azure Backup y Site Recovery (PDF AZ-104, págs. 190–202).</p>
+  </header>
+
+  <div class="note">
+    <h3>Repaso de la base AZ-900</h3>
+    <p>Azure Monitor, Log Analytics, Application Insights, alertas y grupos de acción, Service Health, Advisor y Arc: <a href="../az900/cap10-monitorizacion-gestion.html">cap. 10</a> · Redundancia del almacenamiento y región emparejada: <a href="../az900/cap07-almacenamiento.html">cap. 7</a>.</p>
+  </div>
+
+  <!-- 1 · Regla de alerta -->
+  <section class="bloque">
+    <h2 class="h">1 · Arma una regla de alerta</h2>
+    <p class="intro">Una regla de alerta tiene <b>recurso</b> + <b>señal</b> (la telemetría) + <b>condición</b> (umbral durante una ventana de tiempo) + <b>gravedad</b> + <b>grupo de acción</b> (qué hacer). Ejemplo del curso: VM, uso de disco &gt; 80% durante 10 minutos, gravedad crítica (pág. 200). La línea muestra 30 minutos de la señal, minuto a minuto.</p>
+    <div class="controls">
+      <div class="ctl"><label>Señal de la VM vm-web1</label><div class="seg" id="senal"></div></div>
+      <div class="ctl"><label>Ventana: debe superar el umbral durante</label><div class="seg" id="ventana"></div></div>
+    </div>
+    <div class="controls">
+      <div class="ctl"><label>Gravedad</label><div class="seg" id="grav"></div></div>
+      <div class="ctl"><label>Grupo de acción</label><div class="chks" id="acciones"></div></div>
+    </div>
+    <div class="code" id="reglaTxt"></div>
+    <div class="linea" id="linea"></div>
+    <div class="eje"><span>min 1</span><span>min 15</span><span>min 30</span></div>
+    <div class="ley"><span><i style="background:var(--line)"></i>bajo el umbral</span><span><i style="background:var(--warn)"></i>sobre el umbral</span><span><i style="background:var(--bad)"></i>la alerta se dispara</span></div>
+    <div class="status" id="statusA"></div>
+  </section>
+
+  <!-- 2 · KQL -->
+  <section class="bloque">
+    <h2 class="h">2 · Consultas KQL en Log Analytics</h2>
+    <p class="intro">Log Analytics guarda los registros de Azure Monitor en un <b>área de trabajo</b> y se consultan con <b>KQL</b> (Kusto Query Language): una tabla y luego operadores encadenados con <code>|</code> (págs. 196–197). Los datos son de ejemplo: 3 VMs en la última hora.</p>
+    <div class="ctl"><label>¿Qué quieres saber?</label><div class="seg" id="consulta"></div></div>
+    <pre class="code" id="kql"></pre>
+    <div class="tbl"><table><thead id="theadK"></thead><tbody id="tbodyK"></tbody></table></div>
+    <div class="status" id="statusK"></div>
+  </section>
+
+  <!-- 3 · Backup -->
+  <section class="bloque">
+    <h2 class="h">3 · Azure Backup y Site Recovery: ¿puedo recuperarme?</h2>
+    <p class="intro">El PDF solo da la idea general: backup protege los datos y recovery restaura para la continuidad del negocio (pág. 202). El detalle de abajo <b>no está en el PDF</b>, pero AZ-104 lo pregunta: un <b>almacén de Recovery Services</b> guarda los puntos de restauración según una <b>política</b>. Ahora son las 15:00 del miércoles.</p>
+    <div class="controls">
+      <div class="ctl"><label>Frecuencia de la política</label><div class="seg" id="frec"></div></div>
+      <div class="ctl"><label>Retención de puntos diarios</label><div class="seg" id="retD"></div></div>
+    </div>
+    <div class="controls">
+      <div class="ctl"><label>Retención mensual</label><div class="seg" id="retM"></div></div>
+      <div class="ctl"><label>Redundancia del almacén</label><div class="seg" id="redV"></div></div>
+    </div>
+    <div class="chks">
+      <label class="chk"><input type="checkbox" id="soft" checked><span>Eliminación temporal (soft delete) activada: 14 días</span></label>
+      <label class="chk"><input type="checkbox" id="asr"><span>Azure Site Recovery replica la VM a la región emparejada</span></label>
+    </div>
+    <div class="ctl"><label>Incidente</label><div class="seg fail" id="inc"></div></div>
+    <div class="puntos" id="puntos"></div>
+    <div class="status" id="statusB"></div>
+    <div class="facts" id="factsB"></div>
+  </section>
+
+  <!-- 4 · Tarjetas -->
+  <section>
+    <h2 class="h">4 · Lo que más pregunta AZ-104 de este dominio</h2>
+    <div class="cards">
+      <div class="card"><h3>Qué envía una VM a Monitor (pág. 192)</h3><ul>
+        <li><b>Métricas</b> de rendimiento (números en el tiempo: CPU, disco, red).</li>
+        <li><b>Registros</b>: actividad, diagnóstico, red, seguridad y auditoría, aplicaciones.</li>
+        <li>Para registros del SO invitado hace falta el <b>agente</b> (extensión de monitoreo).</li>
+      </ul></div>
+      <div class="card"><h3>Log Analytics y KQL (págs. 196–197)</h3><ul>
+        <li>Almacena y consulta los registros en un <b>área de trabajo</b>.</li>
+        <li>KQL: <code>Tabla | where … | summarize … by … | order by …</code>.</li>
+        <li>Tablas típicas: <code>Perf</code>, <code>Heartbeat</code>, <code>AzureActivity</code>, <code>Event</code>.</li>
+      </ul></div>
+      <div class="card"><h3>Application Insights (pág. 198)</h3><ul>
+        <li>Para <b>aplicaciones web</b>: cuellos de botella, tiempos de respuesta, interacción de los usuarios.</li>
+        <li>Funciona con App Service, VMs (necesitan <b>agente</b>) y recursos fuera de Azure.</li>
+      </ul></div>
+      <div class="card"><h3>Alertas y grupos de acción (págs. 199–200)</h3><ul>
+        <li>Regla = recurso + señal + condición + gravedad + grupo de acción.</li>
+        <li>Grupo de acción: <b>email/SMS</b>, <b>Logic Apps</b>, <b>Azure Functions</b>, webhook, etc. Se reutiliza en muchas reglas.</li>
+        <li>Gravedad de 0 (crítica) a 4 (detallada).</li>
+      </ul></div>
+      <div class="card"><h3>Almacén de Recovery Services (no está en el PDF)</h3><ul>
+        <li>Guarda los puntos de restauración de VMs, Azure Files, SQL en VM, etc.</li>
+        <li>Para respaldar una VM, el almacén debe estar en la <b>misma región</b> que la VM.</li>
+        <li>Redundancia del almacén: LRS, ZRS o <b>GRS</b> (con <b>restauración entre regiones</b> opcional). Se elige antes del primer backup.</li>
+      </ul></div>
+      <div class="card"><h3>Política y restauración (no está en el PDF)</h3><ul>
+        <li>Política: frecuencia (diaria, o cada pocas horas con la política mejorada) y retención diaria, semanal, mensual y anual.</li>
+        <li>Restaurar: <b>crear una VM nueva</b>, <b>reemplazar o restaurar discos</b>, o <b>recuperar archivos</b> sueltos.</li>
+        <li><b>Eliminación temporal:</b> los datos de backup borrados se guardan 14 días más.</li>
+      </ul></div>
+      <div class="card"><h3>Backup vs Site Recovery (no está en el PDF)</h3><ul>
+        <li><b>Backup:</b> copias para volver atrás en el tiempo (borrados, ransomware, auditoría).</li>
+        <li><b>Site Recovery (ASR):</b> <b>replica</b> la VM a otra región y hace <b>failover</b> si cae la región: recuperación ante desastres.</li>
+        <li><b>RPO:</b> cuántos datos puedes perder (tiempo desde el último punto). <b>RTO:</b> cuánto tardas en volver a funcionar.</li>
+      </ul></div>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="h">Preguntas tipo examen</h2>
+    <div class="score" id="score"></div>
+    <div class="quiz" id="quiz"></div>
+  </section>
+</div>
+
+<script src="../assets/progreso.js"></script>
+<script src="../assets/quiz.js"></script>
+<script>
+function seg(id,obj,get,set,fn){
+  const el=document.getElementById(id);el.innerHTML="";
+  Object.keys(obj).forEach(k=>{const b=document.createElement("button");b.type="button";b.textContent=typeof obj[k]==="string"?obj[k]:obj[k].name;b.dataset.k=k;
+    b.setAttribute("aria-pressed",String(get()===k));b.onclick=()=>{set(k);fn()};el.appendChild(b)});
+}
+function facts(id,rows){document.getElementById(id).innerHTML=rows.map(([k,v])=>`<div class="fact"><div class="k">${k}</div><div class="v">${v}</div></div>`).join("")}
+function status(id,lvl,t,d){
+  const col={ok:"var(--ok)",warn:"var(--warn)",bad:"var(--bad)",info:"var(--accent)"}[lvl],ico={ok:"✓",warn:"!",bad:"✕",info:"i"}[lvl];
+  document.getElementById(id).innerHTML=`<span class="dot" style="background:${col}" aria-hidden="true"></span><div><b>${ico} ${t}</b><p>${d}</p></div>`;
+}
+
+/* ---------- 1 · Regla de alerta ---------- */
+// 30 minutos de cada señal (valores de ejemplo)
+const SENAL={
+ disco:{name:"Disco usado (%)",metrica:"Percentage Disk Used",umbral:80,u:"%",v:[71,72,72,73,74,75,76,77,78,79,81,82,82,83,84,84,85,86,86,87,88,88,89,90,90,91,91,92,92,93]},
+ cpu:{name:"CPU (%)",metrica:"Percentage CPU",umbral:85,u:"%",v:[35,40,42,91,95,93,60,45,40,38,42,44,88,92,94,96,97,95,96,94,93,97,96,95,40,38,36,35,34,33]},
+ lat:{name:"Latencia de la app (ms)",metrica:"Server response time",umbral:5000,u:" ms",v:[800,900,850,950,1200,5200,5400,1100,900,850,800,780,820,5100,5300,5600,5800,6100,6000,5900,6200,6400,6300,6100,6000,5800,5900,6100,6200,6000]}
+};
+const VENT={1:"1 min",5:"5 min",10:"10 min"};
+const GRAV={0:"0 Crítica",1:"1 Error",2:"2 Advertencia",3:"3 Informativa",4:"4 Detallada"};
+const ACC=[["mail","Email al equipo de soporte"],["sms","SMS al de turno"],["logic","Logic App que abre un ticket"],["func","Azure Function que limpia el disco"]];
+let senal="disco",ventana="10",grav="0";
+const acciones=new Set(["mail","sms"]);
+document.getElementById("acciones").innerHTML=ACC.map(([k,t])=>`<label class="chk"><input type="checkbox" data-a="${k}"${acciones.has(k)?" checked":""}><span>${t}</span></label>`).join("");
+document.querySelectorAll("#acciones input").forEach(i=>i.onchange=()=>{i.checked?acciones.add(i.dataset.a):acciones.delete(i.dataset.a);renderA()});
+function renderA(){
+  seg("senal",SENAL,()=>senal,v=>senal=v,renderA);
+  seg("ventana",VENT,()=>ventana,v=>ventana=v,renderA);
+  seg("grav",GRAV,()=>grav,v=>grav=v,renderA);
+  const S=SENAL[senal],w=+ventana;
+  let fuego=-1;
+  for(let i=w-1;i<S.v.length;i++){if(S.v.slice(i-w+1,i+1).every(x=>x>S.umbral)){fuego=i;break}}
+  document.getElementById("linea").innerHTML=S.v.map((x,i)=>`<div class="${i===fuego?"fuego":x>S.umbral?"sobre":""}" title="min ${i+1}: ${x}${S.u}" style="height:${Math.round(14+20*Math.min(1,x/(S.umbral*1.15)))}px;align-self:end"></div>`).join("");
+  document.getElementById("linea").style.alignItems="end";
+  const acc=ACC.filter(([k])=>acciones.has(k)).map(([,t])=>t);
+  document.getElementById("reglaTxt").textContent=`Recurso:          vm-web1 (máquina virtual)
+Señal:            ${S.metrica}
+Condición:        mayor que ${S.umbral}${S.u} durante ${w} min (se evalúa cada 1 min)
+Gravedad:         ${GRAV[grav]}
+Grupo de acción:  ${acc.length?acc.join(" · "):"(ninguno)"}`;
+  const picos=S.v.filter(x=>x>S.umbral).length;
+  if(fuego<0){status("statusA","info","La alerta no se dispara",`La señal pasó el umbral ${picos} de 30 minutos, pero nunca ${w} minutos seguidos. Una ventana más larga evita alertas por picos cortos; una más corta avisa antes, con más falsas alarmas.`);return}
+  const sinAcc=!acc.length?" Ojo: sin grupo de acción la alerta queda registrada en el portal, pero no avisa a nadie.":"";
+  status("statusA",grav<=1?"bad":"warn",`Se dispara en el minuto ${fuego+1} · gravedad ${GRAV[grav]}`,`La señal estuvo sobre ${S.umbral}${S.u} durante ${w} minutos seguidos.${acc.length?" El grupo de acción ejecuta: "+acc.join(", ")+".":""}${sinAcc}${acciones.has("func")||acciones.has("logic")?" Las acciones automáticas (Logic Apps, Functions) resuelven o escalan sin intervención humana (pág. 200).":""}`);
+}
+
+/* ---------- 2 · KQL ---------- */
+const VMS=["vm-web1","vm-web2","vm-db"];
+const CPUV={"vm-web1":[42,55,61,78,83,70],"vm-web2":[30,33,35,41,38,36],"vm-db":[64,71,92,95,88,90]};
+const PERF=[];VMS.forEach(c=>CPUV[c].forEach((v,i)=>PERF.push({TimeGenerated:`14:${String(i*10).padStart(2,"0")}`,Computer:c,CounterName:"% Processor Time",CounterValue:v})));
+const HEART={"vm-web1":"14:59","vm-web2":"14:58","vm-db":"14:31"};
+const ACT=[{TimeGenerated:"14:05",Caller:"ana@contoso.com",OperationNameValue:"MICROSOFT.COMPUTE/VIRTUALMACHINES/WRITE",Resource:"vm-web2"},{TimeGenerated:"14:22",Caller:"bruno@contoso.com",OperationNameValue:"MICROSOFT.NETWORK/NETWORKSECURITYGROUPS/WRITE",Resource:"nsg-web"},{TimeGenerated:"14:31",Caller:"bruno@contoso.com",OperationNameValue:"MICROSOFT.COMPUTE/VIRTUALMACHINES/DEALLOCATE/ACTION",Resource:"vm-db"}];
+const CONS={
+ prom:{name:"CPU promedio por VM",kql:`Perf
+| where TimeGenerated > ago(1h)
+| where CounterName == "% Processor Time"
+| summarize CPUpromedio = avg(CounterValue) by Computer
+| order by CPUpromedio desc`,
+  run:()=>VMS.map(c=>({Computer:c,CPUpromedio:(CPUV[c].reduce((a,b)=>a+b,0)/6).toFixed(1)})).sort((a,b)=>b.CPUpromedio-a.CPUpromedio),
+  exp:"<code>where</code> filtra filas, <code>summarize … by</code> agrupa y calcula (avg, max, count), <code>order by</code> ordena."},
+ top:{name:"Las 3 lecturas de CPU más altas",kql:`Perf
+| where CounterName == "% Processor Time"
+| top 3 by CounterValue desc
+| project TimeGenerated, Computer, CounterValue`,
+  run:()=>[...PERF].sort((a,b)=>b.CounterValue-a.CounterValue).slice(0,3).map(r=>({TimeGenerated:r.TimeGenerated,Computer:r.Computer,CounterValue:r.CounterValue})),
+  exp:"<code>top N by</code> devuelve las N filas mayores y <code>project</code> elige qué columnas mostrar."},
+ latido:{name:"VMs sin latido hace más de 10 min",kql:`Heartbeat
+| summarize UltimoLatido = max(TimeGenerated) by Computer
+| where UltimoLatido < ago(10m)`,
+  run:()=>VMS.filter(c=>HEART[c]<"14:50").map(c=>({Computer:c,UltimoLatido:HEART[c]})),
+  exp:"El agente envía un latido (Heartbeat) cada minuto. Si una VM deja de enviarlo, está apagada o el agente falló: es la base de la alerta \"VM no responde\" (pág. 199)."},
+ quien:{name:"¿Quién cambió algo?",kql:`AzureActivity
+| where OperationNameValue endswith "WRITE" or OperationNameValue endswith "ACTION"
+| project TimeGenerated, Caller, OperationNameValue, Resource
+| order by TimeGenerated desc`,
+  run:()=>[...ACT].reverse(),
+  exp:"El registro de actividad (<code>AzureActivity</code>) guarda las operaciones del plano de control: quién, qué y cuándo. Aquí se ve que bruno desasignó vm-db a las 14:31, lo que explica la falta de latido."}
+};
+let consulta="prom";
+function renderK(){
+  seg("consulta",CONS,()=>consulta,v=>consulta=v,renderK);
+  const C=CONS[consulta],filas=C.run();
+  document.getElementById("kql").textContent=C.kql;
+  const cols=filas.length?Object.keys(filas[0]):["Computer"];
+  document.getElementById("theadK").innerHTML=`<tr>${cols.map(c=>`<th>${c}</th>`).join("")}</tr>`;
+  document.getElementById("tbodyK").innerHTML=filas.length?filas.map(f=>`<tr>${cols.map(c=>`<td>${f[c]}</td>`).join("")}</tr>`).join(""):`<tr><td class="na">Sin resultados</td></tr>`;
+  status("statusK","info",`${filas.length} fila${filas.length===1?"":"s"}`,C.exp);
+}
+
+/* ---------- 3 · Backup ---------- */
+const FREC={d:"Diaria a las 22:00",h4:"Cada 4 horas (política mejorada)"};
+const RETD={7:"7 días",30:"30 días",180:"180 días"};
+const RETM={no:"Sin retención mensual",m12:"12 meses (1.er día del mes)"};
+const REDV={lrs:"LRS",grs:"GRS",crr:"GRS + restauración entre regiones"};
+const INC={
+ archivo:{name:"Borraron un archivo hace 3 días",h:72},
+ ransom:{name:"Ransomware cifró el disco a las 13:00",h:2},
+ audit:{name:"Auditoría: archivo de hace 3 meses",h:24*90},
+ borrado:{name:"Borraron los datos de backup hace 5 días",h:2},
+ region:{name:"Cae toda la región",h:0}
+};
+let frec="d",retD="30",retM="no",redV="lrs",inc="ransom";
+const soft=document.getElementById("soft"),asr=document.getElementById("asr");
+soft.onchange=renderB;asr.onchange=renderB;
+function renderB(){
+  seg("frec",FREC,()=>frec,v=>frec=v,renderB);
+  seg("retD",RETD,()=>retD,v=>retD=v,renderB);
+  seg("retM",RETM,()=>retM,v=>retM=v,renderB);
+  seg("redV",REDV,()=>redV,v=>redV=v,renderB);
+  seg("inc",INC,()=>inc,v=>inc=v,renderB);
+  // Puntos recientes para mostrar
+  const pts=frec==="d"?["Lun 22:00","Mar 22:00"]:["Mar 20:00","Mié 00:00","Mié 04:00","Mié 08:00","Mié 12:00"];
+  let usa=null;
+  if(inc==="ransom")usa=frec==="d"?"Mar 22:00":"Mié 12:00";
+  document.getElementById("puntos").innerHTML=`<span class="mini" style="border:0;background:none">Últimos puntos:</span>`+pts.map(p=>`<span class="${p===usa?"usa":""}">${p}</span>`).join("")+(retM==="m12"?`<span>+ 12 mensuales</span>`:"");
+  const rd=+retD;
+  let lvl,t,d,f;
+  if(inc==="archivo"){
+    lvl="ok";t="Se recupera el archivo";d=`Hay puntos de hace 4 días o más dentro de la retención de ${rd} días. Usas la recuperación de archivos: montas el punto y copias solo el archivo, sin restaurar la VM entera.`;
+    f=[["Método","Recuperar archivos"],["Punto","Antes del borrado"],["RPO (datos perdidos)","Cambios después de ese punto"],["RTO","Minutos"]];
+  }else if(inc==="ransom"){
+    const perd=frec==="d"?"15 h (desde ayer 22:00)":"1 h (desde las 12:00)";
+    lvl=frec==="d"?"warn":"ok";t="Se recupera restaurando un punto anterior al ataque";
+    d=`El último punto limpio es ${usa}. Restauras los discos o creas una VM nueva desde ese punto. Pierdes ${perd}: eso es el RPO. ${frec==="d"?"Con backups cada 4 horas perderías solo 1 hora.":"La política mejorada acorta el RPO."}`;
+    f=[["Método","Restaurar discos o VM nueva"],["Punto",usa],["RPO (datos perdidos)",perd],["RTO","Minutos a horas"]];
+  }else if(inc==="audit"){
+    const ok=rd>=90||retM==="m12";
+    lvl=ok?"ok":"bad";t=ok?"Hay un punto de hace 3 meses":"No hay ningún punto tan antiguo";
+    d=ok?(retM==="m12"&&rd<90?"La retención diaria ya lo borró, pero la mensual guarda el punto del día 1 de cada mes durante 12 meses.":`La retención diaria de ${rd} días alcanza.`):`La retención diaria es de ${rd} días y no hay retención mensual: los puntos de hace 90 días ya se eliminaron. Para auditorías se usa la retención mensual o anual, que guarda pocos puntos por mucho tiempo.`;
+    f=[["Método","Recuperar archivos"],["Punto",ok?(rd>=90?"Diario de hace 90 días":"Mensual del día 1"):"—"],["Retención diaria",rd+" días"],["Retención mensual",retM==="m12"?"12 meses":"No"]];
+  }else if(inc==="borrado"){
+    lvl=soft.checked?"ok":"bad";t=soft.checked?"Se recuperan: siguen en eliminación temporal":"Se perdieron los backups";
+    d=soft.checked?"Con la eliminación temporal, los datos de backup borrados se conservan 14 días más sin costo y se pueden recuperar. Pasaron 5 días: todavía estás a tiempo. Protege contra borrados accidentales o malintencionados.":"Sin eliminación temporal, al borrar los datos de backup desaparecen al instante. Por eso viene activada por defecto.";
+    f=[["Eliminación temporal",soft.checked?"14 días":"Desactivada"],["Días desde el borrado","5"],["¿Recuperable?",soft.checked?"Sí":"No"],["Costo extra","Ninguno"]];
+  }else{
+    if(asr.checked){lvl="ok";t="Failover a la región emparejada con Site Recovery";d="Site Recovery replica la VM continuamente: haces failover y la VM arranca en la otra región en minutos, con pocos minutos de datos perdidos. Es recuperación ante desastres, no backup.";f=[["Método","Failover (ASR)"],["Región","Emparejada"],["RPO","Minutos"],["RTO","Minutos"]];}
+    else if(redV==="crr"){lvl="warn";t="Restauras la VM en la región secundaria desde el backup";d="Con un almacén GRS y la restauración entre regiones activada, puedes restaurar en la región emparejada sin esperar a Microsoft. Más lento que Site Recovery y pierdes lo hecho desde el último punto.";f=[["Método","Restauración entre regiones"],["Región","Emparejada"],["RPO","Desde el último backup"],["RTO","Horas"]];}
+    else if(redV==="grs"){lvl="warn";t="Los datos están a salvo, pero no puedes restaurar todavía";d="El almacén GRS copió los backups a la región emparejada, pero sin la restauración entre regiones solo podrás usarlos si Microsoft declara el desastre y hace el failover del almacén. Activa la restauración entre regiones o usa Site Recovery.";f=[["Método","Esperar el failover del almacén"],["Región","Emparejada"],["RPO","Desde el último backup"],["RTO","Indefinido"]];}
+    else{lvl="bad";t="Sin recuperación hasta que vuelva la región";d="El almacén LRS está en la misma región que la VM (debe estarlo para respaldarla): si cae la región, caen la VM y sus backups. Usa un almacén GRS con restauración entre regiones, o Site Recovery.";f=[["Método","—"],["Región","Caída"],["RPO","—"],["RTO","Hasta que vuelva la región"]];}
+  }
+  status("statusB",lvl,t,d);facts("factsB",f);
+}
+
+renderA();renderK();renderB();iniciarQuiz("monitoreo","az104");
+</script>
+</body>
+</html>

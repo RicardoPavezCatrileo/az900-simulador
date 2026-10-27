@@ -1,0 +1,92 @@
+[
+  {
+    "pregunta": "Quieres que te avisen cuando el disco de una VM supere el 80% de uso durante 10 minutos. ¿Qué configuras?",
+    "opciones": ["Un presupuesto de Cost Management", "Una regla de alerta de Azure Monitor con un grupo de acción", "Una política de Azure Policy", "Un lock ReadOnly"],
+    "correcta": 1,
+    "explicacion": "Una regla de alerta define recurso (VM), señal (uso de disco), condición (> 80% durante 10 min) y gravedad; el grupo de acción decide qué hacer (PDF pág. 200)."
+  },
+  {
+    "pregunta": "En Azure Monitor, ¿qué define un grupo de acción?",
+    "opciones": ["Qué recursos se monitorean", "Las acciones que se ejecutan cuando se activa una regla de alerta, como email, SMS, Logic Apps o Functions", "El umbral de la alerta", "Quién puede ver las métricas"],
+    "correcta": 1,
+    "explicacion": "El grupo de acción define las acciones tomadas al activarse una regla: notificar por email o SMS, o flujos automatizados con Logic Apps, Azure Functions, etc. (pág. 200)."
+  },
+  {
+    "pregunta": "Quieres que, al dispararse una alerta, se ejecute código automáticamente para liberar espacio en el disco. ¿Qué agregas al grupo de acción?",
+    "opciones": ["Un SMS", "Una Azure Function", "Un panel de Azure Monitor", "Un área de trabajo de Log Analytics"],
+    "correcta": 1,
+    "explicacion": "Los grupos de acción integran flujos automatizados con Logic Apps y Azure Functions (pág. 200). Un SMS solo avisa."
+  },
+  {
+    "pregunta": "¿Qué lenguaje se usa para consultar los datos de Log Analytics?",
+    "opciones": ["SQL", "Kusto Query Language (KQL)", "PowerShell", "GraphQL"],
+    "correcta": 1,
+    "explicacion": "Las consultas en Log Analytics se hacen con KQL (pág. 197)."
+  },
+  {
+    "pregunta": "En KQL, ¿qué operador agrupa filas y calcula un valor por grupo, como el promedio de CPU por equipo?",
+    "opciones": ["where", "project", "summarize ... by", "top"],
+    "correcta": 2,
+    "explicacion": "summarize avg(CounterValue) by Computer agrupa y agrega. where filtra filas, project elige columnas y top devuelve las N mayores."
+  },
+  {
+    "pregunta": "¿Qué tabla de Log Analytics usarías para detectar VMs que dejaron de reportar (VM que no responde)?",
+    "opciones": ["Perf", "Heartbeat", "AzureActivity", "Usage"],
+    "correcta": 1,
+    "explicacion": "El agente envía un latido periódico a la tabla Heartbeat; si deja de llegar, la VM o el agente no responden. Perf guarda contadores de rendimiento y AzureActivity las operaciones del plano de control."
+  },
+  {
+    "pregunta": "Necesitas saber quién desasignó una VM ayer. ¿Dónde lo buscas?",
+    "opciones": ["En las métricas de CPU de la VM", "En el registro de actividad (AzureActivity)", "En Application Insights", "En Azure Advisor"],
+    "correcta": 1,
+    "explicacion": "El registro de actividad guarda las operaciones sobre los recursos: quién, qué y cuándo (pág. 192 lo menciona entre lo que envía una VM)."
+  },
+  {
+    "pregunta": "Necesitas diagnosticar cuellos de botella de rendimiento y analizar cómo interactúan los usuarios con tu aplicación web. ¿Qué usas?",
+    "opciones": ["Log Analytics", "Application Insights", "Azure Service Health", "Network Watcher"],
+    "correcta": 1,
+    "explicacion": "Application Insights está enfocado en aplicaciones web: cuellos de botella y uso de los usuarios. Funciona con App Service, VMs (con agente) y recursos externos (pág. 198)."
+  },
+  {
+    "pregunta": "Para usar Application Insights en una aplicación que corre en una VM de Azure, ¿qué se necesita?",
+    "opciones": ["Nada, se activa solo", "Instalar un agente en la VM", "Moverla a App Service", "Un endpoint privado"],
+    "correcta": 1,
+    "explicacion": "El curso indica que Application Insights necesita un agente para las VMs (pág. 198)."
+  },
+  {
+    "pregunta": "Quieres respaldar una VM de Azure con Azure Backup. ¿Dónde se guardan los puntos de restauración?",
+    "opciones": ["En un almacén de Recovery Services", "En un área de trabajo de Log Analytics", "En Azure Container Registry", "En el disco temporal de la VM"],
+    "correcta": 0,
+    "explicacion": "Azure Backup guarda los puntos de restauración en un almacén de Recovery Services, que debe estar en la misma región que la VM. No está en el PDF."
+  },
+  {
+    "pregunta": "Alguien eliminó los datos de backup de una VM hace 5 días. Con la configuración por defecto, ¿se pueden recuperar?",
+    "opciones": ["No, se borran al instante", "Sí, la eliminación temporal los conserva 14 días", "Sí, pero solo si el almacén es GRS", "Solo abriendo un caso de soporte"],
+    "correcta": 1,
+    "explicacion": "La eliminación temporal (soft delete) conserva los datos de backup borrados 14 días adicionales. No está en el PDF."
+  },
+  {
+    "pregunta": "Un usuario borró por error un archivo de una VM respaldada. ¿Qué opción de restauración es la más rápida y no afecta al resto de la VM?",
+    "opciones": ["Crear una VM nueva", "Reemplazar los discos", "Recuperar archivos (file recovery)", "Failover con Site Recovery"],
+    "correcta": 2,
+    "explicacion": "La recuperación de archivos monta el punto de restauración y copias solo lo necesario. Restaurar discos o crear una VM sirve cuando se dañó la VM entera. No está en el PDF."
+  },
+  {
+    "pregunta": "Debes poder recuperar una VM en otra región en pocos minutos si cae toda la región primaria. ¿Qué usas?",
+    "opciones": ["Azure Backup con almacén LRS", "Azure Site Recovery", "Un lock Delete", "Una alerta de Service Health"],
+    "correcta": 1,
+    "explicacion": "Site Recovery replica la VM a otra región y hace failover: es recuperación ante desastres con RPO y RTO de minutos. Backup sirve para volver atrás en el tiempo. No está en el PDF."
+  },
+  {
+    "pregunta": "¿Qué mide el RPO (objetivo de punto de recuperación)?",
+    "opciones": ["Cuánto tarda el servicio en volver a funcionar", "Cuántos datos (medidos en tiempo) puedes perder", "Cuántas copias del backup existen", "Cuánto cuesta el almacén"],
+    "correcta": 1,
+    "explicacion": "RPO = datos que puedes perder, el tiempo desde el último punto de restauración. RTO = cuánto tardas en volver a funcionar. Backups más frecuentes bajan el RPO."
+  },
+  {
+    "pregunta": "Por auditoría debes conservar un backup de cada mes durante un año, sin pagar 365 puntos diarios. ¿Qué configuras en la política?",
+    "opciones": ["Retención diaria de 365 días", "Retención mensual de 12 meses", "Un almacén GRS", "La eliminación temporal"],
+    "correcta": 1,
+    "explicacion": "La política de backup tiene retención diaria, semanal, mensual y anual: la mensual guarda un punto por mes durante el tiempo que elijas. No está en el PDF."
+  }
+]
