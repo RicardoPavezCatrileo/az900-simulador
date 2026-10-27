@@ -1,0 +1,98 @@
+[
+  {
+    "pregunta": "Vas a implementar Azure Bastion en una red virtual. ¿Cómo debe llamarse la subred donde se despliega?",
+    "opciones": ["BastionSubnet", "AzureBastionSubnet", "GatewaySubnet", "Cualquier nombre, si tiene al menos un /26"],
+    "correcta": 1,
+    "explicacion": "Bastion se implementa en su propia subred, que debe llamarse exactamente AzureBastionSubnet (PDF pág. 130). GatewaySubnet es la de los VPN y ExpressRoute Gateway."
+  },
+  {
+    "pregunta": "Los administradores deben conectarse por RDP y SSH a VMs que NO tienen IP pública, desde el portal de Azure y sin abrir puertos a Internet. ¿Qué usas?",
+    "opciones": ["Un Load Balancer público", "Azure Bastion", "Una IP pública con el puerto 3389 abierto en el NSG", "Azure Front Door"],
+    "correcta": 1,
+    "explicacion": "Azure Bastion es un PaaS que da RDP y SSH desde el portal por una conexión privada y cifrada, sin IP pública en la VM (pág. 128)."
+  },
+  {
+    "pregunta": "¿Qué permisos mínimos necesita un usuario para conectarse a una VM mediante Azure Bastion?",
+    "opciones": ["Propietario de la suscripción", "Colaborador de la VM", "Lector en la VM, en su interfaz de red y en el recurso Bastion", "Administrador de acceso de usuario"],
+    "correcta": 2,
+    "explicacion": "Bastion requiere roles de lectura sobre la VM de destino, su NIC (con IP privada) y el recurso de Azure Bastion (pág. 130)."
+  },
+  {
+    "pregunta": "Necesitas un Scale Set que pueda mezclar VMs de distintos tamaños y configuraciones. ¿Qué modo de orquestación eliges?",
+    "opciones": ["Uniform", "Flexible", "Manual", "Spot"],
+    "correcta": 1,
+    "explicacion": "Flexible permite mezclar tamaños y configuraciones; Uniform crea VMs idénticas desde una imagen base o plantilla (pág. 127)."
+  },
+  {
+    "pregunta": "¿Cuánto cuesta usar un conjunto de escalado de máquinas virtuales (VMSS)?",
+    "opciones": ["Un cargo fijo mensual por conjunto", "Un 10% sobre el costo de las VMs", "Nada adicional: pagas las VMs, el almacenamiento y la red que usas", "Depende de la cantidad de reglas de autoescalado"],
+    "correcta": 2,
+    "explicacion": "No hay costo adicional por usar Scale Sets: solo pagas los recursos subyacentes (pág. 127)."
+  },
+  {
+    "pregunta": "Un Scale Set agrega instancias cuando la CPU media supera el 70% y las quita cuando baja del 30%. ¿Qué concepto describe esto?",
+    "opciones": ["Escalado vertical", "Elasticidad (autoescalado)", "Agilidad", "Alta disponibilidad"],
+    "correcta": 1,
+    "explicacion": "La elasticidad es el autoescalado según la carga en un sistema escalable. La agilidad es tener recursos en minutos; la alta disponibilidad es correr en al menos 2 zonas (págs. 121–123)."
+  },
+  {
+    "pregunta": "Según el curso, ¿qué significa alta disponibilidad para una aplicación en Azure?",
+    "opciones": ["Usar una VM con más vCPU", "Ejecutarla en al menos 2 zonas de disponibilidad", "Tener un plan de ahorro de 3 años", "Usar discos SSD premium"],
+    "correcta": 1,
+    "explicacion": "Alta disponibilidad es ejecutar la aplicación en al menos 2 zonas de disponibilidad para sobrevivir a la pérdida de un centro de datos (pág. 121)."
+  },
+  {
+    "pregunta": "¿En qué formato están escritas las plantillas de Azure Resource Manager (ARM)?",
+    "opciones": ["YAML imperativo", "JSON declarativo", "PowerShell", "XML"],
+    "correcta": 1,
+    "explicacion": "Las plantillas ARM usan JSON declarativo para describir los recursos y su configuración (pág. 134)."
+  },
+  {
+    "pregunta": "¿Cuál es la relación entre Bicep y las plantillas ARM?",
+    "opciones": ["Bicep reemplaza a Resource Manager", "Bicep se transpila a JSON ARM y se despliega con Resource Manager", "Bicep solo funciona con Terraform", "Bicep es imperativo y ARM declarativo"],
+    "correcta": 1,
+    "explicacion": "Bicep es un lenguaje declarativo más legible que se compila (bicep build) a una plantilla ARM en JSON, sin perder compatibilidad (pág. 135)."
+  },
+  {
+    "pregunta": "¿Qué comando de Azure CLI despliega una plantilla ARM o un archivo Bicep en un grupo de recursos?",
+    "opciones": ["az group create", "az deployment group create", "az vm create", "bicep deploy"],
+    "correcta": 1,
+    "explicacion": "az deployment group create --resource-group <rg> --template-file main.bicep (o .json) (pág. 135). az group create solo crea el grupo de recursos."
+  },
+  {
+    "pregunta": "Despliegas una plantilla en modo Completo en un grupo de recursos que tiene recursos que la plantilla no declara. ¿Qué pasa con ellos?",
+    "opciones": ["Se mantienen intactos", "Se eliminan", "Se mueven a otro grupo de recursos", "El despliegue falla"],
+    "correcta": 1,
+    "explicacion": "En modo Completo, Resource Manager elimina los recursos del grupo que no estén en la plantilla. En modo Incremental (por defecto) los deja intactos. No está en el PDF."
+  },
+  {
+    "pregunta": "En Docker, ¿qué es un contenedor?",
+    "opciones": ["El archivo de texto con las instrucciones de construcción", "Una instancia en ejecución de una imagen, en un ambiente aislado", "El registro donde se guardan las imágenes", "Una máquina virtual ligera con su propio sistema operativo"],
+    "correcta": 1,
+    "explicacion": "Dockerfile = instrucciones; imagen = archivo por capas con las dependencias; contenedor = instancia de la imagen, aislada y que comparte el SO del servidor (pág. 145)."
+  },
+  {
+    "pregunta": "Necesitas un registro privado de imágenes de contenedor con acceso por Entra ID y RBAC, escaneo de vulnerabilidades e integración con AKS. ¿Qué usas?",
+    "opciones": ["Docker Hub público", "Azure Container Registry (ACR)", "Azure Blob Storage", "Azure Container Instances"],
+    "correcta": 1,
+    "explicacion": "ACR es el registro privado de Azure: RBAC, escaneo de vulnerabilidades, etiquetas, limpieza automática y CI/CD; se integra con AKS, ACI y Container Apps (pág. 149)."
+  },
+  {
+    "pregunta": "Una API en contenedores va a producción. Debe escalar automáticamente por peticiones HTTP, incluso hasta cero, sin que administres un clúster. ¿Qué servicio usas?",
+    "opciones": ["Azure Container Instances", "Azure Container Apps", "Azure Kubernetes Service", "Máquinas virtuales con Docker"],
+    "correcta": 1,
+    "explicacion": "Container Apps es serverless sobre Kubernetes y KEDA, con autoescalado por HTTP, CPU o eventos hasta cero. ACI es para tareas puntuales y efímeras; AKS te hace gestionar el clúster (pág. 152)."
+  },
+  {
+    "pregunta": "¿Qué opción de App Service permite ejecutar una aplicación empaquetada en un contenedor Docker?",
+    "opciones": ["API Apps", "Web App para contenedores", "Azure Functions", "Logic Apps"],
+    "correcta": 1,
+    "explicacion": "App Service ofrece Web Apps, Web App para contenedores (Docker) y API Apps (pág. 141)."
+  },
+  {
+    "pregunta": "En Bash, ¿qué comando agrega la lista de archivos al final de listing.txt sin borrar lo que ya tenía?",
+    "opciones": ["ls > listing.txt", "ls >> listing.txt", "ls < listing.txt", "ls | listing.txt"],
+    "correcta": 1,
+    "explicacion": "> redirige la salida sobrescribiendo el archivo; >> agrega al final; < toma la entrada desde un archivo; | pasa la salida a otro comando (pág. 22)."
+  }
+]

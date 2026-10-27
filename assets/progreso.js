@@ -21,7 +21,7 @@ const CAPITULOS=[
 const AZ104=[
  {id:"identidad",     num:1,titulo:"Identidades y gobierno",          archivo:"identidad-gobierno.html", pdf:"25–81",   base:[3,8,10,11],listo:true},
  {id:"almacenamiento",num:2,titulo:"Almacenamiento",                  archivo:"almacenamiento.html",     pdf:"82–112",  base:[7],        listo:false},
- {id:"computo",       num:3,titulo:"Cómputo",                         archivo:"computo.html",            pdf:"113–155", base:[4,5],      listo:false},
+ {id:"computo",       num:3,titulo:"Cómputo",                         archivo:"computo.html",            pdf:"113–155", base:[4,5],      listo:true},
  {id:"redes",         num:4,titulo:"Redes virtuales",                 archivo:"redes.html",              pdf:"156–189", base:[6,9],      listo:false},
  {id:"monitoreo",     num:5,titulo:"Monitoreo y copias de seguridad", archivo:"monitoreo-backup.html",   pdf:"190–202", base:[10],       listo:false}
 ];

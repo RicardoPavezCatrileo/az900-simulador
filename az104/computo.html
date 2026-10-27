@@ -1,0 +1,369 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Cómputo AZ-104</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="../assets/estilos.css">
+<style>
+.bloque{display:grid;gap:14px}
+.bloque>h2.h{margin:0}
+.bloque>p.intro{margin:0;color:var(--muted);max-width:75ch}
+.chk{display:flex;gap:8px;align-items:flex-start;font-size:.9rem;cursor:pointer}
+.chk input{accent-color:var(--accent);margin-top:4px}
+.chks{display:flex;flex-wrap:wrap;gap:8px 18px}
+td.si{color:var(--ok);font-weight:600} td.no{color:var(--bad);font-weight:600} td.na{color:var(--muted)}
+.mini{font-size:.82rem;color:var(--muted)}
+.code{font-family:var(--f-mono);font-size:.8rem;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin:0;overflow-x:auto;white-space:pre;line-height:1.45}
+.codes{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}
+.bloque>*{min-width:0}
+@media (max-width:760px){.codes{grid-template-columns:1fr}}
+.codes h3{margin:0 0 6px;font-family:var(--f-mono);font-size:.75rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:500}
+.campo{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center}
+.campo label{font-family:var(--f-mono);font-size:.75rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.campo input,.campo select{font:inherit;font-family:var(--f-mono);font-size:.85rem;padding:6px 8px;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--ink)}
+.campo input[type=range]{padding:0;accent-color:var(--accent)}
+.vms{display:flex;gap:3px;flex-wrap:wrap}
+.vms i{display:block;width:12px;height:12px;border-radius:3px;background:var(--accent)}
+.cpu{display:flex;align-items:center;gap:8px;min-width:130px}
+.cpu .bar{flex:1;min-width:60px}
+.cpu .bar.alta span{background:var(--bad)} .cpu .bar.baja span{background:var(--muted)}
+.flujo{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-family:var(--f-mono);font-size:.8rem}
+.flujo span.p{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:6px 10px}
+.flujo span.p.on{border-color:var(--accent);background:var(--accent-soft)}
+.flujo b{color:var(--muted);font-weight:500}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="nav"><a class="volver" href="index.html">← Dominios AZ-104</a><a class="volver" href="../mapa.html">Mapa conceptual →</a><a class="volver" href="../arquitectura.html">Arquitectura →</a></div>
+  <header>
+    <div class="eyebrow">AZ-104 · Dominio 3 · Cómputo</div>
+    <h1>Cómputo: conectar, escalar, desplegar con código y contenedores</h1>
+    <p>En AZ-900 viste <b>qué son</b> las VMs, los Scale Sets, App Service y los contenedores. AZ-104 pregunta <b>cómo se administran</b>: entrar a una VM sin exponerla con <b>Bastion</b>, las <b>reglas de autoescalado</b>, desplegar con <b>ARM y Bicep</b> y elegir entre <b>ACI, Container Apps y AKS</b> (PDF AZ-104, págs. 113–155).</p>
+  </header>
+
+  <div class="note">
+    <h3>Repaso de la base AZ-900</h3>
+    <p>Portal, CLI, PowerShell, Cloud Shell y plantillas ARM: <a href="../az900/cap04-fundamentos-herramientas.html">cap. 4</a> · VMs, opciones de compra, escalado vertical y horizontal con zonas, App Service, ACI y AKS: <a href="../az900/cap05-computacion.html">cap. 5</a>.</p>
+  </div>
+
+  <!-- 1 · Bastion -->
+  <section class="bloque">
+    <h2 class="h">1 · ¿Cómo me conecto a la VM?</h2>
+    <p class="intro">Abrir RDP (3389) o SSH (22) a Internet es el error clásico. <b>Azure Bastion</b> es un PaaS que te da RDP y SSH desde el portal, por una conexión cifrada, <b>sin IP pública en la VM</b> (págs. 128–130).</p>
+    <div class="ctl"><label>Método de conexión</label><div class="seg" id="metodo"></div></div>
+    <div id="bastionCfg" class="bloque"></div>
+    <div class="status" id="statusB"></div>
+    <div class="facts" id="factsB"></div>
+  </section>
+
+  <!-- 2 · Autoescalado -->
+  <section class="bloque">
+    <h2 class="h">2 · Scale Set: reglas de autoescalado</h2>
+    <p class="intro">Un Scale Set crea y quita VMs idénticas según reglas sobre una métrica (CPU, memoria, tráfico), en modo <b>automático</b>, <b>manual</b> o combinado (pág. 125). Supuesto: cada VM atiende 100 unidades de carga al 100% de CPU; la regla mira la CPU media de cada intervalo y actúa en el siguiente.</p>
+    <div class="ctl"><label>Modo de escalado</label><div class="seg" id="modoE"></div></div>
+    <div class="campo" id="camposE"></div>
+    <div class="status" id="statusE"></div>
+    <div class="tbl"><table>
+      <thead><tr><th>Hora</th><th>Carga</th><th>Instancias</th><th>CPU media</th><th>Decisión de la regla</th></tr></thead>
+      <tbody id="tbodyE"></tbody>
+    </table></div>
+    <div class="facts" id="factsE"></div>
+  </section>
+
+  <!-- 3 · ARM vs Bicep -->
+  <section class="bloque">
+    <h2 class="h">3 · Infraestructura como código: ARM vs Bicep</h2>
+    <p class="intro">Una <b>plantilla ARM</b> describe los recursos en JSON declarativo; <b>Bicep</b> describe lo mismo con una sintaxis más corta y se <b>transpila</b> a JSON ARM con <code>bicep build</code>. Las dos se despliegan con Azure Resource Manager (págs. 131–135). Cambia los parámetros y mira las dos versiones.</p>
+    <div class="ctl"><label>Recurso</label><div class="seg" id="recurso"></div></div>
+    <div class="campo" id="camposT"></div>
+    <div class="codes">
+      <div><h3 id="tBicep">main.bicep</h3><pre class="code" id="codeBicep"></pre></div>
+      <div><h3 id="tArm">main.json (plantilla ARM)</h3><pre class="code" id="codeArm"></pre></div>
+    </div>
+    <div class="ctl"><label>Modo de despliegue (no está en el PDF, pero lo pregunta AZ-104)</label><div class="seg" id="modoD"></div></div>
+    <pre class="code" id="codeCmd"></pre>
+    <div class="status" id="statusT"></div>
+  </section>
+
+  <!-- 4 · Contenedores -->
+  <section class="bloque">
+    <h2 class="h">4 · Contenedores: de Dockerfile a ACI, Container Apps o AKS</h2>
+    <p class="intro"><b>Dockerfile</b> (receta) → <code>build</code> → <b>imagen</b> → <code>push</code> → <b>ACR</b> (registro privado) → <code>pull</code> → <b>contenedor</b> en el servicio que elijas (págs. 143–155).</p>
+    <div class="flujo" id="flujoC"></div>
+    <div class="controls">
+      <div class="ctl"><label>¿Qué vas a ejecutar?</label><div class="seg" id="durC"></div></div>
+      <div class="ctl"><label>Escalado</label><div class="seg" id="escC"></div></div>
+    </div>
+    <div class="ctl"><label>¿Necesitas controlar Kubernetes (API, pods, nodos)?</label><div class="seg" id="k8sC"></div></div>
+    <div class="status" id="statusC"></div>
+    <div class="tbl"><table>
+      <thead><tr><th></th><th>ACI</th><th>Container Apps (ACA)</th><th>AKS</th><th>App Service (Web App para contenedores)</th></tr></thead>
+      <tbody id="tbodyC"></tbody>
+    </table></div>
+  </section>
+
+  <!-- 5 · Tarjetas -->
+  <section>
+    <h2 class="h">5 · Lo que más pregunta AZ-104 de este dominio</h2>
+    <div class="cards">
+      <div class="card"><h3>Escalar (págs. 118–123)</h3><ul>
+        <li><b>Vertical</b> (scale up/down): VM más grande, desde 0,5 GB y 1 vCPU hasta 11,4 TB y 416 vCPU. Tiene límites y puede ser caro.</li>
+        <li><b>Horizontal</b> (scale out/in): más instancias, con Scale Sets y Load Balancer.</li>
+        <li><b>Alta disponibilidad:</b> la app en al menos <b>2 zonas</b>.</li>
+        <li><b>Elasticidad</b> = autoescalado según la carga. <b>Agilidad</b> = recursos en minutos, no semanas.</li>
+      </ul></div>
+      <div class="card"><h3>Scale Sets (págs. 124–127)</h3><ul>
+        <li>Orquestación <b>Uniform:</b> VMs idénticas desde una imagen o plantilla.</li>
+        <li>Orquestación <b>Flexible:</b> puedes mezclar tamaños y configuraciones.</li>
+        <li>Se integran con Load Balancer (capa 4) o Application Gateway (capa 7).</li>
+        <li><b>Sin costo adicional:</b> pagas las VMs, discos y red.</li>
+      </ul></div>
+      <div class="card"><h3>Azure Bastion (págs. 128–130)</h3><ul>
+        <li>PaaS: RDP y SSH desde el portal, por TLS (443).</li>
+        <li>La VM solo necesita <b>IP privada</b>.</li>
+        <li>Subred propia llamada exactamente <b>AzureBastionSubnet</b>, en la misma VNet o en una emparejada.</li>
+        <li>Roles de <b>lectura</b> sobre la VM, su NIC y el recurso Bastion.</li>
+      </ul></div>
+      <div class="card"><h3>Datos de usuario de la VM (págs. 116–117)</h3><ul>
+        <li>Script que corre al crear la VM, ej.: <code>apt-get -y install nginx</code> para que arranque como servidor web.</li>
+        <li>Así la VM queda configurada sin entrar a mano.</li>
+      </ul></div>
+      <div class="card"><h3>App Service (págs. 136–141)</h3><ul>
+        <li>PaaS: Microsoft gestiona el SO, la capacidad, el balanceo y el autoescalado.</li>
+        <li><b>Web Apps</b> (sitios), <b>Web App para contenedores</b> (Docker), <b>API Apps</b> (servicios web).</li>
+        <li>El servicio es gratis; pagas los recursos que consume (el plan).</li>
+      </ul></div>
+      <div class="card"><h3>Docker (págs. 143–147)</h3><ul>
+        <li><b>Dockerfile:</b> instrucciones para crear la imagen.</li>
+        <li><b>Imagen:</b> archivo por capas con todas las dependencias.</li>
+        <li><b>Contenedor:</b> una instancia de la imagen, aislada.</li>
+        <li>Más ligero que una VM: comparte el SO del servidor.</li>
+      </ul></div>
+      <div class="card"><h3>Azure Container Registry (pág. 149)</h3><ul>
+        <li>Registro <b>privado</b> de imágenes, integrado con ACI, AKS y Container Apps.</li>
+        <li>Acceso con Entra ID y RBAC, <b>escaneo de vulnerabilidades</b>, etiquetas, limpieza automática y CI/CD (GitHub Actions, Azure DevOps).</li>
+      </ul></div>
+      <div class="card"><h3>Bash para administradores (págs. 20–22)</h3><ul>
+        <li><code>ls -la</code> listar · <code>cd</code> cambiar carpeta · <code>mkdir</code> / <code>rmdir</code> · <code>rm -r</code> · <code>cp -i</code> · <code>touch</code> · <code>cat</code> · <code>sudo</code>.</li>
+        <li><code>ps -ef</code> procesos · <code>w</code> usuarios conectados.</li>
+        <li><code>&gt;</code> sobrescribe · <code>&gt;&gt;</code> agrega · <code>&lt;</code> lee de un archivo · <code>|</code> pasa la salida a otro comando.</li>
+      </ul></div>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="h">Preguntas tipo examen</h2>
+    <div class="score" id="score"></div>
+    <div class="quiz" id="quiz"></div>
+  </section>
+</div>
+
+<script src="../assets/progreso.js"></script>
+<script src="../assets/quiz.js"></script>
+<script>
+function seg(id,obj,get,set,fn){
+  const el=document.getElementById(id);el.innerHTML="";
+  Object.keys(obj).forEach(k=>{const b=document.createElement("button");b.type="button";b.textContent=typeof obj[k]==="string"?obj[k]:obj[k].name;b.dataset.k=k;
+    b.setAttribute("aria-pressed",String(get()===k));b.onclick=()=>{set(k);fn()};el.appendChild(b)});
+}
+function facts(id,rows){document.getElementById(id).innerHTML=rows.map(([k,v])=>`<div class="fact"><div class="k">${k}</div><div class="v">${v}</div></div>`).join("")}
+function status(id,lvl,t,d){
+  const col={ok:"var(--ok)",warn:"var(--warn)",bad:"var(--bad)",info:"var(--accent)"}[lvl],ico={ok:"✓",warn:"!",bad:"✕",info:"i"}[lvl];
+  document.getElementById(id).innerHTML=`<span class="dot" style="background:${col}" aria-hidden="true"></span><div><b>${ico} ${t}</b><p>${d}</p></div>`;
+}
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"})[c]);
+
+/* ---------- 1 · Bastion ---------- */
+const METODO={ip:"IP pública + RDP/SSH abierto",bastion:"Azure Bastion",p2s:"VPN punto a sitio"};
+const SUBRED={AzureBastionSubnet:"AzureBastionSubnet",BastionSubnet:"BastionSubnet",GatewaySubnet:"GatewaySubnet"};
+const UBIC={misma:"Misma VNet que la VM",peer:"VNet emparejada",otra:"VNet sin conexión"};
+const ROLESB=[["vm","Lector en la VM"],["nic","Lector en la NIC de la VM"],["bas","Lector en el recurso Bastion"]];
+let metodo="bastion",subred="AzureBastionSubnet",ubic="misma";
+const rolesB=new Set(["vm","nic","bas"]);
+function renderB(){
+  seg("metodo",METODO,()=>metodo,v=>metodo=v,renderB);
+  const cfg=document.getElementById("bastionCfg");
+  if(metodo!=="bastion")cfg.innerHTML="";
+  else{
+    cfg.innerHTML=`<div class="controls"><div class="ctl"><label>Nombre de la subred del Bastion</label><div class="seg" id="subred"></div></div><div class="ctl"><label>Dónde está el Bastion</label><div class="seg" id="ubic"></div></div></div>
+      <div class="ctl"><label>Roles del usuario que se conecta</label><div class="chks" id="rolesB">${ROLESB.map(([k,t])=>`<label class="chk"><input type="checkbox" data-r="${k}"${rolesB.has(k)?" checked":""}><span>${t}</span></label>`).join("")}</div></div>`;
+    seg("subred",SUBRED,()=>subred,v=>subred=v,renderB);
+    seg("ubic",UBIC,()=>ubic,v=>ubic=v,renderB);
+    cfg.querySelectorAll("input[data-r]").forEach(i=>i.onchange=()=>{i.checked?rolesB.add(i.dataset.r):rolesB.delete(i.dataset.r);renderB()});
+  }
+  if(metodo==="ip"){
+    status("statusB","bad","Funciona, pero la VM queda expuesta a Internet","Con IP pública y el puerto 3389 (RDP) o 22 (SSH) abierto en el NSG, cualquiera puede intentar entrar: ataques de fuerza bruta y escaneos constantes. Es justo el problema que resuelve Bastion (pág. 128).");
+    facts("factsB",[["IP pública en la VM","Sí"],["Expuesto a Internet","3389 / 22"],["Cliente","RDP o SSH local"],["Infraestructura extra","Ninguna"]]);return;
+  }
+  if(metodo==="p2s"){
+    status("statusB","ok","Funciona sin IP pública en la VM","Tu equipo entra a la VNet por un túnel cifrado y usas RDP/SSH a la IP privada. Necesitas un VPN Gateway en la GatewaySubnet y el cliente VPN instalado en cada equipo (repaso del cap. 6 de AZ-900).");
+    facts("factsB",[["IP pública en la VM","No"],["Expuesto a Internet","Solo el VPN Gateway"],["Cliente","VPN + RDP/SSH"],["Infraestructura extra","VPN Gateway"]]);return;
+  }
+  const fallas=[];
+  if(subred!=="AzureBastionSubnet")fallas.push(`la subred se llama "${subred}": debe llamarse exactamente AzureBastionSubnet`);
+  if(ubic==="otra")fallas.push("el Bastion está en una VNet sin conexión: debe estar en la misma VNet que la VM o en una emparejada");
+  const falta=ROLESB.filter(([k])=>!rolesB.has(k)).map(([,t])=>t.toLowerCase());
+  if(falta.length)fallas.push("al usuario le falta: "+falta.join(", "));
+  facts("factsB",[["IP pública en la VM","No (solo privada)"],["Expuesto a Internet","Solo el Bastion, por 443"],["Cliente","El navegador (portal)"],["Infraestructura extra","Bastion en su subred"]]);
+  if(fallas.length)status("statusB","bad","No se puede conectar",fallas.map(f=>f[0].toUpperCase()+f.slice(1)).join(". ")+". (pág. 130)");
+  else status("statusB","ok",`Conectado por Bastion${ubic==="peer"?" a través del peering":""}`,"RDP o SSH desde el portal sobre TLS. La VM no tiene IP pública ni puertos abiertos a Internet; el NSG de la VM solo debe permitir 3389/22 desde la AzureBastionSubnet.");
+}
+
+/* ---------- 2 · Autoescalado ---------- */
+const HORAS=["08:00","09:00","10:00","11:00","12:00","13:00","14:00","15:00","16:00","17:00","18:00","19:00"];
+const CARGA=[90,150,240,330,420,510,560,470,350,230,140,80];
+const MODOE={auto:"Automático (regla por CPU)",manual:"Manual (fijo)"};
+let modoE="auto",minI=2,maxI=6,umbOut=70,umbIn=30,fijo=4;
+function campo(id,etq,min,max,step,val,suf){return`<label for="${id}">${etq}</label><input type="range" id="${id}" min="${min}" max="${max}" step="${step}" value="${val}"><span class="mini" id="${id}v">${val}${suf}</span>`}
+function renderE(){
+  seg("modoE",MODOE,()=>modoE,v=>modoE=v,renderE);
+  const c=document.getElementById("camposE");
+  c.innerHTML=modoE==="auto"
+    ?campo("minI","Mínimo",1,4,1,minI,"")+campo("maxI","Máximo",3,10,1,maxI,"")+campo("umbOut","Agregar si CPU >",50,90,5,umbOut,"%")+campo("umbIn","Quitar si CPU <",10,45,5,umbIn,"%")
+    :campo("fijo","Instancias fijas",1,10,1,fijo,"");
+  const liga=(id,f)=>{const e=document.getElementById(id);if(e)e.oninput=()=>{f(+e.value);calcE()}};
+  liga("minI",v=>{minI=v;if(maxI<minI)maxI=minI});liga("maxI",v=>{maxI=v;if(minI>maxI)minI=maxI});liga("umbOut",v=>umbOut=v);liga("umbIn",v=>umbIn=v);liga("fijo",v=>fijo=v);
+  calcE();
+}
+// Recalcula sin volver a crear los deslizadores (si no, se pierde el arrastre)
+function calcE(){
+  [["minI",minI,""],["maxI",maxI,""],["umbOut",umbOut,"%"],["umbIn",umbIn,"%"],["fijo",fijo,""]].forEach(([id,v,suf])=>{const e=document.getElementById(id);if(e){e.value=v;document.getElementById(id+"v").textContent=v+suf}});
+  let inst=modoE==="auto"?minI:fijo,horas=0,sat=0,filas="";
+  CARGA.forEach((d,i)=>{
+    const cpuReal=d/(inst*100)*100,cpu=Math.min(100,Math.round(cpuReal)),satur=cpuReal>100;
+    horas+=inst;if(satur)sat++;
+    let dec="—";
+    if(modoE==="auto"){
+      if(cpu>umbOut&&inst<maxI){dec=`CPU ${cpu}% > ${umbOut}% → +1 instancia`;}
+      else if(cpu>umbOut){dec=`CPU ${cpu}% > ${umbOut}%, pero ya está en el máximo (${maxI})`;}
+      else if(cpu<umbIn&&inst>minI){dec=`CPU ${cpu}% < ${umbIn}% → −1 instancia`;}
+      else if(cpu<umbIn){dec=`CPU ${cpu}% < ${umbIn}%, pero ya está en el mínimo (${minI})`;}
+    }
+    filas+=`<tr${satur?' class="sel"':""}><td>${HORAS[i]}</td><td>${d}</td><td><div class="vms">${"<i></i>".repeat(inst)}</div><span class="mini">${inst}</span></td><td><div class="cpu"><div class="bar${cpu>umbOut&&modoE==="auto"||satur?" alta":cpu<umbIn&&modoE==="auto"?" baja":""}"><span style="width:${cpu}%"></span></div><span class="mini">${satur?"100% · saturado":cpu+"%"}</span></div></td><td class="mini">${dec}</td></tr>`;
+    if(modoE==="auto"){if(cpu>umbOut&&inst<maxI)inst++;else if(cpu<umbIn&&inst>minI)inst--;}
+  });
+  document.getElementById("tbodyE").innerHTML=filas;
+  const pico=Math.ceil(Math.max(...CARGA)/100);
+  facts("factsE",[["VM-hora pagadas",horas],["Fijo para el pico ("+pico+" VMs)",pico*CARGA.length+" VM-hora"],["Horas saturadas",sat],["Ahorro vs. fijo al pico",Math.max(0,Math.round(100-100*horas/(pico*CARGA.length)))+"%"]]);
+  if(modoE==="manual")status("statusE",sat?"bad":"warn",sat?`${sat} hora${sat===1?"":"s"} saturada${sat===1?"":"s"} con ${fijo} instancias fijas`:`Sin saturación, pero pagas ${fijo} VMs todo el día`,"Modo manual: el administrador define la cantidad. Si es poca, los usuarios sufren en el pico; si es mucha, pagas capacidad ociosa en la mañana y la noche.");
+  else status("statusE",sat?"warn":"ok",sat?`Autoescala, pero hubo ${sat} hora${sat===1?"":"s"} saturada${sat===1?"":"s"}`:"El Scale Set siguió la carga",sat?`La regla reacciona un intervalo tarde y suma de a 1 instancia. Prueba bajar el umbral de salida o subir el máximo (${maxI}).`:"Agrega instancias cuando la CPU pasa el umbral y las quita cuando baja: eso es elasticidad. Pagas solo las VMs que corren; el Scale Set no tiene costo adicional (pág. 127).");
+}
+
+/* ---------- 3 · ARM vs Bicep ---------- */
+const RECURSO={st:"Cuenta de almacenamiento",vnet:"Red virtual con subred"};
+const MODOD={inc:"Incremental (por defecto)",comp:"Completo"};
+let recurso="st",modoD="inc",nombre="stazdemo001",ubicT="brazilsouth",sku="Standard_LRS",prefijo="10.1.0.0/16";
+const UBICS=["brazilsouth","eastus","westeurope"],SKUS=["Standard_LRS","Standard_ZRS","Standard_GRS","Standard_RAGRS"],PREF=["10.1.0.0/16","10.2.0.0/16","172.16.0.0/16"];
+function selT(id,opts,val){return`<select id="${id}">${opts.map(o=>`<option${o===val?" selected":""}>${o}</option>`).join("")}</select>`}
+function renderT(){
+  seg("recurso",RECURSO,()=>recurso,v=>{recurso=v;nombre=v==="st"?"stazdemo001":"vnet-app"},renderT);
+  seg("modoD",MODOD,()=>modoD,v=>modoD=v,renderT);
+  const c=document.getElementById("camposT");
+  c.innerHTML=`<label for="nom">Nombre</label><input id="nom" value="${esc(nombre)}" size="16"><label for="ubi">Ubicación</label>${selT("ubi",UBICS,ubicT)}`+
+    (recurso==="st"?`<label for="sku">SKU</label>${selT("sku",SKUS,sku)}`:`<label for="pre">Espacio de direcciones</label>${selT("pre",PREF,prefijo)}`);
+  document.getElementById("nom").oninput=e=>{nombre=e.target.value.replace(/[^A-Za-z0-9-]/g,"");pinta()};
+  document.getElementById("ubi").onchange=e=>{ubicT=e.target.value;pinta()};
+  const s=document.getElementById("sku");if(s)s.onchange=e=>{sku=e.target.value;pinta()};
+  const p=document.getElementById("pre");if(p)p.onchange=e=>{prefijo=e.target.value;pinta()};
+  pinta();
+}
+function pinta(){
+  const sub=prefijo.replace(/\.0\.0\/16$/,".1.0/24");
+  let bicep,arm;
+  if(recurso==="st"){
+    bicep=`param nombre string = '${nombre}'
+param ubicacion string = '${ubicT}'
+param sku string = '${sku}'
+
+resource st 'Microsoft.Storage/storageAccounts@2023-05-01' = {
+  name: nombre
+  location: ubicacion
+  sku: {
+    name: sku
+  }
+  kind: 'StorageV2'
+}`;
+    arm={"$schema":"https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#","contentVersion":"1.0.0.0",
+      parameters:{nombre:{type:"string",defaultValue:nombre},ubicacion:{type:"string",defaultValue:ubicT},sku:{type:"string",defaultValue:sku}},
+      resources:[{type:"Microsoft.Storage/storageAccounts",apiVersion:"2023-05-01",name:"[parameters('nombre')]",location:"[parameters('ubicacion')]",sku:{name:"[parameters('sku')]"},kind:"StorageV2"}]};
+  }else{
+    bicep=`param nombre string = '${nombre}'
+param ubicacion string = '${ubicT}'
+
+resource vnet 'Microsoft.Network/virtualNetworks@2023-09-01' = {
+  name: nombre
+  location: ubicacion
+  properties: {
+    addressSpace: {
+      addressPrefixes: [ '${prefijo}' ]
+    }
+    subnets: [
+      {
+        name: 'snet-web'
+        properties: { addressPrefix: '${sub}' }
+      }
+    ]
+  }
+}`;
+    arm={"$schema":"https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#","contentVersion":"1.0.0.0",
+      parameters:{nombre:{type:"string",defaultValue:nombre},ubicacion:{type:"string",defaultValue:ubicT}},
+      resources:[{type:"Microsoft.Network/virtualNetworks",apiVersion:"2023-09-01",name:"[parameters('nombre')]",location:"[parameters('ubicacion')]",
+        properties:{addressSpace:{addressPrefixes:[prefijo]},subnets:[{name:"snet-web",properties:{addressPrefix:sub}}]}}]};
+  }
+  const armTxt=JSON.stringify(arm,null,2);
+  document.getElementById("codeBicep").textContent=bicep;
+  document.getElementById("codeArm").textContent=armTxt;
+  const lb=bicep.split("\n").length,la=armTxt.split("\n").length;
+  document.getElementById("tBicep").textContent=`main.bicep · ${lb} líneas`;
+  document.getElementById("tArm").textContent=`main.json (plantilla ARM) · ${la} líneas`;
+  document.getElementById("codeCmd").textContent=`# Opcional: ver el JSON que genera Bicep
+bicep build main.bicep          # crea main.json
+
+# Desplegar en un grupo de recursos (sirve con .bicep o .json)
+az deployment group create \\
+  --resource-group rg-demo \\
+  --template-file main.bicep \\
+  --mode ${modoD==="inc"?"Incremental":"Complete"}`;
+  if(!nombre){status("statusT","bad","Falta el nombre","Todo recurso necesita un nombre; en una cuenta de almacenamiento, de 3 a 24 letras minúsculas y números, único en todo Azure.");return}
+  const nota=recurso==="st"&&!/^[a-z0-9]{3,24}$/.test(nombre)?` Ojo: "${nombre}" no es un nombre válido de cuenta de almacenamiento (3–24 minúsculas y números, sin guiones); el despliegue fallaría.`:"";
+  if(modoD==="inc")status("statusT",nota?"warn":"ok",`Mismo recurso: ${lb} líneas en Bicep, ${la} en JSON`,"Las dos son declarativas: dices QUÉ quieres, no los pasos. Modo incremental: crea o actualiza lo que está en la plantilla y deja intactos los demás recursos del grupo."+nota);
+  else status("statusT","warn","Modo completo: borra lo que no esté en la plantilla","Además de crear o actualizar, Resource Manager ELIMINA del grupo de recursos todo lo que la plantilla no declare. Útil para que el grupo quede idéntico a la plantilla; peligroso si hay otros recursos."+nota);
+}
+
+/* ---------- 4 · Contenedores ---------- */
+const DURC={puntual:"Una tarea puntual (batch) que termina",web:"Una app o API en producción"};
+const ESCC={fijo:"Fijo",auto:"Automático, incluso a cero"};
+const K8SC={no:"No",si:"Sí"};
+let durC="puntual",escC="fijo",k8sC="no";
+const FILAS=[
+ ["Modelo","Serverless: un contenedor o grupo, sin orquestador","Serverless sobre Kubernetes + KEDA, sin gestionar el clúster","Kubernetes administrado: tú gestionas nodos, pods y despliegues","PaaS web: el plan de App Service ejecuta tu imagen"],
+ ["Ideal para","Tareas simples, puntuales y efímeras; jobs batch, APIs ligeras","Apps en producción con autoescalado y despliegues gestionados","Muchos microservicios con control total de la orquestación","Una web o API en contenedor con lo de App Service (dominios, TLS, slots)"],
+ ["Escalado","Manual (sin orquestador)","Automático por HTTP, CPU o eventos, hasta cero","Automático de pods y nodos","Autoescalado del plan"],
+ ["Pagas","Por segundo de ejecución","Por uso (nada si escala a cero)","Las VMs de los nodos","El plan de App Service"],
+ ["PDF","150–151","152","153–155","141"]
+];
+const RCOL={aci:1,aca:2,aks:3,app:4};
+function renderC(){
+  seg("durC",DURC,()=>durC,v=>durC=v,renderC);
+  seg("escC",ESCC,()=>escC,v=>escC=v,renderC);
+  seg("k8sC",K8SC,()=>k8sC,v=>k8sC=v,renderC);
+  let r,t,d;
+  if(k8sC==="si"){r="aks";t="Azure Kubernetes Service (AKS)";d="Si necesitas la API de Kubernetes (pods, nodos, despliegues propios), la respuesta es AKS. ACA usa Kubernetes por dentro, pero no te deja tocarlo.";}
+  else if(durC==="puntual"&&escC==="fijo"){r="aci";t="Azure Container Instances (ACI)";d="Lo más simple: ejecuta el contenedor directo desde la imagen, sin orquestador, y pagas por segundo. Ideal para tareas puntuales y efímeras (pág. 152).";}
+  else if(durC==="puntual"){r="aca";t="Azure Container Apps (ACA)";d="Un job que debe escalar según eventos o colas es un caso de Container Apps (jobs con KEDA). ACI no autoescala.";}
+  else if(escC==="auto"){r="aca";t="Azure Container Apps (ACA)";d="App en producción con autoescalado por peticiones HTTP, CPU o eventos, incluso hasta cero, sin gestionar el clúster (pág. 152).";}
+  else{r="app";t="App Service (Web App para contenedores) o ACI";d="Una web o API con capacidad fija: App Service ejecuta tu imagen con dominios, TLS y slots. Si es algo muy simple y sin web, ACI también sirve.";}
+  status("statusC","ok",t,d);
+  document.getElementById("tbodyC").innerHTML=FILAS.map(f=>`<tr><td><b>${f[0]}</b></td>${f.slice(1).map((v,i)=>`<td${i+1===RCOL[r]?' class="si"':""}>${v}</td>`).join("")}</tr>`).join("");
+  const pasos=["Dockerfile","build","Imagen","push","ACR","pull",{aci:"ACI",aca:"Container Apps",aks:"AKS",app:"App Service"}[r]];
+  document.getElementById("flujoC").innerHTML=pasos.map((p,i)=>i%2?`<b>— ${p} →</b>`:`<span class="p${i===pasos.length-1?" on":""}">${p}</span>`).join("");
+}
+
+renderB();renderE();renderT();renderC();iniciarQuiz("computo","az104");
+</script>
+</body>
+</html>
