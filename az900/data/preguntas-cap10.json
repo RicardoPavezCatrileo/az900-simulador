@@ -112,5 +112,11 @@
     "opciones": ["RBAC", "Azure Policy", "Un lock", "Service Health"],
     "correcta": 1,
     "explicacion": "Es una regla sobre cómo deben ser los recursos (sus propiedades): Azure Policy. RBAC decide quién puede actuar, no cómo debe quedar el recurso."
+  },
+  {
+    "pregunta": "¿Cuál es el método óptimo para ejecutar servicios sin servidor de Azure, tales como Logic Apps, en tus servidores locales?",
+    "opciones": ["Activa Azure Sentinel en tus servidores locales", "Activa Azure Arc en tus servidores locales", "No es posible ejecutar servicios Azure en hardware que no sea Azure", "Instala el conector de Logic Apps en tu servidor local"],
+    "correcta": 1,
+    "explicacion": "Palabras clave: \"servicios de Azure\" + \"servidores locales\" → Azure Arc, que extiende servicios de Azure a cualquier infraestructura, incluida la on-premises (PDF pág. 245). Sentinel es un SIEM; el conector (gateway de datos local) solo deja que Logic Apps en la nube lea datos locales, no la ejecuta en tu servidor."
   }
 ]
