@@ -118,5 +118,11 @@
     "opciones": ["Usar grupos de recursos para organizar y gestionar múltiples suscripciones", "Grupos de administración de Azure", "Tenants de Azure", "Microsoft Entra ID"],
     "correcta": 1,
     "explicacion": "Palabras clave: \"múltiples suscripciones\" + \"desde un solo lugar\". Asignas RBAC y Azure Policy una vez en el grupo de administración y todas sus suscripciones lo heredan (PDF pág. 45). Los grupos de recursos viven dentro de una suscripción; el tenant y Entra ID gestionan identidades, no organizan suscripciones."
+  },
+  {
+    "pregunta": "Respecto a los grupos de administración de Azure, ¿cuál de las siguientes afirmaciones es verdadera?",
+    "opciones": ["Los grupos de administración permiten crear y gestionar entornos totalmente conformes de manera simplificada y directa", "Los grupos de administración facilitan la aplicación de políticas mediante jerarquías flexibles a varias suscripciones simultáneamente", "Los grupos de administración permiten aplicar gestión basada en políticas a todos los servicios de Azure de manera indiscriminada", "Los grupos de administración ofrecen la capacidad de crear dashboards personalizados para visualizar y analizar el uso de recursos en la nube"],
+    "correcta": 1,
+    "explicacion": "Grupo de administración = organizar suscripciones en jerarquía y heredar políticas y permisos (PDF pág. 45). Trampa: \"crear entornos conformes\" describe Azure Blueprints (pág. 246, hoy retirado). No aplica a todo de forma indiscriminada, solo a sus suscripciones; los dashboards son de Azure Monitor o del portal."
   }
 ]
