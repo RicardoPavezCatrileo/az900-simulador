@@ -142,5 +142,11 @@
     "opciones": ["Los nodos (VMs) del clúster", "El plano de control de Kubernetes", "Las imágenes de tus contenedores", "El código de tu aplicación"],
     "correcta": 1,
     "explicacion": "Microsoft administra el plano de control (el que decide dónde corre cada pod) y no lo cobra en el nivel gratuito; tú pagas los nodos, que son VMs. No está en el PDF."
+  },
+  {
+    "pregunta": "Tu empresa está planificando desarrollar una aplicación extensa y compleja con diversos microservicios, los cuales serán desplegados en Azure. ¿Qué servicio de Azure es el más adecuado para orquestar de manera eficiente múltiples microservicios alojados en contenedores, minimizando así la sobrecarga de gestión?",
+    "opciones": ["Azure Container Instances", "Azure Kubernetes Service (AKS)", "Azure Virtual Machines", "Azure Cloud Storage"],
+    "correcta": 1,
+    "explicacion": "Palabra que decide: \"orquestar\" + \"múltiples microservicios\" → AKS (Kubernetes administrado: Microsoft gestiona el plano de control) (PDF págs. 93–95). Trampa: ACI también ejecuta contenedores, pero es para uno simple o puntual, sin orquestador. Con VMs tendrías que montar tú el orquestador."
   }
 ]

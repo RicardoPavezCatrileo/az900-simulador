@@ -108,7 +108,7 @@ Errores de esa guía que NO se deben copiar: dice que la secundaria de GZRS es Z
 - Escalado: vertical (tamaños hasta 416 vCPU) vs horizontal en 1 zona vs horizontal en 3 zonas, slider de usuarios (supuesto: 100 usuarios por vCPU, 4 vCPU por VM en horizontal; límite 100/1000 VMs del Scale Set) y caída de la Zona 1.
 - Explorador de servicios: VM, Scale Sets, App Service, ACI, AKS, Functions, Virtual Desktop (modelo, quién gestiona el SO, escalado, qué pagas).
 - AKS por dentro (sección 4): plano de control (Microsoft), nodos (VMs) en 3 zonas y pods; slider de usuarios (100 por pod, 4 pods por nodo), HPA 2–30 pods, escalador del clúster 3–9 nodos y caída de la Zona 1 (pods recreados en las zonas sanas). HPA y escalador no están en el PDF (págs. 93–95).
-- 24 preguntas en `data/preguntas-cap05.json` (la 23 y 24 son de AKS: nodo = VM y plano de control administrado por Microsoft; la 22 es la de usuarios de Mac/Android con apps Windows → Virtual Desktop, redacción del examen; la 21 es de selección múltiple: serverless = Functions, Logic Apps y Event Grid; va más allá del PDF).
+- 25 preguntas en `data/preguntas-cap05.json` (la 25: orquestar microservicios → AKS, con ACI de trampa; la 23 y 24 son de AKS: nodo = VM y plano de control administrado por Microsoft; la 22 es la de usuarios de Mac/Android con apps Windows → Virtual Desktop, redacción del examen; la 21 es de selección múltiple: serverless = Functions, Logic Apps y Event Grid; va más allá del PDF).
 - Para probar un estado distinto al inicial: copiar la página a `_prueba.html` con `sed` cambiando las variables `let …` iniciales, capturar y borrar la copia.
 
 ## Lo que ya existe: cap06-redes.html (PDF págs. 101–121)
