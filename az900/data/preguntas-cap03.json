@@ -112,5 +112,11 @@
     "opciones": ["Cada zona de disponibilidad cuenta con sus propias instalaciones independientes de alimentación, refrigeración y red", "Las regiones de Azure que admiten zonas de disponibilidad disponen de al menos tres de estas", "Las zonas de disponibilidad garantizan el aislamiento de los recursos de máquinas virtuales entre sí dentro de un centro de datos de Azure", "Todas las zonas de disponibilidad están ubicadas en diferentes geografías de Azure"],
     "correcta": [0, 1],
     "explicacion": "Cada zona es uno o varios centros de datos con alimentación, red y conectividad propias (PDF pág. 36), y una región con zonas tiene como mínimo 3. Trampas: aislar VMs \"dentro de un centro de datos\" es un conjunto de disponibilidad, no una zona; y las zonas están en la MISMA región (otra región = región emparejada)."
+  },
+  {
+    "pregunta": "Con el crecimiento en el uso de servicios de Azure en tu empresa, ahora gestionas múltiples suscripciones distribuidas en diversos departamentos para una variedad de proyectos. Dado que la administración del acceso y permisos en todas estas suscripciones se ha complicado, ¿cuál sería tu recomendación para administrar eficazmente el acceso a múltiples suscripciones desde un solo lugar?",
+    "opciones": ["Usar grupos de recursos para organizar y gestionar múltiples suscripciones", "Grupos de administración de Azure", "Tenants de Azure", "Microsoft Entra ID"],
+    "correcta": 1,
+    "explicacion": "Palabras clave: \"múltiples suscripciones\" + \"desde un solo lugar\". Asignas RBAC y Azure Policy una vez en el grupo de administración y todas sus suscripciones lo heredan (PDF pág. 45). Los grupos de recursos viven dentro de una suscripción; el tenant y Entra ID gestionan identidades, no organizan suscripciones."
   }
 ]
