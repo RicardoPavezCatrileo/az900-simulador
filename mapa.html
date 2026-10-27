@@ -75,6 +75,7 @@ const N=[
  ["adlocal","AD local (AD DS)",0,8,"Active Directory tradicional en servidores locales. Kerberos, NTLM, LDAP. No es lo mismo que Entra ID."],
  ["connect","Entra Connect",0,8,"Se instala en local y sincroniza el AD local con Entra ID: identidad híbrida."],
  ["entra","Microsoft Entra ID",0,8,"Identidad y acceso en la nube (antes Azure AD). Cada organización tiene su tenant."],
+ ["tenant","Tenant (inquilino)",0,8,"Tu organización dentro de Entra ID: instancia dedicada con tus usuarios y grupos. Puede tener muchas suscripciones; cada suscripción confía en un solo tenant."],
  ["mfa","MFA",0,8,"Segundo factor de otra categoría: algo que sabes, que tienes o que eres."],
  ["ca","Acceso condicional",0,8,"Motor de directivas de Zero Trust: usa señales (usuario, ubicación, dispositivo, riesgo) para bloquear o conceder con requisitos."],
  ["sso","SSO",0,8,"Una sola cuenta e inicio de sesión para muchas aplicaciones."],
@@ -151,7 +152,7 @@ const N=[
 ];
 // [origen, destino, relación]
 const E=[
- ["adlocal","connect","se sincroniza con"],["connect","entra","sincroniza cuentas a"],["usuarios","entra","inician sesión en"],
+ ["adlocal","connect","se sincroniza con"],["connect","entra","sincroniza cuentas a"],["tenant","entra","es tu instancia de"],["sub","tenant","confía en un solo"],["usuarios","entra","inician sesión en"],
  ["entra","ca","evalúa el acceso con"],["ca","mfa","decide cuándo pedir"],["entra","mfa","puede exigir"],["entra","sso","ofrece"],
  ["b2b","entra","son invitados del tenant de"],["entra","entrads","sincroniza (en una vía) a"],["entrads","vm","une al dominio a"],
  ["oficina","vpn","túnel cifrado por Internet (S2S)"],["usuarios","vpn","un dispositivo remoto (P2S)"],["oficina","er","conexión privada, sin Internet"],
@@ -221,6 +222,7 @@ const VS={
  mgbp:{n:"Grupo de administración vs Blueprints",a:"mg",b:"blueprints",ta:"DÓNDE se aplican las reglas: árbol de suscripciones; lo asignado (políticas, roles) se hereda hacia abajo.",tb:"QUÉ paquete se desplegaba: plantillas + políticas + roles + grupos de recursos para que un entorno nazca conforme. Retirado.",p:"\"Varias suscripciones\", \"jerarquía\", \"desde un solo lugar\" → grupo de administración. \"Crear entornos conformes de forma repetible\" → Blueprints (hoy Bicep/ARM + Policy)."},
  aish:{n:"Application Insights vs Service Health",a:"ai",b:"sh",ta:"Problemas de TU aplicación web: lentitud, cuellos de botella, errores, comportamiento de los usuarios.",tb:"Problemas de AZURE: caídas y mantenimientos planificados o no que afectan a tus recursos.",p:"\"Mi app está lenta o falla\" → Application Insights. \"Azure tiene un incidente o mantenimiento\" → Service Health. SIEM → Sentinel; consultas KQL → Log Analytics."},
  conds:{n:"Entra Connect vs Entra Domain Services",a:"connect",b:"entrads",ta:"Antes Azure AD Connect. App que instalas en tu oficina y SINCRONIZA las cuentas del AD local (AD DS) hacia Entra ID: misma cuenta en los dos lados (identidad híbrida).",tb:"Antes Azure AD DS. Dominio ADMINISTRADO por Microsoft en Azure, con Kerberos, NTLM y LDAP, para apps antiguas o VMs que deben unirse a un dominio, sin montar controladores. Recibe las cuentas desde Entra ID en una sola vía.",p:"\"Sincronizar el AD local con la nube\" → Entra Connect. \"App legacy con Kerberos/LDAP\" o \"unir VMs a un dominio sin administrar controladores\" → Entra Domain Services. Ojo: AD DS sin \"Azure\" es el Active Directory tradicional en tus servidores."},
+ tensub:{n:"Tenant vs suscripción",a:"tenant",b:"sub",ta:"QUIÉNES: tu organización en Entra ID, con usuarios, grupos y aplicaciones. Uno por organización.",tb:"QUÉ y QUIÉN PAGA: contenedor de recursos con su facturación y sus límites. Una organización puede tener muchas.",p:"Un tenant → muchas suscripciones; una suscripción → un solo tenant. \"Usuarios, identidades, inicio de sesión\" → tenant. \"Facturación, separar entornos o departamentos\" → suscripción."},
  lbagw:{n:"Load Balancer vs Application Gateway",a:"lb",b:"agw",ta:"Capa 4 (TCP/UDP): reparte por IP y puerto.",tb:"Capa 7 (HTTP/HTTPS): rutas por URL (/images, /video), terminación SSL y WAF.",p:"Si menciona URL, HTTPS o WAF → Application Gateway."},
  aciaks:{n:"Container Instances vs AKS",a:"aci",b:"aks",ta:"Un contenedor bajo demanda, lo más simple.",tb:"Orquestación de muchos contenedores con Kubernetes.",p:"\"La forma más simple de ejecutar un contenedor\" → ACI. \"Orquestar\" → AKS. Guardar imágenes → ACR."},
  defsen:{n:"Defender for Cloud vs Sentinel",a:"defender",b:"sentinel",ta:"Postura de seguridad: evalúa, recomienda y alerta sobre tus recursos.",tb:"SIEM: reúne eventos de toda la empresa y detecta amenazas con IA.",p:"\"Recomendaciones de seguridad\" o \"postura\" → Defender. \"SIEM\" o \"recopilar y analizar eventos\" → Sentinel."},
