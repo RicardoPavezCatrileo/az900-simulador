@@ -1,7 +1,7 @@
 # AZ-900 Simulador — contexto del proyecto
 
 ## Objetivo
-Sitio web personal para estudiar el examen **AZ-900 (Microsoft Azure Fundamentals)** con simuladores interactivos y quizzes por capítulo, y ver rápidamente qué temas tengo cubiertos.
+Sitio web personal para estudiar las certificaciones de Azure, con **AZ-900 (Microsoft Azure Fundamentals)** como base y luego AZ-104 (y más adelante DP-900 y AZ-305), con simuladores interactivos y quizzes por capítulo, y ver rápidamente qué temas tengo cubiertos.
 
 ## Decisiones tomadas
 - **Tecnología:** solo HTML + CSS + JavaScript (sin Python, sin Next.js, sin build). Mantener el foco en estudiar Azure, no en desarrollo web.
@@ -12,34 +12,47 @@ Sitio web personal para estudiar el examen **AZ-900 (Microsoft Azure Fundamental
 - **Opcional más adelante:** pruebas automatizadas con Playwright + Python (que cada quiz cargue y el puntaje se guarde).
 - **Idioma del sitio:** español.
 
-## Estructura objetivo
+## Estructura (varias certificaciones, AZ-900 es la base)
 ```
 az900-simulador/
 ├── CLAUDE.md
-├── index.html                  ← portada: 10 capítulos con % de avance
-├── cap02-cloud.html
-├── cap03-arquitectura.html
-├── cap04-fundamentos-herramientas.html
-├── cap05-computacion.html
-├── cap06-redes.html
-├── cap07-almacenamiento.html   ← YA EXISTE (simulador de redundancia)
-├── cap08-autenticacion-autorizacion.html
-├── cap09-seguridad.html
-├── cap10-monitorizacion-gestion.html
-├── cap11-precios.html
+├── index.html                  ← portada: elegir certificación (AZ-900, AZ-104, DP-900, AZ-305) con su avance
+├── mapa.html                   ← compartido (enlaza a az900/…)
+├── arquitectura.html           ← compartido (enlaza a az900/…)
 ├── assets/
-│   ├── estilos.css             ← diseño compartido (tokens claro/oscuro, controles, tablas, quiz, barras)
-│   ├── progreso.js             ← lista CAPITULOS + objeto Progreso (localStorage)
-│   └── quiz.js                 ← iniciarQuiz("capXX"): carga el JSON, pinta el quiz y guarda el avance
-└── data/
-    └── preguntas-capXX.json
+│   ├── estilos.css             ← diseño compartido (tokens claro/oscuro, controles, tablas, quiz, barras, portadas)
+│   ├── progreso.js             ← CAPITULOS (AZ-900), AZ104, CERTS + objeto Progreso (localStorage)
+│   ├── portada.js              ← portadaCert("az900"|"az104"): tarjetas de temas con avance y "Repaso AZ-900"
+│   └── quiz.js                 ← iniciarQuiz("capXX") o iniciarQuiz("<tema>","az104")
+├── az900/
+│   ├── index.html              ← portada de AZ-900 (10 capítulos)
+│   ├── cap02-cloud.html … cap11-precios.html
+│   └── data/preguntas-capXX.json
+├── az104/
+│   ├── index.html              ← portada de AZ-104 (5 dominios oficiales)
+│   └── data/preguntas-<tema>.json   (cuando existan)
+└── docs/                       ← PDFs de los cursos (NO se suben)
 ```
+- Las páginas dentro de `az900/` y `az104/` usan `../assets/…`, `../mapa.html` y `../arquitectura.html`. El quiz busca `data/…` relativo a la página, así que cada certificación tiene su propia carpeta `data/`.
+- Avance: clave `<cert>:progreso:<id>` (las de AZ-900 no cambiaron: `az900:progreso:capXX`). `Progreso.leer/guardar/borrar/porcentaje(id, cert="az900")`, `Progreso.porcentajeCert(cert)`.
+- Al crear una certificación nueva: agregar su lista de temas en `progreso.js`, ponerle `carpeta` en `CERTS`, crear `<carpeta>/index.html` con `portadaCert("<id>")`.
+- Idea a futuro: pasar los nodos del mapa a un catálogo único de servicios con un texto por nivel (qué es / cómo se configura / cuándo elegirlo) y un filtro por certificación en el mapa y la arquitectura.
+
+## AZ-104 (PDF "Microsoft-Azure-Administrator-Associate-v2.pdf", 214 páginas, mismo autor que el de AZ-900)
+Cerca del 60% repite AZ-900. Cada tema de `AZ104` en `progreso.js` lleva `pdf` (páginas) y `base` (capítulos de AZ-900 a repasar); las páginas de AZ-104 solo agregan lo nuevo.
+- Dominio 1 · Identidades y gobierno (págs. 25–81): gobernanza (25–40), Entra ID (41–70: licencias Free/P1/P2 48–54, usuarios 55–56, grupos y pertenencia dinámica 57–60, atributos de seguridad 61–62, SCIM 63–66, AD DS 67–70), RBAC por dentro (71–81). Archivo `identidad-gobierno.html`.
+- Dominio 2 · Almacenamiento (82–112): casi todo en cap07; nuevo: Archive (91–92). Archivo `almacenamiento.html`.
+- Dominio 3 · Cómputo (113–155): VMs, Bastion (128–130), ARM y Bicep (131–135), App Service, Docker y contenedores, Container Apps (152). Archivo `computo.html`.
+- Dominio 4 · Redes (156–189): VNet, peering, NSG, endpoints, LB/AGW, Azure DNS (183–189). Archivo `redes.html`.
+- Dominio 5 · Monitoreo y copias de seguridad (190–202): Monitor, Log Analytics, alertas, Backup (201–202). Archivo `monitoreo-backup.html`.
+- Herramientas (14–24) y cloud (8–13) son repaso de AZ-900; los comandos de Bash (21–22) son lo único nuevo.
+- Examen (203–209): igual formato que AZ-900, pero las Associate caducan cada año (renovación gratis en Learn).
 
 ## Cómo se arma un capítulo
 - La página carga `assets/estilos.css`, luego `assets/progreso.js` y `assets/quiz.js`, y llama a `iniciarQuiz("capXX")`. Debe tener `<div id="score">` y `<div id="quiz">`.
 - Los estilos propios del simulador van en un `<style>` dentro de la página; lo reutilizable va a `estilos.css`.
 - Formato de pregunta en JSON: `{"pregunta","opciones":[...],"correcta":<índice>,"explicacion"}`. Para selección múltiple ("Selecciona TODAS"), `"correcta":[<índice>,...]`: se marcan opciones y se responde con "Comprobar"; solo es correcta si coincide exactamente (las correctas no marcadas se muestran con borde verde punteado).
-- Al publicar un capítulo nuevo, marcar `listo:true` en `CAPITULOS` (`progreso.js`) para que la portada lo enlace.
+- Al publicar un capítulo o tema nuevo, marcar `listo:true` en su lista (`CAPITULOS` o `AZ104` en `progreso.js`) para que la portada lo enlace.
 - Avance guardado en la clave `az900:progreso:capXX` como `{respuestas, total, mejor}`; el % de la portada es `mejor/total`. Si cambia la cantidad de preguntas del JSON, las respuestas guardadas se descartan (se conserva `mejor`).
 - `fetch` del JSON no funciona abriendo el archivo con doble clic (`file://`): usar Live Server.
 

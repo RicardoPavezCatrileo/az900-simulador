@@ -93,4 +93,20 @@ td.y{color:var(--ok);font-weight:600} td.n{color:var(--muted)}
 .bar span{display:block;height:100%;background:var(--accent);border-radius:99px;transition:width .3s}
 .bar.full span{background:var(--ok)}
 
+/* Portadas (index.html y la de cada certificación, assets/portada.js) */
+.total{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;display:grid;gap:8px}
+.total .fila{display:flex;justify-content:space-between;gap:12px;font-family:var(--f-mono);font-size:.85rem;color:var(--muted)}
+.total .fila b{font-family:var(--f-display);font-size:1.4rem;color:var(--ink);font-variant-numeric:tabular-nums}
+.caps{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px}
+.cap{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;display:grid;gap:10px;text-decoration:none;color:inherit;align-content:start}
+a.cap:hover{border-color:var(--accent)}
+a.cap.destacada{border-color:var(--accent)}
+.cap.pendiente{opacity:.6}
+.cap .n{font-family:var(--f-mono);font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.cap h2{margin:0;font-family:var(--f-display);font-size:1.05rem;font-weight:700}
+.cap h2 a{color:inherit;text-decoration:none}
+.cap h2 a:hover{color:var(--accent)}
+.cap .det{font-family:var(--f-mono);font-size:.78rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.pie{display:flex;justify-content:flex-end}
+
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}

@@ -69,7 +69,7 @@
 </head>
 <body>
 <div class="wrap">
-  <div class="nav"><a class="volver" href="index.html">← Todos los capítulos</a><a class="volver" href="mapa.html">Mapa conceptual →</a></div>
+  <div class="nav"><a class="volver" href="index.html">← Inicio</a><a class="volver" href="az900/index.html">Capítulos AZ-900</a><a class="volver" href="mapa.html">Mapa conceptual →</a></div>
   <header>
     <div class="eyebrow">AZ-900 · Diagrama de arquitectura</div>
     <h1>Una arquitectura real, capítulo a capítulo</h1>
@@ -381,7 +381,7 @@ const POR_ID={};
 EL.forEach(e=>POR_ID[e.id]=e);
 AR.forEach(a=>POR_ID[a.id]=a);
 const capId=n=>"cap"+String(n).padStart(2,"0");
-const archivo=n=>CAPITULOS.find(c=>c.num===n).archivo;
+const archivo=n=>"az900/"+CAPITULOS.find(c=>c.num===n).archivo;
 const tituloCap=n=>CAPITULOS.find(c=>c.num===n).titulo;
 
 let hasta=11,resaltar=true,flujo=null,sel=null,red="GRS",entrada="fd";
@@ -593,7 +593,7 @@ function panelEntrada(){
     </table></div>
     <p>Pista de examen: "DNS" o "tráfico que no es HTTP" → Traffic Manager. "WAF global", "aceleración" o "caché" → Front Door.</p>
     ${avance(6)}
-    <p><a href="cap06-redes.html">Comparar los balanceadores en el capítulo 6 →</a></p>`;
+    <p><a href="az900/cap06-redes.html">Comparar los balanceadores en el capítulo 6 →</a></p>`;
 }
 const rb=document.getElementById("red");
 Object.keys(RED).forEach(k=>{
@@ -611,7 +611,7 @@ function panelRed(){
     <p><b>Protege ante:</b> ${r.protege}. <b>No protege ante:</b> ${r.no}.</p>
     <p><b>Durabilidad:</b> ${r.d} · <b>Leer la secundaria sin failover:</b> ${r.geo?(r.ra?"sí (endpoint -secondary)":"no"):"no hay secundaria"}.</p>
     ${avance(7)}
-    <p><a href="cap07-almacenamiento.html">Simular fallas con cada opción en el capítulo 7 →</a></p>`;
+    <p><a href="az900/cap07-almacenamiento.html">Simular fallas con cada opción en el capítulo 7 →</a></p>`;
 }
 const fl=document.getElementById("flujos");
 [{id:"none",n:"Ninguno"},...FLUJOS].forEach(f=>{

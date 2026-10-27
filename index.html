@@ -3,71 +3,47 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Simulador AZ-900</title>
+<title>Simulador Azure</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <link rel="stylesheet" href="assets/estilos.css">
-<style>
-.total{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;display:grid;gap:8px}
-.total .fila{display:flex;justify-content:space-between;gap:12px;font-family:var(--f-mono);font-size:.85rem;color:var(--muted)}
-.total .fila b{font-family:var(--f-display);font-size:1.4rem;color:var(--ink);font-variant-numeric:tabular-nums}
-.caps{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px}
-.cap{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;display:grid;gap:10px;text-decoration:none;color:inherit;align-content:start}
-a.cap:hover{border-color:var(--accent)}
-.cap.pendiente{opacity:.6}
-.cap .n{font-family:var(--f-mono);font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
-.cap h2{margin:0;font-family:var(--f-display);font-size:1.05rem;font-weight:700}
-.cap .det{font-family:var(--f-mono);font-size:.78rem;color:var(--muted);font-variant-numeric:tabular-nums}
-.pie{display:flex;justify-content:flex-end}
-</style>
 </head>
 <body>
 <div class="wrap">
   <header>
-    <div class="eyebrow">Microsoft Azure Fundamentals</div>
-    <h1>Simulador AZ-900</h1>
-    <p>Simuladores interactivos y preguntas tipo examen por capítulo. El avance de cada capítulo es tu mejor intento en su quiz y se guarda en este navegador.</p>
+    <div class="eyebrow">Certificaciones de Microsoft Azure</div>
+    <h1>Simulador Azure</h1>
+    <p>AZ-900 es la base: cada certificación siguiente agrega profundidad sobre los mismos servicios. El mapa conceptual y el diagrama de arquitectura son compartidos.</p>
   </header>
 
-  <div class="total" id="total"></div>
-  <a class="cap" href="mapa.html" style="border-color:var(--accent)">
-    <div class="n">Repaso transversal</div>
-    <h2>Mapa conceptual: cómo se conectan los servicios →</h2>
-    <div class="det">Explora conexiones, recorre escenarios completos y compara las confusiones típicas del examen</div>
-  </a>
-  <a class="cap" href="arquitectura.html" style="border-color:var(--accent)">
-    <div class="n">Repaso transversal</div>
-    <h2>Diagrama de arquitectura: una app real, capítulo a capítulo →</h2>
-    <div class="det">Arma una web de 3 niveles con la oficina conectada según el capítulo hasta el que vas, y sigue sus recorridos</div>
-  </a>
-  <div class="caps" id="caps"></div>
-  <div class="pie"><button type="button" class="btn" id="borrar">Borrar todo el progreso</button></div>
+  <div class="caps" id="certs"></div>
+  <div class="caps">
+    <a class="cap destacada" href="mapa.html">
+      <div class="n">Repaso transversal</div>
+      <h2>Mapa conceptual →</h2>
+      <div class="det">Cómo se conectan los servicios, escenarios y confusiones típicas</div>
+    </a>
+    <a class="cap destacada" href="arquitectura.html">
+      <div class="n">Repaso transversal</div>
+      <h2>Diagrama de arquitectura →</h2>
+      <div class="det">Una web de 3 niveles con la oficina conectada, capítulo a capítulo</div>
+    </a>
+  </div>
 </div>
 
 <script src="assets/progreso.js"></script>
 <script>
-function pintar(){
-  const caps=document.getElementById("caps");caps.innerHTML="";
-  let suma=0;
-  CAPITULOS.forEach(c=>{
-    const pct=Progreso.porcentaje(c.id),p=Progreso.leer(c.id);
-    suma+=pct||0;
-    const el=document.createElement(c.listo?"a":"div");
-    el.className="cap"+(c.listo?"":" pendiente");
-    if(c.listo)el.href=c.archivo;
-    const det=!c.listo?"Pendiente":pct===null?"Sin empezar":`${p.mejor||0} de ${p.total} correctas · ${pct}%`;
-    el.innerHTML=`<div class="n">Capítulo ${c.num}</div><h2></h2><div class="bar${pct===100?" full":""}"><span style="width:${pct||0}%"></span></div><div class="det">${det}</div>`;
-    el.querySelector("h2").textContent=c.titulo;
-    caps.appendChild(el);
-  });
-  const prom=Math.round(suma/CAPITULOS.length);
-  const listos=CAPITULOS.filter(c=>c.listo).length;
-  document.getElementById("total").innerHTML=`<div class="fila"><span>Avance total · ${listos} de ${CAPITULOS.length} capítulos disponibles</span><b>${prom}%</b></div><div class="bar${prom===100?" full":""}"><span style="width:${prom}%"></span></div>`;
-}
-document.getElementById("borrar").onclick=()=>{
-  if(confirm("¿Borrar el progreso de todos los capítulos?")){CAPITULOS.forEach(c=>Progreso.borrar(c.id));pintar()}
-};
-pintar();
+const caja=document.getElementById("certs");
+CERTS.forEach(c=>{
+  const el=document.createElement(c.carpeta?"a":"div");
+  el.className="cap"+(c.carpeta?"":" pendiente");
+  if(c.carpeta)el.href=c.carpeta+"/index.html";
+  const listos=c.temas.filter(t=>t.listo).length,pct=Progreso.porcentajeCert(c);
+  const det=!c.carpeta?"Pendiente":!listos?`${c.temas.length} dominios planificados · en construcción`:`${listos} de ${c.temas.length} temas disponibles · ${pct}%`;
+  el.innerHTML=`<div class="n">${c.nivel}</div><h2></h2><div class="bar${pct===100?" full":""}"><span style="width:${pct}%"></span></div><div class="det">${det}</div>`;
+  el.querySelector("h2").textContent=`${c.codigo} · ${c.nombre}${c.carpeta?" →":""}`;
+  caja.appendChild(el);
+});
 </script>
 </body>
 </html>

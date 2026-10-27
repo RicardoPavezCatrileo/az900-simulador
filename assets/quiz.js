@@ -1,9 +1,9 @@
 // Quiz compartido: carga las preguntas de data/preguntas-capXX.json, las muestra y guarda el avance con progreso.js.
 // Formato de cada pregunta: {"pregunta":"...","opciones":["..."],"correcta":<índice>,"explicacion":"..."}
 // Selección múltiple: "correcta":[<índice>,...]; se marcan varias opciones y se responde con "Comprobar".
-// Uso: iniciarQuiz("cap07")  (requiere <div id="score"> y <div id="quiz"> en la página)
+// Uso: iniciarQuiz("cap07") o iniciarQuiz("identidad","az104")  (requiere <div id="score"> y <div id="quiz"> en la página)
 
-async function iniciarQuiz(cap){
+async function iniciarQuiz(cap,cert="az900"){
   const el=document.getElementById("quiz"),sc=document.getElementById("score");
   const url=`data/preguntas-${cap}.json`;
   let Q;
@@ -17,7 +17,7 @@ async function iniciarQuiz(cap){
     return;
   }
 
-  let p=Progreso.leer(cap)||{};
+  let p=Progreso.leer(cap,cert)||{};
   // Si cambió la cantidad de preguntas, las respuestas guardadas ya no calzan
   if(p.total!==Q.length)p={respuestas:{},total:Q.length,mejor:Math.min(p.mejor||0,Q.length)};
   const ans=p.respuestas||{};
@@ -31,7 +31,7 @@ async function iniciarQuiz(cap){
   }
   function correctas(){return Object.keys(ans).filter(i=>acierto(i)).length}
   const marcadas={};  // selección en curso (sin comprobar) de las preguntas múltiples
-  function responder(i,r){ans[i]=r;p.respuestas=ans;p.mejor=Math.max(p.mejor||0,correctas());Progreso.guardar(cap,p);pintar()}
+  function responder(i,r){ans[i]=r;p.respuestas=ans;p.mejor=Math.max(p.mejor||0,correctas());Progreso.guardar(cap,p,cert);pintar()}
 
   function pintar(){
     el.innerHTML="";
@@ -81,7 +81,7 @@ async function iniciarQuiz(cap){
     sc.appendChild(t);
     if(done){
       const b=document.createElement("button");b.type="button";b.className="btn";b.textContent="Reintentar";
-      b.onclick=()=>{Object.keys(ans).forEach(k=>delete ans[k]);p.respuestas=ans;Progreso.guardar(cap,p);pintar()};
+      b.onclick=()=>{Object.keys(ans).forEach(k=>delete ans[k]);p.respuestas=ans;Progreso.guardar(cap,p,cert);pintar()};
       sc.appendChild(b);
     }
   }
