@@ -90,7 +90,7 @@ Errores de esa guía que NO se deben copiar: dice que la secundaria de GZRS es Z
 ## Lo que ya existe: cap02-cloud.html (PDF págs. 9–29)
 - Simulador de responsabilidad compartida: Local/IaaS/PaaS/SaaS sobre 10 capas (cliente / compartida / Microsoft) + tabla comparativa.
 - Simulador de capacidad: centro de datos propio (servidores fijos, slider) vs cloud (capacidad = demanda +10%), gráfico SVG mensual con demanda atendida, sin atender y capacidad ociosa.
-- Tarjetas de conceptos (despliegue, 5 características, 6 ventajas, pilares, precios, IaaS/PaaS/SaaS) y 16 preguntas en `data/preguntas-cap02.json` (la 16 es de selección múltiple: atributos de la nube privada, control total + compra de hardware).
+- Tarjetas de conceptos (despliegue, 5 características, 6 ventajas, pilares, precios, IaaS/PaaS/SaaS) y 17 preguntas en `data/preguntas-cap02.json` (la 16 es de selección múltiple: atributos de la nube privada, control total + compra de hardware; la 17 es previsibilidad vs confiabilidad).
 
 ## Lo que ya existe: cap03-arquitectura.html (PDF págs. 30–47)
 - Simulador de despliegue (ejemplo Londres/Mumbai del curso): 1 centro de datos / 2 centros de datos / 2 regiones × evento (falla de centro de datos, caída de región) × ubicación del usuario → disponibilidad y latencia, con los 3 desafíos del curso marcados como resueltos o no.

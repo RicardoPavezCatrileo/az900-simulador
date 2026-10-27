@@ -94,5 +94,11 @@
     "opciones": ["La empresa tiene un control total sobre los recursos físicos y la seguridad", "El hardware debe comprarse", "Pagar solo por lo que se usa", "Las aplicaciones pueden aprovisionarse y desaprovisionarse rápidamente"],
     "correcta": [0, 1],
     "explicacion": "Privada = lo que trae ser dueño: control total y seguridad (PDF pág. 17) y compra de hardware por adelantado (CapEx). Pagar por uso (OpEx) y aprovisionar rápido sin límite son ventajas de la nube pública: en la privada estás limitado al hardware que compraste."
+  },
+  {
+    "pregunta": "¿Cuál término en la computación en la nube se refiere a la certeza de que una aplicación funcionará como se espera, incluso bajo cargas de trabajo intensas?",
+    "opciones": ["Confiabilidad", "Previsibilidad", "Gobernanza", "Manejabilidad"],
+    "correcta": 1,
+    "explicacion": "Palabras clave: \"como se espera\" + \"bajo carga\" = previsibilidad del rendimiento (autoescalado, balanceo de carga, alta disponibilidad). Confiabilidad es recuperarse de FALLOS y seguir funcionando. PDF pág. 27: previsibilidad = anticipar el comportamiento de recursos y cargas de trabajo."
   }
 ]
