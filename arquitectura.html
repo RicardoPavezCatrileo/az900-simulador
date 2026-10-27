@@ -270,10 +270,10 @@ const EL=[
  {id:"policy",k:"pill",a:5,cap:10,x:1006,y:211,w:200,h:16,t:"Azure Policy · ubicaciones permitidas",
   q:"Reglas sobre CÓMO deben ser los recursos (región, SKU, etiquetas). Con efecto Deny bloquea; con Audit solo marca no conformidad.",
   p:"Asignada en el grupo de administración, se hereda: nadie puede crear recursos fuera de las regiones permitidas.",pg:"232–236"},
- {id:"rbac",k:"pill",a:5,cap:10,x:540,y:263,w:150,h:16,t:"RBAC · Colaborador",
+ {id:"rbac",k:"pill",a:5,cap:10,x:634,y:263,w:118,h:16,t:"RBAC · Colaborador",
   q:"Control de acceso basado en roles: QUIÉN puede hacer QUÉ y en qué ámbito. Se hereda hacia abajo.",
   p:"El equipo de la app es Colaborador solo en este grupo de recursos: puede gestionar, pero no dar permisos.",pg:"222–226"},
- {id:"lock",k:"pill",a:5,cap:10,x:700,y:263,w:146,h:16,t:"Bloqueo · CanNotDelete",
+ {id:"lock",k:"pill",a:5,cap:10,x:758,y:263,w:118,h:16,t:"Bloqueo · CanNotDelete",
   q:"Bloqueo de recurso: CanNotDelete impide borrar; ReadOnly impide modificar. Le gana incluso al Propietario.",
   p:"Evita que alguien borre por error el grupo de recursos de producción.",pg:"227–229"},
  {id:"monitor",k:"nodo",a:4,cap:10,x:916,y:510,w:266,h:46,t:"Azure Monitor",s:"métricas · alertas",
@@ -286,8 +286,8 @@ const EL=[
   p:"Si la app cae por un problema de Azure en Brazil South, lo verás aquí."},
 
  // Capítulo 11: precios
- {id:"tags",k:"pill",a:5,cap:11,x:650,y:289,w:210,h:16,t:"Etiquetas · depto=Ventas · oficina=Stgo",
-  q:"Etiquetas (tags): pares clave=valor que se ponen en cada recurso. Un recurso puede tener varias a la vez (oficina Y departamento), algo que un grupo de recursos no permite.",
+ {id:"tags",k:"pill",a:5,cap:11,x:478,y:263,w:150,h:16,t:"Etiquetas · depto=Ventas",
+  q:"Etiquetas (tags): pares clave=valor (depto=Ventas, oficina=Stgo) que se ponen en recursos, grupos de recursos o suscripciones; no en regiones. Los recursos NO heredan las etiquetas del grupo (salvo con Azure Policy). Un recurso puede tener varias a la vez (oficina Y departamento), algo que un grupo de recursos no permite.",
   p:"Cost Management agrupa el gasto por etiqueta (flecha), y Azure Policy puede exigir que todo recurso la tenga.",pg:"266"},
  {id:"budget",k:"pill",a:5,cap:11,x:1010,y:237,w:186,h:16,t:"Presupuesto · alertas 80% / 100%",
   q:"Presupuesto de Cost Management: avisa al llegar a cada umbral, pero NO detiene los recursos (el límite de gasto es otra cosa y solo existe en ciertas suscripciones).",
@@ -320,7 +320,7 @@ const AR=[
  {id:"e_con_entra",cap:8,d:[[123,228],[123,82]],lab:["sincroniza",128,120,"start"]},
  {id:"e_emp_ca",cap:8,d:[[222,387],[242,387],[242,100],[317,100],[317,82]],lab:["inicia sesión",250,104,"start"]},
  {id:"e_inet_ca",cap:8,d:[[470,60],[392,60]],lab:["inicia sesión",431,54]},
- {id:"e_tags_cost",cap:11,d:[[860,297],[892,297],[892,773],[916,773]]},
+ {id:"e_tags_cost",cap:11,d:[[553,263],[553,250],[892,250],[892,773],[916,773]]},
  {id:"e_arm_rg",cap:4,d:[[1162,82],[1162,100],[864,100],[864,258]],lab:["despliega el grupo de recursos",870,126,"start"]}
 ];
 
