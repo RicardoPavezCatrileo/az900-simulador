@@ -88,5 +88,11 @@
     "opciones": ["Previsibilidad", "Gobernanza", "Manejabilidad", "Confiabilidad"],
     "correcta": 1,
     "explicacion": "Gobernanza. Confiabilidad es funcionamiento estable; previsibilidad es anticipar comportamiento y costos; manejabilidad es monitoreo y administración sencillos."
+  },
+  {
+    "pregunta": "¿Qué dos atributos son característicos del modelo de implementación de nube privada? Selecciona DOS respuestas.",
+    "opciones": ["La empresa tiene un control total sobre los recursos físicos y la seguridad", "El hardware debe comprarse", "Pagar solo por lo que se usa", "Las aplicaciones pueden aprovisionarse y desaprovisionarse rápidamente"],
+    "correcta": [0, 1],
+    "explicacion": "Privada = lo que trae ser dueño: control total y seguridad (PDF pág. 17) y compra de hardware por adelantado (CapEx). Pagar por uso (OpEx) y aprovisionar rápido sin límite son ventajas de la nube pública: en la privada estás limitado al hardware que compraste."
   }
 ]
