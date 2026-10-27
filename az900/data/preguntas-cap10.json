@@ -124,5 +124,11 @@
     "opciones": ["Listar caídas de servicio tanto planificadas como no planificadas en los recursos de Azure", "Funcionar como un sistema de gestión de información y eventos de seguridad (SIEM) para monitorear la seguridad de los recursos de Azure", "Ofrecer insights detallados sobre el comportamiento de los usuarios, cuellos de botella en el rendimiento y errores en aplicaciones web", "Permitir el análisis de logs y métricas recopiladas por Azure Monitor a través de consultas"],
     "correcta": 2,
     "explicacion": "Cada opción es un servicio real: caídas de Azure = Service Health; SIEM = Microsoft Sentinel; consultas sobre logs = Log Analytics (KQL); usuarios, rendimiento y errores de TU app web = Application Insights. Truco: problema de Azure → Service Health; problema de tu aplicación → Application Insights."
+  },
+  {
+    "pregunta": "Deseas extender la funcionalidad Single pane of glass de Microsoft Defender for Cloud a tus recursos alojados en AWS y en instalaciones locales, habiendo ya implementado con éxito Defender for Cloud en tus recursos de Azure. ¿Cuál es el requisito previo necesario para implementar esta funcionalidad en tus recursos de AWS y locales?",
+    "opciones": ["Establecer conexión con los recursos externos mediante endpoints privados", "Conectar los recursos que no son de Azure mediante endpoints de servicio", "Integrar recursos fuera de Azure con Azure Sentinel", "Los recursos en AWS y on-premises deben estar registrados con Azure Arc"],
+    "correcta": 3,
+    "explicacion": "\"AWS / on-premises\" + \"gestionar desde Azure en un único panel\" → Azure Arc: proyecta los recursos externos dentro de Azure y así Defender for Cloud, Policy o Monitor pueden actuar sobre ellos (PDF págs. 244–245). Sentinel es un SIEM que analiza eventos, no incorpora recursos; los endpoints privados y de servicio son de red."
   }
 ]
