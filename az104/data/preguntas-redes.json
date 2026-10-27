@@ -1,0 +1,92 @@
+[
+  {
+    "pregunta": "Una VM tiene un NSG en su subred que permite el puerto 3389 y otro NSG en su NIC que lo deniega. ¿Qué ocurre con una conexión RDP entrante?",
+    "opciones": ["Se permite: gana el NSG de la subred", "Se deniega: el tráfico entrante debe ser permitido por los dos NSG", "Se permite: gana la regla con la prioridad más baja de los dos", "Depende de cuál NSG se creó primero"],
+    "correcta": 1,
+    "explicacion": "El tráfico entrante se evalúa primero en el NSG de la subred y luego en el de la NIC; basta con que uno lo deniegue. Los NSG se aplican a subredes y a instancias individuales (PDF pág. 165)."
+  },
+  {
+    "pregunta": "En un NSG tienes una regla 200 que permite TCP 80 y una regla 300 que deniega todo el tráfico entrante. ¿Qué pasa con el tráfico al puerto 80?",
+    "opciones": ["Se deniega porque la regla de denegación es más general", "Se permite porque la regla 200 se evalúa primero", "Se deniega porque las reglas de denegación siempre ganan", "Se permite solo si viene de la misma VNet"],
+    "correcta": 1,
+    "explicacion": "Los números más bajos tienen prioridad más alta; la primera regla que coincide decide y las demás no se evalúan (pág. 167)."
+  },
+  {
+    "pregunta": "Quieres crear reglas de NSG para \"los servidores web\" sin escribir sus IPs, de modo que una VM web nueva reciba las reglas automáticamente. ¿Qué usas?",
+    "opciones": ["Un grupo de recursos", "Un grupo de seguridad de aplicaciones (ASG)", "Un endpoint de servicio", "Una etiqueta (tag) de Azure"],
+    "correcta": 1,
+    "explicacion": "Un ASG agrupa VMs con una etiqueta lógica; el NSG la usa como origen o destino. Al agregar una VM al ASG hereda las reglas (pág. 168). Las tags de Azure sirven para organizar y facturar, no para reglas de NSG."
+  },
+  {
+    "pregunta": "¿Cuál afirmación sobre los grupos de seguridad de aplicaciones (ASG) es correcta?",
+    "opciones": ["Reemplazan a los NSG", "Se usan junto con los NSG: las reglas del NSG hacen referencia al ASG", "Solo funcionan con Load Balancer", "Filtran tráfico por URL"],
+    "correcta": 1,
+    "explicacion": "Los ASG no reemplazan a los NSG: un NSG hace referencia a un ASG en sus reglas (pág. 168)."
+  },
+  {
+    "pregunta": "La VNet A tiene los espacios 10.1.0.0/16 y 10.0.0.0/16. La VNet C tiene 10.1.0.0/16 y 10.6.0.0/16. ¿Se pueden emparejar?",
+    "opciones": ["Sí, porque 10.0.0.0/16 y 10.6.0.0/16 no se superponen", "No, mientras compartan el espacio 10.1.0.0/16", "Sí, si se usa un VPN Gateway", "Sí, pero solo en una dirección"],
+    "correcta": 1,
+    "explicacion": "Para emparejar dos VNets ninguno de sus espacios de direcciones puede superponerse. Hay que quitar el bloque repetido de una de ellas (pág. 163)."
+  },
+  {
+    "pregunta": "La VNet A está emparejada con B, y B con C. ¿Pueden comunicarse A y C a través de B sin más configuración?",
+    "opciones": ["Sí, el peering es transitivo", "No, el peering no es transitivo: hace falta un peering A–C", "Sí, si están en la misma región", "Solo si las tres están en la misma suscripción"],
+    "correcta": 1,
+    "explicacion": "El peering no es transitivo: debe establecerse para cada par de VNets que necesiten comunicarse (pág. 161)."
+  },
+  {
+    "pregunta": "Necesitas que una subred acceda a Azure Storage por la red de Microsoft, pero el área de seguridad exige desactivar por completo el acceso público a esa cuenta y llegar también desde la oficina por VPN. ¿Qué usas?",
+    "opciones": ["Endpoint de servicio", "Endpoint privado", "NSG con la etiqueta Storage", "Peering con la cuenta de almacenamiento"],
+    "correcta": 1,
+    "explicacion": "El endpoint privado da una IP privada al recurso, permite deshabilitar el acceso público y es accesible desde redes conectadas por VPN o ExpressRoute. El endpoint de servicio no sirve desde la oficina y el endpoint público sigue existiendo (págs. 171–172)."
+  },
+  {
+    "pregunta": "¿Cuál es una limitación de los endpoints de servicio?",
+    "opciones": ["Dan una IP privada a cada cuenta de almacenamiento", "No dan acceso privado desde las instalaciones locales y el endpoint público del servicio sigue existiendo", "Solo funcionan con Azure SQL", "Requieren ExpressRoute"],
+    "correcta": 1,
+    "explicacion": "Los endpoints de servicio protegen el acceso desde VNets, pero no desde las instalaciones locales, el endpoint público sigue existiendo y dan acceso al servicio completo, no a una sola cuenta (pág. 171)."
+  },
+  {
+    "pregunta": "Necesitas enviar las solicitudes a /images a un grupo de servidores y las de /video a otro. ¿Qué servicio usas?",
+    "opciones": ["Azure Load Balancer", "Azure Application Gateway", "Azure DNS", "Un NSG"],
+    "correcta": 1,
+    "explicacion": "Application Gateway es un balanceador web de capa 7 que enruta según la URL de destino (págs. 179–180). Load Balancer es de capa 4 y no ve las URLs."
+  },
+  {
+    "pregunta": "Un servidor del grupo de back-end de un Application Gateway deja de responder bien en /health. ¿Qué hace el Application Gateway?",
+    "opciones": ["Sigue enviándole tráfico hasta que un administrador lo quite", "Deja de enviarle tráfico mientras falle el sondeo de estado", "Reinicia la VM", "Envía todo el tráfico a Internet"],
+    "correcta": 1,
+    "explicacion": "Los sondeos de estado evalúan periódicamente a los servidores y el tráfico solo va a los que están operativos (pág. 182)."
+  },
+  {
+    "pregunta": "¿En qué capa del modelo OSI opera Azure Load Balancer y qué protocolos admite?",
+    "opciones": ["Capa 7, HTTP y HTTPS", "Capa 4, TCP y UDP", "Capa 3, solo ICMP", "Capa 7, TCP y UDP"],
+    "correcta": 1,
+    "explicacion": "Load Balancer opera en la capa 4 (transporte) con TCP y UDP; reparte según reglas y sondeos entre VMs o un Scale Set (pág. 177)."
+  },
+  {
+    "pregunta": "Creaste una zona pública para tu dominio en Azure DNS, pero desde Internet se siguen resolviendo los registros antiguos. ¿Qué falta?",
+    "opciones": ["Vincular la zona a una VNet", "Delegar el dominio: configurar en el registrador los servidores NS de Azure DNS", "Activar el registro automático", "Crear un endpoint privado"],
+    "correcta": 1,
+    "explicacion": "La zona pública se usa cuando el dominio está registrado con un proveedor externo: hay que apuntar el dominio a los NS de Azure DNS en el registrador (pág. 188). Azure DNS hospeda zonas, no registra dominios."
+  },
+  {
+    "pregunta": "Quieres que las VMs de tus VNets se resuelvan por nombre entre sí (vm-db.contoso.internal), sin que esos nombres sean visibles en Internet ni necesitar un registrador. ¿Qué usas?",
+    "opciones": ["Una zona DNS pública", "Una zona DNS privada vinculada a las VNets", "Un archivo hosts en cada VM", "Azure Traffic Manager"],
+    "correcta": 1,
+    "explicacion": "Las zonas DNS privadas no son visibles en Internet, no requieren registrador y asignan nombres a VMs (pág. 189). Solo responden a las VNets vinculadas."
+  },
+  {
+    "pregunta": "¿Qué tipo de registro DNS hace que www.blockstellart.com apunte al nombre demo.blockstellart.com?",
+    "opciones": ["A", "CNAME", "MX", "TXT"],
+    "correcta": 1,
+    "explicacion": "CNAME apunta un nombre a otro nombre. A apunta a una IPv4, MX indica el servidor de correo y TXT guarda texto (pág. 185)."
+  },
+  {
+    "pregunta": "¿Cuántas direcciones IP puedes asignar a tus recursos en una subred /24 de Azure?",
+    "opciones": ["256", "254", "251", "250"],
+    "correcta": 2,
+    "explicacion": "Una /24 tiene 256 direcciones, pero Azure reserva 5 en cada subred (la de red, .1, .2, .3 y la de broadcast): quedan 251. El PDF dice 256 disponibles (pág. 160), lo que no es correcto en Azure."
+  }
+]

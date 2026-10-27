@@ -1,0 +1,366 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Redes AZ-104</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="../assets/estilos.css">
+<style>
+.bloque{display:grid;gap:14px}
+.bloque>*{min-width:0}
+.bloque>h2.h{margin:0}
+.bloque>p.intro{margin:0;color:var(--muted);max-width:75ch}
+.chk{display:flex;gap:8px;align-items:flex-start;font-size:.9rem;cursor:pointer}
+.chk input{accent-color:var(--accent);margin-top:4px}
+.chks{display:flex;flex-wrap:wrap;gap:8px 18px}
+td.si{color:var(--ok);font-weight:600} td.no{color:var(--bad);font-weight:600} td.na{color:var(--muted)}
+tr.dec td{background:var(--accent-soft)} tr.skip td{opacity:.45}
+.mini{font-size:.82rem;color:var(--muted)}
+.pasos{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-family:var(--f-mono);font-size:.8rem}
+.paso{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:7px 10px}
+.paso.ok{border-color:var(--ok)} .paso.no{border-color:var(--bad);color:var(--bad)} .paso.skip{opacity:.45}
+.vnets{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}
+.vnet{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px;display:grid;gap:6px}
+.vnet h3{margin:0;font-family:var(--f-display);font-size:1rem}
+.vnet .choque{color:var(--bad);font-family:var(--f-mono);font-size:.75rem}
+.dns{font-family:var(--f-mono);font-size:.8rem;display:grid;gap:4px}
+.dns div{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:6px 10px}
+.dns div.on{border-color:var(--ok)} .dns div.off{border-color:var(--bad);color:var(--bad)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="nav"><a class="volver" href="index.html">← Dominios AZ-104</a><a class="volver" href="../mapa.html">Mapa conceptual →</a><a class="volver" href="../arquitectura.html">Arquitectura →</a></div>
+  <header>
+    <div class="eyebrow">AZ-104 · Dominio 4 · Redes virtuales</div>
+    <h1>Redes virtuales: filtrar, conectar, repartir y resolver nombres</h1>
+    <p>En AZ-900 viste qué son una VNet, un NSG, el peering y los balanceadores. AZ-104 pregunta <b>cómo se configuran</b>: NSG en la subred <b>y</b> en la NIC, grupos de seguridad de aplicaciones (<b>ASG</b>), peering con <b>varios espacios de direcciones</b>, rutas y sondeos del <b>Application Gateway</b> y zonas de <b>Azure DNS</b> (PDF AZ-104, págs. 156–189).</p>
+  </header>
+
+  <div class="note">
+    <h3>Repaso de la base AZ-900</h3>
+    <p>Espacio de direcciones, 5 IPs reservadas por subred, NSG con prioridades, peering no transitivo, VPN y ExpressRoute, Load Balancer vs Application Gateway: <a href="../az900/cap06-redes.html">cap. 6</a> · Endpoints públicos, de servicio y privados: <a href="../az900/cap09-seguridad.html">cap. 9</a>.</p>
+  </div>
+
+  <!-- 1 · NSG + ASG -->
+  <section class="bloque">
+    <h2 class="h">1 · NSG en subred y NIC, con ASG</h2>
+    <p class="intro">El tráfico <b>entrante</b> pasa primero por el NSG de la <b>subred</b> y después por el de la <b>NIC</b>: tiene que permitirlo <b>los dos</b>. Las reglas pueden apuntar a un <b>ASG</b> (etiqueta lógica de VMs) en vez de IPs: una VM nueva en el ASG hereda las reglas (págs. 165–168).</p>
+    <div class="controls">
+      <div class="ctl"><label>Origen</label><div class="seg" id="origen"></div></div>
+      <div class="ctl"><label>Destino</label><div class="seg" id="destino"></div></div>
+    </div>
+    <div class="ctl"><label>Puerto de destino</label><div class="seg" id="puerto"></div></div>
+    <div class="chks">
+      <label class="chk"><input type="checkbox" id="nicOn"><span>Poner un NSG en la NIC de vm-web2 que deniega RDP (3389)</span></label>
+      <label class="chk"><input type="checkbox" id="asgNueva"><span>Agregar vm-nueva al ASG-Web</span></label>
+    </div>
+    <div class="pasos" id="pasosN"></div>
+    <div class="status" id="statusN"></div>
+    <div class="tbl"><table>
+      <thead><tr><th>NSG</th><th>Prioridad</th><th>Nombre</th><th>Origen</th><th>Destino</th><th>Puerto</th><th>Acción</th><th>Resultado</th></tr></thead>
+      <tbody id="tbodyN"></tbody>
+    </table></div>
+    <p class="mini">VNet 10.0.0.0/16 · subred web 10.0.1.0/24 (vm-web1 y vm-web2 en ASG-Web, vm-admin sin ASG, vm-nueva) · subred datos 10.0.2.0/24 (vm-db en ASG-DB) · oficina 192.168.0.0/16 por VPN. El tráfico desde la oficina por VPN cuenta como etiqueta <code>VirtualNetwork</code>.</p>
+  </section>
+
+  <!-- 2 · Peering multi-CIDR -->
+  <section class="bloque">
+    <h2 class="h">2 · Peering con varios espacios de direcciones</h2>
+    <p class="intro">Una VNet puede tener <b>más de un espacio de direcciones</b>. Para emparejar dos VNets, <b>ninguno</b> de sus espacios puede superponerse; y el peering <b>no es transitivo</b> (págs. 161–163). Activa o quita espacios y peerings.</p>
+    <div class="vnets" id="vnets"></div>
+    <div class="ctl"><label>Peerings creados</label><div class="chks" id="peers"></div></div>
+    <div class="status" id="statusP"></div>
+    <div class="tbl"><table>
+      <thead><tr><th>Desde \ hacia</th><th>VNet A</th><th>VNet B</th><th>VNet C</th></tr></thead>
+      <tbody id="tbodyP"></tbody>
+    </table></div>
+  </section>
+
+  <!-- 3 · Application Gateway -->
+  <section class="bloque">
+    <h2 class="h">3 · Application Gateway: rutas por URL y sondeos de estado</h2>
+    <p class="intro">Balanceador web de <b>capa 7</b>: elige el grupo de back-end según la <b>ruta de la URL</b>, puede <b>redirigir HTTP a HTTPS</b> y solo envía tráfico a los servidores que responden bien al <b>sondeo de estado</b> (págs. 179–182).</p>
+    <div class="controls">
+      <div class="ctl"><label>Solicitud</label><div class="seg" id="url"></div></div>
+      <div class="ctl"><label>Protocolo</label><div class="seg" id="proto"></div></div>
+    </div>
+    <div class="chks">
+      <label class="chk"><input type="checkbox" id="redir" checked><span>Regla de redirección HTTP → HTTPS</span></label>
+    </div>
+    <div class="ctl"><label>Estado de los servidores (sondeo HTTP a /health) · clic para cambiar</label><div class="chks" id="salud"></div></div>
+    <div class="pasos" id="pasosA"></div>
+    <div class="status" id="statusA"></div>
+  </section>
+
+  <!-- 4 · Azure DNS -->
+  <section class="bloque">
+    <h2 class="h">4 · Azure DNS: zona pública vs zona privada</h2>
+    <p class="intro">Una <b>zona pública</b> hospeda los registros de tu dominio en Internet (hay que delegar el dominio desde el registrador). Una <b>zona privada</b> no es visible en Internet, no necesita registrador y da nombres a las VMs dentro de las VNets <b>vinculadas</b> (págs. 183–189).</p>
+    <div class="controls">
+      <div class="ctl"><label>Nombre que se consulta</label><div class="seg" id="nombre"></div></div>
+      <div class="ctl"><label>Quién pregunta</label><div class="seg" id="quien"></div></div>
+    </div>
+    <div class="chks">
+      <label class="chk"><input type="checkbox" id="deleg" checked><span>Dominio delegado: el registrador apunta a los servidores NS de Azure DNS</span></label>
+      <label class="chk"><input type="checkbox" id="autoreg" checked><span>Registro automático activado en el vínculo de la VNet de producción</span></label>
+    </div>
+    <div class="dns" id="cadena"></div>
+    <div class="status" id="statusD"></div>
+    <div class="tbl"><table>
+      <thead><tr><th>Zona</th><th>Tipo</th><th>Nombre</th><th>Valor</th><th>TTL</th></tr></thead>
+      <tbody id="tbodyD"></tbody>
+    </table></div>
+  </section>
+
+  <!-- 5 · Tarjetas -->
+  <section>
+    <h2 class="h">5 · Lo que más pregunta AZ-104 de este dominio</h2>
+    <div class="cards">
+      <div class="card"><h3>VNet y subredes (págs. 157–160)</h3><ul>
+        <li>Cada subred tiene un rango CIDR único dentro del espacio de la VNet, sin superponerse.</li>
+        <li>Una /16 tiene 65.536 direcciones. <b>Corrección:</b> el PDF dice que una /24 tiene 256 IPs disponibles; en Azure son <b>251 asignables</b>, porque Azure reserva 5 por subred (la de red, .1, .2, .3 y la de broadcast).</li>
+      </ul></div>
+      <div class="card"><h3>Reglas de NSG (págs. 166–167)</h3><ul>
+        <li>Campos: origen, puertos de origen, destino, servicio/puertos de destino, protocolo, acción, prioridad, nombre.</li>
+        <li><b>Número más bajo = se evalúa primero</b>; la primera que coincide decide.</li>
+        <li>No puede haber dos reglas con la misma prioridad y dirección.</li>
+        <li>Se asocia a una subred, a una NIC o a ambas.</li>
+      </ul></div>
+      <div class="card"><h3>ASG (pág. 168)</h3><ul>
+        <li>Agrupa VMs (sus NICs) con una etiqueta lógica: "ASG-Web", "ASG-DB".</li>
+        <li><b>No reemplaza al NSG:</b> el NSG usa el ASG como origen o destino de sus reglas.</li>
+        <li>Una VM nueva en el ASG hereda las reglas sin tocar IPs.</li>
+      </ul></div>
+      <div class="card"><h3>Endpoint de servicio vs privado (págs. 169–175)</h3><ul>
+        <li><b>De servicio:</b> la subred llega al servicio por la red de Microsoft, pero el endpoint público <b>sigue existiendo</b>, da acceso al servicio completo (todo Storage) y <b>no sirve desde la oficina</b>.</li>
+        <li><b>Privado:</b> una NIC con <b>IP privada</b> para UN recurso; permite desactivar el acceso público y llega desde redes conectadas por VPN o ExpressRoute.</li>
+      </ul></div>
+      <div class="card"><h3>Load Balancer (págs. 176–178)</h3><ul>
+        <li><b>Capa 4</b> (TCP/UDP): front-end, grupo de back-end (VMs o Scale Set), reglas y sondeos de estado.</li>
+        <li>Público o interno; alta disponibilidad entre zonas.</li>
+        <li><b>Corrección:</b> el PDF le atribuye terminación SSL; eso lo hace el <b>Application Gateway</b> (capa 7).</li>
+      </ul></div>
+      <div class="card"><h3>Application Gateway (págs. 179–182)</h3><ul>
+        <li>Rutas por URL (/images, /video), redirección HTTP→HTTPS, terminación TLS, WAF.</li>
+        <li>Soporta zonas de disponibilidad.</li>
+        <li>Sondeos de estado: solo envía tráfico a los back-end sanos.</li>
+      </ul></div>
+      <div class="card"><h3>Registros DNS (págs. 185–186)</h3><ul>
+        <li><b>A:</b> nombre → IPv4 · <b>AAAA:</b> → IPv6 · <b>CNAME:</b> nombre → otro nombre · <b>MX:</b> correo · <b>TXT:</b> texto (verificaciones).</li>
+        <li><b>TTL:</b> segundos que la respuesta queda en caché.</li>
+        <li>Azure DNS hospeda zonas; <b>no vende dominios</b>: eso lo hace el registrador.</li>
+      </ul></div>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="h">Preguntas tipo examen</h2>
+    <div class="score" id="score"></div>
+    <div class="quiz" id="quiz"></div>
+  </section>
+</div>
+
+<script src="../assets/progreso.js"></script>
+<script src="../assets/quiz.js"></script>
+<script>
+function seg(id,obj,get,set,fn){
+  const el=document.getElementById(id);el.innerHTML="";
+  Object.keys(obj).forEach(k=>{const b=document.createElement("button");b.type="button";b.textContent=typeof obj[k]==="string"?obj[k]:obj[k].name;b.dataset.k=k;
+    b.setAttribute("aria-pressed",String(get()===k));b.onclick=()=>{set(k);fn()};el.appendChild(b)});
+}
+function status(id,lvl,t,d){
+  const col={ok:"var(--ok)",warn:"var(--warn)",bad:"var(--bad)",info:"var(--accent)"}[lvl],ico={ok:"✓",warn:"!",bad:"✕",info:"i"}[lvl];
+  document.getElementById(id).innerHTML=`<span class="dot" style="background:${col}" aria-hidden="true"></span><div><b>${ico} ${t}</b><p>${d}</p></div>`;
+}
+function chk(id,fn){const e=document.getElementById(id);e.onchange=fn;return e}
+
+/* ---------- 1 · NSG + ASG ---------- */
+// Etiquetas que cumple cada origen y destino (para comparar con las reglas)
+const ORIG={internet:{name:"Internet",tags:["Internet"]},web1:{name:"vm-web1 (ASG-Web)",tags:["ASG-Web","VirtualNetwork"]},admin:{name:"vm-admin (sin ASG)",tags:["VirtualNetwork"]},ofi:{name:"Oficina por VPN",tags:["Oficina","VirtualNetwork"]}};
+const DEST={web2:{name:"vm-web2",sub:"web"},db:{name:"vm-db",sub:"datos"},nueva:{name:"vm-nueva",sub:"web"}};
+const PUERTO={80:"80 HTTP",443:"443 HTTPS",1433:"1433 SQL",3389:"3389 RDP"};
+const POR_DEFECTO=[
+ {p:65000,n:"AllowVnetInBound",s:"VirtualNetwork",d:"VirtualNetwork",pt:"*",a:"Permitir"},
+ {p:65001,n:"AllowAzureLoadBalancerInBound",s:"AzureLoadBalancer",d:"*",pt:"*",a:"Permitir"},
+ {p:65500,n:"DenyAllInBound",s:"*",d:"*",pt:"*",a:"Denegar"}
+];
+const NSG={
+ web:[{p:100,n:"Web-desde-Internet",s:"Internet",d:"ASG-Web",pt:[80,443],a:"Permitir"},{p:110,n:"RDP-desde-oficina",s:"Oficina",d:"*",pt:[3389],a:"Permitir"},...POR_DEFECTO],
+ datos:[{p:100,n:"SQL-desde-web",s:"ASG-Web",d:"ASG-DB",pt:[1433],a:"Permitir"},{p:110,n:"RDP-desde-oficina",s:"Oficina",d:"*",pt:[3389],a:"Permitir"},{p:200,n:"Bloquear-resto-VNet",s:"VirtualNetwork",d:"*",pt:"*",a:"Denegar"},...POR_DEFECTO],
+ nic:[{p:100,n:"Sin-RDP",s:"*",d:"*",pt:[3389],a:"Denegar"},{p:4000,n:"Permitir-resto",s:"*",d:"*",pt:"*",a:"Permitir"},...POR_DEFECTO]
+};
+let origen="internet",destino="web2",puerto="80";
+const nicOn=chk("nicOn",renderN),asgNueva=chk("asgNueva",renderN);
+function tagsDestino(){const t=["VirtualNetwork"];if(destino==="web2"||destino==="nueva"&&asgNueva.checked)t.push("ASG-Web");if(destino==="db")t.push("ASG-DB");return t}
+function coincideN(r){
+  const so=r.s==="*"||ORIG[origen].tags.includes(r.s),de=r.d==="*"||tagsDestino().includes(r.d),pu=r.pt==="*"||r.pt.includes(+puerto);
+  return so&&de&&pu;
+}
+function evaluaN(lista){const r=lista.find(coincideN);return r}
+function renderN(){
+  seg("origen",ORIG,()=>origen,v=>origen=v,renderN);
+  seg("destino",DEST,()=>destino,v=>destino=v,renderN);
+  seg("puerto",PUERTO,()=>puerto,v=>puerto=v,renderN);
+  const sub=DEST[destino].sub,nsgs=[[`NSG-${sub}`,NSG[sub],"subred "+sub]];
+  if(destino==="web2"&&nicOn.checked)nsgs.push(["NSG-nic-web2",NSG.nic,"NIC de vm-web2"]);
+  let filas="",ok=true,pasos=[],corta=false,quien="";
+  nsgs.forEach(([nom,lista,dnd])=>{
+    const dec=corta?null:evaluaN(lista);
+    lista.forEach(r=>{
+      const c=!corta&&coincideN(r),esDec=r===dec;
+      const fmt=v=>v==="*"?"Cualquiera":Array.isArray(v)?v.join(", "):v;
+      filas+=`<tr class="${esDec?"dec":corta||dec&&r.p>dec.p?"skip":""}"><td>${nom}</td><td>${r.p}</td><td>${r.n}</td><td>${fmt(r.s)}</td><td>${fmt(r.d)}</td><td>${fmt(r.pt)}</td><td>${r.a}</td><td class="${esDec?(r.a==="Permitir"?"si":"no"):"na"}">${corta?"no se evalúa":esDec?"coincide → decide":dec&&r.p>dec.p?"no se evalúa":c?"coincide":"no coincide"}</td></tr>`;
+    });
+    if(corta){pasos.push(`<span class="paso skip">${nom}: no se evalúa</span>`);return}
+    const permite=dec.a==="Permitir";
+    pasos.push(`<span class="paso ${permite?"ok":"no"}">${nom} (${dnd}): ${dec.p} ${dec.n} → ${permite?"permite":"deniega"}</span>`);
+    if(!permite){ok=false;corta=true;quien=`${nom}, regla ${dec.p} ${dec.n}`}
+  });
+  document.getElementById("tbodyN").innerHTML=filas;
+  document.getElementById("pasosN").innerHTML=pasos.join("<span>→</span>");
+  const desc=`${ORIG[origen].name} → ${DEST[destino].name}:${puerto}`;
+  if(ok){
+    let extra=nsgs.length>1?" Pasó los dos NSG: el de la subred y el de la NIC.":" Solo hay NSG en la subred; la NIC no tiene uno propio.";
+    if(destino==="nueva"&&asgNueva.checked)extra+=" vm-nueva hereda la regla del ASG-Web sin que se tocara ninguna IP.";
+    status("statusN","ok",`Permitido: ${desc}`,extra);
+  }else{
+    let extra="Basta con que UN NSG lo deniegue.";
+    if(destino==="nueva"&&!asgNueva.checked&&origen==="internet")extra+=" vm-nueva no está en el ASG-Web, así que la regla 100 no la incluye. Marca \"Agregar vm-nueva al ASG-Web\".";
+    if(sub==="datos"&&origen==="admin")extra+=" La regla 200 le gana a la regla por defecto AllowVnetInBound (65000): dentro de la VNet también se puede bloquear.";
+    if(nsgs.length>1&&quien.startsWith("NSG-nic"))extra+=" El NSG de la subred lo permitía, pero el de la NIC lo bloquea.";
+    status("statusN","bad",`Denegado: ${desc}`,`Lo decide ${quien}. ${extra}`);
+  }
+}
+
+/* ---------- 2 · Peering multi-CIDR ---------- */
+const VN={A:["10.1.0.0/16","10.0.0.0/16"],B:["10.2.0.0/16"],C:["10.1.0.0/16","10.6.0.0/16"]};
+const activos={A:new Set(VN.A),B:new Set(VN.B),C:new Set(VN.C)};
+const PARES=[["A","B"],["B","C"],["A","C"]];
+const peers=new Set(["A-B","B-C"]);
+const choques=(x,y)=>[...activos[x]].filter(c=>activos[y].has(c));
+function renderP(){
+  document.getElementById("vnets").innerHTML=Object.keys(VN).map(v=>{
+    const otros=Object.keys(VN).filter(o=>o!==v).flatMap(o=>choques(v,o).map(c=>`${c} también está en ${o}`));
+    return`<div class="vnet"><h3>VNet ${v}</h3>${VN[v].map(c=>`<label class="chk"><input type="checkbox" data-v="${v}" data-c="${c}"${activos[v].has(c)?" checked":""}><span>${c}</span></label>`).join("")}${otros.map(t=>`<div class="choque">⚠ ${t}</div>`).join("")}</div>`;
+  }).join("");
+  document.querySelectorAll("#vnets input").forEach(i=>i.onchange=()=>{const s=activos[i.dataset.v];i.checked?s.add(i.dataset.c):s.delete(i.dataset.c);renderP()});
+  const malos=[];
+  document.getElementById("peers").innerHTML=PARES.map(([x,y])=>{
+    const k=`${x}-${y}`,ch=choques(x,y);
+    if(peers.has(k)&&ch.length)malos.push(`${x}↔${y} (${ch.join(", ")})`);
+    return`<label class="chk"><input type="checkbox" data-p="${k}"${peers.has(k)?" checked":""}><span>Peering ${x} ↔ ${y}${ch.length?` <span class="mini">· superpuesto: ${ch.join(", ")}</span>`:""}</span></label>`;
+  }).join("");
+  document.querySelectorAll("#peers input").forEach(i=>i.onchange=()=>{i.checked?peers.add(i.dataset.p):peers.delete(i.dataset.p);renderP()});
+  const valido=([x,y])=>peers.has(`${x}-${y}`)&&!choques(x,y).length;
+  const directo=(a,b)=>PARES.some(([x,y])=>(x===a&&y===b||x===b&&y===a)&&valido([x,y]));
+  const indirecto=(a,b)=>Object.keys(VN).some(m=>m!==a&&m!==b&&directo(a,m)&&directo(m,b));
+  document.getElementById("tbodyP").innerHTML=Object.keys(VN).map(a=>`<tr><td><b>VNet ${a}</b></td>${Object.keys(VN).map(b=>{
+    if(a===b)return`<td class="na">—</td>`;
+    if(directo(a,b))return`<td class="si">✓ Peering directo</td>`;
+    if(indirecto(a,b))return`<td class="no">✕ No: el peering no es transitivo</td>`;
+    return`<td class="no">✕ Sin conexión</td>`;
+  }).join("")}</tr>`).join("");
+  if(malos.length)status("statusP","bad","No se puede crear el peering "+malos.join(" y "),"Mientras dos VNets compartan un espacio de direcciones, Azure no permite emparejarlas. Quita el espacio repetido de una de ellas (desmárcalo arriba) y el peering pasa a ser válido (pág. 163).");
+  else if(indirecto("A","C")&&!directo("A","C"))status("statusP","warn","A y C no se ven aunque las dos estén emparejadas con B","El peering no es transitivo: hace falta un peering directo A↔C (o un hub con gateway o firewall que enrute).");
+  else status("statusP","ok","Todos los peerings creados son válidos","Ningún par emparejado comparte espacios de direcciones. El tráfico va por la red de Microsoft, sin pasar por Internet (pág. 161).");
+}
+
+/* ---------- 3 · Application Gateway ---------- */
+const URL={img:"/images/logo.png",vid:"/video/intro.mp4",home:"/carrito"};
+const PROTO={https:"HTTPS",http:"HTTP"};
+const POOLS={img:{n:"ImageServerPool",vms:["img-1","img-2"]},vid:{n:"VideoServerPool",vms:["vid-1","vid-2"]},home:{n:"WebPool (por defecto)",vms:["web-1","web-2"]}};
+const caidas=new Set(["img-1"]);
+let url="img",proto="https";
+const redir=chk("redir",renderA);
+function renderA(){
+  seg("url",URL,()=>url,v=>url=v,renderA);
+  seg("proto",PROTO,()=>proto,v=>proto=v,renderA);
+  document.getElementById("salud").innerHTML=Object.values(POOLS).flatMap(p=>p.vms).map(v=>`<label class="chk"><input type="checkbox" data-vm="${v}"${caidas.has(v)?"":" checked"}><span>${v} ${caidas.has(v)?"(falla el sondeo)":"(sano)"}</span></label>`).join("");
+  document.querySelectorAll("#salud input").forEach(i=>i.onchange=()=>{i.checked?caidas.delete(i.dataset.vm):caidas.add(i.dataset.vm);renderA()});
+  const pasos=[`<span class="paso">${proto.toUpperCase()} ${URL[url]}</span>`];
+  if(proto==="http"&&redir.checked){
+    pasos.push(`<span class="paso ok">Redirección 301 → HTTPS</span>`);
+    document.getElementById("pasosA").innerHTML=pasos.join("<span>→</span>");
+    status("statusA","info","El navegador vuelve a pedir lo mismo por HTTPS","La regla de redirección responde al cliente que use HTTPS; la solicitud HTTP no llega a ningún servidor. Cambia el protocolo a HTTPS para seguirla (pág. 179).");return;
+  }
+  const pool=POOLS[url],sanos=pool.vms.filter(v=>!caidas.has(v));
+  pasos.push(`<span class="paso ok">Regla de ruta: ${url==="home"?"ninguna ruta coincide → grupo por defecto":(url==="img"?"/images/*":"/video/*")+" → "+pool.n}</span>`);
+  if(sanos.length){
+    pasos.push(`<span class="paso ok">${pool.n}: ${sanos.join(", ")}</span>`);
+    document.getElementById("pasosA").innerHTML=pasos.join("<span>→</span>");
+    const nota=sanos.length<pool.vms.length?` ${pool.vms.filter(v=>caidas.has(v)).join(", ")} falla el sondeo a /health, así que queda fuera hasta que vuelva a responder bien.`:"";
+    status("statusA","ok",`Se atiende en ${pool.n}`,`El Application Gateway reparte entre los servidores sanos: ${sanos.join(" y ")}.${nota}${proto==="http"?" Ojo: sin la redirección, el sitio queda en HTTP sin cifrar.":""}`);
+  }else{
+    pasos.push(`<span class="paso no">${pool.n}: ningún servidor sano</span>`);
+    document.getElementById("pasosA").innerHTML=pasos.join("<span>→</span>");
+    status("statusA","bad","502 Bad Gateway","Todos los servidores de ese grupo fallan el sondeo de estado: el Application Gateway no tiene a quién enviar la solicitud. Los otros grupos siguen funcionando.");
+  }
+}
+
+/* ---------- 4 · Azure DNS ---------- */
+const NOMBRE={demo:"demo.blockstellart.com",www:"www.blockstellart.com",db:"vm-db.contoso.internal",web:"vm-web1.contoso.internal"};
+const QUIEN={inet:"Usuario en Internet",prod:"VM en vnet-prod (vinculada)",otra:"VM en vnet-test (no vinculada)"};
+let nombre="demo",quien="inet";
+const deleg=chk("deleg",renderD),autoreg=chk("autoreg",renderD);
+function registros(){
+  const r=[
+   ["blockstellart.com","Pública","A","demo","76.13.12.2",300],
+   ["blockstellart.com","Pública","A","api","76.13.12.3",300],
+   ["blockstellart.com","Pública","A","dev","76.13.12.4",300],
+   ["blockstellart.com","Pública","CNAME","www","demo.blockstellart.com",3600],
+   ["blockstellart.com","Pública","MX","@","10 mail.blockstellart.com",3600],
+   ["contoso.internal","Privada","A","vm-db","10.0.2.4",3600]
+  ];
+  if(autoreg.checked)r.push(["contoso.internal","Privada","A","vm-web1","10.0.1.4 (registro automático)",10]);
+  return r;
+}
+function renderD(){
+  seg("nombre",NOMBRE,()=>nombre,v=>nombre=v,renderD);
+  seg("quien",QUIEN,()=>quien,v=>quien=v,renderD);
+  document.getElementById("tbodyD").innerHTML=registros().map(r=>`<tr><td>${r[0]}</td><td>${r[2]}</td><td>${r[3]}</td><td>${r[4]}</td><td>${r[5]}</td></tr>`).join("");
+  const pub=nombre==="demo"||nombre==="www",fq=NOMBRE[nombre];
+  const paso=(t,c)=>`<div class="${c||""}">${t}</div>`;
+  let cad=[],res;
+  if(pub){
+    cad.push(paso(`1. ${quien==="inet"?"Resolutor del ISP":"DNS de Azure (168.63.129.16)"} pregunta al servidor raíz → ".com"`));
+    cad.push(paso(`2. Servidor TLD .com → servidores NS de blockstellart.com`));
+    if(!deleg.checked){
+      cad.push(paso(`3. Los NS son los del registrador, no los de Azure: la zona de Azure DNS nunca se consulta`,"off"));
+      res=["bad","No resuelve con los registros de Azure","Creaste la zona pública en Azure DNS, pero el registrador sigue apuntando a sus propios servidores NS. Hay que copiar los 4 NS de la zona de Azure en el registrador (delegar el dominio)."];
+    }else{
+      cad.push(paso(`3. NS de Azure DNS (ns1-0x.azure-dns.com) → zona pública blockstellart.com`,"on"));
+      if(nombre==="www"){cad.push(paso(`4. www es CNAME → demo.blockstellart.com → A 76.13.12.2`,"on"));res=["ok","www.blockstellart.com → 76.13.12.2","El CNAME apunta a otro nombre (demo) y ese nombre tiene el registro A. La respuesta se guarda en caché según el TTL."];}
+      else{cad.push(paso(`4. Registro A demo → 76.13.12.2 (TTL 300 s)`,"on"));res=["ok","demo.blockstellart.com → 76.13.12.2","La zona pública responde a cualquiera en Internet, y también a las VMs de Azure."];}
+    }
+  }else{
+    if(quien==="inet"){
+      cad.push(paso(`1. Resolutor del ISP busca "contoso.internal" en Internet`));
+      cad.push(paso(`2. Ningún servidor público conoce esa zona`,"off"));
+      res=["bad","NXDOMAIN: no existe para Internet","Las zonas privadas no son visibles en Internet (pág. 189). Eso es justamente lo que quieres para nombres internos."];
+    }else if(quien==="otra"){
+      cad.push(paso(`1. La VM pregunta al DNS de Azure (168.63.129.16)`));
+      cad.push(paso(`2. vnet-test no tiene vínculo con la zona privada contoso.internal`,"off"));
+      res=["bad","No resuelve: la VNet no está vinculada","Una zona privada solo responde a las VNets vinculadas a ella. Crea un vínculo de red virtual de vnet-test a la zona."];
+    }else{
+      cad.push(paso(`1. La VM pregunta al DNS de Azure (168.63.129.16)`));
+      cad.push(paso(`2. vnet-prod está vinculada a la zona privada contoso.internal`,"on"));
+      if(nombre==="web"&&!autoreg.checked){
+        cad.push(paso(`3. No hay registro vm-web1: el registro automático está apagado`,"off"));
+        res=["bad","NXDOMAIN: vm-web1 no está en la zona","Sin registro automático, cada VM se agrega a mano como registro A. Con el registro automático, Azure crea y borra el registro cuando la VM se crea o elimina."];
+      }else{
+        cad.push(paso(`3. Registro A ${nombre==="db"?"vm-db → 10.0.2.4":"vm-web1 → 10.0.1.4 (creado por el registro automático)"}`,"on"));
+        res=["ok",`${fq} → ${nombre==="db"?"10.0.2.4":"10.0.1.4"}`,"Nombres internos con IP privada, sin registrador y sin exponer nada a Internet."];
+      }
+    }
+  }
+  document.getElementById("cadena").innerHTML=cad.join("");
+  status("statusD",...res);
+}
+
+renderN();renderP();renderA();renderD();iniciarQuiz("redes","az104");
+</script>
+</body>
+</html>
