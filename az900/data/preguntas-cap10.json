@@ -130,5 +130,11 @@
     "opciones": ["Establecer conexión con los recursos externos mediante endpoints privados", "Conectar los recursos que no son de Azure mediante endpoints de servicio", "Integrar recursos fuera de Azure con Azure Sentinel", "Los recursos en AWS y on-premises deben estar registrados con Azure Arc"],
     "correcta": 3,
     "explicacion": "\"AWS / on-premises\" + \"gestionar desde Azure en un único panel\" → Azure Arc: proyecta los recursos externos dentro de Azure y así Defender for Cloud, Policy o Monitor pueden actuar sobre ellos (PDF págs. 244–245). Sentinel es un SIEM que analiza eventos, no incorpora recursos; los endpoints privados y de servicio son de red."
+  },
+  {
+    "pregunta": "¿Cuál servicio entre las siguientes opciones engloba a Log Analytics, alertas de Azure Monitor y Azure Monitor Application Insights?",
+    "opciones": ["Azure Monitor", "Azure Advisor", "Azure Service Health", "Azure Service Trust Portal"],
+    "correcta": 0,
+    "explicacion": "Log Analytics, las alertas y Application Insights son herramientas de Azure Monitor (PDF págs. 233–239); la propia pregunta da la pista: \"alertas de Azure Monitor\". Service Trust Portal publica documentos de cumplimiento y auditorías (ISO, SOC, GDPR); Advisor da recomendaciones y Service Health avisa de incidentes de Azure."
   }
 ]
