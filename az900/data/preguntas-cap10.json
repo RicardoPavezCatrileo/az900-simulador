@@ -136,5 +136,11 @@
     "opciones": ["Azure Monitor", "Azure Advisor", "Azure Service Health", "Azure Service Trust Portal"],
     "correcta": 0,
     "explicacion": "Log Analytics, las alertas y Application Insights son herramientas de Azure Monitor (PDF págs. 233–239); la propia pregunta da la pista: \"alertas de Azure Monitor\". Service Trust Portal publica documentos de cumplimiento y auditorías (ISO, SOC, GDPR); Advisor da recomendaciones y Service Health avisa de incidentes de Azure."
+  },
+  {
+    "pregunta": "Posees un servidor de base de datos vital para tu negocio ejecutándose en una Máquina Virtual (VM) de Azure. Dada su importancia, necesitas enviar notificaciones automáticas a tu equipo de SRE siempre que la utilización de la CPU del servidor supere el 90% durante más de cinco minutos. ¿Cuál servicio o función de Azure deberías implementar para satisfacer este requisito?",
+    "opciones": ["Azure Monitor Application Insights", "Alertas de Azure Monitor", "Azure Sentinel", "Log Analytics"],
+    "correcta": 1,
+    "explicacion": "\"Notificar\" + \"cuando supere X% durante Y minutos\" → regla de alerta de Azure Monitor (condición CPU > 90% por 5 min + grupo de acción que avisa al equipo) (PDF pág. 239). Application Insights mide tu app web, no la CPU de la VM; Log Analytics consulta registros; Sentinel es un SIEM."
   }
 ]
