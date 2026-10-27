@@ -172,5 +172,11 @@
     "opciones": ["Las opciones de rendimiento Premium solo están disponibles en un número limitado de regiones de Azure", "Las opciones de rendimiento Premium están limitadas a ciertos tipos de almacenamiento", "Las opciones de rendimiento Premium no admiten todos los tipos de redundancia", "Las opciones de rendimiento Premium tienen un costo superior al del tipo de rendimiento Standard General-Purpose v2"],
     "correcta": [1, 2, 3],
     "explicacion": "El PDF (pág. 157) nombra como principales aspectos los tipos de almacenamiento (cada cuenta Premium sirve un solo servicio: Block Blobs, File Shares o Page Blobs) y la redundancia (solo LRS/ZRS: sacrificas redundancia por rendimiento). Además cuestan más que Standard GPv2, la opción por defecto y económica. Las regiones no son la limitación principal (distractor)."
+  },
+  {
+    "pregunta": "Una empresa utiliza Azure Blob Storage para conservar grabaciones de vídeo de seguridad con fines de cumplimiento normativo. Las grabaciones deben mantenerse durante al menos 90 días, se consultarán rara vez y deben estar disponibles de forma inmediata cuando se requieran, sin necesidad de esperar a un proceso de rehidratación. La empresa quiere minimizar el coste de almacenamiento sin incumplir estos requisitos. ¿Qué nivel de acceso de Azure Blob Storage debe utilizar?",
+    "opciones": ["Almacena los archivos de vídeo utilizando el nivel de almacenamiento Cold", "Almacena los archivos de vídeo utilizando el nivel de almacenamiento Archive", "Almacena los archivos de vídeo utilizando el nivel de almacenamiento Hot", "Almacena los archivos de vídeo utilizando el nivel de almacenamiento Cool"],
+    "correcta": 0,
+    "explicacion": "\"Inmediata, sin rehidratar\" descarta Archive (tarda horas). Entre los niveles en línea, el más barato es Cold, y su retención mínima es justo 90 días: no hay cargo por eliminación anticipada. Truco: \"90 días\" → Cold (Cool 30, Archive 180)."
   }
 ]
