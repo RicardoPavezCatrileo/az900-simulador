@@ -118,5 +118,11 @@
     "opciones": ["Activa Azure Sentinel en tus servidores locales", "Activa Azure Arc en tus servidores locales", "No es posible ejecutar servicios Azure en hardware que no sea Azure", "Instala el conector de Logic Apps en tu servidor local"],
     "correcta": 1,
     "explicacion": "Palabras clave: \"servicios de Azure\" + \"servidores locales\" → Azure Arc, que extiende servicios de Azure a cualquier infraestructura, incluida la on-premises (PDF pág. 245). Sentinel es un SIEM; el conector (gateway de datos local) solo deja que Logic Apps en la nube lea datos locales, no la ejecuta en tu servidor."
+  },
+  {
+    "pregunta": "¿Cuál es el propósito principal de Azure Monitor Application Insights en Azure?",
+    "opciones": ["Listar caídas de servicio tanto planificadas como no planificadas en los recursos de Azure", "Funcionar como un sistema de gestión de información y eventos de seguridad (SIEM) para monitorear la seguridad de los recursos de Azure", "Ofrecer insights detallados sobre el comportamiento de los usuarios, cuellos de botella en el rendimiento y errores en aplicaciones web", "Permitir el análisis de logs y métricas recopiladas por Azure Monitor a través de consultas"],
+    "correcta": 2,
+    "explicacion": "Cada opción es un servicio real: caídas de Azure = Service Health; SIEM = Microsoft Sentinel; consultas sobre logs = Log Analytics (KQL); usuarios, rendimiento y errores de TU app web = Application Insights. Truco: problema de Azure → Service Health; problema de tu aplicación → Application Insights."
   }
 ]
