@@ -100,5 +100,11 @@
     "opciones": ["Confiabilidad", "Previsibilidad", "Gobernanza", "Manejabilidad"],
     "correcta": 1,
     "explicacion": "Palabras clave: \"como se espera\" + \"bajo carga\" = previsibilidad del rendimiento (autoescalado, balanceo de carga, alta disponibilidad). Confiabilidad es recuperarse de FALLOS y seguir funcionando. PDF pág. 27: previsibilidad = anticipar el comportamiento de recursos y cargas de trabajo."
+  },
+  {
+    "pregunta": "Tu empresa migrará varios servidores a Azure Virtual Machines para reducir responsabilidades administrativas. Selecciona TODAS las responsabilidades que se reducen.",
+    "opciones": ["Actualizar los sistemas operativos de los servidores", "Sustituir hardware de servidor dañado", "Gestionar la seguridad física de los servidores", "Gestionar los permisos de documentos compartidos", "Realizar copias de seguridad de los datos de aplicaciones"],
+    "correcta": [1, 2],
+    "explicacion": "Una VM es IaaS: Microsoft se encarga solo de lo físico (hardware y seguridad del centro de datos). El sistema operativo, los backups de tus datos (Azure Backup existe, pero lo configuras tú) y los permisos siguen siendo tuyos; los permisos y los datos lo son en cualquier modelo. Con PaaS también se reduciría actualizar el SO (PDF pág. 29)."
   }
 ]
