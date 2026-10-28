@@ -106,7 +106,7 @@ const RESUMEN={
  7:"Los datos: Azure SQL Database y una cuenta de almacenamiento GRS con copia en la región emparejada, y el servidor de archivos de la oficina sincronizado con Azure File Sync.",
  8:"La identidad: Microsoft Entra ID con MFA y acceso condicional, y el AD local sincronizado mediante Entra Connect (identidad híbrida).",
  9:"La seguridad: el endpoint privado lleva SQL y Storage dentro de la VNet, Key Vault guarda los secretos y Defender for Cloud evalúa la postura.",
- 10:"El gobierno y la monitorización: Azure Policy heredada, RBAC, un bloqueo contra borrado, Azure Monitor con Log Analytics, y Service Health.",
+ 10:"El gobierno y la monitorización: Azure Policy heredada, RBAC, un bloqueo contra borrado, Azure Monitor con Log Analytics, una alerta que ejecuta una Logic App, y Service Health.",
  11:"Los costos: presupuesto con alertas en la suscripción, Cost Management, y cuánto se cobra el tráfico (la entrada es gratis; la salida y el tráfico entre regiones se cobran)."
 };
 
@@ -156,7 +156,7 @@ const EL=[
  {id:"gov",k:"marco",cls:"solido",cap:4,x:904,y:422,w:290,h:392,t:"Servicios de la suscripción",
   q:"Servicios que supervisan y optimizan los recursos de toda la suscripción.",
   p:"No están dentro del grupo de recursos de la app: miran todo desde arriba."},
- {id:"advisor",k:"nodo",a:4,cap:4,x:916,y:450,w:266,h:46,t:"Azure Advisor",s:"costo · seguridad · confiabilidad…",
+ {id:"advisor",k:"nodo",a:4,cap:4,x:916,y:450,w:266,h:44,t:"Azure Advisor",s:"costo · seguridad · confiabilidad…",
   q:"Recomendaciones personalizadas en 5 categorías: Costo, Seguridad, Confiabilidad, Excelencia operativa y Rendimiento.",
   p:"Avisa, por ejemplo, si una VM está infrautilizada (bajar de tamaño) o si falta redundancia.",pg:"56–58"},
 
@@ -262,7 +262,7 @@ const EL=[
  {id:"kv",k:"nodo",a:4,cap:9,x:562,y:700,w:100,h:54,t:"Key Vault",s:"secretos",
   q:"Almacén seguro de secretos, claves de cifrado y certificados.",
   p:"La cadena de conexión de SQL y el certificado HTTPS no quedan en el código: la app los lee de aquí."},
- {id:"defender",k:"nodo",a:4,cap:9,x:916,y:630,w:266,h:46,t:"Defender for Cloud",s:"postura · puntuación segura",
+ {id:"defender",k:"nodo",a:4,cap:9,x:916,y:658,w:266,h:44,t:"Defender for Cloud",s:"postura · puntuación segura",
   q:"Evalúa la postura de seguridad, da la puntuación segura y protege cargas de trabajo (también híbridas).",
   p:"Avisa, por ejemplo, si una VM tiene un puerto de administración abierto a Internet."},
 
@@ -276,15 +276,21 @@ const EL=[
  {id:"lock",k:"pill",a:5,cap:10,x:758,y:263,w:118,h:16,t:"Bloqueo · CanNotDelete",
   q:"Bloqueo de recurso: CanNotDelete impide borrar; ReadOnly impide modificar. Le gana incluso al Propietario.",
   p:"Evita que alguien borre por error el grupo de recursos de producción.",pg:"227–229"},
- {id:"monitor",k:"nodo",a:4,cap:10,x:916,y:510,w:266,h:46,t:"Azure Monitor",s:"métricas · alertas",
+ {id:"monitor",k:"nodo",a:4,cap:10,x:916,y:502,w:130,h:44,t:"Azure Monitor",s:"métricas · logs",
   q:"Recoge métricas y logs de todos los recursos, y dispara alertas que avisan a un grupo de acciones.",
   p:"Alerta si la CPU de las VMs se dispara o si la app empieza a fallar."},
- {id:"logs",k:"nodo",a:4,cap:10,x:916,y:570,w:130,h:46,t:"Log Analytics",s:"consultas KQL",
+ {id:"logs",k:"nodo",a:4,cap:10,x:916,y:554,w:130,h:44,t:"Log Analytics",s:"consultas KQL",
   q:"Área de trabajo donde se guardan los logs y se consultan con KQL.",p:"Para investigar qué pasó cuando algo falla."},
- {id:"appi",k:"nodo",a:4,cap:10,x:1052,y:570,w:130,h:46,t:"Application Insights",s:"tu app web",
+ {id:"appi",k:"nodo",a:4,cap:10,x:916,y:606,w:266,h:44,t:"Application Insights",s:"tu app web",
   q:"Application Insights (parte de Azure Monitor): rendimiento y uso de TU aplicación web: tiempos de respuesta, cuellos de botella, errores y comportamiento de los usuarios.",
   p:"Mide la tienda web que corre en las VMs web. No confundir con Service Health, que avisa de problemas de AZURE, no de tu app.",pg:"236–237"},
- {id:"sh",k:"nodo",a:4,cap:10,x:916,y:690,w:266,h:46,t:"Service Health",s:"incidentes de Azure",
+ {id:"alertas",k:"nodo",a:4,cap:10,x:1052,y:502,w:130,h:44,t:"Alerta",s:"CPU > 90% · 5 min",
+  q:"Regla de alerta de Azure Monitor: recurso + señal + condición (CPU > 90% durante 5 minutos) + gravedad. Al dispararse, avisa a un grupo de acción, que define QUÉ hacer: email, SMS, Logic Apps, Functions…",
+  p:"Si las VMs de la app se saturan (por ejemplo, en Black Friday), el equipo se entera en minutos y no por los clientes.",pg:"238–239"},
+ {id:"logic",k:"nodo",a:2,cap:10,x:1052,y:554,w:130,h:44,t:"Logic Apps",s:"Teams + ticket",
+  q:"Logic Apps: serverless SIN código. Diseñas un flujo visual con conectores (Outlook, Teams, SQL, ServiceNow…). Functions, en cambio, es CÓDIGO que corre ante un evento.",
+  p:"El grupo de acción de la alerta ejecuta este flujo: publica el aviso en el canal de Teams del equipo y abre un ticket, sin escribir código.",pg:"239"},
+ {id:"sh",k:"nodo",a:4,cap:10,x:916,y:710,w:266,h:44,t:"Service Health",s:"incidentes de Azure",
   q:"Informa de incidentes, mantenimientos planificados y avisos de Azure que afectan a TUS servicios y regiones.",
   p:"Si la app cae por un problema de Azure en Brazil South, lo verás aquí."},
 
@@ -295,7 +301,7 @@ const EL=[
  {id:"budget",k:"pill",a:5,cap:11,x:1010,y:237,w:186,h:16,t:"Presupuesto · alertas 80% / 100%",
   q:"Presupuesto de Cost Management: avisa al llegar a cada umbral, pero NO detiene los recursos (el límite de gasto es otra cosa y solo existe en ciertas suscripciones).",
   p:"El equipo recibe un correo antes de pasarse del gasto mensual previsto.",pg:"263–265"},
- {id:"cost",k:"nodo",a:5,cap:11,x:916,y:750,w:266,h:46,t:"Cost Management",s:"gasto real · presupuestos",
+ {id:"cost",k:"nodo",a:5,cap:11,x:916,y:762,w:266,h:44,t:"Cost Management",s:"gasto real · presupuestos",
   q:"Muestra el gasto real y su previsión, por servicio, grupo de recursos o etiqueta. No confundir con la calculadora de precios (estimar) ni con la TCO (local vs Azure).",
   p:"Para ver cuánto cuesta realmente esta app cada mes.",pg:"263–265"}
 ];
@@ -318,12 +324,13 @@ const AR=[
  {id:"e_gw_lb",cap:6,d:[[412,523],[436,523]]},
  {id:"e_files_st",cap:7,d:[[222,455],[246,455],[246,810],[776,810],[776,778]],lab:["File Sync",640,805,"start"]},
  {id:"e_st_st2",cap:7,d:[[856,737],[892,737],[892,325],[924,325]],lab:["← réplica asíncrona",924,376,"start"],l11:["transferencia entre regiones: se cobra",924,394,"start"]},
- {id:"e_be_mon",cap:10,d:[[840,519],[916,519]],lab:["logs",878,513]},
+ {id:"e_al_logic",cap:10,d:[[1117,546],[1117,554]]},
+ {id:"e_be_mon",cap:10,d:[[840,524],[916,524]],lab:["logs",878,518]},
  {id:"e_ad_con",cap:8,d:[[123,296],[123,274]]},
  {id:"e_con_entra",cap:8,d:[[123,228],[123,82]],lab:["sincroniza",128,120,"start"]},
  {id:"e_emp_ca",cap:8,d:[[222,387],[242,387],[242,100],[317,100],[317,82]],lab:["inicia sesión",250,104,"start"]},
  {id:"e_inet_ca",cap:8,d:[[470,60],[392,60]],lab:["inicia sesión",431,54]},
- {id:"e_tags_cost",cap:11,d:[[553,263],[553,250],[892,250],[892,773],[916,773]]},
+ {id:"e_tags_cost",cap:11,d:[[553,263],[553,250],[892,250],[892,784],[916,784]]},
  {id:"e_arm_rg",cap:4,d:[[1162,82],[1162,100],[864,100],[864,258]],lab:["despliega el grupo de recursos",870,126,"start"]}
 ];
 
@@ -358,11 +365,11 @@ const FLUJOS=[
    "Si cae toda la región, los datos siguen existiendo en la secundaria tras el failover. Con RA-GRS se podrían leer sin esperar al failover.",
    "SQL Database y Storage son PaaS: Microsoft administra la plataforma; tú, los datos y el acceso."]},
  {id:"gobierno",n:"Gobierno y costos",
-  ids:["arm","e_arm_rg","tools","rg","mg","sub","policy","rbac","lock","tags","e_tags_cost","budget","cost","appi","advisor","gov","monitor","logs","e_be_mon","sh","defender","be","vma1","vma2","vma3"],
+  ids:["arm","e_arm_rg","tools","rg","mg","sub","policy","rbac","lock","tags","e_tags_cost","budget","cost","appi","advisor","gov","monitor","logs","e_be_mon","alertas","e_al_logic","logic","sh","defender","be","vma1","vma2","vma3"],
   pasos:["Una plantilla ARM/Bicep despliega todo el grupo de recursos de forma repetible.",
    "Azure Policy asignada en el grupo de administración se hereda: nadie crea recursos fuera de las regiones permitidas (efecto Deny).",
    "RBAC da al equipo el rol Colaborador solo en rg-web, y un bloqueo CanNotDelete impide borrarlo, incluso al Propietario.",
-   "Azure Monitor recoge métricas y logs de las VMs (consultas KQL en Log Analytics) y lanza alertas; Application Insights mide la app web (lentitud, errores, usuarios); Service Health avisa de incidentes de AZURE, no de tu app.",
+   "Azure Monitor recoge métricas y logs de las VMs (consultas KQL en Log Analytics) y lanza alertas: si la CPU pasa del 90% durante 5 minutos, el grupo de acción ejecuta una Logic App que avisa en Teams y abre un ticket (sin código). Application Insights mide la app web (lentitud, errores, usuarios); Service Health avisa de incidentes de AZURE, no de tu app.",
    "Advisor y Defender for Cloud recomiendan mejoras de costo y de seguridad.",
    "Cada recurso lleva etiquetas (depto=Ventas, oficina=Stgo) y Azure Policy puede exigirlas: así Cost Management muestra el gasto por departamento y por oficina.",
    "El presupuesto avisa al 80% y al 100% del gasto, pero no detiene nada; Cost Management muestra el gasto real."]},
