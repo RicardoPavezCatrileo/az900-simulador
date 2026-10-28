@@ -70,5 +70,35 @@
     "opciones": ["No es transitivo", "Las VNets no pueden tener espacios de direcciones superpuestos", "Requiere un VPN Gateway en ambas VNets", "Solo funciona dentro de la misma región", "Puede unir VNets de suscripciones distintas"],
     "correcta": [0, 1, 4],
     "explicacion": "No es transitivo y no admite CIDR superpuestos (pág. 104). No usa gateways, funciona entre regiones (peering global) y entre suscripciones e incluso tenants distintos."
+  },
+  {
+    "pregunta": "Un empleado trabaja desde su casa y necesita conectarse de forma segura a las VMs de una VNet. ¿Qué usas?",
+    "opciones": ["VPN Site-to-Site", "VPN Point-to-Site", "VNet peering", "ExpressRoute"],
+    "correcta": 1,
+    "explicacion": "Point-to-Site conecta un solo equipo con la VNet mediante un cliente VPN. Site-to-Site conecta una red completa (la oficina) y ExpressRoute es un circuito privado con un proveedor (PDF págs. 112–114 y 120)."
+  },
+  {
+    "pregunta": "La empresa exige que la conexión entre su centro de datos y Azure no pase por Internet. ¿Qué usas?",
+    "opciones": ["VPN Site-to-Site", "VPN Point-to-Site", "ExpressRoute", "Un endpoint de servicio"],
+    "correcta": 2,
+    "explicacion": "ExpressRoute es una conexión privada a través de un proveedor que no pasa por Internet. La VPN Site-to-Site va cifrada, pero viaja por Internet (pág. 120)."
+  },
+  {
+    "pregunta": "Dos VNets deben comunicarse con la menor latencia y sin pagar gateways. ¿Qué eliges?",
+    "opciones": ["VNet-to-VNet con VPN Gateway en cada VNet", "VNet peering", "ExpressRoute", "VPN Point-to-Site"],
+    "correcta": 1,
+    "explicacion": "El peering conecta directo por la red troncal de Microsoft, sin gateways. VNet-to-VNet usa un túnel IPsec entre dos VPN Gateways: más latencia, menos ancho de banda y el costo de los gateways. VNet-to-VNet no está en el PDF."
+  },
+  {
+    "pregunta": "La oficina, conectada por VPN a una VNet, debe acceder a una cuenta de Storage por IP privada y con el acceso público deshabilitado. ¿Qué usas?",
+    "opciones": ["Endpoint de servicio", "Endpoint privado", "Un NSG", "VNet peering"],
+    "correcta": 1,
+    "explicacion": "El endpoint privado da a la cuenta una IP privada dentro de la VNet; todo lo que llegue a esa VNet (la oficina por VPN) llega a la cuenta. El endpoint de servicio no funciona desde las instalaciones locales y la cuenta sigue con IP pública (cap. 9; AZ-104 págs. 171–172)."
+  },
+  {
+    "pregunta": "¿Cuál es la diferencia de costo entre un endpoint de servicio y un endpoint privado?",
+    "opciones": ["Los dos son gratis", "El endpoint de servicio es gratis; el endpoint privado se cobra por hora y por GB", "El endpoint de servicio se cobra; el endpoint privado es gratis", "Los dos se cobran solo si hay ExpressRoute"],
+    "correcta": 1,
+    "explicacion": "El endpoint de servicio no tiene costo adicional. El endpoint privado (Private Link) se cobra por hora y por GB procesado. No está en el PDF."
   }
 ]

@@ -119,11 +119,11 @@ Errores de esa guía que NO se deben copiar: dice que la secundaria de GZRS es Z
 - 19 preguntas en `data/preguntas-cap06.json` (la 19: VNets en dos regiones por la red troncal → peering global, con VPN Gateway de trampa).
 - Errores del PDF corregidos en el sitio: una /24 tiene 251 IPs asignables en Azure (no 256); la terminación SSL es de Application Gateway, no de Load Balancer.
 
-## Lo que ya existe: az900/peering.html (laboratorio de VNet peering, puente a AZ-104)
-- Diagrama SVG hub y radios: oficina por VPN S2S al hub (Brazil South, 10.0.0.0/16, VPN Gateway + Azure Firewall opcional), vnet-web (vm-web + sql-prod) y vnet-dev en Brazil South, vnet-dr (sql-dr, réplica para recuperación ante desastres) en South Central US, la región emparejada (peering global).
-- Controles: peerings hub↔web/dr/dev y web↔dr directo (la clave interna de vnet-dr sigue siendo `datos`), peering "solo desde el hub" (estado Iniciado), espacio de vnet-dev 10.3 o 10.0 (se superpone con el hub), tránsito de gateway, firewall + UDR. `ruta(x,y)` calcula camino y motivo; origen/destino resaltan el camino y una matriz 5×5 muestra quién llega a quién.
-- 6 desafíos (`RETOS`: `ini` = estado de partida, `ok()` = condición resuelta, `sol`). 12 preguntas en `az900/data/preguntas-peering.json` (`iniciarQuiz("peering")`, clave `az900:progreso:peering`; no cuenta en el avance de los capítulos).
-- Tránsito de gateway, estado Iniciado/Conectado, firewall en el hub y cobro del peering no están en el PDF (AZ-900 pág. 104, AZ-104 págs. 161–163).
+## Lo que ya existe: az900/peering.html (laboratorio de conectividad en 3 tramos, puente a AZ-104)
+- Tramo 1 (fuera de Azure → VNet): oficina por VPN S2S / ExpressRoute / sin conexión, laptop por P2S, tránsito de gateway. Tramo 2 (VNet ↔ VNet): hub y radios con peerings (hub en Brazil South 10.0.0.0/16 con gateway y Azure Firewall opcional; vnet-web con vm-web + sql-prod; vnet-dev; vnet-dr con sql-dr en South Central US, región emparejada, peering global; la clave interna de vnet-dr es `datos`), estado Iniciado, espacio de vnet-dev 10.3 o 10.0 (choca con el hub), conexión directa web↔dr como peering o VNet-to-VNet (dibuja un VPN Gateway en cada VNet), firewall + UDR. Tramo 3 (VNet → PaaS): cuenta stprod con endpoint público / service endpoint (solo la subred de vnet-web) / private endpoint (10.1.3.5 en vnet-web; llega todo lo que llegue a vnet-web).
+- `ruta(x,y)` y `alStorage(x)` dan camino, motivo y enlaces; `info(k)` da tramo, si pasa por Internet y qué se cobra (facts). Matriz origen (of, lap, inet, hub, radios) × destino (of, lap, hub, radios, st); `na` = no aplica.
+- 10 desafíos (`RETOS`: `tr` = tramo, `ini` = estado de partida, `ok()`, `sol`). Tabla resumen de los 3 tramos. 17 preguntas en `az900/data/preguntas-peering.json` (`iniciarQuiz("peering")`, clave `az900:progreso:peering`; no cuenta en el avance de los capítulos).
+- No están en el PDF: VNet-to-VNet, tránsito de gateway, estado Iniciado/Conectado, firewall en el hub, costos de peering y endpoints (sí: peering pág. 104, VPN 112–114, ExpressRoute 120, endpoints cap. 9 / AZ-104 171–172).
 - Enlazado desde la `.nav` de arquitectura, mapa, cap06 y az104/redes.
 
 ## Lo que ya existe: capítulos 8 a 11
