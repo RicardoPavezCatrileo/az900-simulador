@@ -142,5 +142,11 @@
     "opciones": ["Azure Monitor Application Insights", "Alertas de Azure Monitor", "Azure Sentinel", "Log Analytics"],
     "correcta": 1,
     "explicacion": "\"Notificar\" + \"cuando supere X% durante Y minutos\" → regla de alerta de Azure Monitor (condición CPU > 90% por 5 min + grupo de acción que avisa al equipo) (PDF pág. 239). Application Insights mide tu app web, no la CPU de la VM; Log Analytics consulta registros; Sentinel es un SIEM."
+  },
+  {
+    "pregunta": "¿Qué funcionalidades proporciona Azure Arc? Selecciona TODAS las correctas.",
+    "opciones": ["Ejecutar servicios de Azure, como Azure Functions, en contenedores de servidores locales", "Establecer conexiones privadas entre redes locales y servicios administrados por Azure", "Aplicar RBAC en servidores que no pertenecen a Azure", "Proteger instancias de Amazon EC2 con Microsoft Defender for Cloud"],
+    "correcta": [0, 2, 3],
+    "explicacion": "Azure Arc extiende la administración de Azure (políticas, RBAC, Defender for Cloud e incluso servicios como Functions sobre Kubernetes con Arc) a recursos fuera de Azure: locales, AWS o GCP (PDF págs. 242–245). La conexión privada entre la red local y Azure es ExpressRoute (o VPN o Private Link): Arc administra, no conecta redes."
   }
 ]
