@@ -178,5 +178,11 @@
     "opciones": ["Almacena los archivos de vídeo utilizando el nivel de almacenamiento Cold", "Almacena los archivos de vídeo utilizando el nivel de almacenamiento Archive", "Almacena los archivos de vídeo utilizando el nivel de almacenamiento Hot", "Almacena los archivos de vídeo utilizando el nivel de almacenamiento Cool"],
     "correcta": 0,
     "explicacion": "\"Inmediata, sin rehidratar\" descarta Archive (tarda horas). Entre los niveles en línea, el más barato es Cold, y su retención mínima es justo 90 días: no hay cargo por eliminación anticipada. Truco: \"90 días\" → Cold (Cool 30, Archive 180)."
+  },
+  {
+    "pregunta": "Necesitas elegir la opción de rendimiento de una cuenta de almacenamiento que alojará discos de máquinas virtuales, con el rendimiento más rápido posible. ¿Cuál eliges?",
+    "opciones": ["Premium File Shares", "Premium Block Blobs", "Premium Page Blobs", "Azure Disk Storage", "Uso general v2 (GPv2) estándar"],
+    "correcta": 2,
+    "explicacion": "Los discos de VM son page blobs y \"lo más rápido\" es Premium (PDF págs. 158–162). Azure Disk Storage también guarda discos, pero es un servicio aparte, no una opción de rendimiento de la cuenta: la cuenta solo ofrece Standard, Premium Block Blobs, Premium File Shares y Premium Page Blobs. Block blobs son archivos, File Shares son carpetas compartidas y GPv2 no es lo más rápido."
   }
 ]
