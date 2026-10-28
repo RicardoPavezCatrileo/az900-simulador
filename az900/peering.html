@@ -37,6 +37,10 @@
 .et{font-family:var(--f-body);font-size:10.5px;fill:var(--ink);paint-order:stroke;stroke:var(--surface);stroke-width:4px;stroke-linejoin:round}
 .et.m{fill:var(--muted)}
 .et.b{fill:var(--bad)}
+.tb circle{fill:var(--accent)}
+.tb text.n{font-family:var(--f-mono);font-weight:700;font-size:12px;fill:var(--surface)}
+.tb text.a{font-family:var(--f-body);font-weight:600;font-size:12px;fill:var(--accent);paint-order:stroke;stroke:var(--surface);stroke-width:4px;stroke-linejoin:round}
+.tb text.b{font-family:var(--f-mono);font-size:10px;fill:var(--muted);paint-order:stroke;stroke:var(--surface);stroke-width:4px;stroke-linejoin:round}
 .chkP{display:grid;gap:8px}
 .chkP label{display:flex;gap:8px;align-items:flex-start;font-size:.9rem;cursor:pointer}
 .chkP input{accent-color:var(--accent);margin-top:4px}
@@ -373,6 +377,11 @@ function dibujar(){
   s+=no("vmb",945,250,200,"sql-dr (réplica)","10.2.1.4");
   s+=no("gwd",945,310,200,"VPN Gateway","GatewaySubnet",!v2v);
   Object.keys(LN).forEach(k=>{const [,t,c]=aspecto(k);if(t)s+=`<text class="et ${c}" x="${LN[k].x}" y="${LN[k].y}" text-anchor="middle">${t}</text>`});
+  // Marcas de tramo
+  const tb=(x,y,n,a,b)=>`<g class="tb"><circle cx="${x+11}" cy="${y}" r="11"/><text class="n" x="${x+11}" y="${y+4}" text-anchor="middle">${n}</text><text class="a" x="${x+28}" y="${y-2}">${a}</text><text class="b" x="${x+28}" y="${y+12}">${b}</text></g>`;
+  s+=tb(20,95,1,"Red local → VNet","VPN Gateway o ExpressRoute");
+  s+=tb(270,95,2,"VNet ↔ VNet","VNet peering");
+  s+=tb(285,535,3,"VNet → Storage o SQL","endpoint de servicio o privado");
   document.getElementById("svg").innerHTML=s;
 }
 
