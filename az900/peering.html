@@ -58,6 +58,13 @@
 .de .tr{font-family:var(--f-mono);font-size:.72rem;color:var(--accent);margin-right:6px}
 .de .sol{grid-column:2/4;color:var(--muted);font-size:.88rem}
 @media (max-width:760px){.de{grid-template-columns:auto 1fr}.de .btn{grid-column:2}.de .sol{grid-column:1/3}}
+/* 5 · Pistas */
+.pista{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px;font-size:1.15rem;font-family:var(--f-display);font-weight:700}
+.pista small{display:block;font-family:var(--f-mono);font-size:.72rem;font-weight:400;color:var(--muted);margin-bottom:6px}
+.pis button.ok{border-color:var(--ok);color:var(--ok);font-weight:700}
+.pis button.mal{border-color:var(--bad);color:var(--bad);text-decoration:line-through}
+.pis button:disabled{cursor:default}
+.metodo{margin:0;padding-left:20px;display:grid;gap:4px;color:var(--muted)}
 </style>
 </head>
 <body>
@@ -160,9 +167,24 @@
     <p class="fb" style="margin:0">En el PDF: VNet peering pág. 104 (AZ-104 págs. 161–163), VPN Gateway págs. 112–114, ExpressRoute pág. 120, endpoints en el capítulo 9 (AZ-104 págs. 171–172). VNet-to-VNet, tránsito de gateway, estado Iniciado, firewall en el hub y costos no están en el PDF.</p>
   </section>
 
-  <!-- 5 · Quiz -->
+  <!-- 5 · Pistas -->
   <section class="bloque">
-    <h2 class="h">5 · Preguntas de práctica</h2>
+    <h2 class="h">5 · ¿Qué servicio es? Entrena con las pistas</h2>
+    <p style="margin:0;color:var(--muted)">Cada frase es la pista clave de una pregunta de examen. Elige el servicio con el método de dos pasos:</p>
+    <ol class="metodo">
+      <li><b>¿Qué se conecta con qué?</b> VNet ↔ VNet → peering · Fuera de Azure ↔ VNet → VPN o ExpressRoute · VNet → servicio PaaS → endpoint.</li>
+      <li><b>¿Por dónde viaja?</b> Internet, IPsec o túnel → VPN (toda la red = S2S, un equipo = P2S) · Línea dedicada, proveedor o sin Internet → ExpressRoute.</li>
+    </ol>
+    <p class="fb" style="margin:0">"Segura y privada" no decide nada: la VPN también lo es, porque va cifrada. Busca la palabra que sí decide.</p>
+    <div class="pista" id="pista"></div>
+    <div class="seg pis" id="pisOps"></div>
+    <div class="status" id="statusP"></div>
+    <div class="paso" style="display:flex;gap:6px"><button type="button" class="btn" id="pisSig">Siguiente frase ▶</button><button type="button" class="btn" id="pisRe">Empezar de nuevo</button></div>
+  </section>
+
+  <!-- 6 · Quiz -->
+  <section class="bloque">
+    <h2 class="h">6 · Preguntas de práctica</h2>
     <div class="score" id="score"></div>
     <div class="quiz" id="quiz"></div>
   </section>
@@ -402,7 +424,50 @@ function retos(){
   document.querySelectorAll("[data-r]").forEach(b=>b.onclick=()=>{const i=+b.dataset.r,r=RETOS[i];reto=i;verSol=false;cfg={...INI,...r.ini};o=r.o;d=r.d;render();document.getElementById("svg").scrollIntoView({behavior:"smooth",block:"center"})});
 }
 
+/* ---------- 5 · Pistas ---------- */
+const SERV={s2s:"VPN Site-to-Site",p2s:"VPN Point-to-Site",er:"ExpressRoute",peer:"VNet peering",se:"Endpoint de servicio",pe:"Endpoint privado"};
+const PISTAS=[
+ ["Conexión segura entre la red local y la VNet mediante un túnel IPsec a través de Internet público","s2s","Paso 1: red local ↔ VNet. Paso 2: IPsec + Internet → VPN. Es la red completa → Site-to-Site."],
+ ["Línea dedicada de alta velocidad entre la red local y Azure, sin pasar por Internet","er","Paso 1: red local ↔ VNet. Paso 2: línea dedicada, sin Internet → ExpressRoute (pág. 120)."],
+ ["Conexión privada con Azure a través de un proveedor de conectividad","er","\"Proveedor\" o \"circuito\" es la palabra de ExpressRoute: no usa Internet."],
+ ["Un empleado debe conectarse a las VMs desde su casa","p2s","Un solo equipo, fuera de Azure → Point-to-Site, con un cliente VPN en el equipo."],
+ ["Se instala un cliente VPN en cada laptop","p2s","Cliente en el equipo = Point-to-Site. En Site-to-Site el dispositivo VPN está en el borde de la oficina."],
+ ["Toda la sucursal debe conectarse a la VNet de forma permanente y cifrada","s2s","Una red completa (sucursal u oficina) por Internet cifrado → Site-to-Site."],
+ ["Un dispositivo VPN en el borde de la red local se conecta al VPN Gateway","s2s","Dispositivo VPN de la oficina + VPN Gateway = Site-to-Site (págs. 112–114)."],
+ ["Latencia predecible y mayor ancho de banda desde el centro de datos, con un SLA de conectividad","er","Lo que la VPN por Internet no puede prometer: latencia estable y gran ancho de banda → ExpressRoute."],
+ ["Dos VNets deben comunicarse por la red troncal de Microsoft, sin gateways","peer","Paso 1: VNet ↔ VNet → peering. No usa gateways ni Internet (pág. 104)."],
+ ["Una VNet de Brazil South y otra de South Central US deben comunicarse con la menor latencia","peer","VNet ↔ VNet en regiones distintas → peering global. VNet-to-VNet con VPN Gateway sería más lento y caro."],
+ ["Las VNets no pueden tener espacios de direcciones superpuestos y la conexión no es transitiva","peer","Son las dos reglas del peering: CIDR sin solaparse y sin transitividad."],
+ ["La cuenta de Storage debe tener una IP privada dentro de la VNet","pe","Tramo 3. IP privada en tu VNet → endpoint privado (Private Link)."],
+ ["La oficina, conectada por VPN, debe llegar a SQL Database por IP privada con el acceso público deshabilitado","pe","Tramo 3. Lo que llega a la VNet llega al endpoint privado, también la oficina. El endpoint de servicio no sirve desde la red local."],
+ ["Solo una subred debe llegar a Storage, sin costo adicional; la cuenta sigue con IP pública","se","Tramo 3. Gratis, por subred y la cuenta conserva su IP pública → endpoint de servicio."]
+];
+let pisOrden=[],pisI=0,pisResp=null,pisOk=0,pisN=0;
+function pisMezclar(){pisOrden=PISTAS.map((_,i)=>i).sort(()=>Math.random()-.5);pisI=0;pisResp=null;pisOk=0;pisN=0;renderP()}
+function renderP(){
+  const fin=pisI>=pisOrden.length;
+  if(fin){
+    document.getElementById("pista").innerHTML=`<small>Terminaste</small>${pisOk} de ${pisN} correctas`;
+    document.getElementById("pisOps").innerHTML="";
+    status("statusP",pisOk===pisN?"ok":"warn",pisOk===pisN?"Todas bien":"Repasa las que fallaste","Pulsa \"Empezar de nuevo\" para otra ronda con las frases en otro orden.");
+    document.getElementById("pisSig").hidden=true;return;
+  }
+  const [t,c,por]=PISTAS[pisOrden[pisI]];
+  document.getElementById("pista").innerHTML=`<small>Frase ${pisI+1} de ${pisOrden.length} · ${pisOk} de ${pisN} correctas</small>${t}`;
+  const el=document.getElementById("pisOps");el.innerHTML="";
+  Object.keys(SERV).forEach(k=>{const b=document.createElement("button");b.type="button";b.textContent=SERV[k];
+    if(pisResp){b.disabled=true;if(k===c)b.className="ok";else if(k===pisResp)b.className="mal"}
+    b.onclick=()=>{pisResp=k;pisN++;if(k===c)pisOk++;renderP()};el.appendChild(b)});
+  if(pisResp)status("statusP",pisResp===c?"ok":"bad",pisResp===c?"Correcto: "+SERV[c]:"Era "+SERV[c],por);
+  else document.getElementById("statusP").innerHTML="";
+  document.getElementById("statusP").hidden=!pisResp;
+  document.getElementById("pisSig").hidden=!pisResp;
+}
+document.getElementById("pisSig").onclick=()=>{pisI++;pisResp=null;renderP()};
+document.getElementById("pisRe").onclick=pisMezclar;
+
 render();
+pisMezclar();
 iniciarQuiz("peering");
 </script>
 </body>

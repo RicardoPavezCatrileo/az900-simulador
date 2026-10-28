@@ -106,5 +106,11 @@
     "opciones": ["Azure ExpressRoute", "Azure VPN Gateway", "VNet peering", "Una conexión Azure Secure-net entre ambas redes"],
     "correcta": 0,
     "explicacion": "Línea dedicada + sin Internet = ExpressRoute, un circuito privado con un proveedor (PDF pág. 120). VPN Gateway va cifrado, pero viaja por Internet. El peering solo une VNets dentro de Azure (tramo 2): no conecta la red local. \"Azure Secure-net\" no existe."
+  },
+  {
+    "pregunta": "Necesitas conectar tu VNet con la red local de forma segura y privada, mediante un túnel IPsec a través de Internet público. ¿Qué usas?",
+    "opciones": ["Azure ExpressRoute", "VNet peering", "Una conexión Azure Secure-net", "Azure VPN Gateway"],
+    "correcta": 3,
+    "explicacion": "Es la pareja de la pregunta de ExpressRoute: solo cambia el camino. Túnel IPsec + Internet público = VPN Gateway (Site-to-Site, págs. 112–114). \"Segura y privada\" no decide: la VPN también lo es porque va cifrada. ExpressRoute no pasa por Internet, el peering solo une VNets y \"Secure-net\" no existe."
   }
 ]
