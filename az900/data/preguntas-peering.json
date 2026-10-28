@@ -100,5 +100,11 @@
     "opciones": ["Los dos son gratis", "El endpoint de servicio es gratis; el endpoint privado se cobra por hora y por GB", "El endpoint de servicio se cobra; el endpoint privado es gratis", "Los dos se cobran solo si hay ExpressRoute"],
     "correcta": 1,
     "explicacion": "El endpoint de servicio no tiene costo adicional. El endpoint privado (Private Link) se cobra por hora y por GB procesado. No está en el PDF."
+  },
+  {
+    "pregunta": "Necesitas conectar tu VNet con la red local de forma segura y privada, mediante una línea dedicada de alta velocidad que no pase por Internet. ¿Qué usas?",
+    "opciones": ["Azure ExpressRoute", "Azure VPN Gateway", "VNet peering", "Una conexión Azure Secure-net entre ambas redes"],
+    "correcta": 0,
+    "explicacion": "Línea dedicada + sin Internet = ExpressRoute, un circuito privado con un proveedor (PDF pág. 120). VPN Gateway va cifrado, pero viaja por Internet. El peering solo une VNets dentro de Azure (tramo 2): no conecta la red local. \"Azure Secure-net\" no existe."
   }
 ]
