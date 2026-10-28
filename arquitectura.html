@@ -44,10 +44,11 @@
 .el.sel.nodo rect.caja,.el.sel.marco rect{stroke:var(--ink);stroke-width:2.4;stroke-dasharray:none}
 .el:focus-visible rect{stroke:var(--accent);stroke-width:2.4}
 /* Flechas */
-.arista path{fill:none;stroke:var(--muted);stroke-width:1.6}
+.arista path{fill:none;stroke:var(--muted);stroke-width:1.8}
+.arista.f0 path{stroke:var(--a0)}.arista.f1 path{stroke:var(--a1)}.arista.f3 path{stroke:var(--a3)}.arista.f4 path{stroke:var(--a4)}.arista.f5 path{stroke:var(--a5)}
 .arista.rayas path{stroke-dasharray:6 4}
-.arista.nuevo path{stroke:var(--accent);stroke-width:2.2}
-.arista.on path{stroke:var(--ink);stroke-width:2.4}
+.arista.nuevo path{stroke-width:2.8}
+.arista.on path{stroke-width:3.4}
 .et{font-family:var(--f-body);font-size:10.5px;fill:var(--ink);paint-order:stroke;stroke:var(--surface);stroke-width:4px;stroke-linejoin:round;pointer-events:none}
 .escala{font-family:var(--f-mono);font-size:10px;font-weight:600;fill:var(--warn);paint-order:stroke;stroke:var(--surface);stroke-width:4px;stroke-linejoin:round;pointer-events:none}
 .et.precio{fill:var(--a5);font-weight:600}
@@ -66,6 +67,8 @@
 .leyenda i.l{height:0;border-top:2px solid var(--muted);border-radius:0;width:18px}
 .leyenda i.l.r{border-top-style:dashed}
 .leyenda i.l.n{border-top-color:var(--accent)}
+.leyenda i.l.g{border-top-width:4px;border-top-color:var(--ink)}
+.leyenda .fl{flex-basis:100%;margin:0}
 </style>
 </head>
 <body>
@@ -306,32 +309,32 @@ const EL=[
   p:"Para ver cuánto cuesta realmente esta app cada mes.",pg:"263–265"}
 ];
 
-// d: puntos de la línea · lab: [texto, x, y, anchor?] · l11: etiqueta de precio (capítulo 11)
+// f: área del flujo (color de la flecha) · d: puntos de la línea · lab: [texto, x, y, anchor?] · l11: etiqueta de precio (capítulo 11)
 const AR=[
- {id:"e_inet_fd",cap:6,d:[[492,84],[492,134]],lab:["HTTPS",498,110,"start"],l11:["entrada: gratis · salida: se cobra",540,110,"start"]},
- {id:"e_fd_ag",cap:6,d:[[492,180],[492,380]],lab:["al back-end de la región",498,310,"start"]},
- {id:"e_inet_tm",cap:6,cls:"rayas",d:[[492,84],[492,134]],lab:["1 · consulta DNS",486,112,"end"]},
- {id:"e_inet_ag2",cap:6,d:[[556,84],[556,392],[548,392]],lab:["2 · HTTPS directo: no pasa por Traffic Manager",562,150,"start"],l11:["entrada: gratis · salida: se cobra",562,166,"start"]},
- {id:"e_ag_ss",cap:6,d:[[548,407],[560,407]]},
- {id:"e_ss_lb",cap:6,d:[[600,442],[600,465],[492,465],[492,496]]},
- {id:"e_lb_be",cap:6,d:[[548,523],[560,523]]},
- {id:"e_be_pe",cap:9,d:[[600,556],[600,575],[492,575],[492,596]]},
- {id:"e_pe_sql",cap:9,d:[[492,650],[492,700]]},
- {id:"e_pe_st",cap:9,d:[[548,623],[776,623],[776,700]]},
- {id:"e_be_kv",cap:9,d:[[634,556],[634,700]],lab:["lee secretos",638,676,"start"]},
- {id:"e_vpn",cap:6,d:[[222,523],[330,523]],lab:["VPN S2S · cifrada",228,516,"start"]},
- {id:"e_er",cap:6,cls:"rayas",d:[[222,603],[330,603]],lab:["privada, sin Internet",228,596,"start"]},
- {id:"e_gw_lb",cap:6,d:[[412,523],[436,523]]},
- {id:"e_files_st",cap:7,d:[[222,455],[246,455],[246,810],[776,810],[776,778]],lab:["File Sync",640,805,"start"]},
- {id:"e_st_st2",cap:7,d:[[856,737],[892,737],[892,325],[924,325]],lab:["← réplica asíncrona",924,376,"start"],l11:["transferencia entre regiones: se cobra",924,394,"start"]},
- {id:"e_al_logic",cap:10,d:[[1117,546],[1117,554]]},
- {id:"e_be_mon",cap:10,d:[[840,524],[916,524]],lab:["logs",878,518]},
- {id:"e_ad_con",cap:8,d:[[123,296],[123,274]]},
- {id:"e_con_entra",cap:8,d:[[123,228],[123,82]],lab:["sincroniza",128,120,"start"]},
- {id:"e_emp_ca",cap:8,d:[[222,387],[242,387],[242,100],[317,100],[317,82]],lab:["inicia sesión",250,104,"start"]},
- {id:"e_inet_ca",cap:8,d:[[470,60],[392,60]],lab:["inicia sesión",431,54]},
- {id:"e_tags_cost",cap:11,d:[[553,263],[553,250],[892,250],[892,784],[916,784]]},
- {id:"e_arm_rg",cap:4,d:[[1162,82],[1162,100],[864,100],[864,258]],lab:["despliega el grupo de recursos",870,126,"start"]}
+ {id:"e_inet_fd",f:1,cap:6,d:[[492,84],[492,134]],lab:["HTTPS",498,110,"start"],l11:["entrada: gratis · salida: se cobra",540,110,"start"]},
+ {id:"e_fd_ag",f:1,cap:6,d:[[492,180],[492,380]],lab:["al back-end de la región",498,310,"start"]},
+ {id:"e_inet_tm",f:1,cap:6,cls:"rayas",d:[[492,84],[492,134]],lab:["1 · consulta DNS",486,112,"end"]},
+ {id:"e_inet_ag2",f:1,cap:6,d:[[556,84],[556,392],[548,392]],lab:["2 · HTTPS directo: no pasa por Traffic Manager",562,150,"start"],l11:["entrada: gratis · salida: se cobra",562,166,"start"]},
+ {id:"e_ag_ss",f:1,cap:6,d:[[548,407],[560,407]]},
+ {id:"e_ss_lb",f:1,cap:6,d:[[600,442],[600,465],[492,465],[492,496]]},
+ {id:"e_lb_be",f:1,cap:6,d:[[548,523],[560,523]]},
+ {id:"e_be_pe",f:3,cap:9,d:[[600,556],[600,575],[492,575],[492,596]]},
+ {id:"e_pe_sql",f:3,cap:9,d:[[492,650],[492,700]]},
+ {id:"e_pe_st",f:3,cap:9,d:[[548,623],[776,623],[776,700]]},
+ {id:"e_be_kv",f:4,cap:9,d:[[634,556],[634,700]],lab:["lee secretos",638,676,"start"]},
+ {id:"e_vpn",f:1,cap:6,d:[[222,523],[330,523]],lab:["VPN S2S · cifrada",228,516,"start"]},
+ {id:"e_er",f:1,cap:6,cls:"rayas",d:[[222,603],[330,603]],lab:["privada, sin Internet",228,596,"start"]},
+ {id:"e_gw_lb",f:1,cap:6,d:[[412,523],[436,523]]},
+ {id:"e_files_st",f:3,cap:7,d:[[222,455],[246,455],[246,810],[776,810],[776,778]],lab:["File Sync",640,805,"start"]},
+ {id:"e_st_st2",f:3,cap:7,d:[[856,737],[892,737],[892,325],[924,325]],lab:["← réplica asíncrona",924,376,"start"],l11:["transferencia entre regiones: se cobra",924,394,"start"]},
+ {id:"e_al_logic",f:4,cap:10,d:[[1117,546],[1117,554]]},
+ {id:"e_be_mon",f:4,cap:10,d:[[840,524],[916,524]],lab:["logs",878,518]},
+ {id:"e_ad_con",f:0,cap:8,d:[[123,296],[123,274]]},
+ {id:"e_con_entra",f:0,cap:8,d:[[123,228],[123,82]],lab:["sincroniza",128,120,"start"]},
+ {id:"e_emp_ca",f:0,cap:8,d:[[222,387],[242,387],[242,100],[317,100],[317,82]],lab:["inicia sesión",250,104,"start"]},
+ {id:"e_inet_ca",f:0,cap:8,d:[[470,60],[392,60]],lab:["inicia sesión",431,54]},
+ {id:"e_tags_cost",f:5,cap:11,d:[[553,263],[553,250],[892,250],[892,784],[916,784]]},
+ {id:"e_arm_rg",f:4,cap:4,d:[[1162,82],[1162,100],[864,100],[864,258]],lab:["despliega el grupo de recursos",870,126,"start"]}
 ];
 
 const FLUJOS=[
@@ -471,7 +474,7 @@ function dibujar(){
     }
   });
   AR.forEach(a=>{
-    const g=mk("g",{class:`el arista ${a.cls||""}`,"data-id":a.id},capaAristas);
+    const g=mk("g",{class:`el arista f${a.f} ${a.cls||""}`,"data-id":a.id},capaAristas);
     mk("path",{d:"M"+a.d.map(p=>p.join(",")).join("L"),"marker-end":"url(#punta)"},g);
     if(a.lab)texto(g,"et",a.lab[1],a.lab[2],a.lab[0],a.lab[3]||"middle");
     if(a.l11){const t=texto(g,"et precio",a.l11[1],a.l11[2],a.l11[0],a.l11[3]||"start");t.dataset.c11="1"}
@@ -669,7 +672,8 @@ document.getElementById("panel").addEventListener("click",ev=>{
 });
 svg.addEventListener("click",()=>{if(sel)deseleccionar()});
 document.getElementById("leyenda").innerHTML=AREAS.map(a=>`<span><i style="background:${a.c}"></i>${a.n}</span>`).join("")+
-  '<span><i class="l n"></i>Nuevo en el capítulo</span><span><i class="l r"></i>Alternativa</span>';
+  '<span><i class="l n"></i>Nuevo en el capítulo</span><span><i class="l g"></i>Flecha nueva o del recorrido (más gruesa)</span><span><i class="l r"></i>Alternativa</span>'+
+  '<p class="fl">Flechas por flujo: <b style="color:var(--a1)">naranja</b> tráfico web y oficina · <b style="color:var(--a3)">amarillo</b> datos · <b style="color:var(--a0)">azul</b> identidad · <b style="color:var(--a4)">rosa</b> gestión · <b style="color:var(--a5)">violeta</b> costos.</p>';
 
 dibujar();aplicar();panelCapitulo();
 </script>
