@@ -148,5 +148,17 @@
     "opciones": ["Ejecutar servicios de Azure, como Azure Functions, en contenedores de servidores locales", "Establecer conexiones privadas entre redes locales y servicios administrados por Azure", "Aplicar RBAC en servidores que no pertenecen a Azure", "Proteger instancias de Amazon EC2 con Microsoft Defender for Cloud"],
     "correcta": [0, 2, 3],
     "explicacion": "Azure Arc extiende la administración de Azure (políticas, RBAC, Defender for Cloud e incluso servicios como Functions sobre Kubernetes con Arc) a recursos fuera de Azure: locales, AWS o GCP (PDF págs. 242–245). La conexión privada entre la red local y Azure es ExpressRoute (o VPN o Private Link): Arc administra, no conecta redes."
+  },
+  {
+    "pregunta": "Debes evitar cualquier modificación en la configuración de una VM esencial y también su eliminación accidental. ¿Qué haces?",
+    "opciones": ["Aplicar un bloqueo de eliminación (CanNotDelete) a la VM", "Aplicar un bloqueo de solo lectura (ReadOnly) a la VM", "Asignar una Azure Policy a la VM que impida la eliminación", "Crear una directiva de acceso condicional que impida la eliminación"],
+    "correcta": 1,
+    "explicacion": "Pide dos cosas: que no se modifique y que no se elimine. Solo lectura bloquea ambas; el bloqueo de eliminación solo impide borrar, pero deja modificar (PDF pág. 224). Azure Policy controla cómo se crean y configuran los recursos, y el acceso condicional controla el inicio de sesión."
+  },
+  {
+    "pregunta": "Debes evitar que alguien elimine por accidente una VM esencial, pero el equipo debe poder seguir cambiando su tamaño y reiniciándola. ¿Qué haces?",
+    "opciones": ["Aplicar un bloqueo de eliminación (CanNotDelete) a la VM", "Aplicar un bloqueo de solo lectura (ReadOnly) a la VM", "Quitar el rol de Propietario a todos", "Mover la VM a otra suscripción"],
+    "correcta": 0,
+    "explicacion": "Solo pide evitar la eliminación: CanNotDelete deja leer y modificar, pero no borrar. ReadOnly se pasa: congela la VM e incluso impide iniciarla o reiniciarla, porque esas operaciones cuentan como escritura. Se elige la medida justa, no la más fuerte (PDF pág. 224)."
   }
 ]
