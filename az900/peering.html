@@ -1,0 +1,307 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Laboratorio de VNet peering</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="../assets/estilos.css">
+<style>
+.wrap{max-width:1240px}
+.lienzo{background:var(--surface);border:1px solid var(--line);border-radius:10px;overflow-x:auto}
+.lienzo svg{display:block;min-width:900px;width:100%;height:auto}
+.reg rect{fill:none;stroke:var(--muted);stroke-width:1.2;stroke-dasharray:5 4}
+.reg text{font-family:var(--f-mono);font-size:11px;fill:var(--muted)}
+.vn>rect{fill:var(--bg);stroke:var(--line);stroke-width:1.4}
+.vn>text{font-family:var(--f-mono);font-size:11px;fill:var(--ink)}
+.vn.err>rect{stroke:var(--bad);stroke-dasharray:5 3}
+.nd rect{fill:var(--surface);stroke:var(--line)}
+.nd text.t{font-family:var(--f-body);font-weight:600;font-size:12.5px;fill:var(--ink)}
+.nd text.s{font-family:var(--f-mono);font-size:10px;fill:var(--muted)}
+.nd.off{opacity:.25}
+.vn.on>rect,.nd.on rect{stroke:var(--accent);stroke-width:2.6}
+.ln{fill:none;stroke-width:2.4}
+.ln.ok{stroke:var(--ok)}
+.ln.off{stroke:var(--line);stroke-dasharray:6 5}
+.ln.err{stroke:var(--bad);stroke-dasharray:6 4}
+.ln.vpn{stroke:var(--muted);stroke-dasharray:3 3}
+.ln.on{stroke:var(--accent);stroke-width:4.5;stroke-dasharray:none}
+.et{font-family:var(--f-body);font-size:10.5px;fill:var(--ink);paint-order:stroke;stroke:var(--surface);stroke-width:4px;stroke-linejoin:round}
+.et.m{fill:var(--muted)}
+.et.b{fill:var(--bad)}
+.chkP{display:grid;gap:8px}
+.chkP label{display:flex;gap:8px;align-items:flex-start;font-size:.9rem;cursor:pointer}
+.chkP input{accent-color:var(--accent);margin-top:4px}
+.chkP small{color:var(--muted)}
+.mtx{width:100%;border-collapse:collapse;font-size:.88rem}
+.mtx th,.mtx td{border:1px solid var(--line);padding:6px 8px;text-align:center}
+.mtx th{font-family:var(--f-mono);font-size:.75rem;font-weight:500;color:var(--muted)}
+.mtx td button{font:inherit;width:100%;border:0;background:none;cursor:pointer;padding:2px;border-radius:5px;color:var(--ink)}
+.mtx td button.si{color:var(--ok);font-weight:700}
+.mtx td button.no{color:var(--bad);font-weight:700}
+.mtx td button.act{outline:2px solid var(--accent)}
+.des{display:grid;gap:8px}
+.de{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.de.act{border-color:var(--accent)}
+.de .ic{font-family:var(--f-mono);font-weight:700;width:1.4em;text-align:center}
+.de .ic.ok{color:var(--ok)}
+.de p{margin:0}
+.de .sol{grid-column:2/4;color:var(--muted);font-size:.88rem}
+@media (max-width:760px){.de{grid-template-columns:auto 1fr}.de .btn{grid-column:2}.de .sol{grid-column:1/3}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="nav"><a class="volver" href="index.html">← Capítulos AZ-900</a><a class="volver" href="cap06-redes.html">Capítulo 6 · Redes</a><a class="volver" href="../mapa.html">Mapa conceptual →</a><a class="volver" href="../arquitectura.html">Arquitectura →</a></div>
+  <header>
+    <div class="eyebrow">AZ-900 → AZ-104 · Laboratorio de redes</div>
+    <h1>VNet peering: hub y radios</h1>
+    <p>Una red central (<b>hub</b>) con el VPN Gateway de la oficina y tres redes de aplicaciones (<b>radios</b>), una de ellas en otra región. Crea o quita peerings y cambia la configuración: el diagrama y la matriz muestran quién llega a quién y por qué. Lo básico está en el PDF (AZ-900 pág. 104, AZ-104 págs. 161–163); el tránsito de gateway, el estado del peering y el firewall en el hub no están, pero son la base de AZ-104.</p>
+  </header>
+
+  <!-- 1 · Diagrama -->
+  <section class="bloque">
+    <h2 class="h">1 · El diagrama</h2>
+    <div class="controls">
+      <div class="ctl"><label>Peerings</label>
+        <div class="chkP">
+          <label class="chk"><input type="checkbox" data-c="hA"><span>vnet-hub ↔ vnet-web <small>(local)</small></span></label>
+          <label class="chk"><input type="checkbox" data-c="hB"><span>vnet-hub ↔ vnet-datos <small>(global: otra región)</small></span></label>
+          <label class="chk"><input type="checkbox" data-c="bIni"><span>…pero creado solo desde el hub <small>(falta el lado de vnet-datos)</small></span></label>
+          <label class="chk"><input type="checkbox" data-c="hC"><span>vnet-hub ↔ vnet-dev <small>(local)</small></span></label>
+          <label class="chk"><input type="checkbox" data-c="AB"><span>vnet-web ↔ vnet-datos directo <small>(global, sin pasar por el hub)</small></span></label>
+        </div>
+      </div>
+      <div class="ctl"><label>Configuración</label>
+        <div class="chkP">
+          <label class="chk"><input type="checkbox" data-c="gt"><span>Tránsito de gateway <small>(el hub permite usar su VPN Gateway y los radios usan el gateway remoto)</small></span></label>
+          <label class="chk"><input type="checkbox" data-c="fw"><span>Azure Firewall en el hub + rutas (UDR) en los radios <small>(el hub reenvía el tráfico entre radios)</small></span></label>
+        </div>
+        <label>Espacio de direcciones de vnet-dev</label>
+        <div class="seg" id="segDev"></div>
+      </div>
+    </div>
+    <div class="lienzo"><svg id="svg" viewBox="0 0 1210 560" role="img" aria-label="Diagrama hub y radios con peerings"></svg></div>
+    <div class="controls">
+      <div class="ctl"><label>Origen</label><div class="seg" id="segO"></div></div>
+      <div class="ctl"><label>Destino</label><div class="seg" id="segD"></div></div>
+    </div>
+    <div class="status" id="statusR"></div>
+    <div class="facts" id="factsR"></div>
+  </section>
+
+  <!-- 2 · Matriz -->
+  <section class="bloque">
+    <h2 class="h">2 · ¿Quién llega a quién?</h2>
+    <p style="margin:0;color:var(--muted)">Haz clic en una celda para ver el camino en el diagrama. Se recalcula con cada cambio de arriba.</p>
+    <div class="tbl"><table class="mtx" id="mtx"></table></div>
+  </section>
+
+  <!-- 3 · Desafíos -->
+  <section class="bloque">
+    <h2 class="h">3 · Desafíos tipo examen</h2>
+    <p style="margin:0;color:var(--muted)">"Cargar" deja el diagrama con el problema; arréglalo con los controles de la sección 1. Se marca ✓ cuando lo resuelves.</p>
+    <div class="des" id="des"></div>
+  </section>
+
+  <!-- 4 · Reglas -->
+  <section class="bloque">
+    <h2 class="h">4 · Las reglas que más se preguntan</h2>
+    <div class="cards">
+      <div class="card"><h3>Qué es</h3><ul>
+        <li>Une dos VNets de forma <b>privada</b> por la red troncal de Microsoft: <b>sin Internet y sin gateways</b> (pág. 104).</li>
+        <li>Se comportan como si fueran la misma red: baja latencia y alto ancho de banda.</li>
+        <li><b>Local</b> (misma región) o <b>global</b> (otra región). También entre suscripciones y tenants distintos.</li>
+      </ul></div>
+      <div class="card"><h3>Lo que lo impide</h3><ul>
+        <li>Espacios de direcciones (CIDR) <b>superpuestos</b>: no se puede crear (AZ-104 págs. 162–163).</li>
+        <li>Creado solo desde un lado: queda <b>Iniciado</b> y no pasa tráfico. Debe quedar <b>Conectado</b> en las dos VNets.</li>
+        <li>Solo un peering por par de VNets.</li>
+      </ul></div>
+      <div class="card"><h3>No es transitivo</h3><ul>
+        <li>A↔B y B↔C no dan A↔C (pág. 104).</li>
+        <li>Soluciones: peering directo A↔C, o un <b>firewall/NVA en el hub</b> con rutas definidas por el usuario (UDR).</li>
+        <li>Malla completa de <i>n</i> VNets = <i>n</i>(<i>n</i>−1)/2 peerings (4 VNets → 6).</li>
+      </ul></div>
+      <div class="card"><h3>Hub y radios (AZ-104)</h3><ul>
+        <li>Un solo VPN Gateway en el hub para toda la empresa: <b>tránsito de gateway</b> ("permitir tránsito de gateway" en el hub + "usar gateway remoto" en el radio).</li>
+        <li>Lo compartido (VPN, firewall, DNS) va en el hub; las aplicaciones, en los radios.</li>
+        <li>Cobro: el tráfico del peering se paga al entrar y al salir; el global cuesta más.</li>
+      </ul></div>
+    </div>
+  </section>
+
+  <!-- 5 · Quiz -->
+  <section class="bloque">
+    <h2 class="h">5 · Preguntas de práctica</h2>
+    <div class="score" id="score"></div>
+    <div class="quiz" id="quiz"></div>
+  </section>
+</div>
+
+<script src="../assets/progreso.js"></script>
+<script src="../assets/quiz.js"></script>
+<script>
+function seg(id,obj,get,set,fn){
+  const el=document.getElementById(id);el.innerHTML="";
+  Object.keys(obj).forEach(k=>{const b=document.createElement("button");b.type="button";b.textContent=obj[k];b.dataset.k=k;
+    b.setAttribute("aria-pressed",String(get()===k));b.onclick=()=>{set(k);fn()};el.appendChild(b)});
+}
+function facts(id,rows){document.getElementById(id).innerHTML=rows.map(([k,v])=>`<div class="fact"><div class="k">${k}</div><div class="v">${v}</div></div>`).join("")}
+function status(id,lvl,t,d){
+  const col={ok:"var(--ok)",warn:"var(--warn)",bad:"var(--bad)",info:"var(--accent)"}[lvl],ico={ok:"✓",warn:"!",bad:"✕",info:"i"}[lvl];
+  document.getElementById(id).innerHTML=`<span class="dot" style="background:${col}" aria-hidden="true"></span><div><b>${ico} ${t}</b><p>${d}</p></div>`;
+}
+
+/* ---------- Modelo ---------- */
+const NOM={of:"Oficina",hub:"vnet-hub",web:"vnet-web",datos:"vnet-datos",dev:"vnet-dev"};
+const REG={hub:"Brazil South",web:"Brazil South",dev:"Brazil South",datos:"East US"};
+const RADIOS=["web","datos","dev"];
+const INI={hA:true,hB:true,bIni:false,hC:false,AB:false,gt:false,fw:false,dev:"10.3"};
+let cfg={...INI},o="of",d="web",reto=null,verSol=false;
+// Peerings: extremos y estado según la configuración
+const PE={hA:["hub","web"],hB:["hub","datos"],hC:["hub","dev"],AB:["web","datos"]};
+function estado(k){
+  if(!cfg[k])return"no";
+  if(k==="hC"&&cfg.dev==="10.0")return"choca";
+  if(k==="hB"&&cfg.bIni)return"ini";
+  return"ok";
+}
+const tipo=(x,y)=>REG[x]===REG[y]?"local":"global";
+function par(x,y){const k=Object.keys(PE).find(k=>PE[k].includes(x)&&PE[k].includes(y));return k}
+const unidas=(x,y)=>{const k=par(x,y);return k&&estado(k)==="ok"?k:null};
+function porQueNo(x,y){
+  const k=par(x,y);
+  if(!k)return`No hay peering entre ${NOM[x]} y ${NOM[y]}.`;
+  const e=estado(k);
+  if(e==="no")return`No hay peering entre ${NOM[x]} y ${NOM[y]}.`;
+  if(e==="choca")return`El peering no se puede crear: vnet-dev usa 10.0.0.0/16, el mismo espacio que vnet-hub. Los espacios de direcciones no pueden superponerse.`;
+  if(e==="ini")return`El peering está en estado Iniciado: se creó desde vnet-hub, pero falta crearlo desde vnet-datos. Hasta que los dos lados digan Conectado no pasa tráfico.`;
+}
+// Ruta entre dos extremos: {ok, ln:[enlaces], nd:[nodos], txt, por}
+function ruta(x,y){
+  if(x===y)return{ok:true,ln:[],nd:[x],txt:"misma red",por:""};
+  if(y==="of")return ruta(y,x);
+  if(x==="of"){
+    if(y==="hub")return{ok:true,ln:["vpn"],nd:["of","vgw","hub"],txt:"Oficina → VPN S2S → vnet-hub",por:"El túnel IPsec termina en el VPN Gateway del hub."};
+    const k=unidas("hub",y);
+    if(!k)return{ok:false,ln:["vpn"],nd:["of","hub"],por:`La oficina llega al hub, pero ${porQueNo("hub",y)}`};
+    if(!cfg.gt)return{ok:false,ln:["vpn",k],nd:["of","hub",y],por:`El peering no es transitivo: ${NOM[y]} no aprende las rutas de la oficina ni puede usar el VPN Gateway del hub. Activa el tránsito de gateway (o habría que poner otro VPN Gateway en ${NOM[y]}).`};
+    return{ok:true,ln:["vpn",k],nd:["of","vgw","hub",y],txt:`Oficina → VPN S2S → vnet-hub → peering → ${NOM[y]}`,por:`Tránsito de gateway: ${NOM[y]} usa el VPN Gateway del hub, sin gateway propio.`};
+  }
+  if(x==="hub"||y==="hub"){
+    const r=x==="hub"?y:x,k=unidas("hub",r);
+    return k?{ok:true,ln:[k],nd:["hub",r],txt:`vnet-hub → peering ${tipo("hub",r)} → ${NOM[r]}`,por:`Peering ${tipo("hub",r)} en estado Conectado.`}
+            :{ok:false,ln:par("hub",r)&&cfg[par("hub",r)]?[par("hub",r)]:[],nd:["hub",r],por:porQueNo("hub",r)};
+  }
+  // radio ↔ radio
+  const k=unidas(x,y);
+  if(k)return{ok:true,ln:[k],nd:[x,y],txt:`${NOM[x]} → peering ${tipo(x,y)} directo → ${NOM[y]}`,por:"Peering directo: el camino más corto y sin inspección intermedia."};
+  const kx=unidas("hub",x),ky=unidas("hub",y);
+  if(kx&&ky&&cfg.fw)return{ok:true,ln:[kx,ky],nd:[x,"hub","fw",y],txt:`${NOM[x]} → vnet-hub (Azure Firewall) → ${NOM[y]}`,por:"El firewall del hub reenvía el tráfico y las rutas (UDR) de los radios lo mandan hacia él. Además, inspecciona el tráfico en un solo punto."};
+  if(kx&&ky)return{ok:false,ln:[kx,ky],nd:[x,"hub",y],por:`Las dos están emparejadas con el hub, pero el peering no es transitivo. Crea un peering directo o pon un firewall en el hub con rutas (UDR).`};
+  return{ok:false,ln:[],nd:[x,y],por:`${!kx?porQueNo("hub",x):porQueNo("hub",y)} Además, no hay peering directo entre ${NOM[x]} y ${NOM[y]}.`};
+}
+
+/* ---------- Diagrama ---------- */
+const LN={
+  vpn:{d:"M190,262 L285,237",x:236,y:236,t:()=>"VPN S2S"},
+  hA:{d:"M520,215 C565,215 555,125 600,125",x:515,y:150},
+  hB:{d:"M520,280 L930,275",x:725,y:268},
+  hC:{d:"M520,350 C565,350 555,455 600,455",x:515,y:418},
+  AB:{d:"M820,125 C885,125 880,240 930,240",x:885,y:160}
+};
+function etiq(k){
+  const e=estado(k);
+  if(e==="no")return["sin peering","m"];
+  if(e==="choca")return["✕ se superpone","b"];
+  if(e==="ini")return["✕ Iniciado","b"];
+  return[`peering ${tipo(...PE[k])} · Conectado`,""];
+}
+function dibujar(){
+  const r=ruta(o,d),on=new Set(r.ln),nd=new Set(r.nd);
+  const vn=(id,x,y,w,h,tit,err)=>`<g class="vn${nd.has(id)?" on":""}${err?" err":""}"><rect x="${x}" y="${y}" width="${w}" height="${h}" rx="8"/><text x="${x+12}" y="${y+20}">${tit}</text></g>`;
+  const no=(id,x,y,w,t,s,off)=>`<g class="nd${nd.has(id)?" on":""}${off?" off":""}"><rect x="${x}" y="${y}" width="${w}" height="44" rx="6"/><text class="t" x="${x+12}" y="${y+19}">${t}</text><text class="s" x="${x+12}" y="${y+35}">${s}</text></g>`;
+  let s=`<g class="reg"><rect x="240" y="20" width="620" height="520" rx="12"/><text x="256" y="40">Región · Brazil South</text></g>`;
+  s+=`<g class="reg"><rect x="900" y="20" width="290" height="520" rx="12"/><text x="916" y="40">Región · East US</text></g>`;
+  // Enlaces debajo de las cajas
+  Object.keys(LN).forEach(k=>{
+    const c=k==="vpn"?"vpn":({no:"off",choca:"err",ini:"err",ok:"ok"})[estado(k)];
+    s+=`<path class="ln ${c}${on.has(k)?" on":""}" d="${LN[k].d}"/>`;
+  });
+  s+=`<g class="vn${nd.has("of")?" on":""}"><rect x="20" y="210" width="170" height="125" rx="8"/><text x="32" y="230">Oficina (on-premises)</text></g>`;
+  s+=no("of",32,245,146,"Red local","192.168.0.0/16");
+  s+=`<text class="et m" x="32" y="318">Dispositivo VPN</text>`;
+  s+=vn("hub",270,170,250,220,"vnet-hub · 10.0.0.0/16");
+  s+=no("vgw",285,215,220,"VPN Gateway","GatewaySubnet");
+  s+=no("fw",285,275,220,"Azure Firewall","AzureFirewallSubnet",!cfg.fw);
+  s+=`<text class="et m" x="285" y="350">Lo compartido vive en el hub</text><text class="et m" x="285" y="366">${cfg.gt?"Permite tránsito de gateway ✓":"Tránsito de gateway: no"}</text>`;
+  s+=vn("web",600,70,220,110,"vnet-web · 10.1.0.0/16");
+  s+=no("vmw",615,110,190,"vm-web","10.1.1.4");
+  s+=vn("dev",600,400,220,110,`vnet-dev · ${cfg.dev}.0.0/16`,cfg.dev==="10.0");
+  s+=no("vmd",615,440,190,"vm-dev",`${cfg.dev}.1.4`);
+  s+=vn("datos",930,215,230,120,"vnet-datos · 10.2.0.0/16");
+  s+=no("vmb",945,255,200,"vm-db","10.2.1.4");
+  // Etiquetas encima
+  Object.keys(LN).forEach(k=>{
+    const [t,c]=k==="vpn"?["VPN S2S","m"]:etiq(k);
+    s+=`<text class="et ${c}" x="${LN[k].x}" y="${LN[k].y}" text-anchor="middle">${t}</text>`;
+  });
+  document.getElementById("svg").innerHTML=s;
+}
+
+/* ---------- Controles ---------- */
+const chks=[...document.querySelectorAll("[data-c]")];
+chks.forEach(c=>c.onchange=()=>{cfg[c.dataset.c]=c.checked;render()});
+function render(){
+  chks.forEach(c=>{c.checked=cfg[c.dataset.c];if(c.dataset.c==="bIni")c.disabled=!cfg.hB});
+  seg("segDev",{"10.3":"10.3.0.0/16","10.0":"10.0.0.0/16 (igual que el hub)"},()=>cfg.dev,v=>cfg.dev=v,render);
+  seg("segO",NOM,()=>o,v=>{o=v;if(d===o)d=o==="of"?"web":"of"},render);
+  seg("segD",Object.fromEntries(Object.entries(NOM).filter(([k])=>k!==o)),()=>d,v=>d=v,render);
+  dibujar();
+  const r=ruta(o,d);
+  if(r.ok)status("statusR","ok",`${NOM[o]} llega a ${NOM[d]}`,r.por);
+  else status("statusR","bad",`${NOM[o]} no llega a ${NOM[d]}`,r.por);
+  const ps=r.ln.filter(k=>k!=="vpn");
+  facts("factsR",[["Camino",r.ok?r.txt:"—"],["Peerings usados",!r.ok?"—":ps.length?ps.map(k=>tipo(...PE[k])).join(" + "):"ninguno"],["Pasa por Internet",r.ln.includes("vpn")?"Solo el túnel VPN (cifrado)":"No: red troncal de Microsoft"],["Se cobra",!r.ok?"—":ps.length?(ps.some(k=>tipo(...PE[k])==="global")?"Peering global (más caro), entrada y salida":"Peering local, entrada y salida")+(r.nd.includes("fw")?" + firewall":""):"Tráfico de la VPN"]]);
+  matriz();retos();
+}
+function matriz(){
+  const ks=Object.keys(NOM);
+  let h=`<tr><th>Origen ↓ / destino →</th>${ks.map(k=>`<th>${NOM[k]}</th>`).join("")}</tr>`;
+  h+=ks.map(x=>`<tr><th>${NOM[x]}</th>${ks.map(y=>{
+    if(x===y)return"<td>—</td>";
+    const ok=ruta(x,y).ok;
+    return`<td><button type="button" class="${ok?"si":"no"}${x===o&&y===d?" act":""}" data-o="${x}" data-d="${y}" aria-label="${NOM[x]} a ${NOM[y]}: ${ok?"llega":"no llega"}">${ok?"✓":"✕"}</button></td>`}).join("")}</tr>`).join("");
+  const t=document.getElementById("mtx");t.innerHTML=h;
+  t.querySelectorAll("button").forEach(b=>b.onclick=()=>{o=b.dataset.o;d=b.dataset.d;render();document.getElementById("svg").scrollIntoView({behavior:"smooth",block:"center"})});
+}
+
+/* ---------- Desafíos ---------- */
+const RETOS=[
+  {t:"La oficina debe llegar a vnet-web usando el único VPN Gateway, el del hub.",ini:{hA:true,hB:false},o:"of",d:"web",
+   ok:()=>ruta("of","web").ok,sol:"Activa el tránsito de gateway: el hub permite usar su gateway y vnet-web usa el gateway remoto. Así no hace falta un VPN Gateway por radio."},
+  {t:"vnet-datos no responde desde vnet-hub, aunque el peering \"está creado\".",ini:{hB:true,bIni:true},o:"hub",d:"datos",
+   ok:()=>ruta("hub","datos").ok,sol:"El peering se creó solo desde el hub y quedó Iniciado. Hay que crearlo también desde vnet-datos (desmarca \"creado solo desde el hub\")."},
+  {t:"Hay que emparejar vnet-dev con el hub, pero Azure no deja crear el peering.",ini:{hC:true,dev:"10.0"},o:"hub",d:"dev",
+   ok:()=>ruta("hub","dev").ok,sol:"vnet-dev usa 10.0.0.0/16, el mismo espacio que el hub. Cámbialo a 10.3.0.0/16 (en una VNet nueva o sin recursos) y el peering se puede crear."},
+  {t:"vnet-web y vnet-datos deben hablar con la menor latencia posible, sin pasar por el hub.",ini:{fw:true},o:"web",d:"datos",
+   ok:()=>!!unidas("web","datos"),sol:"Crea el peering directo vnet-web ↔ vnet-datos (global, porque están en regiones distintas). Por el firewall del hub también llegan, pero con un salto más."},
+  {t:"Los tres radios deben comunicarse entre sí inspeccionando el tráfico en un solo punto, sin peerings entre radios.",ini:{hC:true},o:"web",d:"dev",
+   ok:()=>!cfg.AB&&cfg.fw&&["web","datos","dev"].every((x,i,a)=>a.every(y=>x===y||ruta(x,y).ok)),sol:"Pon Azure Firewall en el hub con rutas (UDR) en los radios. Con peerings directos habría que crear una malla (3 peerings) y no habría inspección central."},
+  {t:"Todo debe llegar a todo (oficina incluida) con el menor número de gateways y peerings.",ini:{hA:false,hB:false},o:"of",d:"datos",
+   ok:()=>Object.keys(NOM).every(x=>Object.keys(NOM).every(y=>ruta(x,y).ok))&&!cfg.AB,sol:"Hub y radios: tres peerings con el hub (Conectados y sin espacios superpuestos), tránsito de gateway para la oficina y firewall en el hub para el tráfico entre radios."}
+];
+function retos(){
+  document.getElementById("des").innerHTML=RETOS.map((r,i)=>{const ok=r.ok();
+    return`<div class="de${reto===i?" act":""}"><span class="ic${ok&&reto===i?" ok":""}">${reto===i?(ok?"✓":"…"):i+1}</span><p>${r.t}</p><button type="button" class="btn" data-r="${i}">${reto===i?"Reiniciar":"Cargar"}</button>${reto===i?`<details class="sol"${verSol?" open":""}><summary>Ver solución</summary>${r.sol}</details>`:""}</div>`}).join("");
+  document.querySelectorAll("#des details").forEach(x=>x.ontoggle=()=>verSol=x.open);
+  document.querySelectorAll("[data-r]").forEach(b=>b.onclick=()=>{const i=+b.dataset.r,r=RETOS[i];reto=i;verSol=false;cfg={...INI,...r.ini};o=r.o;d=r.d;render();document.getElementById("svg").scrollIntoView({behavior:"smooth",block:"center"})});
+}
+
+render();
+iniciarQuiz("peering");
+</script>
+</body>
+</html>

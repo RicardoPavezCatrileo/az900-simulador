@@ -119,6 +119,13 @@ Errores de esa guía que NO se deben copiar: dice que la secundaria de GZRS es Z
 - 19 preguntas en `data/preguntas-cap06.json` (la 19: VNets en dos regiones por la red troncal → peering global, con VPN Gateway de trampa).
 - Errores del PDF corregidos en el sitio: una /24 tiene 251 IPs asignables en Azure (no 256); la terminación SSL es de Application Gateway, no de Load Balancer.
 
+## Lo que ya existe: az900/peering.html (laboratorio de VNet peering, puente a AZ-104)
+- Diagrama SVG hub y radios: oficina por VPN S2S al hub (Brazil South, 10.0.0.0/16, VPN Gateway + Azure Firewall opcional), vnet-web y vnet-dev en Brazil South, vnet-datos en East US (peering global).
+- Controles: peerings hub↔web/datos/dev y web↔datos directo, peering "solo desde el hub" (estado Iniciado), espacio de vnet-dev 10.3 o 10.0 (se superpone con el hub), tránsito de gateway, firewall + UDR. `ruta(x,y)` calcula camino y motivo; origen/destino resaltan el camino y una matriz 5×5 muestra quién llega a quién.
+- 6 desafíos (`RETOS`: `ini` = estado de partida, `ok()` = condición resuelta, `sol`). 12 preguntas en `az900/data/preguntas-peering.json` (`iniciarQuiz("peering")`, clave `az900:progreso:peering`; no cuenta en el avance de los capítulos).
+- Tránsito de gateway, estado Iniciado/Conectado, firewall en el hub y cobro del peering no están en el PDF (AZ-900 pág. 104, AZ-104 págs. 161–163).
+- Enlazado desde la `.nav` de arquitectura, mapa, cap06 y az104/redes.
+
 ## Lo que ya existe: capítulos 8 a 11
 - **cap08-autenticacion-autorizacion.html** (págs. 168–197): ¿es MFA? (métodos por categoría sabes/tienes/eres; contraseña+PIN no es MFA), acceso condicional (usuario × ubicación × dispositivo × riesgo contra 6 directivas de ejemplo; bloquear gana), elegir servicio de identidad (Entra Connect, Connect Health, Domain Services, B2B, SSO, admin center) y tabla AD DS vs Entra ID. 18 preguntas. Nombres actuales: Microsoft Entra ID / Entra Domain Services (el PDF dice Azure AD DS).
 - **cap09-seguridad.html** (págs. 198–216): defensa en profundidad con las 7 capas de Microsoft Learn (el PDF usa otra lista: políticas, física, perímetro, redes, hosts, aplicaciones, datos) + juego de clasificar 10 controles; endpoints público / de servicio / privado × origen (VM, oficina por VPN, Internet) con opción de deshabilitar el acceso público; elegir servicio (Key Vault, Defender for Cloud, Sentinel, endpoint privado, NSG). 16 preguntas. Sentinel ahora es "Microsoft Sentinel".

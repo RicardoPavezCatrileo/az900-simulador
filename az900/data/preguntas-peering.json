@@ -1,0 +1,74 @@
+[
+  {
+    "pregunta": "¿Qué ofrece VNet peering?",
+    "opciones": ["Un túnel IPsec cifrado por Internet entre dos VNets", "Una conexión privada y directa entre dos VNets por la red de Azure, sin pasar por Internet", "Un enlace privado entre la oficina y Azure a través de un proveedor", "Un balanceador entre dos VNets"],
+    "correcta": 1,
+    "explicacion": "El peering conecta dos VNets de forma privada usando la red de Azure: conexión directa y rápida, como si fueran la misma red (PDF pág. 104). El túnel IPsec es VPN Gateway y el enlace por proveedor es ExpressRoute."
+  },
+  {
+    "pregunta": "vnet-hub está emparejada con vnet-web y con vnet-datos. No hay más configuración. ¿Puede vnet-web comunicarse con vnet-datos?",
+    "opciones": ["Sí, a través del hub", "No, el peering no es transitivo", "Sí, si están en la misma suscripción", "Solo si las dos están en la misma región"],
+    "correcta": 1,
+    "explicacion": "El peering no es transitivo: hay que crearlo para cada par de VNets que deba comunicarse (pág. 104), o poner un firewall/NVA en el hub con rutas definidas por el usuario (UDR)."
+  },
+  {
+    "pregunta": "Quieres emparejar una VNet de Brazil South con una de East US. ¿Es posible?",
+    "opciones": ["No, el peering solo funciona dentro de una región", "Sí, con peering global", "Solo con un VPN Gateway en cada VNet", "Solo si las dos usan el mismo espacio de direcciones"],
+    "correcta": 1,
+    "explicacion": "El peering global une VNets de regiones distintas por la red troncal de Microsoft, sin gateways. No está en el PDF."
+  },
+  {
+    "pregunta": "vnet-hub usa 10.0.0.0/16 y vnet-dev también usa 10.0.0.0/16. ¿Qué pasa al intentar emparejarlas?",
+    "opciones": ["Se emparejan y Azure renombra las IPs", "No se puede: los espacios de direcciones no pueden superponerse", "Se emparejan, pero solo en una dirección", "Se emparejan si se agrega un NSG"],
+    "correcta": 1,
+    "explicacion": "Las VNets emparejadas no pueden tener CIDR superpuestos (pág. 104; AZ-104 págs. 162–163). Hay que cambiar el espacio de una de ellas."
+  },
+  {
+    "pregunta": "Creaste el peering desde vnet-hub hacia vnet-datos y su estado dice \"Iniciado\". No pasa tráfico. ¿Qué falta?",
+    "opciones": ["Esperar 24 horas", "Crear el peering también desde vnet-datos hacia vnet-hub", "Agregar un VPN Gateway", "Habilitar el tránsito de gateway"],
+    "correcta": 1,
+    "explicacion": "El peering se crea desde los dos lados. Mientras falte uno, queda Iniciado; con los dos, pasa a Conectado. El portal suele crear ambos lados de una vez. No está en el PDF."
+  },
+  {
+    "pregunta": "La oficina se conecta por VPN al hub. Quieres que también llegue a las VNets radio emparejadas con el hub, sin poner un VPN Gateway en cada una. ¿Qué configuras?",
+    "opciones": ["Un peering entre la oficina y cada radio", "El tránsito de gateway: \"permitir tránsito de gateway\" en el hub y \"usar gateway remoto\" en los radios", "Un endpoint de servicio en cada radio", "ExpressRoute en cada radio"],
+    "correcta": 1,
+    "explicacion": "Con el tránsito de gateway, los radios usan el VPN Gateway del hub. Sin él, el peering no es transitivo y la oficina solo llega al hub. No está en el PDF; es tema de AZ-104."
+  },
+  {
+    "pregunta": "En una red hub y radios, los radios deben comunicarse entre sí y todo ese tráfico debe inspeccionarse en un punto central. ¿Qué usas?",
+    "opciones": ["Peerings directos entre todos los radios", "Azure Firewall (o una NVA) en el hub y rutas definidas por el usuario (UDR) en los radios", "Un Load Balancer en cada radio", "Grupos de administración"],
+    "correcta": 1,
+    "explicacion": "El hub no reenvía por sí solo. Un firewall en el hub y rutas que manden el tráfico hacia él permiten la comunicación entre radios con inspección central. Con peerings directos no hay inspección. No está en el PDF."
+  },
+  {
+    "pregunta": "¿Qué necesita una VNet para emparejarse con otra?",
+    "opciones": ["Un VPN Gateway en cada una", "Un circuito ExpressRoute", "Ningún gateway: solo espacios de direcciones que no se superpongan", "Una IP pública en cada VM"],
+    "correcta": 2,
+    "explicacion": "El peering no usa gateways ni Internet. El requisito clave es que los CIDR no se superpongan (pág. 104)."
+  },
+  {
+    "pregunta": "¿Por dónde viaja el tráfico entre dos VNets emparejadas?",
+    "opciones": ["Por Internet, cifrado con IPsec", "Por la red troncal privada de Microsoft", "Por el proveedor de ExpressRoute", "Por la red de la oficina"],
+    "correcta": 1,
+    "explicacion": "El peering usa la red de Azure, sin atravesar la red pública de Internet (pág. 104). Por eso tiene baja latencia."
+  },
+  {
+    "pregunta": "¿Cómo se cobra el tráfico de VNet peering?",
+    "opciones": ["Es gratis siempre", "Se cobra el tráfico que entra y el que sale; el peering global cuesta más que el local", "Solo se cobra una tarifa fija mensual por peering", "Solo se cobra si se usa un VPN Gateway"],
+    "correcta": 1,
+    "explicacion": "El peering cobra por GB de entrada y de salida en ambos extremos; entre regiones (global) la tarifa es mayor. No está en el PDF."
+  },
+  {
+    "pregunta": "Necesitas que 4 VNets se comuniquen todas con todas usando solo peering, sin firewall. ¿Cuántos peerings necesitas?",
+    "opciones": ["3", "4", "6", "12"],
+    "correcta": 2,
+    "explicacion": "Como no es transitivo, se necesita una malla completa: n(n−1)/2 = 4·3/2 = 6 peerings."
+  },
+  {
+    "pregunta": "Selecciona TODAS las afirmaciones correctas sobre VNet peering.",
+    "opciones": ["No es transitivo", "Las VNets no pueden tener espacios de direcciones superpuestos", "Requiere un VPN Gateway en ambas VNets", "Solo funciona dentro de la misma región", "Puede unir VNets de suscripciones distintas"],
+    "correcta": [0, 1, 4],
+    "explicacion": "No es transitivo y no admite CIDR superpuestos (pág. 104). No usa gateways, funciona entre regiones (peering global) y entre suscripciones e incluso tenants distintos."
+  }
+]
