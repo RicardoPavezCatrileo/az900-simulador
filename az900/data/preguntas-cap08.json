@@ -112,5 +112,11 @@
     "opciones": ["Grupos de acción", "Señales", "Decisiones de acceso", "Agente de Azure Arc"],
     "correcta": [1, 2],
     "explicacion": "El acceso condicional reúne señales (usuario, ubicación, dispositivo, aplicación, riesgo) para tomar una decisión (permitir, bloquear o pedir MFA) y aplicarla (PDF págs. 182–183). Los grupos de acción son de Azure Monitor: definen qué hacer cuando salta una alerta. El agente de Azure Arc conecta servidores fuera de Azure."
+  },
+  {
+    "pregunta": "En Microsoft Entra ID, ¿de cuántos tenants puede ser miembro un usuario y en cuántos tenants externos puede ser invitado?",
+    "opciones": ["No hay límite", "Miembro de un único tenant e invitado en hasta 499 tenants externos", "Miembro de un tenant principal y de dos tenants externos", "Depende del tipo de suscripción de Azure"],
+    "correcta": 1,
+    "explicacion": "Un usuario pertenece como miembro a un solo tenant, su tenant de origen, y puede ser invitado (B2B) en otros: el límite es de 500 tenants en total, es decir 1 + 499. No depende de la suscripción, porque las suscripciones confían en un tenant y no al revés. No está en el PDF."
   }
 ]
