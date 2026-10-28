@@ -63,10 +63,6 @@ td.gratis{color:var(--ok);font-weight:600} td.cobra{color:var(--warn);font-weigh
   <!-- 3 · Herramientas -->
   <section class="bloque">
     <h2 class="h">3 · ¿Qué herramienta de costos uso?</h2>
-    <div class="ctl"><label>Lo que necesitas</label><div class="seg" id="nec"></div></div>
-    <div class="status" id="statusH"></div>
-    <div class="facts" id="factsH"></div>
-    <h3 style="margin:6px 0 0;font-family:var(--f-display);font-size:1rem">Cada herramienta tiene su momento</h3>
     <div class="tbl"><table>
       <thead><tr><th>Momento</th><th>Herramienta</th><th>Pregunta que responde</th></tr></thead>
       <tbody>
@@ -210,26 +206,7 @@ function renderB(){
   facts("factsB",[["Gasto proyectado (30 días)","USD "+proy],["Alerta 80%",enMes(d80)],["Llega al 100%",enMes(d100)],["Gasto final",tipo==="lim"&&over?"USD "+pres+" (se detiene)":"USD "+proy]]);
 }
 
-/* ---------- 3 · Herramientas ---------- */
-const NEC={
- calc:{name:"Estimar el costo de una solución nueva",s:"Calculadora de precios",d:"Eliges servicios, ajustas la configuración (tamaño, región, horas) y ves el costo estimado antes de crear nada.",cu:"Antes de desplegar",t:"Estimación"},
- tco:{name:"Comparar mi centro de datos con Azure",s:"Calculadora TCO",d:"Compara el costo total de tu infraestructura local (servidores, electricidad, mantenimiento) con el de Azure, y genera informes para decidir la migración.",cu:"Antes de migrar",t:"Comparación"},
- cm:{name:"Ver cuánto llevo gastado y repartirlo",s:"Azure Cost Management",d:"Costos acumulados, asignación por departamento, exportación, informes de ineficiencias, comparativas y vistas personalizadas.",cu:"Durante la operación",t:"Monitorización de costos"},
- pr:{name:"Recibir un aviso al acercarme a un monto",s:"Presupuestos (Cost Management)",d:"Defines un monto y recibes alertas al acercarte o superarlo. No detienen los recursos por sí solos.",cu:"Durante la operación",t:"Alertas de gasto"},
- tag:{name:"Saber cuánto gasta cada proyecto",s:"Etiquetas (tags)",d:"Clasificas los recursos (proyecto, centro de costo, entorno) y luego agrupas el gasto por etiqueta en Cost Management.",cu:"Siempre",t:"Organización"},
- adv:{name:"Que me sugieran cómo ahorrar",s:"Azure Advisor",d:"Detecta recursos infrautilizados, sugiere reservas y otras optimizaciones de costo, además de seguridad, confiabilidad, rendimiento y excelencia operativa.",cu:"Durante la operación",t:"Recomendaciones"},
- cuo:{name:"Evitar que se creen demasiados recursos",s:"Cuotas",d:"Límites en la cantidad de ciertos recursos (por ejemplo, vCPU por región) que evitan excesos y gastos inesperados.",cu:"Siempre",t:"Límites de uso"},
- lim:{name:"Que nunca me cobren más de mi crédito",s:"Límite de gasto",d:"Un techo de gasto: al alcanzarlo, se detienen los recursos. Solo en ciertas ofertas, como la cuenta gratuita o suscripciones con crédito.",cu:"Siempre",t:"Freno financiero"}
-};
-let nec="calc";
-function renderH(){
-  seg("nec",NEC,()=>nec,k=>nec=k,renderH);
-  const x=NEC[nec];
-  status("statusH","ok",x.s,x.d);
-  facts("factsH",[["Herramienta",x.s],["Cuándo",x.cu],["Tipo",x.t],["¿Detiene recursos?",nec==="lim"?"Sí":"No"]]);
-}
-
-renderT();renderB();renderH();iniciarQuiz("cap11");
+renderT();renderB();iniciarQuiz("cap11");
 </script>
 </body>
 </html>
