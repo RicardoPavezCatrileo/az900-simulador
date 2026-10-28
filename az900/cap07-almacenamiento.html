@@ -48,6 +48,41 @@
     <p>Elige un tipo de redundancia y provoca una falla para ver dónde viven las copias y si la app sigue funcionando. Después explora qué servicio usar para cada tipo de dato, cuánto te cuesta cada nivel de acceso de Blob, qué disco necesita tu VM y con qué herramienta mover tus datos a Azure.</p>
   </header>
 
+  <!-- 0 · Resumen -->
+  <section class="bloque">
+    <h2 class="h">El almacenamiento en 4 preguntas</h2>
+    <div class="note"><h3>Método</h3><p><b>1.</b> ¿Qué guardas? → servicio y tipo de blob. <b>2.</b> ¿Qué tan rápido? → Standard (GPv2) o Premium. <b>3.</b> ¿Cada cuánto lo usas? → Hot / Cool / Cold / Archive (solo block blobs). <b>4.</b> ¿Qué falla debe aguantar? → LRS / ZRS / GRS / GZRS. Cada pregunta del examen suele tocar solo uno o dos pasos.</p></div>
+    <div class="tbl"><table>
+      <thead><tr><th>Servicio</th><th>Para qué</th><th>Quién lo usa</th><th>Opciones</th><th>¿Premium?</th><th>¿Hot / Cool / Cold / Archive?</th><th>Palabra clave</th></tr></thead>
+      <tbody>
+        <tr><td><b>Disk Storage</b></td><td>Disco del SO y de datos de la VM</td><td>La VM</td><td>HDD estándar · SSD estándar · SSD Premium · Ultra</td><td>✅ SSD Premium y Ultra</td><td>❌</td><td>"disco de VM", "IOPS"</td></tr>
+        <tr><td><b>Blob</b></td><td>Archivos y objetos</td><td>Apps por API</td><td>Block · Append · Page</td><td>✅ Block y Page</td><td>✅ solo block</td><td>"imágenes", "videos", "backup"</td></tr>
+        <tr><td><b>Files</b></td><td>Carpeta compartida</td><td>VM o PC local (unidad de red)</td><td>SMB · NFS</td><td>✅ Premium File Shares</td><td>❌</td><td>"SMB", "compartir archivos"</td></tr>
+        <tr><td><b>Queue</b></td><td>Mensajes entre partes de una app</td><td>Apps por API</td><td>—</td><td>❌</td><td>❌</td><td>"mensajes", "desacoplar"</td></tr>
+        <tr><td><b>Table</b></td><td>NoSQL simple, clave-valor</td><td>Apps por API</td><td>—</td><td>❌</td><td>❌</td><td>"NoSQL", "sin esquema"</td></tr>
+      </tbody>
+    </table></div>
+    <div class="cards">
+      <div class="card"><h3>Los 3 tipos de blob</h3><ul>
+        <li><b>Block</b>: fotos, videos, backups (el más común).</li>
+        <li><b>Append</b>: solo se agrega al final, como un log.</li>
+        <li><b>Page</b>: acceso aleatorio, discos de VM (VHD).</li>
+      </ul></div>
+      <div class="card"><h3>Disk Storage y page blobs guardan lo mismo</h3><ul>
+        <li>Los dos guardan el <b>disco de la VM</b>.</li>
+        <li><b>Disco administrado</b> (Disk Storage): Azure maneja la cuenta; tú eliges tipo y tamaño. Es lo que se usa hoy.</li>
+        <li><b>Page blob</b> en tu cuenta: disco no administrado (antiguo).</li>
+      </ul></div>
+      <div class="card"><h3>Cazabobos</h3><ul>
+        <li>"Rendimiento para una <b>cuenta de almacenamiento</b> con discos" → <b>Premium Page Blobs</b>; "tipo de <b>disco</b> más rápido" → <b>Ultra</b>.</li>
+        <li>Los niveles Hot/Cool/Cold/Archive son <b>solo block blobs</b>.</li>
+        <li><b>Queue y Table</b> no tienen Premium.</li>
+        <li><b>Premium</b> solo LRS o ZRS, sin copia en otra región.</li>
+        <li><b>Archive</b> no se lee al tiro: hay que rehidratarlo (horas).</li>
+      </ul></div>
+    </div>
+  </section>
+
   <h2 class="h" style="margin:0">1 · Redundancia (durabilidad)</h2>
 
   <div class="controls">
