@@ -6,13 +6,13 @@
     "explicacion": "El peering conecta dos VNets de forma privada usando la red de Azure: conexión directa y rápida, como si fueran la misma red (PDF pág. 104). El túnel IPsec es VPN Gateway y el enlace por proveedor es ExpressRoute."
   },
   {
-    "pregunta": "vnet-hub está emparejada con vnet-web y con vnet-datos. No hay más configuración. ¿Puede vnet-web comunicarse con vnet-datos?",
+    "pregunta": "vnet-hub está emparejada con vnet-web y con vnet-dr. No hay más configuración. ¿Puede vnet-web comunicarse con vnet-dr?",
     "opciones": ["Sí, a través del hub", "No, el peering no es transitivo", "Sí, si están en la misma suscripción", "Solo si las dos están en la misma región"],
     "correcta": 1,
     "explicacion": "El peering no es transitivo: hay que crearlo para cada par de VNets que deba comunicarse (pág. 104), o poner un firewall/NVA en el hub con rutas definidas por el usuario (UDR)."
   },
   {
-    "pregunta": "Quieres emparejar una VNet de Brazil South con una de East US. ¿Es posible?",
+    "pregunta": "Quieres emparejar una VNet de Brazil South con una de South Central US (su región emparejada). ¿Es posible?",
     "opciones": ["No, el peering solo funciona dentro de una región", "Sí, con peering global", "Solo con un VPN Gateway en cada VNet", "Solo si las dos usan el mismo espacio de direcciones"],
     "correcta": 1,
     "explicacion": "El peering global une VNets de regiones distintas por la red troncal de Microsoft, sin gateways. No está en el PDF."
@@ -24,8 +24,8 @@
     "explicacion": "Las VNets emparejadas no pueden tener CIDR superpuestos (pág. 104; AZ-104 págs. 162–163). Hay que cambiar el espacio de una de ellas."
   },
   {
-    "pregunta": "Creaste el peering desde vnet-hub hacia vnet-datos y su estado dice \"Iniciado\". No pasa tráfico. ¿Qué falta?",
-    "opciones": ["Esperar 24 horas", "Crear el peering también desde vnet-datos hacia vnet-hub", "Agregar un VPN Gateway", "Habilitar el tránsito de gateway"],
+    "pregunta": "Creaste el peering desde vnet-hub hacia vnet-dr y su estado dice \"Iniciado\". No pasa tráfico. ¿Qué falta?",
+    "opciones": ["Esperar 24 horas", "Crear el peering también desde vnet-dr hacia vnet-hub", "Agregar un VPN Gateway", "Habilitar el tránsito de gateway"],
     "correcta": 1,
     "explicacion": "El peering se crea desde los dos lados. Mientras falte uno, queda Iniciado; con los dos, pasa a Conectado. El portal suele crear ambos lados de una vez. No está en el PDF."
   },

@@ -57,7 +57,7 @@
   <header>
     <div class="eyebrow">AZ-900 → AZ-104 · Laboratorio de redes</div>
     <h1>VNet peering: hub y radios</h1>
-    <p>Una red central (<b>hub</b>) con el VPN Gateway de la oficina y tres redes de aplicaciones (<b>radios</b>), una de ellas en otra región. Crea o quita peerings y cambia la configuración: el diagrama y la matriz muestran quién llega a quién y por qué. Lo básico está en el PDF (AZ-900 pág. 104, AZ-104 págs. 161–163); el tránsito de gateway, el estado del peering y el firewall en el hub no están, pero son la base de AZ-104.</p>
+    <p>Una red central (<b>hub</b>) con el VPN Gateway de la oficina y tres redes de aplicaciones (<b>radios</b>), una de ellas en la región emparejada para recuperación ante desastres (DR). Crea o quita peerings y cambia la configuración: el diagrama y la matriz muestran quién llega a quién y por qué. Lo básico está en el PDF (AZ-900 pág. 104, AZ-104 págs. 161–163); el tránsito de gateway, el estado del peering y el firewall en el hub no están, pero son la base de AZ-104.</p>
   </header>
 
   <!-- 1 · Diagrama -->
@@ -67,10 +67,10 @@
       <div class="ctl"><label>Peerings</label>
         <div class="chkP">
           <label class="chk"><input type="checkbox" data-c="hA"><span>vnet-hub ↔ vnet-web <small>(local)</small></span></label>
-          <label class="chk"><input type="checkbox" data-c="hB"><span>vnet-hub ↔ vnet-datos <small>(global: otra región)</small></span></label>
-          <label class="chk"><input type="checkbox" data-c="bIni"><span>…pero creado solo desde el hub <small>(falta el lado de vnet-datos)</small></span></label>
+          <label class="chk"><input type="checkbox" data-c="hB"><span>vnet-hub ↔ vnet-dr <small>(global: región emparejada)</small></span></label>
+          <label class="chk"><input type="checkbox" data-c="bIni"><span>…pero creado solo desde el hub <small>(falta el lado de vnet-dr)</small></span></label>
           <label class="chk"><input type="checkbox" data-c="hC"><span>vnet-hub ↔ vnet-dev <small>(local)</small></span></label>
-          <label class="chk"><input type="checkbox" data-c="AB"><span>vnet-web ↔ vnet-datos directo <small>(global, sin pasar por el hub)</small></span></label>
+          <label class="chk"><input type="checkbox" data-c="AB"><span>vnet-web ↔ vnet-dr directo <small>(global, para la réplica sin pasar por el hub)</small></span></label>
         </div>
       </div>
       <div class="ctl"><label>Configuración</label>
@@ -155,8 +155,8 @@ function status(id,lvl,t,d){
 }
 
 /* ---------- Modelo ---------- */
-const NOM={of:"Oficina",hub:"vnet-hub",web:"vnet-web",datos:"vnet-datos",dev:"vnet-dev"};
-const REG={hub:"Brazil South",web:"Brazil South",dev:"Brazil South",datos:"East US"};
+const NOM={of:"Oficina",hub:"vnet-hub",web:"vnet-web",datos:"vnet-dr",dev:"vnet-dev"};
+const REG={hub:"Brazil South",web:"Brazil South",dev:"Brazil South",datos:"South Central US"};
 const RADIOS=["web","datos","dev"];
 const INI={hA:true,hB:true,bIni:false,hC:false,AB:false,gt:false,fw:false,dev:"10.3"};
 let cfg={...INI},o="of",d="web",reto=null,verSol=false;
@@ -177,7 +177,7 @@ function porQueNo(x,y){
   const e=estado(k);
   if(e==="no")return`No hay peering entre ${NOM[x]} y ${NOM[y]}.`;
   if(e==="choca")return`El peering no se puede crear: vnet-dev usa 10.0.0.0/16, el mismo espacio que vnet-hub. Los espacios de direcciones no pueden superponerse.`;
-  if(e==="ini")return`El peering está en estado Iniciado: se creó desde vnet-hub, pero falta crearlo desde vnet-datos. Hasta que los dos lados digan Conectado no pasa tráfico.`;
+  if(e==="ini")return`El peering está en estado Iniciado: se creó desde vnet-hub, pero falta crearlo desde vnet-dr. Hasta que los dos lados digan Conectado no pasa tráfico.`;
 }
 // Ruta entre dos extremos: {ok, ln:[enlaces], nd:[nodos], txt, por}
 function ruta(x,y){
@@ -224,7 +224,7 @@ function dibujar(){
   const vn=(id,x,y,w,h,tit,err)=>`<g class="vn${nd.has(id)?" on":""}${err?" err":""}"><rect x="${x}" y="${y}" width="${w}" height="${h}" rx="8"/><text x="${x+12}" y="${y+20}">${tit}</text></g>`;
   const no=(id,x,y,w,t,s,off)=>`<g class="nd${nd.has(id)?" on":""}${off?" off":""}"><rect x="${x}" y="${y}" width="${w}" height="44" rx="6"/><text class="t" x="${x+12}" y="${y+19}">${t}</text><text class="s" x="${x+12}" y="${y+35}">${s}</text></g>`;
   let s=`<g class="reg"><rect x="240" y="20" width="620" height="520" rx="12"/><text x="256" y="40">Región · Brazil South</text></g>`;
-  s+=`<g class="reg"><rect x="900" y="20" width="290" height="520" rx="12"/><text x="916" y="40">Región · East US</text></g>`;
+  s+=`<g class="reg"><rect x="900" y="20" width="290" height="520" rx="12"/><text x="916" y="40">Región · South Central US</text><text x="916" y="56">(emparejada con Brazil South)</text></g>`;
   // Enlaces debajo de las cajas
   Object.keys(LN).forEach(k=>{
     const c=k==="vpn"?"vpn":({no:"off",choca:"err",ini:"err",ok:"ok"})[estado(k)];
@@ -238,11 +238,11 @@ function dibujar(){
   s+=no("fw",285,275,220,"Azure Firewall","AzureFirewallSubnet",!cfg.fw);
   s+=`<text class="et m" x="285" y="350">Lo compartido vive en el hub</text><text class="et m" x="285" y="366">${cfg.gt?"Permite tránsito de gateway ✓":"Tránsito de gateway: no"}</text>`;
   s+=vn("web",600,70,220,110,"vnet-web · 10.1.0.0/16");
-  s+=no("vmw",615,110,190,"vm-web","10.1.1.4");
+  s+=no("vmw",615,110,190,"vm-web + sql-prod","10.1.1.4 · 10.1.2.4");
   s+=vn("dev",600,400,220,110,`vnet-dev · ${cfg.dev}.0.0/16`,cfg.dev==="10.0");
   s+=no("vmd",615,440,190,"vm-dev",`${cfg.dev}.1.4`);
-  s+=vn("datos",930,215,230,120,"vnet-datos · 10.2.0.0/16");
-  s+=no("vmb",945,255,200,"vm-db","10.2.1.4");
+  s+=vn("datos",930,215,230,120,"vnet-dr · 10.2.0.0/16");
+  s+=no("vmb",945,255,200,"sql-dr (réplica)","10.2.1.4");
   // Etiquetas encima
   Object.keys(LN).forEach(k=>{
     const [t,c]=k==="vpn"?["VPN S2S","m"]:etiq(k);
@@ -282,12 +282,12 @@ function matriz(){
 const RETOS=[
   {t:"La oficina debe llegar a vnet-web usando el único VPN Gateway, el del hub.",ini:{hA:true,hB:false},o:"of",d:"web",
    ok:()=>ruta("of","web").ok,sol:"Activa el tránsito de gateway: el hub permite usar su gateway y vnet-web usa el gateway remoto. Así no hace falta un VPN Gateway por radio."},
-  {t:"vnet-datos no responde desde vnet-hub, aunque el peering \"está creado\".",ini:{hB:true,bIni:true},o:"hub",d:"datos",
-   ok:()=>ruta("hub","datos").ok,sol:"El peering se creó solo desde el hub y quedó Iniciado. Hay que crearlo también desde vnet-datos (desmarca \"creado solo desde el hub\")."},
+  {t:"vnet-dr no responde desde vnet-hub, aunque el peering \"está creado\".",ini:{hB:true,bIni:true},o:"hub",d:"datos",
+   ok:()=>ruta("hub","datos").ok,sol:"El peering se creó solo desde el hub y quedó Iniciado. Hay que crearlo también desde vnet-dr (desmarca \"creado solo desde el hub\")."},
   {t:"Hay que emparejar vnet-dev con el hub, pero Azure no deja crear el peering.",ini:{hC:true,dev:"10.0"},o:"hub",d:"dev",
    ok:()=>ruta("hub","dev").ok,sol:"vnet-dev usa 10.0.0.0/16, el mismo espacio que el hub. Cámbialo a 10.3.0.0/16 (en una VNet nueva o sin recursos) y el peering se puede crear."},
-  {t:"vnet-web y vnet-datos deben hablar con la menor latencia posible, sin pasar por el hub.",ini:{fw:true},o:"web",d:"datos",
-   ok:()=>!!unidas("web","datos"),sol:"Crea el peering directo vnet-web ↔ vnet-datos (global, porque están en regiones distintas). Por el firewall del hub también llegan, pero con un salto más."},
+  {t:"La réplica de sql-prod (vnet-web) a sql-dr (vnet-dr) debe ir directa, con la menor latencia, sin pasar por el firewall del hub.",ini:{fw:true},o:"web",d:"datos",
+   ok:()=>!!unidas("web","datos"),sol:"Crea el peering directo vnet-web ↔ vnet-dr (global, porque están en regiones distintas). Por el firewall del hub también llega, pero con un salto más y con costo de firewall por cada GB replicado."},
   {t:"Los tres radios deben comunicarse entre sí inspeccionando el tráfico en un solo punto, sin peerings entre radios.",ini:{hC:true},o:"web",d:"dev",
    ok:()=>!cfg.AB&&cfg.fw&&["web","datos","dev"].every((x,i,a)=>a.every(y=>x===y||ruta(x,y).ok)),sol:"Pon Azure Firewall en el hub con rutas (UDR) en los radios. Con peerings directos habría que crear una malla (3 peerings) y no habría inspección central."},
   {t:"Todo debe llegar a todo (oficina incluida) con el menor número de gateways y peerings.",ini:{hA:false,hB:false},o:"of",d:"datos",

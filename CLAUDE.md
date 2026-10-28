@@ -120,8 +120,8 @@ Errores de esa guía que NO se deben copiar: dice que la secundaria de GZRS es Z
 - Errores del PDF corregidos en el sitio: una /24 tiene 251 IPs asignables en Azure (no 256); la terminación SSL es de Application Gateway, no de Load Balancer.
 
 ## Lo que ya existe: az900/peering.html (laboratorio de VNet peering, puente a AZ-104)
-- Diagrama SVG hub y radios: oficina por VPN S2S al hub (Brazil South, 10.0.0.0/16, VPN Gateway + Azure Firewall opcional), vnet-web y vnet-dev en Brazil South, vnet-datos en East US (peering global).
-- Controles: peerings hub↔web/datos/dev y web↔datos directo, peering "solo desde el hub" (estado Iniciado), espacio de vnet-dev 10.3 o 10.0 (se superpone con el hub), tránsito de gateway, firewall + UDR. `ruta(x,y)` calcula camino y motivo; origen/destino resaltan el camino y una matriz 5×5 muestra quién llega a quién.
+- Diagrama SVG hub y radios: oficina por VPN S2S al hub (Brazil South, 10.0.0.0/16, VPN Gateway + Azure Firewall opcional), vnet-web (vm-web + sql-prod) y vnet-dev en Brazil South, vnet-dr (sql-dr, réplica para recuperación ante desastres) en South Central US, la región emparejada (peering global).
+- Controles: peerings hub↔web/dr/dev y web↔dr directo (la clave interna de vnet-dr sigue siendo `datos`), peering "solo desde el hub" (estado Iniciado), espacio de vnet-dev 10.3 o 10.0 (se superpone con el hub), tránsito de gateway, firewall + UDR. `ruta(x,y)` calcula camino y motivo; origen/destino resaltan el camino y una matriz 5×5 muestra quién llega a quién.
 - 6 desafíos (`RETOS`: `ini` = estado de partida, `ok()` = condición resuelta, `sol`). 12 preguntas en `az900/data/preguntas-peering.json` (`iniciarQuiz("peering")`, clave `az900:progreso:peering`; no cuenta en el avance de los capítulos).
 - Tránsito de gateway, estado Iniciado/Conectado, firewall en el hub y cobro del peering no están en el PDF (AZ-900 pág. 104, AZ-104 págs. 161–163).
 - Enlazado desde la `.nav` de arquitectura, mapa, cap06 y az104/redes.
