@@ -76,6 +76,26 @@
     <p>Toda pregunta de conectividad cae en uno de tres tramos: <b>1</b> desde fuera de Azure hasta tu VNet, <b>2</b> de una VNet a otra y <b>3</b> de tu VNet a un servicio como Storage. El diagrama es una red hub y radios: una VNet central (<b>hub</b>) con lo compartido y tres VNets de aplicaciones (<b>radios</b>), una de ellas en la región emparejada para recuperación ante desastres (DR). Cambia la configuración y mira quién llega a quién y por qué.</p>
   </header>
 
+  <!-- 0 · Resumen de los tramos -->
+  <section class="bloque">
+    <h2 class="h">Los 3 tramos en 30 segundos</h2>
+    <div class="tres">
+      <div class="tramo"><h3><span>TRAMO 1</span>Red local → VNet</h3>
+        <p style="margin:0"><b>VPN Gateway</b> (tipo <b>S2S</b>: toda la oficina · tipo <b>P2S</b>: un solo equipo) o <b>ExpressRoute</b>.</p>
+        <p style="margin:0;color:var(--muted)">La <b>puerta de entrada</b> desde fuera de Azure. Internet o IPsec → VPN Gateway; línea dedicada → ExpressRoute.</p></div>
+      <div class="tramo"><h3><span>TRAMO 2</span>VNet ↔ VNet</h3>
+        <p style="margin:0"><b>VNet peering</b> (local o global).</p>
+        <p style="margin:0;color:var(--muted)">El <b>puente</b> entre dos VNets. Las subredes de una misma VNet ya se ven entre sí: no necesitan peering.</p></div>
+      <div class="tramo"><h3><span>TRAMO 3</span>VNet → Storage o SQL</h3>
+        <p style="margin:0"><b>Endpoint de servicio</b> o <b>endpoint privado</b>.</p>
+        <p style="margin:0;color:var(--muted)">La <b>puerta hacia los servicios</b> PaaS. No unen redes y no son un VPN Gateway.</p></div>
+    </div>
+    <div class="note"><h3>Cómo resolver una pregunta</h3>
+      <p style="margin:0"><b>1.</b> ¿Qué se conecta con qué? → elige el tramo. <b>2.</b> ¿Por dónde viaja? (Internet o línea dedicada; IP pública o privada) → elige la opción del tramo. <b>3.</b> Descarta lo de otros tramos.<br>
+      Ejemplo: "conectar la VNet con la <b>red local</b> mediante un <b>túnel IPsec por Internet</b>" → red local = tramo 1 → IPsec por Internet = <b>VPN Gateway</b>. El peering es del tramo 2, ExpressRoute no usa Internet y "Secure-net" no existe.</p></div>
+    <p class="fb" style="margin:0">Nombres en el examen: <b>VPN Gateway</b> es el servicio (el recurso que creas en la GatewaySubnet); <b>Site-to-Site</b> y <b>Point-to-Site</b> son los tipos de conexión que acepta. Si una opción dice "VPN Gateway" y otra "Site-to-Site", hablan de lo mismo.</p>
+  </section>
+
   <!-- 1 · Diagrama -->
   <section class="bloque">
     <h2 class="h">1 · El diagrama</h2>
@@ -83,7 +103,7 @@
       <div class="tramo"><h3><span>TRAMO 1</span>De fuera de Azure a la VNet</h3>
         <div class="ctl"><label>Oficina</label><div class="seg" id="segOfi"></div></div>
         <div class="chkP">
-          <label class="chk"><input type="checkbox" data-c="p2s"><span>Laptop remoto por VPN Point-to-Site <small>(cliente VPN en el equipo)</small></span></label>
+          <label class="chk"><input type="checkbox" data-c="p2s"><span>Laptop remoto por VPN Gateway · P2S <small>(cliente VPN en el equipo)</small></span></label>
           <label class="chk"><input type="checkbox" data-c="gt"><span>Tránsito de gateway <small>(los radios usan el gateway del hub para llegar a la oficina y al laptop)</small></span></label>
         </div>
       </div>
@@ -133,8 +153,8 @@
     <div class="tbl"><table>
       <thead><tr><th>Tramo</th><th>Opción</th><th>Qué conecta</th><th>Necesita</th><th>Pista en el enunciado</th></tr></thead>
       <tbody>
-        <tr><td rowspan="3"><b>1</b> · Fuera de Azure → VNet</td><td><b>VPN Site-to-Site</b></td><td>Toda la oficina, permanente, cifrado por Internet</td><td>Dispositivo VPN en la oficina + VPN Gateway</td><td>"oficina", "sucursal"</td></tr>
-        <tr><td><b>VPN Point-to-Site</b></td><td>Un solo equipo, cifrado por Internet</td><td>Cliente VPN en el equipo + VPN Gateway</td><td>"trabajador remoto", "desde casa"</td></tr>
+        <tr><td rowspan="3"><b>1</b> · Fuera de Azure → VNet</td><td><b>VPN Gateway · Site-to-Site</b></td><td>Toda la oficina, permanente, cifrado por Internet</td><td>Dispositivo VPN en la oficina + VPN Gateway</td><td>"oficina", "sucursal"</td></tr>
+        <tr><td><b>VPN Gateway · Point-to-Site</b></td><td>Un solo equipo, cifrado por Internet</td><td>Cliente VPN en el equipo + VPN Gateway</td><td>"trabajador remoto", "desde casa"</td></tr>
         <tr><td><b>ExpressRoute</b></td><td>La oficina por un circuito privado de un proveedor</td><td>Circuito con el proveedor + ExpressRoute Gateway</td><td>"sin pasar por Internet", "dedicado"</td></tr>
         <tr><td rowspan="2"><b>2</b> · VNet → VNet</td><td><b>VNet peering</b></td><td>Directo por la red troncal de Microsoft, local o global</td><td>Nada: sin gateway (se cobra por GB)</td><td>"dos VNets", "menor latencia"</td></tr>
         <tr><td><b>VNet-to-VNet</b></td><td>Túnel IPsec entre dos VNets</td><td>VPN Gateway en cada VNet</td><td>"cifrado IPsec entre VNets"</td></tr>
@@ -362,7 +382,7 @@ chks.forEach(c=>c.onchange=()=>{cfg[c.dataset.c]=c.checked;render()});
 const unico=a=>[...new Set(a)];
 function render(){
   chks.forEach(c=>{c.checked=cfg[c.dataset.c];if(c.dataset.c==="bIni")c.disabled=!cfg.hB});
-  seg("segOfi",{s2s:"VPN Site-to-Site",er:"ExpressRoute",no:"Sin conexión"},()=>cfg.ofi,v=>cfg.ofi=v,render);
+  seg("segOfi",{s2s:"VPN Gateway · S2S",er:"ExpressRoute",no:"Sin conexión"},()=>cfg.ofi,v=>cfg.ofi=v,render);
   seg("segV2v",{peer:"VNet peering",v2v:"VNet-to-VNet (VPN)"},()=>cfg.v2v?"v2v":"peer",v=>cfg.v2v=v==="v2v",render);
   seg("segDev",{"10.3":"10.3.0.0/16","10.0":"10.0.0.0/16 (igual que el hub)"},()=>cfg.dev,v=>cfg.dev=v,render);
   seg("segSt",{publico:"Endpoint público",se:"Service endpoint",pe:"Private endpoint"},()=>cfg.st,v=>cfg.st=v,render);
@@ -425,7 +445,7 @@ function retos(){
 }
 
 /* ---------- 5 · Pistas ---------- */
-const SERV={s2s:"VPN Site-to-Site",p2s:"VPN Point-to-Site",er:"ExpressRoute",peer:"VNet peering",se:"Endpoint de servicio",pe:"Endpoint privado"};
+const SERV={s2s:"VPN Gateway · S2S",p2s:"VPN Gateway · P2S",er:"ExpressRoute",peer:"VNet peering",se:"Endpoint de servicio",pe:"Endpoint privado"};
 const PISTAS=[
  ["Conexión segura entre la red local y la VNet mediante un túnel IPsec a través de Internet público","s2s","Paso 1: red local ↔ VNet. Paso 2: IPsec + Internet → VPN. Es la red completa → Site-to-Site."],
  ["Línea dedicada de alta velocidad entre la red local y Azure, sin pasar por Internet","er","Paso 1: red local ↔ VNet. Paso 2: línea dedicada, sin Internet → ExpressRoute (pág. 120)."],
