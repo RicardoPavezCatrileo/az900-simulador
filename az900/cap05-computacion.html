@@ -138,6 +138,13 @@
         <li>Opcional: Load Balancer y reparto en varias zonas.</li>
         <li><b>Sin costo extra</b>: pagas las VMs, el almacenamiento y la red.</li>
       </ul></div>
+      <div class="card"><h3>Conjunto de disponibilidad vs zona</h3><ul>
+        <li><b>Conjunto de disponibilidad</b>: separa tus VMs en <b>racks distintos</b> dentro de <b>un</b> centro de datos.</li>
+        <li><b>Dominios de error</b> (hasta 3): racks con su propia energía y red → falla de hardware.</li>
+        <li><b>Dominios de actualización</b> (hasta 20): Microsoft reinicia <b>de a uno</b> → mantenimiento.</li>
+        <li><b>Zona de disponibilidad</b>: separa <b>centros de datos</b> → cae un edificio entero.</li>
+        <li>No escala (eso es el Scale Set). <i>No está en el PDF; sí en Microsoft Learn.</i></li>
+      </ul></div>
       <div class="card"><h3>Contenedores</h3><ul>
         <li><b>Docker:</b> empaqueta la app para que corra igual en cualquier lugar; más ligero que una VM.</li>
         <li><b>Docker Hub:</b> repositorio público de imágenes. <b>Azure Container Registry (ACR):</b> privado.</li>

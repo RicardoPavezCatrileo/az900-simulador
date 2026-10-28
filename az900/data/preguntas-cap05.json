@@ -148,5 +148,11 @@
     "opciones": ["Azure Container Instances", "Azure Kubernetes Service (AKS)", "Azure Virtual Machines", "Azure Cloud Storage"],
     "correcta": 1,
     "explicacion": "Palabra que decide: \"orquestar\" + \"múltiples microservicios\" → AKS (Kubernetes administrado: Microsoft gestiona el plano de control) (PDF págs. 93–95). Trampa: ACI también ejecuta contenedores, pero es para uno simple o puntual, sin orquestador. Con VMs tendrías que montar tú el orquestador."
+  },
+  {
+    "pregunta": "Implementas una aplicación en VMs de Azure y quieres que siga disponible ante fallos de hardware y durante las actualizaciones del sistema. ¿Qué concepto aplicas?",
+    "opciones": ["Zona de disponibilidad", "Almacenamiento con redundancia local (LRS)", "Almacenamiento con redundancia de zona (ZRS)", "Conjunto de disponibilidad"],
+    "correcta": 3,
+    "explicacion": "\"Fallos de hardware\" = dominios de error (racks distintos) y \"actualizaciones\" = dominios de actualización (se reinicia uno a la vez): las dos piezas del conjunto de disponibilidad. La zona de disponibilidad protege ante la caída de un centro de datos completo; LRS y ZRS son de almacenamiento. No está en el PDF; sí en Microsoft Learn (módulo de cómputo y redes de AZ-900)."
   }
 ]
