@@ -112,5 +112,11 @@
     "opciones": ["Azure ExpressRoute", "VNet peering", "Una conexión Azure Secure-net", "Azure VPN Gateway"],
     "correcta": 3,
     "explicacion": "Es la pareja de la pregunta de ExpressRoute: solo cambia el camino. Túnel IPsec + Internet público = VPN Gateway (Site-to-Site, págs. 112–114). \"Segura y privada\" no decide: la VPN también lo es porque va cifrada. ExpressRoute no pasa por Internet, el peering solo une VNets y \"Secure-net\" no existe."
+  },
+  {
+    "pregunta": "¿Qué afirmaciones describen correctamente las diferencias entre endpoints privados y endpoints de servicio? Selecciona TODAS las correctas.",
+    "opciones": ["El endpoint de servicio permite deshabilitar por completo el acceso público al servicio PaaS y habilita el acceso desde ubicaciones fuera de Azure", "El endpoint de servicio da acceso privado al servicio PaaS solo a una subred de la VNet; el endpoint privado extiende ese acceso a las redes conectadas, incluida la red local", "El endpoint privado requiere Azure Arc para llegar a redes fuera de Azure", "El endpoint privado permite deshabilitar por completo el acceso público al servicio PaaS"],
+    "correcta": [1, 3],
+    "explicacion": "El endpoint de servicio se activa por subred y el servicio sigue con IP pública. El endpoint privado le da una IP privada dentro de la VNet, así que llega todo lo conectado a ella (otras VNets por peering y la red local por VPN o ExpressRoute), y permite cerrar el acceso público (PDF págs. 204–207). La primera opción describe al privado, no al de servicio; Azure Arc no tiene relación con redes."
   }
 ]
