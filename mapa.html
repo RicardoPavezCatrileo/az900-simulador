@@ -15,6 +15,10 @@
 
 .wrap{max-width:1280px}
 .modos{display:flex;flex-wrap:wrap;gap:6px}
+.grupo{flex-basis:100%;display:grid;grid-template-columns:15em 1fr;gap:6px;align-items:start}
+.grupo .gt{font-family:var(--f-mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;padding-top:9px}
+.grupo .bt{display:flex;flex-wrap:wrap;gap:6px}
+@media (max-width:760px){.grupo{grid-template-columns:1fr}.grupo .gt{padding-top:6px}}
 .lienzo{background:var(--surface);border:1px solid var(--line);border-radius:10px;overflow-x:auto}
 .lienzo svg{display:block;min-width:1080px;width:100%;height:auto}
 .n{cursor:pointer}
@@ -267,7 +271,7 @@ function dibujar(activos,aristas){
   const hay=activos&&activos.size;
   const esActiva=(a,b)=>aristas.some(([x,y])=>(x===a&&y===b));
   let s=`<defs>${AREAS.map((a,i)=>`<marker id="m${i}" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="${a.c}"/></marker>`).join("")}<marker id="mg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--muted)"/></marker></defs>`;
-  s+=AREAS.map((a,i)=>`<text class="col" x="${X0+i*COLX}" y="${a.col?13:26}" fill="${a.c}">${(a.col||[a.n]).map((l,k)=>`<tspan x="${X0+i*COLX}" dy="${k?14:0}">${l}</tspan>`).join("")}</text>`).join("");
+  s+=AREAS.map((a,i)=>`<text class="col" x="${X0+i*COLX}" y="${a.col?13:26}" fill="${a.c}">${(a.col||[a.n]).map((l,k)=>`<tspan x="${X0+i*COLX}" dy="${k?14:0}">${k?"":(i+1)+" · "}${l}</tspan>`).join("")}</text>`).join("");
   let etiquetas="";
   E.forEach(([a,b,l])=>{
     const r=ruta(a,b),on=hay&&esActiva(a,b),ca=byId[a][2];
@@ -294,11 +298,17 @@ function render(){
     b.onclick=()=>{modo=k;if(k==="escenarios"&&!esc)esc="web";if(k==="comparar"&&!vs)vs="vpner";render()};m.appendChild(b)});
   const op=document.getElementById("opciones");op.innerHTML="";
   const lista=modo==="escenarios"?ESC:modo==="comparar"?VS:null;
-  if(lista)Object.keys(lista).forEach(k=>{const b=document.createElement("button");b.type="button";b.className="btn";b.textContent=lista[k].n;
+  const boton=(k,txt,dest)=>{const b=document.createElement("button");b.type="button";b.className="btn";b.textContent=txt;
     b.setAttribute("aria-pressed",String((modo==="escenarios"?esc:vs)===k));
     if((modo==="escenarios"?esc:vs)===k){b.style.borderColor="var(--accent)";b.style.background="var(--accent-soft)"}
-    b.onclick=()=>{modo==="escenarios"?esc=k:vs=k;render()};op.appendChild(b)});
-  document.getElementById("leyenda").innerHTML=AREAS.map(a=>`<span><i style="background:${a.c}"></i>${a.n}</span>`).join("");
+    b.onclick=()=>{modo==="escenarios"?esc=k:vs=k;render()};dest.appendChild(b)};
+  if(modo==="escenarios")Object.keys(ESC).forEach(k=>boton(k,ESC[k].n,op));
+  // Comparaciones agrupadas y numeradas por el área de su primer servicio (igual que las columnas del mapa)
+  if(modo==="comparar")AREAS.forEach((a,i)=>{
+    const ks=Object.keys(VS).filter(k=>byId[VS[k].a][2]===i);if(!ks.length)return;
+    const g=document.createElement("div");g.className="grupo";g.innerHTML=`<span class="gt" style="color:${a.c}">${i+1} · ${a.n}</span><div class="bt"></div>`;
+    ks.forEach((k,j)=>boton(k,`${i+1}.${j+1} ${VS[k].n}`,g.lastChild));op.appendChild(g)});
+  document.getElementById("leyenda").innerHTML=AREAS.map((a,i)=>`<span><i style="background:${a.c}"></i>${i+1} · ${a.n}</span>`).join("");
 
   const panel=document.getElementById("panel");
   if(modo==="explorar"){
