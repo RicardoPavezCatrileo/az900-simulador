@@ -106,5 +106,11 @@
     "opciones": ["Centro de administración de Microsoft Entra (entra.microsoft.com)", "Azure Storage Explorer", "Azure Advisor", "Azure Mobile App únicamente"],
     "correcta": 0,
     "explicacion": "El centro de administración de Microsoft Entra es el punto central para gestionar la identidad en Azure y Microsoft 365."
+  },
+  {
+    "pregunta": "¿Cuáles son componentes clave de una política de acceso condicional? Selecciona TODAS las correctas.",
+    "opciones": ["Grupos de acción", "Señales", "Decisiones de acceso", "Agente de Azure Arc"],
+    "correcta": [1, 2],
+    "explicacion": "El acceso condicional reúne señales (usuario, ubicación, dispositivo, aplicación, riesgo) para tomar una decisión (permitir, bloquear o pedir MFA) y aplicarla (PDF págs. 182–183). Los grupos de acción son de Azure Monitor: definen qué hacer cuando salta una alerta. El agente de Azure Arc conecta servidores fuera de Azure."
   }
 ]

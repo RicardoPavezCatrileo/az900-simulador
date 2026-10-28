@@ -112,5 +112,11 @@
     "opciones": ["Sí", "No"],
     "correcta": 1,
     "explicacion": "El tamaño es solo uno de los factores. También influyen las horas en ejecución (una VM desasignada no cobra cómputo), la región, el disco y su tipo, el tráfico de salida, la licencia del sistema operativo y el modelo de compra (pago por uso, reservada, spot, plan de ahorro). Por eso dos VMs iguales pueden costar distinto (PDF cap. 11)."
+  },
+  {
+    "pregunta": "Tu empresa necesita comparar el costo de mantener su clúster de servidores actual con el de migrar a VMs de Azure, y estimar el ahorro de pasar una aplicación a App Service. ¿Qué herramienta usas?",
+    "opciones": ["Azure Pricing Calculator", "Azure Cost Management", "Calculadora de costo total de propiedad (TCO)", "Azure Arc"],
+    "correcta": 2,
+    "explicacion": "Comparar local vs Azure y estimar el ahorro de migrar = calculadora TCO. La calculadora de precios solo estima lo que crearás en Azure, sin compararlo; Cost Management muestra el gasto real de lo que ya corre; Arc no es de costos. Si entre las opciones apareciera Azure Migrate y se hablara de servidores reales evaluados, Migrate (caso de negocio) sería la mejor."
   }
 ]
