@@ -118,5 +118,11 @@
     "opciones": ["Azure Pricing Calculator", "Azure Cost Management", "Calculadora de costo total de propiedad (TCO)", "Azure Arc"],
     "correcta": 2,
     "explicacion": "Comparar local vs Azure y estimar el ahorro de migrar = calculadora TCO. La calculadora de precios solo estima lo que crearás en Azure, sin compararlo; Cost Management muestra el gasto real de lo que ya corre; Arc no es de costos. Si entre las opciones apareciera Azure Migrate y se hablara de servidores reales evaluados, Migrate (caso de negocio) sería la mejor."
+  },
+  {
+    "pregunta": "Un equipo planea asignar etiquetas a un grupo de recursos. ¿Las etiquetas serán heredadas por los recursos dentro del grupo de recursos?",
+    "opciones": ["Sí", "No"],
+    "correcta": 1,
+    "explicacion": "Las etiquetas NO se heredan: cada recurso lleva las suyas (PDF pág. 266). Para que los recursos las tomen del grupo hay que usar Azure Policy (por ejemplo, \"Heredar una etiqueta del grupo de recursos\"). Trampa: Azure Policy, RBAC y los bloqueos SÍ se heredan hacia abajo; las etiquetas son la excepción."
   }
 ]
