@@ -106,5 +106,17 @@
     "opciones": ["Actualizar los sistemas operativos de los servidores", "Sustituir hardware de servidor dañado", "Gestionar la seguridad física de los servidores", "Gestionar los permisos de documentos compartidos", "Realizar copias de seguridad de los datos de aplicaciones"],
     "correcta": [1, 2],
     "explicacion": "Una VM es IaaS: Microsoft se encarga solo de lo físico (hardware y seguridad del centro de datos). El sistema operativo, los backups de tus datos (Azure Backup existe, pero lo configuras tú) y los permisos siguen siendo tuyos; los permisos y los datos lo son en cualquier modelo. Con PaaS también se reduciría actualizar el SO (PDF pág. 29)."
+  },
+  {
+    "pregunta": "¿Cuál de las siguientes afirmaciones es correcta respecto a los servicios en la nube IaaS (Infraestructura como Servicio)? Selecciona DOS respuestas.",
+    "opciones": ["El cliente es responsable de gestionar y realizar actualizaciones en el sistema operativo y las aplicaciones de la máquina virtual", "El cliente tiene control total sobre el hardware físico que aloja la máquina virtual", "El cliente tiene que adquirir y gestionar todas las licencias del sistema operativo del host", "Los servicios IaaS pueden escalarse automáticamente para adaptarse a variaciones en la carga de trabajo del sistema"],
+    "correcta": [0, 3],
+    "explicacion": "En IaaS el cliente administra el SO invitado, sus parches y las aplicaciones (responsabilidad compartida, PDF pág. 29), y la infraestructura escala automáticamente según la carga (por ejemplo, con Scale Sets). Trampas: el hardware físico y el host son de Microsoft; el cliente no lo toca ni licencia el SO del host (solo el de su VM, que puede venir incluido en el precio)."
+  },
+  {
+    "pregunta": "¿Qué término describe la capacidad de un servicio en la nube de ser accesible rápidamente desde cualquier lugar a través de Internet?",
+    "opciones": ["Baja latencia", "Escalabilidad dinámica", "Recuperación ante desastres", "Elasticidad dinámica"],
+    "correcta": 0,
+    "explicacion": "Pistas: \"rápidamente\" + \"desde cualquier lugar\" = baja latencia, gracias a regiones y PoP cerca de los usuarios (PDF págs. 32–33). Trampas: recuperación ante desastres = seguir funcionando tras una falla grande; escalabilidad y elasticidad hablan de capacidad ante la carga, no de rapidez de acceso."
   }
 ]

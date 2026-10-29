@@ -92,7 +92,7 @@ Errores de esa guía que NO se deben copiar: dice que la secundaria de GZRS es Z
 ## Lo que ya existe: cap02-cloud.html (PDF págs. 9–29)
 - Simulador de responsabilidad compartida: Local/IaaS/PaaS/SaaS sobre 10 capas (cliente / compartida / Microsoft) + tabla comparativa.
 - Simulador de capacidad: centro de datos propio (servidores fijos, slider) vs cloud (capacidad = demanda +10%), gráfico SVG mensual con demanda atendida, sin atender y capacidad ociosa.
-- Tarjetas de conceptos (despliegue, 5 características, 6 ventajas, pilares, precios, IaaS/PaaS/SaaS) y 18 preguntas en `data/preguntas-cap02.json` (la 18 es de selección múltiple: migrar a VMs reduce solo hardware y seguridad física, con el backup de trampa; la 16 es de selección múltiple: atributos de la nube privada, control total + compra de hardware; la 17 es previsibilidad vs confiabilidad).
+- Tarjetas de conceptos (despliegue, 5 características, 6 ventajas, pilares, precios, IaaS/PaaS/SaaS) y 20 preguntas en `data/preguntas-cap02.json` (la 20: baja latencia = "rápido desde cualquier lugar", con recuperación ante desastres de trampa; la 19 es de selección múltiple: IaaS = el cliente gestiona SO y apps + escala automático, con hardware físico y licencias del host de trampa; la 18 es de selección múltiple: migrar a VMs reduce solo hardware y seguridad física, con el backup de trampa; la 16 es de selección múltiple: atributos de la nube privada, control total + compra de hardware; la 17 es previsibilidad vs confiabilidad).
 
 ## Lo que ya existe: cap03-arquitectura.html (PDF págs. 30–47)
 - Simulador de despliegue (ejemplo Londres/Mumbai del curso): 1 centro de datos / 2 centros de datos / 2 regiones × evento (falla de centro de datos, caída de región) × ubicación del usuario → disponibilidad y latencia, con los 3 desafíos del curso marcados como resueltos o no.
@@ -132,6 +132,7 @@ Errores de esa guía que NO se deben copiar: dice que la secundaria de GZRS es Z
 - Enlazado como tarjeta destacada en `az900/index.html`. Carga los JSON de cap02–cap11 (no el laboratorio) y arma 20/40/50/60 preguntas con el peso de los dominios oficiales: 1 Conceptos de la nube 25–30% (cap02), 2 Arquitectura y servicios 35–40% (cap03, 05–09), 3 Gestión y gobernanza 30–35% (cap04, 10, 11); `reparto()` da el sobrante primero a Arquitectura.
 - Una pregunta por pantalla, opciones mezcladas (`orden` por pregunta), selección múltiple con `correcta` array, marcar para revisar, grilla de navegación, teclas 1–5 y ← →, cronómetro 45 min (real) / 60 / sin límite. No muestra si acertaste hasta terminar.
 - Resultado: puntaje = 1000 × aciertos / total (el real es escalado), aprobado con 700, % por dominio, aciertos por capítulo con enlace, revisión (errores / marcadas / todas) con la explicación, y "Practicar solo mis errores".
+- Las preguntas que el usuario falla en simulacros externos se agregan al JSON del capítulo que corresponde (con su redacción, la explicación breve y la trampa): así entran solas al banco del simulacro.
 - `localStorage`: `az900:simulacro:actual` (intento en curso, se puede continuar) y `az900:simulacro:historial` (últimos 30). No cuenta en el avance de los capítulos.
 
 ## Lo que ya existe: capítulos 8 a 11
