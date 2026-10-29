@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Simulacro AZ-900</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="../assets/estilos.css">
+<style>
+.bloque{display:grid;gap:14px}
+.bloque>*{min-width:0}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px 18px;display:grid;gap:14px}
+.mini{font-size:.82rem;color:var(--muted)}
+.barra{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;justify-content:space-between;font-family:var(--f-mono);font-size:.85rem;color:var(--muted)}
+.reloj{font-size:1.1rem;color:var(--ink);font-variant-numeric:tabular-nums}
+.reloj.poco{color:var(--bad)}
+.enun{margin:0;font-size:1.05rem;font-weight:500;line-height:1.5}
+.tipo{font-family:var(--f-mono);font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.ops{display:grid;gap:8px}
+.ops button{font:inherit;text-align:left;padding:10px 14px;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:8px;cursor:pointer;display:flex;gap:10px;align-items:flex-start}
+.ops button:hover{border-color:var(--accent)}
+.ops button .l{font-family:var(--f-mono);font-size:.8rem;color:var(--muted);min-width:1.2em;padding-top:2px}
+.ops button.pick{background:var(--accent-soft);border-color:var(--accent)}
+.ops button.right{border:2px solid var(--ok)}
+.ops button.wrong{border:2px solid var(--bad)}
+.ops button.right.missed{border-style:dashed}
+.acc{display:flex;flex-wrap:wrap;gap:8px;justify-content:space-between}
+.acc>div{display:flex;flex-wrap:wrap;gap:8px}
+.btn.prim{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.marc{border-color:var(--warn);color:var(--warn)}
+.grilla{display:grid;grid-template-columns:repeat(auto-fill,minmax(34px,1fr));gap:4px}
+.grilla button{font:inherit;font-family:var(--f-mono);font-size:.75rem;height:32px;border:1px solid var(--line);background:var(--bg);color:var(--muted);border-radius:5px;cursor:pointer;position:relative;padding:0}
+.grilla button.resp{background:var(--accent-soft);color:var(--ink);border-color:var(--accent)}
+.grilla button.act{outline:2px solid var(--ink);outline-offset:1px}
+.grilla button.mar::after{content:"";position:absolute;top:2px;right:2px;width:7px;height:7px;border-radius:50%;background:var(--warn)}
+.grilla button.ok{background:var(--ok);border-color:var(--ok);color:#fff}
+.grilla button.mal{background:var(--bad);border-color:var(--bad);color:#fff}
+.ley{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:.8rem;color:var(--muted)}
+.ley i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+.nota{font-family:var(--f-display);font-size:3rem;font-weight:800;line-height:1;font-variant-numeric:tabular-nums}
+.nota small{font-size:1rem;color:var(--muted);font-weight:500}
+.dom{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 12px;align-items:center;font-size:.9rem}
+.dom .bar{grid-column:1/-1}
+.rev{display:grid;gap:10px}
+.rev .q .fb a{color:var(--accent)}
+.oculto{display:none!important}
+td.si{color:var(--ok);font-weight:600} td.no{color:var(--bad);font-weight:600}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="nav"><a class="volver" href="index.html">← Capítulos AZ-900</a><a class="volver" href="../mapa.html">Mapa conceptual →</a><a class="volver" href="../arquitectura.html">Arquitectura →</a></div>
+  <header>
+    <div class="eyebrow">AZ-900 · Simulacro de examen</div>
+    <h1>Simulacro AZ-900</h1>
+    <p>Preguntas al azar de los 10 capítulos, con el peso de cada dominio del examen oficial. No ves si acertaste hasta terminar, como en el examen real. Se aprueba con <b>700 de 1000</b>.</p>
+  </header>
+
+  <!-- Inicio -->
+  <section class="bloque" id="vInicio">
+    <div class="panel">
+      <div class="controls">
+        <div class="ctl"><label>Preguntas</label><div class="seg" id="cant"></div></div>
+        <div class="ctl"><label>Tiempo</label><div class="seg" id="tiempo"></div></div>
+      </div>
+      <div class="tbl"><table><thead><tr><th>Dominio del examen</th><th>Peso oficial</th><th>Capítulos</th><th>Preguntas en el simulacro</th></tr></thead><tbody id="tbodyD"></tbody></table></div>
+      <p class="mini" id="pool"></p>
+      <div><button type="button" class="btn prim" id="empezar">Empezar el simulacro</button> <button type="button" class="btn oculto" id="continuar">Continuar el simulacro sin terminar</button></div>
+    </div>
+    <div class="note">
+      <h3>Cómo es el examen real</h3>
+      <p>Entre 40 y 60 preguntas, aprobación con 700/1000, y el puntaje es escalado (no es exactamente el % de aciertos). Microsoft da <b>45 minutos</b> para responder, más tiempo de sesión para instrucciones y encuesta. Trae preguntas de una opción, de varias, de sí/no y de arrastrar; aquí se practican las de una y las de varias. Las preguntas no descuentan: <b>nunca dejes una en blanco</b>.</p>
+    </div>
+    <div id="hist"></div>
+  </section>
+
+  <!-- Examen -->
+  <section class="bloque oculto" id="vExamen">
+    <div class="barra"><span id="prog"></span><span class="reloj" id="reloj"></span></div>
+    <div class="bar"><span id="progBar"></span></div>
+    <div class="panel">
+      <div class="tipo" id="tipoQ"></div>
+      <p class="enun" id="enun"></p>
+      <div class="ops" id="ops"></div>
+      <div class="acc">
+        <div><button type="button" class="btn" id="ant">← Anterior</button><button type="button" class="btn" id="sig">Siguiente →</button></div>
+        <div><button type="button" class="btn marc" id="marcar"></button><button type="button" class="btn" id="terminar">Terminar y ver el puntaje</button></div>
+      </div>
+    </div>
+    <div class="grilla" id="grilla"></div>
+    <div class="ley"><span><i style="background:var(--accent-soft);border:1px solid var(--accent)"></i>respondida</span><span><i style="background:var(--warn);border-radius:50%"></i>marcada para revisar</span><span>Teclas: 1–5 elige, ← → navega</span></div>
+  </section>
+
+  <!-- Resultado -->
+  <section class="bloque oculto" id="vRes">
+    <div class="panel">
+      <div class="nota" id="nota"></div>
+      <div class="status" id="statusR"></div>
+      <div id="doms" style="display:grid;gap:12px"></div>
+    </div>
+    <div class="tbl"><table><thead><tr><th>Capítulo</th><th>Aciertos</th><th>Repasar</th></tr></thead><tbody id="tbodyC"></tbody></table></div>
+    <div class="grilla" id="grillaR"></div>
+    <div class="controls">
+      <div class="ctl"><label>Revisar</label><div class="seg" id="filtro"></div></div>
+    </div>
+    <div class="rev" id="rev"></div>
+    <div><button type="button" class="btn prim" id="otra">Hacer otro simulacro</button> <button type="button" class="btn" id="errores">Practicar solo mis errores</button></div>
+  </section>
+</div>
+
+<script src="../assets/progreso.js"></script>
+<script>
+// Dominios oficiales de AZ-900 (porcentaje medio del temario)
+const DOM=[
+ {id:1,nombre:"Conceptos de la nube",peso:"25–30%",p:.275,caps:["cap02"]},
+ {id:2,nombre:"Arquitectura y servicios de Azure",peso:"35–40%",p:.375,caps:["cap03","cap05","cap06","cap07","cap08","cap09"]},
+ {id:3,nombre:"Gestión y gobernanza de Azure",peso:"30–35%",p:.35,caps:["cap04","cap10","cap11"]}
+];
+const CANT={20:"20",40:"40",50:"50",60:"60"},TIEMPO={45:"45 min (real)",60:"60 min",0:"Sin límite"};
+const K_ACT="az900:simulacro:actual",K_HIST="az900:simulacro:historial";
+const leerLS=k=>{try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}};
+const guardarLS=(k,v)=>{try{v==null?localStorage.removeItem(k):localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
+const $=id=>document.getElementById(id);
+const capDe=id=>CAPITULOS.find(c=>c.id===id);
+const domDe=cap=>DOM.find(d=>d.caps.includes(cap));
+const esc=s=>String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;");
+function mezclar(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function seg(id,obj,get,set,fn){
+  const el=$(id);el.innerHTML="";
+  Object.keys(obj).forEach(k=>{const b=document.createElement("button");b.type="button";b.textContent=obj[k];b.dataset.k=k;
+    b.setAttribute("aria-pressed",String(get()===k));b.onclick=()=>{set(k);fn()};el.appendChild(b)});
+}
+function status(id,lvl,t,d){
+  const col={ok:"var(--ok)",warn:"var(--warn)",bad:"var(--bad)",info:"var(--accent)"}[lvl],ico={ok:"✓",warn:"!",bad:"✕",info:"i"}[lvl];
+  $(id).innerHTML=`<span class="dot" style="background:${col}" aria-hidden="true"></span><div><b>${ico} ${t}</b><p>${d}</p></div>`;
+}
+
+let BANCO={};          // cap → preguntas
+let cant="50",tiempo="45",ex=null,tick=null,filtro="mal";
+
+/* ---------- Inicio ---------- */
+function reparto(n){
+  const r=DOM.map(d=>Math.floor(n*d.p));let resto=n-r.reduce((a,b)=>a+b,0);
+  for(let i=1;resto>0;i=(i+1)%3,resto--)r[i]++;   // el sobrante va primero a Arquitectura
+  return r;
+}
+function renderInicio(){
+  seg("cant",CANT,()=>cant,v=>cant=v,renderInicio);
+  seg("tiempo",TIEMPO,()=>tiempo,v=>tiempo=v,renderInicio);
+  const r=reparto(+cant);
+  $("tbodyD").innerHTML=DOM.map((d,i)=>`<tr><td>${d.id} · ${d.nombre}</td><td>${d.peso}</td><td>${d.caps.map(c=>capDe(c).num).join(", ")}</td><td>${r[i]}</td></tr>`).join("");
+  const tot=Object.values(BANCO).reduce((s,q)=>s+q.length,0);
+  $("pool").textContent=`Banco: ${tot} preguntas de los quizzes de los capítulos 2 a 11. Las opciones se muestran en otro orden en cada intento.`;
+  const act=leerLS(K_ACT);
+  $("continuar").classList.toggle("oculto",!act);
+  if(act)$("continuar").textContent=`Continuar el simulacro sin terminar (${act.items.filter(x=>x.r.length).length}/${act.items.length} respondidas)`;
+  renderHist();
+}
+function renderHist(){
+  const h=leerLS(K_HIST)||[];
+  if(!h.length){$("hist").innerHTML="";return}
+  $("hist").innerHTML=`<h2 class="h">Tus simulacros</h2><div class="tbl"><table><thead><tr><th>Fecha</th><th>Puntaje</th><th>Aciertos</th>${DOM.map(d=>`<th>Dom. ${d.id}</th>`).join("")}<th>Tiempo</th></tr></thead><tbody>${
+    h.slice().reverse().map(x=>`<tr><td>${x.fecha}</td><td class="${x.puntaje>=700?"si":"no"}">${x.puntaje}</td><td>${x.ok}/${x.total}</td>${x.dom.map(p=>`<td>${p==null?"—":p+"%"}</td>`).join("")}<td>${x.min} min</td></tr>`).join("")
+  }</tbody></table></div>`;
+}
+function crear(lista){
+  ex={items:lista.map(([cap,i])=>{const q=BANCO[cap][i];return {cap,i,orden:mezclar(q.opciones.map((_,j)=>j)),r:[],m:false}}),
+      act:0,lim:+tiempo*60,usado:0,ini:Date.now()};
+  guardarLS(K_ACT,ex);abrirExamen();
+}
+$("empezar").onclick=()=>{
+  const r=reparto(+cant),lista=[];
+  DOM.forEach((d,k)=>{const pool=[];d.caps.forEach(c=>BANCO[c].forEach((_,i)=>pool.push([c,i])));lista.push(...mezclar(pool).slice(0,r[k]))});
+  crear(mezclar(lista));
+};
+$("continuar").onclick=()=>{ex=leerLS(K_ACT);ex.ini=Date.now()-ex.usado*1000;abrirExamen()};
+
+/* ---------- Examen ---------- */
+function vista(v){["vInicio","vExamen","vRes"].forEach(x=>$(x).classList.toggle("oculto",x!==v));window.scrollTo(0,0)}
+function abrirExamen(){
+  vista("vExamen");renderQ();
+  clearInterval(tick);tick=setInterval(reloj,1000);reloj();
+}
+function reloj(){
+  ex.usado=Math.floor((Date.now()-ex.ini)/1000);
+  const quedan=ex.lim?ex.lim-ex.usado:ex.usado,s=Math.max(0,quedan);
+  $("reloj").textContent=(ex.lim?"Quedan ":"Llevas ")+`${Math.floor(s/60)}:${String(s%60).padStart(2,"0")}`;
+  $("reloj").classList.toggle("poco",ex.lim&&quedan<300);
+  if(ex.usado%10===0)guardarLS(K_ACT,ex);
+  if(ex.lim&&quedan<=0)terminar(true);
+}
+const q=it=>BANCO[it.cap][it.i];
+const multi=it=>Array.isArray(q(it).correcta);
+function renderQ(){
+  const it=ex.items[ex.act],Q=q(it),n=ex.items.length,resp=ex.items.filter(x=>x.r.length).length;
+  $("prog").textContent=`Pregunta ${ex.act+1} de ${n} · ${resp} respondidas · ${ex.items.filter(x=>x.m).length} marcadas`;
+  $("progBar").style.width=(100*resp/n)+"%";
+  $("tipoQ").textContent=multi(it)?`Selección múltiple: marca todas las correctas (${Q.correcta.length})`:"Una sola respuesta";
+  $("enun").textContent=Q.pregunta;
+  $("ops").innerHTML="";
+  it.orden.forEach((j,pos)=>{
+    const b=document.createElement("button");b.type="button";
+    b.innerHTML=`<span class="l">${"ABCDEFG"[pos]}</span><span>${esc(Q.opciones[j])}</span>`;
+    if(it.r.includes(j))b.className="pick";
+    b.setAttribute("aria-pressed",String(it.r.includes(j)));
+    b.onclick=()=>elegir(j);
+    $("ops").appendChild(b);
+  });
+  $("ant").disabled=ex.act===0;$("sig").disabled=ex.act===n-1;
+  $("marcar").textContent=it.m?"★ Quitar marca":"☆ Marcar para revisar";
+  $("grilla").innerHTML=ex.items.map((x,k)=>`<button type="button" data-k="${k}" class="${x.r.length?"resp":""}${x.m?" mar":""}${k===ex.act?" act":""}" aria-label="Pregunta ${k+1}">${k+1}</button>`).join("");
+  $("grilla").querySelectorAll("button").forEach(b=>b.onclick=()=>{ex.act=+b.dataset.k;renderQ()});
+}
+function elegir(j){
+  const it=ex.items[ex.act];
+  if(multi(it))it.r=it.r.includes(j)?it.r.filter(x=>x!==j):[...it.r,j];
+  else it.r=[j];
+  guardarLS(K_ACT,ex);renderQ();
+}
+$("ant").onclick=()=>{if(ex.act>0){ex.act--;renderQ()}};
+$("sig").onclick=()=>{if(ex.act<ex.items.length-1){ex.act++;renderQ()}};
+$("marcar").onclick=()=>{const it=ex.items[ex.act];it.m=!it.m;guardarLS(K_ACT,ex);renderQ()};
+$("terminar").onclick=()=>{
+  const sin=ex.items.filter(x=>!x.r.length).length,mar=ex.items.filter(x=>x.m).length;
+  const aviso=[sin?`${sin} sin responder`:"",mar?`${mar} marcadas para revisar`:""].filter(Boolean).join(" y ");
+  if(aviso&&!confirm(`Tienes ${aviso}. ¿Terminar igual?`))return;
+  terminar(false);
+};
+document.addEventListener("keydown",e=>{
+  if($("vExamen").classList.contains("oculto")||e.ctrlKey||e.metaKey||e.altKey)return;
+  const it=ex.items[ex.act];
+  if(e.key>="1"&&e.key<="7"&&+e.key<=it.orden.length){elegir(it.orden[+e.key-1]);e.preventDefault()}
+  else if(e.key==="ArrowRight")$("sig").click();
+  else if(e.key==="ArrowLeft")$("ant").click();
+});
+
+/* ---------- Resultado ---------- */
+const acierto=it=>{const c=q(it).correcta;return Array.isArray(c)?c.length===it.r.length&&c.every(x=>it.r.includes(x)):it.r[0]===c};
+function terminar(porTiempo){
+  clearInterval(tick);guardarLS(K_ACT,null);
+  const n=ex.items.length,ok=ex.items.filter(acierto).length,puntaje=Math.round(1000*ok/n);
+  const pd=DOM.map(d=>{const xs=ex.items.filter(it=>d.caps.includes(it.cap));return xs.length?Math.round(100*xs.filter(acierto).length/xs.length):null});
+  const h=leerLS(K_HIST)||[];
+  const f=new Date();
+  h.push({fecha:f.toLocaleDateString("es-CL")+" "+f.toLocaleTimeString("es-CL",{hour:"2-digit",minute:"2-digit"}),ok,total:n,puntaje,dom:pd,min:Math.max(1,Math.round(ex.usado/60))});
+  guardarLS(K_HIST,h.slice(-30));
+  ex.fin={ok,n,puntaje,pd,porTiempo};
+  vista("vRes");renderRes();
+}
+function renderRes(){
+  const {ok,n,puntaje,pd,porTiempo}=ex.fin;
+  $("nota").innerHTML=`${puntaje} <small>/ 1000 · ${ok} de ${n} correctas · ${Math.round(ex.usado/60)} min</small>`;
+  const debil=DOM.map((d,i)=>[d,pd[i]]).filter(([,p])=>p!=null).sort((a,b)=>a[1]-b[1])[0];
+  status("statusR",puntaje>=700?"ok":puntaje>=600?"warn":"bad",
+    (porTiempo?"Se acabó el tiempo. ":"")+(puntaje>=700?"Aprobado":"Todavía no: el corte es 700"),
+    puntaje>=850?"Muy bien: con 850 o más en varios simulacros distintos, estás listo para el examen.":
+    puntaje>=700?`Pasaste. Para ir con margen, apunta a 850 o más. Tu dominio más débil: <b>${debil[0].nombre}</b> (${debil[1]}%).`:
+    `Repasa primero <b>${debil[0].nombre}</b> (${debil[1]}%) y los capítulos de la tabla con menos aciertos.`);
+  $("doms").innerHTML=DOM.map((d,i)=>pd[i]==null?"":`<div class="dom"><span>${d.id} · ${d.nombre} <span class="mini">(peso ${d.peso})</span></span><b>${pd[i]}%</b><div class="bar${pd[i]>=70?" full":""}"><span style="width:${pd[i]}%"></span></div></div>`).join("");
+  const caps=[...new Set(ex.items.map(it=>it.cap))].sort();
+  $("tbodyC").innerHTML=caps.map(c=>{const xs=ex.items.filter(it=>it.cap===c),k=xs.filter(acierto).length,C=capDe(c),p=k/xs.length;
+    return `<tr><td>${C.num} · ${C.titulo}</td><td class="${p>=.7?"si":"no"}">${k}/${xs.length}</td><td>${p<1?`<a href="${C.archivo}">Abrir el capítulo →</a>`:"—"}</td></tr>`}).join("");
+  $("grillaR").innerHTML=ex.items.map((it,k)=>`<button type="button" data-k="${k}" class="${acierto(it)?"ok":"mal"}${it.m?" mar":""}">${k+1}</button>`).join("");
+  $("grillaR").querySelectorAll("button").forEach(b=>b.onclick=()=>{filtro="todas";renderRev();document.getElementById("rq"+b.dataset.k).scrollIntoView({behavior:"smooth",block:"center"})});
+  renderRev();
+}
+function renderRev(){
+  seg("filtro",{mal:"Solo mis errores",mar:"Las que marqué",todas:"Todas"},()=>filtro,v=>filtro=v,renderRev);
+  const xs=ex.items.map((it,k)=>[it,k]).filter(([it])=>filtro==="todas"||(filtro==="mal"?!acierto(it):it.m));
+  $("rev").innerHTML=xs.length?xs.map(([it,k])=>{
+    const Q=q(it),C=capDe(it.cap),c=Array.isArray(Q.correcta)?Q.correcta:[Q.correcta],bien=acierto(it);
+    const ops=it.orden.map((j,pos)=>{const cls=c.includes(j)?(it.r.includes(j)?"right":"right missed"):it.r.includes(j)?"wrong":"";
+      return `<button type="button" disabled class="${cls}"><span class="l">${"ABCDEFG"[pos]}</span><span>${esc(Q.opciones[j])}</span></button>`}).join("");
+    return `<div class="q" id="rq${k}"><div class="tipo">${k+1} · ${bien?"✓ correcta":it.r.length?"✕ incorrecta":"✕ sin responder"} · cap. ${C.num} ${C.titulo}</div><p>${esc(Q.pregunta)}</p><div class="ops">${ops}</div><div class="fb">${esc(Q.explicacion)} <a href="${C.archivo}">Ir al cap. ${C.num} →</a></div></div>`;
+  }).join(""):`<p class="mini">${filtro==="mal"?"Sin errores. ¡Excelente!":"No marcaste preguntas."}</p>`;
+}
+$("otra").onclick=()=>{ex=null;vista("vInicio");renderInicio()};
+$("errores").onclick=()=>{
+  const mal=ex.items.filter(it=>!acierto(it)).map(it=>[it.cap,it.i]);
+  if(!mal.length){alert("No tienes errores en este simulacro.");return}
+  tiempo="0";crear(mezclar(mal));
+};
+
+/* ---------- Carga del banco ---------- */
+const IDS=DOM.flatMap(d=>d.caps);
+Promise.all(IDS.map(id=>fetch(`data/preguntas-${id}.json`).then(r=>r.json()).then(j=>BANCO[id]=j)))
+  .then(renderInicio)
+  .catch(()=>{$("vInicio").innerHTML=`<div class="note"><h3>No se pudieron cargar las preguntas</h3><p>Abre la página con Live Server: <code>fetch</code> no funciona con file://.</p></div>`});
+</script>
+</body>
+</html>
