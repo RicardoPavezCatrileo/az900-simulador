@@ -112,5 +112,11 @@
     "opciones": ["Crea una red virtual en cada región y enlaza ambas redes con una conexión VPN Gateway", "Crea una red virtual en cada región y vincula ambas redes utilizando Azure Virtual Network Peering", "Crea una única Azure Virtual Network que se extienda por ambas regiones, permitiendo que todos los recursos dentro de esta red se comuniquen mediante conexiones privadas", "Crea una red virtual en cada región y conecta ambas redes mediante una conexión websocket"],
     "correcta": 1,
     "explicacion": "VNet ↔ VNet por la red troncal de Microsoft, sin gateways → peering (global, entre regiones) (PDF pág. 104). La VPN necesita gateways con IP pública y un túnel IPsec: más latencia y costo; se usa para oficina ↔ VNet. Una VNet pertenece a una sola región: no puede abarcar dos."
+  },
+  {
+    "pregunta": "¿Qué dos componentes son esenciales para facilitar la comunicación entre recursos locales y aquellos ubicados en Azure? Selecciona TODAS las correctas.",
+    "opciones": ["VPN Gateway", "Azure Virtual Network", "VNet peering", "Tablas de enrutamiento"],
+    "correcta": [0, 1],
+    "explicacion": "Local ↔ Azure (tramo 1) necesita una VNet donde vivan los recursos de Azure y un VPN Gateway en esa VNet, que hace el túnel cifrado con la oficina (PDF págs. 112–114). El peering une VNets entre sí dentro de Azure (tramo 2): no llega a la red local. Las tablas de rutas (UDR) son opcionales: Azure crea las rutas del gateway solo."
   }
 ]
