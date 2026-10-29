@@ -86,6 +86,7 @@
     <div class="ctl"><label>&nbsp;</label><label class="chk"><input type="checkbox" id="resaltar" checked> Resaltar lo que agrega el capítulo</label></div>
   </div>
   <div class="ctl" id="ctlEntrada"><label>Entrada global (desde el cap. 6)</label><div class="seg" id="entrada"></div></div>
+  <div class="ctl" id="ctlIdent"><label>Identidad para apps con Kerberos/NTLM (desde el cap. 8)</label><div class="seg" id="ident"></div></div>
   <div class="ctl" id="ctlRed"><label>Redundancia de la Storage Account (desde el cap. 7)</label><div class="seg" id="red"></div></div>
   <div class="ctl"><label>Recorrido</label><div class="seg" id="flujos"></div></div>
   <div class="leyenda" id="leyenda"></div>
@@ -107,7 +108,7 @@ const RESUMEN={
  5:"El cómputo: un Scale Set de VMs web repartido en las 3 zonas y VMs de aplicación. Son IaaS: el sistema operativo lo administras tú.",
  6:"La red: Azure Front Door como entrada global (no está en el PDF), VNet con subredes, NSG en cada una, Application Gateway, Load Balancer interno, y la oficina conectada por VPN S2S (o ExpressRoute).",
  7:"Los datos: Azure SQL Database y una cuenta de almacenamiento GRS con copia en la región emparejada, y el servidor de archivos de la oficina sincronizado con Azure File Sync.",
- 8:"La identidad: Microsoft Entra ID con MFA y acceso condicional, y el AD local sincronizado mediante Entra Connect (identidad híbrida).",
+ 8:"La identidad: Microsoft Entra ID con MFA y acceso condicional, y el AD local sincronizado mediante Entra Connect (identidad híbrida). Con el selector de identidad compara las otras dos salidas: un DC en una VM de Azure o Entra Domain Services.",
  9:"La seguridad: el endpoint privado lleva SQL y Storage dentro de la VNet, Key Vault guarda los secretos y Defender for Cloud evalúa la postura.",
  10:"El gobierno y la monitorización: Azure Policy heredada, RBAC, un bloqueo contra borrado, Azure Monitor con Log Analytics, una alerta que ejecuta una Logic App, y Service Health.",
  11:"Los costos: presupuesto con alertas en la suscripción, Cost Management, y cuánto se cobra el tráfico (la entrada es gratis; la salida y el tráfico entre regiones se cobran)."
@@ -178,7 +179,7 @@ const EL=[
  {id:"vma3",k:"nodo",a:2,m:"IaaS",cap:5,x:756,y:502,w:82,h:42,t:"VM app",s:"zona 3",q:"Máquina virtual (IaaS) de la capa de aplicación.",p:"Copia en la Zona 3.",pg:"66–77"},
 
  // Capítulo 6: redes
- {id:"vnet",k:"marco",cls:"solido",cap:6,x:310,y:332,w:546,h:356,t:"VNet · 10.1.0.0/16",
+ {id:"vnet",k:"marco",cls:"solido",cap:6,x:310,y:332,w:546,h:356,t:"VNet · 10.1.0.0/16",lb:3,
   q:"Red virtual privada y aislada, con su espacio de direcciones. Abarca todas las zonas de la región.",
   p:"Todas las VMs y gateways tienen IP privada dentro de esta red."},
  {id:"gwsub",k:"marco",cap:6,x:322,y:470,w:98,h:206,t:"GatewaySubnet",lb:1,
@@ -255,6 +256,12 @@ const EL=[
  {id:"adds",k:"nodo",a:0,cap:8,x:24,y:296,w:198,h:46,t:"AD DS local",s:"Kerberos · LDAP",
   q:"Active Directory Domain Services tradicional, en servidores propios. No es lo mismo que Entra ID.",
   p:"Es la fuente de las cuentas de la empresa."},
+ {id:"dcvm",k:"nodo",a:0,m:"IaaS",cap:8,x:328,y:364,w:86,h:54,t:"DC en VM",s:"dominio actual",
+  q:"Controlador de dominio (DC): Windows Server con AD DS en una VM de Azure. Es Active Directory de verdad: Kerberos, NTLM, LDAP y GPO. Como es IaaS, tú administras el SO y los parches.",
+  p:"Se une al dominio ACTUAL como un DC más y se replica con los DC de la oficina por la VPN. Cuando todo funciona en Azure, apagas los DC locales. Respuesta de examen para \"dominio actual\" + \"eliminar los recursos locales\"."},
+ {id:"eds",k:"nodo",a:0,m:"PaaS",cap:8,x:328,y:364,w:86,h:54,t:"Entra DS",s:"dominio nuevo",
+  q:"Microsoft Entra Domain Services (antes Azure AD DS): dominio administrado con Kerberos, NTLM y LDAP. Microsoft gestiona los controladores y los parches. Se sincroniza en una sola vía desde Entra ID.",
+  p:"Vive en su propia subred de la VNet. Es un dominio NUEVO y aparte: no se une al dominio de la oficina ni se replica con él. Respuesta de examen para \"dominio administrado\" o \"sin administrar controladores\", no para \"el dominio actual\"."},
  {id:"emp",k:"nodo",a:0,cap:8,x:24,y:364,w:198,h:46,t:"Empleados",s:"PC de la oficina",
   q:"Usuarios internos de la empresa.",p:"Usan la app interna por la VPN e inician sesión con Entra ID."},
 
@@ -331,6 +338,8 @@ const AR=[
  {id:"e_be_mon",f:4,cap:10,d:[[840,524],[916,524]],lab:["logs",878,518]},
  {id:"e_ad_con",f:0,cap:8,d:[[123,296],[123,274]]},
  {id:"e_con_entra",f:0,cap:8,d:[[123,228],[123,82]],lab:["sincroniza",128,120,"start"]},
+ {id:"e_ad_dc",f:0,cap:8,d:[[222,319],[290,319],[290,391],[328,391]],lab:["réplica AD por la VPN",226,312,"start"]},
+ {id:"e_entra_eds",f:0,cap:8,d:[[342,92],[342,364]],lab:["sincroniza 1 vía",347,324,"start"]},
  {id:"e_emp_ca",f:0,cap:8,d:[[222,387],[242,387],[242,100],[317,100],[317,82]],lab:["inicia sesión",250,104,"start"]},
  {id:"e_inet_ca",f:0,cap:8,d:[[470,60],[392,60]],lab:["inicia sesión",431,54]},
  {id:"e_tags_cost",f:5,cap:11,d:[[553,263],[553,250],[892,250],[892,784],[916,784]]},
@@ -353,7 +362,7 @@ const FLUJOS=[
    "El tráfico a la app interna viaja por el túnel VPN sitio a sitio, cifrado por Internet, entre el dispositivo VPN de la oficina y el VPN Gateway.",
    "El VPN Gateway vive en la GatewaySubnet. Desde ahí el tráfico llega al Load Balancer interno por IP privada: la app nunca se expone a Internet.",
    "Alternativa: ExpressRoute, un circuito privado que no pasa por Internet, con más ancho de banda y menor latencia (línea punteada)."]},
- {id:"identidad",n:"Identidad híbrida",
+ {id:"identidad",n:"Identidad",
   ids:["adds","e_ad_con","connect","e_con_entra","entra","entraT","mfa","ca","emp","e_emp_ca","inet","e_inet_ca","onprem"],
   pasos:["Las cuentas nacen en el AD DS local de la oficina.",
    "Entra Connect, instalado en local, las sincroniza con Microsoft Entra ID (usuarios, grupos y hash de contraseñas).",
@@ -399,10 +408,31 @@ const RED={
  "RA-GZRS":{zonas:true,geo:true,ra:true,copias:6,protege:"la caída de una zona y la de la región, con lectura de la secundaria en cualquier momento",no:"escribir en la secundaria antes del failover",d:"16 nueves"}
 };
 const SOLO_GEO=new Set(["st2","e_st_st2"]);
+// Identidad: híbrida (AD local + Entra Connect), DC en una VM de Azure o Entra Domain Services
+const IDENT={
+ hib:{n:"Híbrida: AD local + Entra Connect",ad:"Kerberos · LDAP"},
+ dc:{n:"DC en una VM de Azure",ad:"se apaga al final"},
+ eds:{n:"Entra Domain Services",ad:"no participa"}
+};
+const SOLO_DC=new Set(["dcvm","e_ad_dc"]),SOLO_EDS=new Set(["eds","e_entra_eds"]);
+const ID_FLUJO={
+ dc:{ids:["adds","e_ad_dc","dcvm","onprem","router","e_vpn","vpngw","gwsub","vnet","be","vma1","vma2","vma3","connect","e_ad_con","e_con_entra","entra","entraT"],
+  pasos:["Punto de partida: las cuentas viven en el AD DS local y la app de contabilidad usa NTLM, que Entra ID no habla.",
+   "Instalas Windows Server en una VM de Azure y la promueves a controlador de dominio (DC) de tu dominio ACTUAL. Es IaaS: tú administras el SO y los parches.",
+   "El DC de Azure se replica con los DC de la oficina por la VPN: mismo dominio, mismos usuarios y contraseñas.",
+   "Las VMs de la app se unen al dominio y se autentican contra el DC de Azure con Kerberos o NTLM.",
+   "Cuando todo funciona en Azure, apagas los DC de la oficina: no queda nada local.",
+   "Pista de examen: \"dominio actual\" + \"eliminar los recursos locales\" → DC en una VM de Azure. AD local + Entra Connect no elimina lo local, y Entra Domain Services es un dominio nuevo."]},
+ eds:{ids:["entra","entraT","e_entra_eds","eds","vnet","be","vma1","vma2","vma3","connect","e_con_entra","adds","e_ad_con"],
+  pasos:["Microsoft Entra Domain Services crea un dominio administrado NUEVO en su propia subred de la VNet. Microsoft gestiona los controladores y los parches (PaaS).",
+   "Se sincroniza en una sola vía desde Entra ID: los usuarios de la nube, y los que Entra Connect trajo del AD local, inician sesión con Kerberos, NTLM o LDAP.",
+   "Las VMs de la app se unen a este dominio nuevo, no al de la oficina: no hay replicación con el AD local.",
+   "Pista de examen: \"dominio administrado\", \"sin administrar controladores\" o \"nombre de dominio único\" → Entra Domain Services. Si piden \"el dominio actual\", no es esta."]}
+};
 // Entrada global: Front Door (proxy capa 7) o Traffic Manager (solo DNS)
 const SOLO_FD=new Set(["edge","fd","e_inet_fd","e_fd_ag"]),SOLO_TM=new Set(["tm","e_inet_tm","e_inet_ag2"]);
 function excluido(id){
-  return (SOLO_GEO.has(id)&&!RED[red].geo)||(SOLO_FD.has(id)&&entrada!=="fd")||(SOLO_TM.has(id)&&entrada!=="tm");
+  return (SOLO_GEO.has(id)&&!RED[red].geo)||(SOLO_FD.has(id)&&entrada!=="fd")||(SOLO_TM.has(id)&&entrada!=="tm")||(SOLO_DC.has(id)&&ident!=="dc")||(SOLO_EDS.has(id)&&ident!=="eds");
 }
 
 const NS="http://www.w3.org/2000/svg";
@@ -414,7 +444,8 @@ const capId=n=>"cap"+String(n).padStart(2,"0");
 const archivo=n=>"az900/"+CAPITULOS.find(c=>c.num===n).archivo;
 const tituloCap=n=>CAPITULOS.find(c=>c.num===n).titulo;
 
-let hasta=11,resaltar=true,flujo=null,sel=null,red="GRS",entrada="fd";
+let hasta=11,resaltar=true,flujo=null,sel=null,red="GRS",entrada="fd",ident="hib";
+try{const v=localStorage.getItem("az900:arquitectura:ident");if(IDENT[v])ident=v}catch(e){}
 try{const v=localStorage.getItem("az900:arquitectura:entrada");if(v==="fd"||v==="tm")entrada=v}catch(e){}
 try{const v=localStorage.getItem("az900:arquitectura:red");if(RED[v])red=v}catch(e){}
 try{const v=parseInt(localStorage.getItem("az900:arquitectura:cap"),10);if(v>=2&&v<=11)hasta=v}catch(e){}
@@ -448,9 +479,9 @@ function dibujar(){
     if(e.k==="marco"){
       mk("rect",{x:e.x,y:e.y,width:e.w,height:e.h,rx:8},g);
       if(e.t){
-        const yl=e.lb?e.y+e.h-8:e.y+16;
-        const xl=e.lb===2?e.x+e.w-8:e.x+10;
-        ajustar(texto(g,"",xl,yl,e.t,e.lb===2?"end":null),e.w-16);
+        const yl=e.lb&&e.lb<3?e.y+e.h-8:e.y+16;   // lb: 1 abajo izq. · 2 abajo der. · 3 arriba der.
+        const xl=e.lb>=2?e.x+e.w-8:e.x+10;
+        ajustar(texto(g,"",xl,yl,e.t,e.lb>=2?"end":null),e.w-16);
       }
     }else if(e.k==="zona"){
       mk("rect",{x:e.x,y:e.y,width:e.w,height:e.h,rx:6},g);
@@ -520,6 +551,7 @@ function pintarEscala(){
 
 function aplicar(){
   pintarCopias();
+  svg.querySelector('[data-id="adds"] text.s').textContent=IDENT[ident].ad;
   pintarEscala();
   const cap=flujo?11:hasta;
   const enFlujo=flujo?new Set(idsFlujo(FLUJOS.find(f=>f.id===flujo))):null;
@@ -539,6 +571,9 @@ function aplicar(){
   document.getElementById("ctlRed").hidden=cap<7;
   document.querySelectorAll("#entrada button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.k===entrada)));
   document.getElementById("ctlEntrada").hidden=cap<6;
+  document.querySelectorAll("#ident button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.k===ident)));
+  document.getElementById("ctlIdent").hidden=cap<8;
+  try{localStorage.setItem("az900:arquitectura:ident",ident)}catch(e){}
   try{localStorage.setItem("az900:arquitectura:entrada",entrada)}catch(e){}
   try{localStorage.setItem("az900:arquitectura:red",red)}catch(e){}
   document.getElementById("ant").disabled=hasta<=2;
@@ -567,7 +602,7 @@ function panelFlujo(){
   const f=FLUJOS.find(x=>x.id===flujo);
   document.getElementById("panel").innerHTML=`
     <div class="area">Recorrido</div>
-    <h2>${esc(f.n)}</h2>
+    <h2>${esc(f.id==="identidad"?"Identidad · "+IDENT[ident].n:f.n)}</h2>
     <ol class="pasos">${pasosFlujo(f).map(p=>`<li>${esc(p)}</li>`).join("")}</ol>`;
 }
 function panelElemento(id){
@@ -605,10 +640,12 @@ const TM_WEB={ids:["tm","e_inet_tm","e_inet_ag2"],pasos:[
  "Con esa IP, el navegador se conecta DIRECTO al Application Gateway: el tráfico no pasa por Traffic Manager, que no ve ni filtra las peticiones. La entrada de datos es gratis; la salida se cobra.",
  "El Application Gateway (regional, capa 7) aplica su WAF y reparte las peticiones entre las VMs web del Scale Set."]};
 function idsFlujo(f){
+  if(f.id==="identidad")return ident==="hib"?f.ids:ID_FLUJO[ident].ids;
   if(f.id!=="web"&&f.id!=="black"||entrada!=="tm")return f.ids;
   return f.ids.filter(i=>!SOLO_FD.has(i)).concat(TM_WEB.ids);
 }
 function pasosFlujo(f){
+  if(f.id==="identidad")return ident==="hib"?f.pasos:ID_FLUJO[ident].pasos;
   if(f.id==="black")return entrada==="tm"?[f.pasos[0],f.pasoTM,...f.pasos.slice(2)]:f.pasos;
   if(f.id!=="web"||entrada!=="tm")return f.pasos;
   return TM_WEB.pasos.concat(f.pasos.slice(3));
@@ -636,6 +673,32 @@ function panelEntrada(){
     <p>Pista de examen: "DNS" o "tráfico que no es HTTP" → Traffic Manager. "WAF global", "aceleración" o "caché" → Front Door.</p>
     ${avance(6)}
     <p><a href="az900/cap06-redes.html">Comparar los balanceadores en el capítulo 6 →</a></p>`;
+}
+const ib=document.getElementById("ident");
+Object.keys(IDENT).forEach(k=>{
+  const b=document.createElement("button");
+  b.type="button";b.dataset.k=k;b.textContent=IDENT[k].n;
+  b.onclick=()=>{ident=k;sel=null;aplicar();flujo?panelFlujo():panelIdent()};
+  ib.appendChild(b);
+});
+function panelIdent(){
+  const T={hib:"La empresa MANTIENE la oficina: las cuentas nacen en el AD DS local y Entra Connect las sincroniza con Entra ID. Misma cuenta en la oficina y en la nube.",
+   dc:"La empresa quiere ELIMINAR lo local pero seguir con su dominio ACTUAL: un DC en una VM de Azure se une al dominio, se replica por la VPN y después se apagan los DC de la oficina.",
+   eds:"La empresa quiere un dominio ADMINISTRADO, sin mantener controladores: Entra Domain Services crea un dominio NUEVO en la VNet, sincronizado desde Entra ID."};
+  const td=k=>k===ident?' class="sel"':"";
+  document.getElementById("panel").innerHTML=`
+    <div class="area">Autenticación y autorización · Capítulo 8</div>
+    <h2>Identidad: ${esc(IDENT[ident].n)}</h2>
+    <p>${T[ident]}</p>
+    <div class="tbl"><table><tr><th>La pregunta dice…</th><th>Respuesta</th><th>Modelo</th></tr>
+      <tr${td("hib")}><td>"mantener lo local", "híbrido", "misma cuenta"</td><td>AD local + Entra Connect</td><td>Tu servidor</td></tr>
+      <tr${td("dc")}><td>"dominio actual" + "eliminar lo local"</td><td>DC en una VM de Azure</td><td>IaaS</td></tr>
+      <tr${td("eds")}><td>"dominio administrado", "sin administrar controladores"</td><td>Entra Domain Services (dominio nuevo)</td><td>PaaS</td></tr>
+      <tr><td>"app web moderna", "SSO"</td><td>Entra ID (no habla NTLM)</td><td>SaaS</td></tr>
+    </table></div>
+    <p>Recorre el flujo con el botón <b>Identidad</b> de "Recorrido".</p>
+    ${avance(8)}
+    <p><a href="az900/cap08-autenticacion-autorizacion.html">Repasar el capítulo 8 →</a></p>`;
 }
 const rb=document.getElementById("red");
 Object.keys(RED).forEach(k=>{
