@@ -124,5 +124,11 @@
     "opciones": ["Ajusta la aplicación para que utilice credenciales de Microsoft Entra ID mediante inicio de sesión único (SSO)", "Implementa Microsoft Entra Domain Services (anteriormente Azure AD DS) para crear un entorno AD totalmente gestionado. Asigna un nombre de dominio único y configura la aplicación para autenticarse con esta instancia", "Instala Windows Server en una VM de Azure y configúralo como controlador de dominio de Active Directory. Asegura que la aplicación se autentique a través del servidor AD en la VM", "Mantén tu servidor AD local, sincronízalo con Microsoft Entra ID mediante Microsoft Entra Connect y configura la aplicación para autenticarse a través del servidor AD local"],
     "correcta": 2,
     "explicacion": "Tres condiciones: dominio actual + eliminar lo local + NTLM. Un controlador de dominio en una VM de Azure se une al dominio actual y permite apagar los DC locales. Trampas: AD local + Entra Connect es la identidad híbrida (la del diagrama de arquitectura), pero no elimina lo local; Entra Domain Services crea un dominio nuevo y aparte (\"nombre de dominio único\"); Entra ID no habla NTLM."
+  },
+  {
+    "pregunta": "¿Qué método se utiliza para verificar que los usuarios de tu aplicación son realmente quienes afirman ser?",
+    "opciones": ["Autenticación", "Autorización", "Regiones de Azure", "Microsoft Entra ID", "Suscripciones de Azure"],
+    "correcta": 0,
+    "explicacion": "\"Quienes afirman ser\" = identidad = autenticación (AuthN: ¿quién eres?). La autorización viene después: qué puedes hacer (AuthZ: ¿qué puedes hacer?). Microsoft Entra ID es el SERVICIO que hace ambas, pero la pregunta pide el MÉTODO. Regiones y suscripciones no tienen relación."
   }
 ]
