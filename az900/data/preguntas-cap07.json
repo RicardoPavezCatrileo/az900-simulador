@@ -184,5 +184,11 @@
     "opciones": ["Premium File Shares", "Premium Block Blobs", "Premium Page Blobs", "Azure Disk Storage", "Uso general v2 (GPv2) estándar"],
     "correcta": 2,
     "explicacion": "Los discos de VM son page blobs y \"lo más rápido\" es Premium (PDF págs. 158–162). Azure Disk Storage también guarda discos, pero es un servicio aparte, no una opción de rendimiento de la cuenta: la cuenta solo ofrece Standard, Premium Block Blobs, Premium File Shares y Premium Page Blobs. Block blobs son archivos, File Shares son carpetas compartidas y GPv2 no es lo más rápido."
+  },
+  {
+    "pregunta": "Debes seleccionar una opción de rendimiento para una cuenta de almacenamiento de Azure. Esta cuenta alojará varios tipos de almacenamiento y debes optimizar los costos mientras mantienes un rendimiento aceptable. ¿Cuál opción de rendimiento deberías elegir?",
+    "opciones": ["Premium Page Blobs", "Almacenamiento de uso general v2 (GPv2)", "Premium File Shares", "Premium Block Blobs"],
+    "correcta": 1,
+    "explicacion": "\"Varios tipos\" + \"optimizar costos\" = Standard GPv2: la opción por defecto, admite blobs, archivos, colas y tablas, y es la más barata. Trampas: cada Premium admite UN solo servicio (Page Blobs = discos no administrados, File Shares = Azure Files, Block Blobs = blobs) y cuesta más (SSD). Premium Page Blobs es la respuesta solo si piden rendimiento para discos de VM (pregunta 31)."
   }
 ]
