@@ -118,5 +118,11 @@
     "opciones": ["No hay límite", "Miembro de un único tenant e invitado en hasta 499 tenants externos", "Miembro de un tenant principal y de dos tenants externos", "Depende del tipo de suscripción de Azure"],
     "correcta": 1,
     "explicacion": "Un usuario pertenece como miembro a un solo tenant, su tenant de origen, y puede ser invitado (B2B) en otros: el límite es de 500 tenants en total, es decir 1 + 499. No depende de la suscripción, porque las suscripciones confían en un tenant y no al revés. No está en el PDF."
+  },
+  {
+    "pregunta": "La empresa está en la fase inicial de migración de aplicaciones a Azure. Una aplicación crítica de contabilidad, que requiere autenticación mediante protocolo NTLM, será trasladada a una máquina virtual (VM) en Azure. Con la intención de eliminar eventualmente todos los recursos locales, se planea una solución totalmente alojada en la nube, utilizando el dominio actual de Active Directory (AD). ¿Cuál es la opción adecuada para alojar esta aplicación en Azure manteniendo la autenticación con Active Directory?",
+    "opciones": ["Ajusta la aplicación para que utilice credenciales de Microsoft Entra ID mediante inicio de sesión único (SSO)", "Implementa Microsoft Entra Domain Services (anteriormente Azure AD DS) para crear un entorno AD totalmente gestionado. Asigna un nombre de dominio único y configura la aplicación para autenticarse con esta instancia", "Instala Windows Server en una VM de Azure y configúralo como controlador de dominio de Active Directory. Asegura que la aplicación se autentique a través del servidor AD en la VM", "Mantén tu servidor AD local, sincronízalo con Microsoft Entra ID mediante Microsoft Entra Connect y configura la aplicación para autenticarse a través del servidor AD local"],
+    "correcta": 2,
+    "explicacion": "Tres condiciones: dominio actual + eliminar lo local + NTLM. Un controlador de dominio en una VM de Azure se une al dominio actual y permite apagar los DC locales. Trampas: AD local + Entra Connect es la identidad híbrida (la del diagrama de arquitectura), pero no elimina lo local; Entra Domain Services crea un dominio nuevo y aparte (\"nombre de dominio único\"); Entra ID no habla NTLM."
   }
 ]
