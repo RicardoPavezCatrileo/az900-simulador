@@ -118,5 +118,11 @@
     "opciones": ["Baja latencia", "Escalabilidad dinámica", "Recuperación ante desastres", "Elasticidad dinámica"],
     "correcta": 0,
     "explicacion": "Pistas: \"rápidamente\" + \"desde cualquier lugar\" = baja latencia, gracias a regiones y PoP cerca de los usuarios (PDF págs. 32–33). Trampas: recuperación ante desastres = seguir funcionando tras una falla grande; escalabilidad y elasticidad hablan de capacidad ante la carga, no de rapidez de acceso."
+  },
+  {
+    "pregunta": "¿De qué depende la alta disponibilidad de un entorno en la nube pública?",
+    "opciones": ["La ubicación geográfica del centro de datos", "El tipo de recursos de hardware utilizados en el centro de datos", "El contrato de nivel de servicio (SLA) que elijas", "El número de usuarios finales que acceden simultáneamente"],
+    "correcta": 2,
+    "explicacion": "La disponibilidad se mide y se garantiza con el SLA: el % de tiempo que Microsoft se compromete a mantener el servicio funcionando (99,9%, 99,99%…). Según lo que elijas (1 VM, conjunto de disponibilidad, zonas), el SLA sube. Trampas: la ubicación influye en la latencia y el cumplimiento, no en la disponibilidad garantizada; el hardware no lo eliges ni lo ves; los usuarios simultáneos son carga (escalabilidad). El SLA no está en el PDF; sí en Microsoft Learn."
   }
 ]
