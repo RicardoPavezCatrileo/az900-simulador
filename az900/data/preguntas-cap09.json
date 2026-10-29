@@ -94,5 +94,11 @@
     "opciones": ["Datos", "Seguridad física", "Aplicación", "Red"],
     "correcta": 1,
     "explicacion": "Orden de Microsoft Learn: seguridad física → identidad y acceso → perímetro → red → proceso → aplicación → datos."
+  },
+  {
+    "pregunta": "¿Cuáles son las principales ventajas del modelo de seguridad de Confianza cero (Zero Trust)? Selecciona TODAS las correctas.",
+    "opciones": ["Permite extender el plano de control de gestión de Azure a los recursos que no pertenecen a Azure", "Restringe a los actores malintencionados el acceso a recursos sensibles", "Facilita el acceso desde cualquier ubicación, siempre que la identidad del usuario sea verificada y validada", "Limita el acceso a recursos sensibles únicamente a usuarios provenientes de ubicaciones de confianza"],
+    "correcta": [1, 2],
+    "explicacion": "Zero Trust significa \"nunca confíes, verifica siempre\": cada solicitud se verifica (identidad, dispositivo, riesgo) con mínimo privilegio y asumiendo una brecha. Por eso se puede acceder desde cualquier lugar si la identidad se verifica, y los atacantes no llegan a los recursos sensibles. Confiar en las \"ubicaciones de confianza\" es el modelo antiguo de perímetro, justo lo que Zero Trust reemplaza. Extender la gestión de Azure a recursos fuera de Azure es Azure Arc."
   }
 ]
