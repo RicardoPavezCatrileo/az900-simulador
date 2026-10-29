@@ -9,9 +9,9 @@
 <link rel="stylesheet" href="assets/estilos.css">
 <style>
 /* Mismos colores por área que mapa.html (paleta categórica validada) */
-:root{--a0:#2a78d6;--a1:#eb6834;--a2:#1baf7a;--a3:#eda100;--a4:#e87ba4;--a5:#6250d6}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--a0:#3987e5;--a1:#d95926;--a2:#199e70;--a3:#c98500;--a4:#d55181;--a5:#9085e9}}
-:root[data-theme="dark"]{--a0:#3987e5;--a1:#d95926;--a2:#199e70;--a3:#c98500;--a4:#d55181;--a5:#9085e9}
+:root{--rbr:#0d9488;--rus:#4f6fae;--a0:#2a78d6;--a1:#eb6834;--a2:#1baf7a;--a3:#eda100;--a4:#e87ba4;--a5:#6250d6}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--rbr:#2dbfae;--rus:#7f9be0;--a0:#3987e5;--a1:#d95926;--a2:#199e70;--a3:#c98500;--a4:#d55181;--a5:#9085e9}}
+:root[data-theme="dark"]{--rbr:#2dbfae;--rus:#7f9be0;--a0:#3987e5;--a1:#d95926;--a2:#199e70;--a3:#c98500;--a4:#d55181;--a5:#9085e9}
 
 .wrap{max-width:1280px}
 .barra{display:flex;flex-wrap:wrap;gap:14px 24px;align-items:end}
@@ -26,6 +26,11 @@
 /* Marcos (ámbitos y redes) */
 .marco rect{fill:none;stroke:var(--muted);stroke-width:1.2;stroke-dasharray:5 4}
 .marco.solido rect{stroke-dasharray:none}
+/* Regiones: cada una con su color (primaria Brazil South, emparejada South Central US) */
+.marco.reg-br>rect{fill:color-mix(in srgb,var(--rbr) 7%,transparent);stroke:var(--rbr);stroke-width:1.6}
+.marco.reg-us>rect{fill:color-mix(in srgb,var(--rus) 9%,transparent);stroke:var(--rus);stroke-width:1.6}
+.marco.reg-br>text{fill:var(--rbr);font-weight:600}
+.marco.reg-us>text{fill:var(--rus);font-weight:600}
 .marco.nube>rect{fill:var(--bg);stroke:var(--line);stroke-dasharray:none}
 .marco text{font-family:var(--f-mono);font-size:11px;fill:var(--muted);letter-spacing:.02em}
 .zona rect{fill:var(--zone);stroke:none}
@@ -138,13 +143,13 @@ const EL=[
  {id:"rg",k:"marco",cap:3,x:286,y:258,w:594,h:538,t:"Grupo de recursos · rg-web",
   q:"Contenedor lógico de recursos que comparten ciclo de vida. Un recurso está en un solo grupo; los grupos no se anidan.",
   p:"Todos los recursos de la app viven juntos: se despliegan, se protegen y se borran en bloque. Borrar el grupo borra todo su contenido.",pg:"40–44"},
- {id:"region",k:"marco",cls:"solido",cap:3,x:298,y:284,w:570,h:500,t:"Región · Brazil South",
+ {id:"region",k:"marco",cls:"solido reg-br",cap:3,x:298,y:284,w:570,h:500,t:"Región · Brazil South",
   q:"Uno o más centros de datos cercanos, conectados con baja latencia. Se elige la región cercana a los usuarios.",
   p:"La app corre en Brazil South, cerca de sus usuarios: menor latencia y datos en el país.",pg:"33–36"},
  {id:"z1",k:"zona",cap:3,x:558,y:310,w:94,h:372,t:"Zona 1",q:"Zona de disponibilidad: uno o más centros de datos con energía, refrigeración y red independientes dentro de la región.",p:"Las VMs se reparten en las 3 zonas: si cae la Zona 1, las otras dos siguen atendiendo.",pg:"36–38"},
  {id:"z2",k:"zona",cap:3,x:654,y:310,w:94,h:372,t:"Zona 2",q:"Zona de disponibilidad independiente dentro de la región.",p:"Segunda copia de cada nivel de la app.",pg:"36–38"},
  {id:"z3",k:"zona",cap:3,x:750,y:310,w:94,h:372,t:"Zona 3",q:"Zona de disponibilidad independiente dentro de la región.",p:"Tercera copia: la región tiene como mínimo 3 zonas cuando las admite.",pg:"36–38"},
- {id:"paired",k:"marco",cls:"solido",cap:3,x:904,y:258,w:290,h:150,t:"Región emparejada · South Central US",
+ {id:"paired",k:"marco",cls:"solido reg-us",cap:3,x:904,y:258,w:290,h:150,t:"Región emparejada · South Central US",
   q:"Cada región se empareja con otra de la misma geografía (con excepciones como Brazil South) para recuperación ante desastres. Las actualizaciones se aplican de a una.",
   p:"Aquí llega la copia geográfica de la cuenta de almacenamiento. Brazil South se empareja con South Central US, pero no al revés.",pg:"35"},
 
@@ -735,7 +740,7 @@ document.getElementById("panel").addEventListener("click",ev=>{
 });
 svg.addEventListener("click",()=>{if(sel)deseleccionar()});
 document.getElementById("leyenda").innerHTML=AREAS.map(a=>`<span><i style="background:${a.c}"></i>${a.n}</span>`).join("")+
-  '<span><i class="l n"></i>Nuevo en el capítulo</span><span><i class="l g"></i>Flecha nueva o del recorrido (más gruesa)</span><span><i class="l r"></i>Alternativa</span>'+
+  '<span><i class="l n"></i>Nuevo en el capítulo</span><span><i class="l g"></i>Flecha nueva o del recorrido (más gruesa)</span><span><i class="l r"></i>Alternativa</span><span><i style="background:var(--rbr)"></i>Región Brazil South</span><span><i style="background:var(--rus)"></i>Región South Central US</span>'+
   '<p class="fl">Flechas por flujo: <b style="color:var(--a1)">naranja</b> tráfico web y oficina · <b style="color:var(--a3)">amarillo</b> datos · <b style="color:var(--a0)">azul</b> identidad · <b style="color:var(--a4)">rosa</b> gestión · <b style="color:var(--a5)">violeta</b> costos.</p>';
 
 dibujar();aplicar();panelCapitulo();
