@@ -160,5 +160,11 @@
     "opciones": ["Aplicar un bloqueo de eliminación (CanNotDelete) a la VM", "Aplicar un bloqueo de solo lectura (ReadOnly) a la VM", "Quitar el rol de Propietario a todos", "Mover la VM a otra suscripción"],
     "correcta": 0,
     "explicacion": "Solo pide evitar la eliminación: CanNotDelete deja leer y modificar, pero no borrar. ReadOnly se pasa: congela la VM e incluso impide iniciarla o reiniciarla, porque esas operaciones cuentan como escritura. Se elige la medida justa, no la más fuerte (PDF pág. 224)."
+  },
+  {
+    "pregunta": "¿Cuál es el propósito principal del Portal de Confianza de Servicios de Microsoft (Service Trust Portal)?",
+    "opciones": ["Proporcionar una plataforma para la monitorización de seguridad a gran escala de recursos tanto en Azure como fuera de Azure", "Ofrecer a los clientes documentación sobre normativas y controles de seguridad de Azure", "Facilitar la autenticación para cuentas de Microsoft Entra ID basada en condiciones específicas relacionadas con intentos de inicio de sesión", "Monitorear la conformidad del entorno Azure con los requisitos normativos empresariales"],
+    "correcta": 1,
+    "explicacion": "El Service Trust Portal es una biblioteca de DOCUMENTOS: informes de auditoría, certificaciones (ISO, SOC) y cómo Microsoft protege SUS servicios. No mira tus recursos. Trampas: monitorear la conformidad de TU entorno = Azure Policy o el panel de cumplimiento de Defender for Cloud; monitorización de seguridad a gran escala = Microsoft Sentinel; autenticación según condiciones = acceso condicional. No está en el PDF; sí en Microsoft Learn."
   }
 ]
