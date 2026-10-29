@@ -1,0 +1,110 @@
+[
+  {
+    "pregunta": "Necesitas una cuenta de almacenamiento para blobs, colas y tablas, con redundancia geográfica. ¿Qué tipo de cuenta creas?",
+    "opciones": ["Premium Block Blobs", "Standard General-Purpose v2", "Premium File Shares", "Premium Page Blobs"],
+    "correcta": 1,
+    "explicacion": "Standard GPv2 es la opción por defecto: admite todos los servicios y todas las redundancias (PDF AZ-104, pág. 101). Cada Premium admite un solo servicio y solo LRS o ZRS; Queue y Table no tienen Premium."
+  },
+  {
+    "pregunta": "Creaste una cuenta Premium File Shares. ¿Qué opciones de redundancia puedes elegir?",
+    "opciones": ["LRS y ZRS", "LRS, ZRS, GRS y GZRS", "Solo GRS", "Todas, incluidas RA-GRS y RA-GZRS"],
+    "correcta": 0,
+    "explicacion": "Todas las cuentas Premium (Block Blobs, File Shares y Page Blobs) solo admiten LRS o ZRS: se sacrifica redundancia a cambio de rendimiento (págs. 100–105)."
+  },
+  {
+    "pregunta": "Necesitas un recurso compartido de archivos por NFS para servidores Linux. ¿Qué tipo de cuenta necesitas?",
+    "opciones": ["Standard GPv2", "Premium Block Blobs", "Premium File Shares", "Premium Page Blobs"],
+    "correcta": 2,
+    "explicacion": "NFS en Azure Files solo está disponible en Premium File Shares (pág. 103: SMB y NFS). Standard GPv2 ofrece Azure Files solo por SMB. La parte de que NFS requiere Premium no está en el PDF."
+  },
+  {
+    "pregunta": "Quieres mover blobs al nivel Archive con una regla de ciclo de vida, pero la acción no se aplica. La cuenta es Standard GPv2. ¿Cuál es la causa más probable?",
+    "opciones": ["La cuenta usa ZRS", "La cuenta usa GRS", "Los blobs son block blobs", "La regla usa daysAfterModificationGreaterThan"],
+    "correcta": 0,
+    "explicacion": "El nivel Archive solo está disponible en cuentas LRS, GRS o RA-GRS; no en ZRS, GZRS ni RA-GZRS. Que sean block blobs está bien: los niveles solo aplican a ellos. No está en el PDF."
+  },
+  {
+    "pregunta": "Un blob está en el nivel Archive y una auditoría necesita leerlo hoy. ¿Qué debes hacer primero?",
+    "opciones": ["Nada: se lee igual que en Hot", "Rehidratarlo: cambiar su nivel a Hot, Cool o Cold, o copiarlo a un blob en línea", "Restaurarlo desde Azure Backup", "Cambiar la redundancia de la cuenta a GRS"],
+    "correcta": 1,
+    "explicacion": "Archive está sin conexión: hay que rehidratarlo. Con prioridad estándar tarda hasta 15 horas; con alta prioridad, menos de 1 hora para objetos de menos de 10 GB (págs. 91–92 para Archive; los tiempos no están en el PDF)."
+  },
+  {
+    "pregunta": "Una regla mueve los blobs a Archive a los 90 días y los borra a los 180 días. ¿Qué ocurre con el costo?",
+    "opciones": ["Nada: borrar es gratis", "Se cobra la eliminación anticipada, porque el blob estuvo en Archive menos de 180 días", "Se cobra la rehidratación", "La regla falla y no borra nada"],
+    "correcta": 1,
+    "explicacion": "Archive exige 180 días mínimos (Cool 30, Cold 90). El blob estuvo 90 días en Archive: se cobran los 90 que faltan como eliminación anticipada."
+  },
+  {
+    "pregunta": "Debes darle a un proveedor acceso de solo lectura a un contenedor durante 8 horas, sin compartir las claves de la cuenta. ¿Qué usas?",
+    "opciones": ["La clave de acceso key2", "Una firma de acceso compartido (SAS) con permiso de lectura y vencimiento", "El rol Propietario en la cuenta", "Un bloqueo ReadOnly"],
+    "correcta": 1,
+    "explicacion": "La SAS da permisos limitados (sp=r), con vencimiento (se) y, si quieres, rango de IP (sip). La clave da acceso total. El PDF solo muestra una SAS en el comando de AzCopy (pág. 107)."
+  },
+  {
+    "pregunta": "Emitiste varias SAS de cuenta firmadas con key1 y una se filtró. ¿Cómo la invalidas?",
+    "opciones": ["Borrando la SAS desde el portal", "Regenerando key1", "Regenerando key2", "Cambiando la redundancia de la cuenta"],
+    "correcta": 1,
+    "explicacion": "Una SAS ad hoc no se guarda en Azure, así que no se puede borrar: la única forma de revocarla es regenerar la clave con que se firmó, lo que invalida todas las SAS firmadas con esa clave. Para revocar una sola, usa una directiva de acceso almacenada. No está en el PDF."
+  },
+  {
+    "pregunta": "Quieres poder revocar o cambiar los permisos de una SAS de servicio después de emitirla, sin regenerar las claves. ¿Qué usas?",
+    "opciones": ["Una directiva de acceso almacenada en el contenedor", "Una SAS de cuenta", "Un bloqueo CanNotDelete", "Azure Policy"],
+    "correcta": 0,
+    "explicacion": "La SAS hace referencia a la directiva (si=nombre); los permisos y el vencimiento viven en la directiva. Si la editas o la borras, cambias o revocas todas las SAS que la usan. Máximo 5 por contenedor. No está en el PDF."
+  },
+  {
+    "pregunta": "¿Qué tipo de SAS se firma con credenciales de Microsoft Entra ID en lugar de la clave de la cuenta?",
+    "opciones": ["SAS de cuenta", "SAS de servicio", "SAS de delegación de usuario", "SAS con directiva almacenada"],
+    "correcta": 2,
+    "explicacion": "La SAS de delegación de usuario usa una clave de delegación obtenida con Entra ID. Solo sirve para Blob, dura como máximo 7 días y es la recomendada por Microsoft. Regenerar las claves de la cuenta no la afecta. No está en el PDF."
+  },
+  {
+    "pregunta": "Una app con identidad administrada debe leer blobs sin usar claves ni SAS, con el mínimo privilegio. ¿Qué rol le asignas?",
+    "opciones": ["Propietario", "Colaborador", "Storage Blob Data Reader", "Storage Account Contributor"],
+    "correcta": 2,
+    "explicacion": "Storage Blob Data Reader es un rol del plano de datos: permite leer y listar blobs con Entra ID. Propietario, Colaborador y Storage Account Contributor son del plano de control: administran la cuenta, no dan acceso a los datos con Entra ID. No está en el PDF."
+  },
+  {
+    "pregunta": "Configuraste el firewall de la cuenta en \"Redes seleccionadas\" con una regla para la subred de vnet-web. ¿Qué necesita esa subred?",
+    "opciones": ["Un VPN Gateway", "Un endpoint de servicio para Microsoft.Storage", "Una IP pública por VM", "Un peering con la cuenta"],
+    "correcta": 1,
+    "explicacion": "Las reglas de VNet del firewall de Storage funcionan con endpoints de servicio habilitados en la subred. Para la oficina se agrega una regla de IP pública; con un endpoint privado puedes deshabilitar el acceso público por completo (AZ-104 págs. 171–172)."
+  },
+  {
+    "pregunta": "Un usuario sobrescribió un blob por error con un archivo dañado. ¿Qué característica te permite recuperar fácilmente el contenido anterior?",
+    "opciones": ["Redundancia GRS", "Control de versiones de blobs", "Bloqueo CanNotDelete", "Nivel Cool"],
+    "correcta": 1,
+    "explicacion": "Con versiones, cada sobrescritura conserva la versión anterior y puedes promoverla a actual. La redundancia replica también el error, y el bloqueo protege la cuenta, no los blobs. No está en el PDF."
+  },
+  {
+    "pregunta": "Alguien borró un contenedor completo. Tenías activada solo la eliminación temporal de blobs. ¿Puedes recuperarlo?",
+    "opciones": ["Sí, con la eliminación temporal de blobs", "No: hace falta la eliminación temporal de contenedores, que es una opción aparte", "Sí, con la redundancia GRS", "Sí, quitando el bloqueo de la cuenta"],
+    "correcta": 1,
+    "explicacion": "La eliminación temporal de blobs no cubre el borrado del contenedor completo; para eso existe la eliminación temporal de contenedores (retención de 1 a 365 días). No está en el PDF."
+  },
+  {
+    "pregunta": "Por norma, los registros de auditoría no se pueden modificar ni borrar durante 7 años, ni siquiera por un administrador. ¿Qué configuras?",
+    "opciones": ["Eliminación temporal de 365 días", "Una directiva de inmutabilidad (WORM) con retención por tiempo bloqueada", "Un bloqueo ReadOnly en la cuenta", "El nivel Archive"],
+    "correcta": 1,
+    "explicacion": "El almacenamiento inmutable (WORM, pág. 85) impide modificar o borrar hasta que termine la retención. Bloqueada, se puede alargar pero no acortar. La eliminación temporal permite borrar; el bloqueo protege el recurso, no los datos."
+  },
+  {
+    "pregunta": "Selecciona TODAS las afirmaciones correctas sobre Azure File Sync.",
+    "opciones": ["Un grupo de sincronización tiene un punto de conexión en la nube (el recurso compartido de Azure Files)", "Los servidores locales se agregan como puntos de conexión de servidor y necesitan el agente de File Sync", "La nube por niveles deja en el servidor solo los archivos más usados", "Requiere ExpressRoute para sincronizar"],
+    "correcta": [0, 1, 2],
+    "explicacion": "File Sync convierte Windows Server en una caché del recurso compartido en la nube (pág. 109). Servicio de sincronización → grupo de sincronización → 1 punto en la nube + puntos de servidor. Sincroniza por Internet (HTTPS), no requiere ExpressRoute. El detalle no está en el PDF."
+  },
+  {
+    "pregunta": "Desde la oficina no puedes montar un recurso compartido de Azure Files por SMB, pero desde una VM de Azure sí. ¿Cuál es la causa más probable?",
+    "opciones": ["El proveedor de Internet bloquea el puerto 445", "La cuenta usa LRS", "Falta un bloqueo CanNotDelete", "Azure Files solo funciona dentro de Azure"],
+    "correcta": 0,
+    "explicacion": "SMB usa el puerto TCP 445, que muchos proveedores bloquean. Alternativas: VPN o ExpressRoute hacia Azure, o Azure File Sync con un servidor local. No está en el PDF."
+  },
+  {
+    "pregunta": "¿Cuál es un nombre válido para una cuenta de almacenamiento?",
+    "opciones": ["St-Prod-01", "stprod01", "st_prod_01", "sp"],
+    "correcta": 1,
+    "explicacion": "El nombre debe tener entre 3 y 24 caracteres, solo letras minúsculas y números, y ser único en todo Azure, porque forma parte del endpoint (stprod01.blob.core.windows.net). No está en el PDF."
+  }
+]

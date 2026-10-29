@@ -1,0 +1,414 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Almacenamiento AZ-104</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="../assets/estilos.css">
+<style>
+.bloque{display:grid;gap:14px}
+.bloque>*{min-width:0}
+.bloque>h2.h{margin:0}
+.bloque>p.intro{margin:0;color:var(--muted);max-width:75ch}
+.chk{display:flex;gap:8px;align-items:flex-start;font-size:.9rem;cursor:pointer}
+.chk input{accent-color:var(--accent);margin-top:4px}
+.chks{display:flex;flex-wrap:wrap;gap:8px 18px}
+td.si{color:var(--ok);font-weight:600} td.no{color:var(--bad);font-weight:600} td.na{color:var(--muted)}
+.mini{font-size:.82rem;color:var(--muted)}
+.code{font-family:var(--f-mono);font-size:.82rem;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin:0;overflow-x:auto;white-space:pre;line-height:1.5}
+.linea{display:grid;grid-template-columns:repeat(73,minmax(0,1fr));gap:1px}
+.linea div{height:30px;border-radius:2px}
+.linea div.hoy{outline:2px solid var(--ink);outline-offset:-2px}
+.eje{display:flex;justify-content:space-between;font-family:var(--f-mono);font-size:.7rem;color:var(--muted)}
+.ley{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:.8rem;color:var(--muted)}
+.ley i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+.t-hot{background:var(--warn)} .t-cool{background:var(--accent)} .t-cold{background:var(--geo)} .t-arch{background:var(--muted)}
+.t-del{background:repeating-linear-gradient(45deg,var(--line) 0 3px,transparent 3px 6px);border:1px solid var(--line)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="nav"><a class="volver" href="index.html">← Dominios AZ-104</a><a class="volver" href="../mapa.html">Mapa conceptual →</a><a class="volver" href="../arquitectura.html">Arquitectura →</a></div>
+  <header>
+    <div class="eyebrow">AZ-104 · Dominio 2 · Almacenamiento</div>
+    <h1>Almacenamiento: crear, dar acceso, automatizar, proteger</h1>
+    <p>En AZ-900 viste <b>qué es</b> cada servicio de Storage. AZ-104 pregunta <b>cómo se administra</b>: qué <b>tipo de cuenta</b> admite qué, cómo dar <b>acceso</b> con claves, SAS o Entra ID, cómo mover blobs entre niveles con <b>reglas de ciclo de vida</b> y cómo <b>proteger</b> los datos de un borrado (PDF AZ-104, págs. 82–112).</p>
+  </header>
+
+  <div class="note">
+    <h3>Repaso de la base AZ-900</h3>
+    <p>Los 5 servicios, tipos de blob, niveles Hot/Cool/Cold/Archive, LRS/ZRS/GRS/GZRS, Premium solo LRS/ZRS y herramientas para mover datos: <a href="../az900/cap07-almacenamiento.html">cap. 7</a> · Endpoints de servicio y privados: <a href="../az900/peering.html">laboratorio de conectividad</a>. En el PDF de AZ-104 lo único nuevo es el nivel <b>Archive</b> (págs. 91–92); lo demás de esta página <b>no está en el PDF, pero sí en Microsoft Learn</b> y en el temario oficial de AZ-104.</p>
+  </div>
+
+  <!-- 1 · Tipo de cuenta -->
+  <section class="bloque">
+    <h2 class="h">1 · ¿Qué tipo de cuenta creo?</h2>
+    <p class="intro">Al crear la cuenta eliges <b>rendimiento</b> (Standard o Premium) y <b>redundancia</b>. Standard GPv2 admite todo; cada Premium admite <b>un solo servicio</b> y solo <b>LRS o ZRS</b> (págs. 100–105). Marca lo que necesitas y mira si la cuenta lo soporta.</p>
+    <div class="controls">
+      <div class="ctl"><label>Tipo de cuenta</label><div class="seg" id="tipo"></div></div>
+      <div class="ctl"><label>Redundancia</label><div class="seg" id="red"></div></div>
+    </div>
+    <div class="ctl"><label>Necesito</label><div class="chks" id="necs"></div></div>
+    <div class="tbl"><table><thead><tr><th>Necesidad</th><th>¿Lo soporta esta cuenta?</th><th>Por qué</th></tr></thead><tbody id="tbodyT"></tbody></table></div>
+    <div class="status" id="statusT"></div>
+    <div class="facts" id="factsT"></div>
+  </section>
+
+  <!-- 2 · Acceso -->
+  <section class="bloque">
+    <h2 class="h">2 · Dar acceso a los datos: clave, SAS o Entra ID</h2>
+    <p class="intro">Una app necesita leer las imágenes del contenedor <code>images</code> de la cuenta <b>stprod</b>. La <b>clave de acceso</b> da control total; una <b>SAS</b> (firma de acceso compartido) da permisos limitados, con vencimiento e IP; <b>Entra ID + RBAC</b> no usa secretos. El PDF solo muestra una SAS en el comando de AzCopy (pág. 107). Prueba 6 solicitudes contra la configuración.</p>
+    <div class="ctl"><label>Método de la app</label><div class="seg" id="met"></div></div>
+    <div class="controls" id="sasOpc">
+      <div class="ctl"><label>Permisos de la SAS (sp)</label><div class="chks" id="perms"></div></div>
+      <div class="ctl"><label>Vencimiento (se)</label><div class="seg" id="venc"></div></div>
+      <div class="ctl"><label>IP permitida (sip)</label><div class="seg" id="ipR"></div></div>
+    </div>
+    <div class="ctl"><label>Cambios del administrador en la cuenta</label><div class="chks">
+      <label class="chk"><input type="checkbox" id="rot"><span>Regenerar key1</span></label>
+      <label class="chk"><input type="checkbox" id="revoc"><span>Borrar la directiva almacenada <code>lectura-app</code></span></label>
+      <label class="chk"><input type="checkbox" id="noShared"><span>Deshabilitar la autorización con clave compartida</span></label>
+      <label class="chk"><input type="checkbox" id="fw"><span>Firewall: solo redes seleccionadas (vnet-web + IP de la oficina)</span></label>
+    </div></div>
+    <pre class="code" id="token"></pre>
+    <div class="tbl"><table><thead><tr><th>Solicitud</th><th>Resultado</th><th>Por qué</th></tr></thead><tbody id="tbodyS"></tbody></table></div>
+    <div class="status" id="statusS"></div>
+  </section>
+
+  <!-- 3 · Ciclo de vida -->
+  <section class="bloque">
+    <h2 class="h">3 · Reglas de ciclo de vida: el blob baja de nivel solo</h2>
+    <p class="intro">Una regla de <b>administración del ciclo de vida</b> mueve block blobs a un nivel más barato o los borra según los días desde la última modificación (pág. 89 la nombra; Archive en págs. 91–92). Ejemplo: un log de 1 GB escrito el día 0. La barra muestra 2 años, de 10 en 10 días.</p>
+    <div class="controls">
+      <div class="ctl"><label>Mover a Cool a los</label><div class="seg" id="dCool"></div></div>
+      <div class="ctl"><label>Mover a Cold a los</label><div class="seg" id="dCold"></div></div>
+    </div>
+    <div class="controls">
+      <div class="ctl"><label>Mover a Archive a los</label><div class="seg" id="dArch"></div></div>
+      <div class="ctl"><label>Borrar a los</label><div class="seg" id="dDel"></div></div>
+    </div>
+    <div class="controls">
+      <div class="ctl"><label>Redundancia de la cuenta</label><div class="seg" id="redL"></div></div>
+      <div class="ctl"><label>Una auditoría pide leer el log el día</label><div class="seg" id="dLeer"></div></div>
+    </div>
+    <div class="linea" id="lineaL"></div>
+    <div class="eje"><span>día 0</span><span>día 365</span><span>día 730</span></div>
+    <div class="ley"><span><i class="t-hot"></i>Hot</span><span><i class="t-cool"></i>Cool (mín. 30 días)</span><span><i class="t-cold"></i>Cold (mín. 90 días)</span><span><i class="t-arch"></i>Archive (mín. 180 días)</span><span><i class="t-del"></i>borrado</span></div>
+    <pre class="code" id="regla"></pre>
+    <div class="status" id="statusL"></div>
+    <div class="facts" id="factsL"></div>
+  </section>
+
+  <!-- 4 · Protección -->
+  <section class="bloque">
+    <h2 class="h">4 · Proteger los datos: ¿se puede recuperar?</h2>
+    <p class="intro">La redundancia (LRS, GRS…) protege contra fallas de hardware o de región, <b>no contra un borrado</b>: el borrado se replica. Contra errores humanos se usan la <b>eliminación temporal</b>, el <b>control de versiones</b>, el <b>almacenamiento inmutable</b> (WORM, pág. 85) y los <b>bloqueos</b>. Activa protecciones y prueba incidentes.</p>
+    <div class="chks">
+      <label class="chk"><input type="checkbox" id="pSoft" checked><span>Eliminación temporal de blobs: 7 días</span></label>
+      <label class="chk"><input type="checkbox" id="pCont"><span>Eliminación temporal de contenedores: 7 días</span></label>
+      <label class="chk"><input type="checkbox" id="pVer"><span>Control de versiones de blobs</span></label>
+      <label class="chk"><input type="checkbox" id="pWorm"><span>Directiva de inmutabilidad en <code>auditoria</code>: 7 años, bloqueada</span></label>
+      <label class="chk"><input type="checkbox" id="pLock"><span>Bloqueo CanNotDelete en la cuenta</span></label>
+    </div>
+    <div class="ctl"><label>Incidente</label><div class="seg fail" id="incP"></div></div>
+    <div class="status" id="statusP"></div>
+    <div class="facts" id="factsP"></div>
+  </section>
+
+  <!-- 5 · Tarjetas -->
+  <section>
+    <h2 class="h">5 · Lo que más pregunta AZ-104 de este dominio</h2>
+    <div class="cards">
+      <div class="card"><h3>Nombre y endpoints</h3><ul>
+        <li>Nombre: 3–24 caracteres, <b>solo minúsculas y números</b>, único en todo Azure.</li>
+        <li><code>https://stprod.blob.core.windows.net</code>, y también <code>.file</code>, <code>.queue</code>, <code>.table</code> y <code>.dfs</code> (Data Lake).</li>
+        <li>Con RA-GRS se lee en <code>stprod-secondary.blob…</code>.</li>
+      </ul></div>
+      <div class="card"><h3>Claves y SAS</h3><ul>
+        <li><b>2 claves</b> para rotar sin cortar: la app pasa a key2, regeneras key1.</li>
+        <li>Al regenerar una clave, <b>todas las SAS firmadas con ella dejan de valer</b>.</li>
+        <li>Tipos de SAS: <b>de cuenta</b>, <b>de servicio</b> y <b>de delegación de usuario</b> (firmada con Entra ID, solo Blob, la más segura).</li>
+        <li><b>Directiva de acceso almacenada:</b> permite cambiar o revocar una SAS de servicio sin tocar las claves (máx. 5 por contenedor).</li>
+      </ul></div>
+      <div class="card"><h3>Entra ID y RBAC de datos</h3><ul>
+        <li>Roles de <b>datos</b>: Storage Blob Data <b>Reader</b> / <b>Contributor</b> / <b>Owner</b>; Storage Queue Data…; Storage File Data SMB Share…</li>
+        <li><b>Propietario</b> o <b>Colaborador</b> de la cuenta son del plano de control: administran la cuenta, pero no dan permiso de datos con Entra ID (aunque pueden leer las claves).</li>
+      </ul></div>
+      <div class="card"><h3>Red de la cuenta</h3><ul>
+        <li>Por defecto: acceso desde <b>todas las redes</b>.</li>
+        <li><b>Redes seleccionadas:</b> reglas de IP pública y de VNet (con endpoint de servicio). Excepción para servicios de confianza de Azure.</li>
+        <li>Endpoint privado: IP privada en la VNet y puedes <b>deshabilitar el acceso público</b>.</li>
+        <li><b>Transferencia segura obligatoria</b> (activada por defecto): rechaza HTTP.</li>
+      </ul></div>
+      <div class="card"><h3>Azure Files (págs. 109–112)</h3><ul>
+        <li><b>SMB</b> (puerto <b>445</b>, a veces bloqueado por el proveedor de Internet) y <b>NFS</b> (solo Premium).</li>
+        <li>Identidad para SMB: AD DS local, Entra Domain Services o Entra Kerberos. Permisos de recurso compartido (RBAC) + ACL de NTFS.</li>
+        <li><b>Instantáneas de recurso compartido</b> para volver atrás.</li>
+      </ul></div>
+      <div class="card"><h3>Azure File Sync</h3><ul>
+        <li>Servicio de sincronización → <b>grupo de sincronización</b> → 1 <b>punto de conexión en la nube</b> (el recurso compartido) + <b>puntos de conexión de servidor</b> (carpetas en Windows Server con el agente).</li>
+        <li><b>Nube por niveles (cloud tiering):</b> el servidor guarda solo los archivos usados y el resto queda en Azure (pág. 109: el servidor como caché).</li>
+      </ul></div>
+      <div class="card"><h3>Mover y replicar</h3><ul>
+        <li><b>AzCopy:</b> línea de comandos, blobs y Files, programable; se autentica con SAS o Entra ID (pág. 107).</li>
+        <li><b>Storage Explorer:</b> interfaz gráfica en Windows, macOS y Linux (pág. 108).</li>
+        <li><b>Replicación de objetos:</b> copia asíncrona de block blobs a otra cuenta; requiere <b>versiones</b> en ambas y <b>fuente de cambios</b> en el origen.</li>
+      </ul></div>
+      <div class="card"><h3>Cifrado</h3><ul>
+        <li>Siempre activo (AES-256), no se puede desactivar.</li>
+        <li>Claves <b>administradas por Microsoft</b> (por defecto) o <b>por el cliente</b> en Key Vault (el almacén necesita eliminación temporal y protección de purga).</li>
+      </ul></div>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="h">Preguntas tipo examen</h2>
+    <div class="score" id="score"></div>
+    <div class="quiz" id="quiz"></div>
+  </section>
+</div>
+
+<script src="../assets/progreso.js"></script>
+<script src="../assets/quiz.js"></script>
+<script>
+function seg(id,obj,get,set,fn){
+  const el=document.getElementById(id);el.innerHTML="";
+  Object.keys(obj).forEach(k=>{const b=document.createElement("button");b.type="button";b.textContent=typeof obj[k]==="string"?obj[k]:obj[k].name;b.dataset.k=k;
+    b.setAttribute("aria-pressed",String(get()===k));b.onclick=()=>{set(k);fn()};el.appendChild(b)});
+}
+function facts(id,rows){document.getElementById(id).innerHTML=rows.map(([k,v])=>`<div class="fact"><div class="k">${k}</div><div class="v">${v}</div></div>`).join("")}
+function status(id,lvl,t,d){
+  const col={ok:"var(--ok)",warn:"var(--warn)",bad:"var(--bad)",info:"var(--accent)"}[lvl],ico={ok:"✓",warn:"!",bad:"✕",info:"i"}[lvl];
+  document.getElementById(id).innerHTML=`<span class="dot" style="background:${col}" aria-hidden="true"></span><div><b>${ico} ${t}</b><p>${d}</p></div>`;
+}
+function checks(id,lista,set,fn){
+  const el=document.getElementById(id);
+  el.innerHTML=lista.map(([k,t])=>`<label class="chk"><input type="checkbox" data-k="${k}"${set.has(k)?" checked":""}><span>${t}</span></label>`).join("");
+  el.querySelectorAll("input").forEach(i=>i.onchange=()=>{i.checked?set.add(i.dataset.k):set.delete(i.dataset.k);fn()});
+}
+
+/* ---------- 1 · Tipo de cuenta ---------- */
+const REDS=["LRS","ZRS","GRS","RA-GRS","GZRS","RA-GZRS"];
+const TIPOS={
+ gpv2:{name:"Standard GPv2",red:REDS,serv:["block","append","page","smb","queue","table","dl","arch","ra"],ep:"blob, file, queue, table, dfs"},
+ pbb:{name:"Premium Block Blobs",red:["LRS","ZRS"],serv:["block","append","dl","lat"],ep:"blob, dfs"},
+ pfs:{name:"Premium File Shares",red:["LRS","ZRS"],serv:["smb","nfs","lat"],ep:"file"},
+ ppb:{name:"Premium Page Blobs",red:["LRS","ZRS"],serv:["page","lat"],ep:"blob (solo page blobs)"}
+};
+const NEC=[["block","Fotos y videos (block blobs)"],["append","Logs que se van agregando (append blobs)"],["page","Discos de VM no administrados (page blobs)"],["smb","Carpeta compartida SMB"],["nfs","Carpeta compartida NFS"],["queue","Colas (Queue)"],["table","Tablas NoSQL (Table)"],["dl","Data Lake (espacio de nombres jerárquico)"],["arch","Nivel Archive"],["ra","Leer en la región secundaria"],["lat","Latencia muy baja"]];
+const PORQUE={
+ page:t=>t==="pbb"?"Premium Block Blobs no admite page blobs: usa Premium Page Blobs.":"",
+ nfs:t=>t==="gpv2"?"NFS en Azure Files requiere Premium File Shares.":"",
+ queue:t=>t!=="gpv2"?"Queue y Table no tienen Premium: solo Standard GPv2.":"",
+ table:t=>t!=="gpv2"?"Queue y Table no tienen Premium: solo Standard GPv2.":"",
+ arch:t=>t!=="gpv2"?"Los niveles de acceso solo existen en Standard.":"",
+ ra:t=>t!=="gpv2"?"Premium solo admite LRS o ZRS: no hay región secundaria.":"",
+ lat:t=>t==="gpv2"?"Standard usa HDD: para latencia de milisegundos de un dígito, Premium (SSD).":""
+};
+let tipo="gpv2",red="LRS";
+const necs=new Set(["block","arch"]);
+function soporta(t,n,r){
+  if(n==="arch")return TIPOS[t].serv.includes("arch")&&["LRS","GRS","RA-GRS"].includes(r);
+  if(n==="ra")return r.startsWith("RA-");
+  return TIPOS[t].serv.includes(n);
+}
+function renderT(){
+  seg("tipo",TIPOS,()=>tipo,v=>{tipo=v;if(!TIPOS[v].red.includes(red))red="LRS"},renderT);
+  const R={};REDS.forEach(r=>R[r]=r);
+  seg("red",R,()=>red,v=>red=v,renderT);
+  const T=TIPOS[tipo],redOk=T.red.includes(red);
+  const filas=NEC.filter(([k])=>necs.has(k)).map(([k,t])=>{
+    const ok=redOk&&soporta(tipo,k,red);
+    let p=ok?"Sí":(PORQUE[k]&&PORQUE[k](tipo))||"";
+    if(!ok&&!p){
+      if(k==="arch")p=`Archive no está disponible con ${red}: solo con LRS, GRS o RA-GRS.`;
+      else if(k==="ra")p=`${red} no permite leer la secundaria: elige RA-GRS o RA-GZRS.`;
+      else p=`${T.name} no admite este servicio.`;
+    }
+    return {t,ok,p};
+  });
+  document.getElementById("tbodyT").innerHTML=filas.length?filas.map(f=>`<tr><td>${f.t}</td><td class="${f.ok?"si":"no"}">${f.ok?"✓ Sí":"✕ No"}</td><td>${f.ok?"":f.p}</td></tr>`).join(""):`<tr><td class="na" colspan="3">Marca al menos una necesidad.</td></tr>`;
+  const mal=filas.filter(f=>!f.ok);
+  // Qué combinaciones de tipo + redundancia cubren todo
+  const sirven=[];Object.keys(TIPOS).forEach(t=>TIPOS[t].red.forEach(r=>{if([...necs].every(n=>soporta(t,n,r)))sirven.push(TIPOS[t].name+" + "+r)}));
+  if(!redOk)status("statusT","bad",`${T.name} no se puede crear con ${red}`,"Premium solo admite LRS o ZRS (pág. 105): sacrificas redundancia a cambio de rendimiento.");
+  else if(!mal.length)status("statusT","ok",`${T.name} con ${red} cubre todo`,necs.has("lat")?"Premium usa SSD: menor latencia, pero se paga por capacidad aprovisionada.":"Standard GPv2 es la opción por defecto y admite todos los servicios y redundancias (pág. 101).");
+  else status("statusT","warn",`Esta cuenta no cubre ${mal.length} necesidad${mal.length>1?"es":""}`,sirven.length?`Te sirve: ${sirven.slice(0,4).join(" · ")}${sirven.length>4?" …":""}.`:"Ninguna cuenta sola cubre todo: usa dos cuentas (por ejemplo, una Premium para el rendimiento y una Standard GPv2 para el resto).");
+  facts("factsT",[["Endpoints",T.ep],["Redundancias",T.red.join(" · ")],["Disco","Standard: HDD · Premium: SSD"],["Se cobra",tipo==="gpv2"?"Por GB usado + operaciones":"Por capacidad aprovisionada o por GB, más caro"]]);
+}
+checks("necs",NEC,necs,renderT);
+
+/* ---------- 2 · Acceso ---------- */
+const MET={clave:"Clave de acceso key1",sas:"SAS de cuenta",pol:"SAS + directiva almacenada",ud:"SAS de delegación de usuario",rbac:"Entra ID · Storage Blob Data Reader"};
+const VENC={ok:"Dentro de 8 horas",exp:"Venció ayer"};
+const IPR={of:"Solo la oficina 200.1.1.10",todas:"Cualquiera"};
+const PERM=[["r","r · leer"],["w","w · escribir"],["d","d · borrar"],["l","l · listar"]];
+const OPN={r:"leer",w:"escribir",d:"borrar",l:"listar"};
+const REQ=[
+ {t:"Leer img1.jpg desde la oficina",op:"r",ip:"of"},
+ {t:"Listar el contenedor desde la oficina",op:"l",ip:"of"},
+ {t:"Subir img3.jpg desde la oficina",op:"w",ip:"of"},
+ {t:"Borrar img2.jpg desde la oficina",op:"d",ip:"of"},
+ {t:"Leer img1.jpg desde la casa de un empleado",op:"r",ip:"casa"},
+ {t:"Leer img1.jpg por HTTP",op:"r",ip:"of",http:true}
+];
+let met="sas",venc="ok",ipR="of";
+const perms=new Set(["r","l"]);
+const rot=document.getElementById("rot"),revoc=document.getElementById("revoc"),noShared=document.getElementById("noShared"),fw=document.getElementById("fw");
+[rot,revoc,noShared,fw].forEach(i=>i.onchange=renderS);
+function evalS(q){
+  if(q.http)return [false,"Transferencia segura obligatoria (activada por defecto): solo HTTPS."];
+  if(fw.checked&&q.ip==="casa")return [false,"Firewall de la cuenta: la IP de la casa no está en las reglas."];
+  if(met==="rbac"){
+    if(q.op==="r"||q.op==="l")return [true,"El rol Reader permite leer y listar. No usa claves: rotarlas o deshabilitarlas no le afecta."];
+    return [false,"Storage Blob Data Reader solo lee. Para escribir o borrar: Storage Blob Data Contributor."];
+  }
+  if(met!=="ud"&&noShared.checked)return [false,"Clave compartida deshabilitada: la clave y las SAS firmadas con ella ya no sirven. Solo funcionan Entra ID y la SAS de delegación de usuario."];
+  if(met!=="ud"&&rot.checked)return [false,met==="clave"?"key1 se regeneró: la app usa una clave que ya no existe.":"La SAS se firmó con key1, que se regeneró: la firma ya no es válida."];
+  if(met==="clave")return [true,"La clave da acceso total a toda la cuenta: no tiene permisos, vencimiento ni IP."];
+  if(met==="pol"&&revoc.checked)return [false,"Se borró la directiva almacenada: todas las SAS que la usan quedan revocadas sin tocar las claves."];
+  if(venc==="exp")return [false,"La SAS venció (se)."];
+  if(ipR==="of"&&q.ip==="casa")return [false,"La IP de la casa está fuera del rango permitido (sip)."];
+  if(!perms.has(q.op))return [false,`La SAS no incluye el permiso ${q.op} (${OPN[q.op]}).`];
+  return [true,met==="ud"?"Válida: la firma usa una clave de delegación de Entra ID, no key1.":"Permiso, vencimiento e IP dentro de lo que dice la SAS."];
+}
+function renderS(){
+  seg("met",MET,()=>met,v=>met=v,renderS);
+  seg("venc",VENC,()=>venc,v=>venc=v,renderS);
+  seg("ipR",IPR,()=>ipR,v=>ipR=v,renderS);
+  const esSas=["sas","pol","ud"].includes(met);
+  document.getElementById("sasOpc").style.display=esSas?"":"none";
+  const sp=PERM.map(([k])=>k).filter(k=>perms.has(k)).join("")||"(ninguno)";
+  const se=venc==="ok"?"2026-10-29T23:00Z":"2026-10-28T23:00Z",sip=ipR==="of"?"&sip=200.1.1.10":"";
+  const tok={
+   clave:`Authorization: SharedKey stprod:<firma HMAC con key1>\n→ acceso total a blobs, archivos, colas y tablas de la cuenta`,
+   sas:`https://stprod.blob.core.windows.net/images/img1.jpg\n?sv=2022-11-02&ss=b&srt=co&sp=${sp}&se=${se}${sip}&spr=https&sig=<firmada con key1>`,
+   pol:`https://stprod.blob.core.windows.net/images/img1.jpg\n?sv=2022-11-02&sr=c&si=lectura-app&sig=<firmada con key1>\n→ permisos (sp=${sp}), vencimiento e IP${sip?"":" (cualquiera)"} viven en la directiva lectura-app del contenedor`,
+   ud:`https://stprod.blob.core.windows.net/images/img1.jpg\n?sv=2022-11-02&sr=c&sp=${sp}&se=${se}${sip}&spr=https&skoid=<id del usuario>&sktid=<tenant>&sig=<firmada con la clave de delegación>\n→ máximo 7 días; solo Blob`,
+   rbac:`Authorization: Bearer eyJ0eXAi… (token de Entra ID de la identidad administrada de la app)\n→ rol Storage Blob Data Reader asignado en el contenedor images`
+  }[met];
+  document.getElementById("token").textContent=tok;
+  const res=REQ.map(q=>[q,...evalS(q)]);
+  document.getElementById("tbodyS").innerHTML=res.map(([q,ok,p])=>`<tr><td>${q.t}</td><td class="${ok?"si":"no"}">${ok?"✓ 200 OK":"✕ 403"}</td><td>${p}</td></tr>`).join("");
+  const n=res.filter(r=>r[1]).length;
+  const consejo={
+   clave:"La clave es como la contraseña de root de la cuenta: no se reparte. Si se filtra, hay que regenerarla y eso rompe todo lo que la usa.",
+   sas:"Una SAS de cuenta no se puede revocar sola: la única forma es regenerar la clave con que se firmó.",
+   pol:"Con una directiva almacenada, revocas o cambias la SAS borrando o editando la directiva, sin regenerar claves.",
+   ud:"La SAS de delegación de usuario es la recomendada: se firma con credenciales de Entra ID y no depende de las claves.",
+   rbac:"Lo más seguro: sin secretos que filtrar. La app usa una identidad administrada con un rol de datos."
+  }[met];
+  status("statusS",n===6?"warn":n?"info":"bad",`${n} de 6 solicitudes permitidas`,consejo);
+}
+checks("perms",PERM,perms,renderS);
+
+/* ---------- 3 · Ciclo de vida ---------- */
+const DCOOL={0:"No",30:"30 días",60:"60 días"},DCOLD={0:"No",90:"90 días",120:"120 días"},DARCH={0:"No",180:"180 días",270:"270 días"},DDEL={0:"Nunca",365:"365 días",730:"730 días"};
+const REDL={LRS:"LRS",GRS:"GRS",ZRS:"ZRS"},DLEER={20:"20",100:"100",300:"300",500:"500"};
+const NIV={hot:"Hot",cool:"Cool",cold:"Cold",arch:"Archive",del:"borrado"},MIN={cool:30,cold:90,arch:180};
+const ORD=["hot","cool","cold","arch"];
+let dCool="30",dCold="90",dArch="180",dDel="365",redL="LRS",dLeer="300";
+function nivelDia(d){
+  const del=+dDel,archOk=redL!=="ZRS";
+  if(del&&d>=del)return "del";
+  // Gana la acción más fría cuya condición se cumple
+  if(archOk&&+dArch&&d>=+dArch)return "arch";
+  if(+dCold&&d>=+dCold)return "cold";
+  if(+dCool&&d>=+dCool)return "cool";
+  return "hot";
+}
+function renderL(){
+  seg("dCool",DCOOL,()=>dCool,v=>dCool=v,renderL);
+  seg("dCold",DCOLD,()=>dCold,v=>dCold=v,renderL);
+  seg("dArch",DARCH,()=>dArch,v=>dArch=v,renderL);
+  seg("dDel",DDEL,()=>dDel,v=>dDel=v,renderL);
+  seg("redL",REDL,()=>redL,v=>redL=v,renderL);
+  seg("dLeer",DLEER,()=>dLeer,v=>dLeer=v,renderL);
+  const leer=+dLeer;
+  document.getElementById("lineaL").innerHTML=Array.from({length:73},(_,i)=>{const d=i*10,n=nivelDia(d);return `<div class="t-${n}${Math.floor(leer/10)===i?" hoy":""}" title="día ${d}: ${NIV[n]}"></div>`}).join("");
+  // Tramos por nivel para la eliminación anticipada
+  const tramos=[];let prev=nivelDia(0),ini=0;
+  for(let d=1;d<=730;d++){const n=d<730?nivelDia(d):"fin";if(n!==prev){tramos.push({n:prev,ini,fin:d});prev=n;ini=d}}
+  const anticip=tramos.filter((t,i)=>MIN[t.n]&&tramos[i+1]&&tramos[i+1].n!=="fin"&&t.fin-t.ini<MIN[t.n]).map(t=>`${NIV[t.n]}: ${t.fin-t.ini} de ${MIN[t.n]} días`);
+  const acc=[];
+  if(+dCool)acc.push(`"tierToCool":    { "daysAfterModificationGreaterThan": ${dCool} }`);
+  if(+dCold)acc.push(`"tierToCold":    { "daysAfterModificationGreaterThan": ${dCold} }`);
+  if(+dArch)acc.push(`"tierToArchive": { "daysAfterModificationGreaterThan": ${dArch} }`);
+  if(+dDel)acc.push(`"delete":        { "daysAfterModificationGreaterThan": ${dDel} }`);
+  document.getElementById("regla").textContent=`{ "rules": [ { "name": "logs-a-frio", "enabled": true, "type": "Lifecycle",
+  "definition": {
+    "filters": { "blobTypes": ["blockBlob"], "prefixMatch": ["logs/"] },
+    "actions": { "baseBlob": {
+      ${acc.join(",\n      ")||"(sin acciones)"}
+    } } } } ] }`;
+  const n=nivelDia(leer);
+  const avisos=[];
+  if(redL==="ZRS"&&+dArch)avisos.push("Archive no está disponible con ZRS, GZRS ni RA-GZRS: la acción tierToArchive no se aplica y el blob se queda en Cold o Cool.");
+  if(anticip.length)avisos.push(`Eliminación anticipada: el blob salió antes del mínimo (${anticip.join(" · ")}) y se cobran los días que faltan.`);
+  if(+dCool&&+dCold&&+dCold<=+dCool)avisos.push("Cold llega antes que Cool: gana la acción más fría y Cool nunca se usa.");
+  let lvl,t,d;
+  if(n==="del"){lvl="bad";t=`Día ${leer}: el log ya no existe`;d=`La regla lo borró el día ${dDel}. Si una auditoría puede pedirlo, alarga el borrado o usa una directiva de inmutabilidad.`}
+  else if(n==="arch"){lvl="warn";t=`Día ${leer}: el log está en Archive, sin conexión`;d="No se puede leer directo: hay que <b>rehidratarlo</b> cambiando el nivel a Hot, Cool o Cold, o copiándolo a otro blob en línea. Prioridad estándar: hasta 15 horas; alta prioridad: menos de 1 hora (objetos de menos de 10 GB), más cara."}
+  else{lvl="ok";t=`Día ${leer}: se lee al instante desde ${NIV[n]}`;d=n==="hot"?"Hot: el almacenamiento más caro y la lectura más barata.":`${NIV[n]} está en línea: lectura inmediata, pero cada lectura cuesta más que en Hot.`}
+  if(avisos.length){d+="<br><br>⚠ "+avisos.join("<br>⚠ ");if(lvl==="ok")lvl="warn"}
+  status("statusL",lvl,t,d);
+  const dias=k=>tramos.filter(x=>x.n===k).reduce((s,x)=>s+x.fin-x.ini,0);
+  facts("factsL",ORD.map(k=>[NIV[k],dias(k)+" días"]).concat([["Borrado",dias("del")+" días"]]));
+}
+
+/* ---------- 4 · Protección ---------- */
+const INCP={
+ b3:{name:"Borraron img1.jpg hace 3 días"},
+ b10:{name:"Borraron img1.jpg hace 10 días"},
+ sob:{name:"Sobrescribieron img1.jpg con un archivo dañado"},
+ cont:{name:"Borraron el contenedor images hace 2 días"},
+ audit:{name:"Un Propietario intenta borrar un log de auditoría"},
+ cuenta:{name:"Alguien intenta borrar la cuenta stprod"},
+ region:{name:"Cae la región primaria (cuenta LRS)"}
+};
+let incP="b3";
+const pSoft=document.getElementById("pSoft"),pCont=document.getElementById("pCont"),pVer=document.getElementById("pVer"),pWorm=document.getElementById("pWorm"),pLock=document.getElementById("pLock");
+[pSoft,pCont,pVer,pWorm,pLock].forEach(i=>i.onchange=renderP);
+function renderP(){
+  seg("incP",INCP,()=>incP,v=>incP=v,renderP);
+  const s=pSoft.checked,c=pCont.checked,v=pVer.checked,w=pWorm.checked,l=pLock.checked;
+  let lvl,t,d,f;
+  if(incP==="b3"){
+    if(v){lvl="ok";t="Se recupera desde una versión anterior";d="Con versiones, al borrar el blob la versión actual pasa a ser una versión anterior. La promueves a actual y listo.";}
+    else if(s){lvl="ok";t="Se recupera: sigue en eliminación temporal";d="Pasaron 3 de 7 días de retención: usas <b>Recuperar</b> (undelete) en el portal.";}
+    else{lvl="bad";t="Se perdió";d="Sin eliminación temporal ni versiones, el borrado es definitivo. La redundancia no ayuda: el borrado también se replica.";}
+    f=[["Eliminación temporal",s?"7 días":"No"],["Versiones",v?"Sí":"No"],["Días desde el borrado","3"]];
+  }else if(incP==="b10"){
+    if(v){lvl="ok";t="Se recupera desde una versión anterior";d="Las versiones anteriores no vencen solas (salvo que una regla de ciclo de vida las borre). La eliminación temporal de 7 días ya no alcanzaba.";}
+    else{lvl="bad";t="Se perdió";d=s?"La eliminación temporal guarda 7 días y pasaron 10. La retención se configura de 1 a 365 días: alárgala o activa las versiones.":"Sin protección, el borrado es definitivo.";}
+    f=[["Eliminación temporal",s?"7 días (vencida)":"No"],["Versiones",v?"Sí":"No"],["Días desde el borrado","10"]];
+  }else if(incP==="sob"){
+    if(v){lvl="ok";t="Se recupera la versión anterior";d="Cada sobrescritura crea una versión nueva y conserva la anterior: el escenario típico del control de versiones.";}
+    else if(s){lvl="ok";t="Se recupera desde una instantánea eliminada temporalmente";d="Sin versiones, la eliminación temporal guarda el contenido sobrescrito como instantánea eliminada temporalmente durante 7 días.";}
+    else{lvl="bad";t="Se perdió el contenido original";d="Sin versiones ni eliminación temporal, sobrescribir reemplaza el blob para siempre.";}
+    f=[["Versiones",v?"Sí":"No"],["Eliminación temporal",s?"7 días":"No"],["Mejor opción","Versiones"]];
+  }else if(incP==="cont"){
+    if(c){lvl="ok";t="Se recupera el contenedor con todo su contenido";d="La eliminación temporal de <b>contenedores</b> es una opción aparte. Pasaron 2 de 7 días: lo recuperas entero.";}
+    else{lvl="bad";t="Se perdió el contenedor";d=`${s||v?"La eliminación temporal de blobs y las versiones no protegen si se borra el contenedor completo: ":""}hace falta la eliminación temporal de contenedores.${l?" El bloqueo de la cuenta tampoco protege los datos de adentro.":""}`;}
+    f=[["Eliminación temporal de contenedores",c?"7 días":"No"],["De blobs",s?"7 días":"No"],["Bloqueo",l?"Sí, pero no aplica":"No"]];
+  }else if(incP==="audit"){
+    if(w){lvl="ok";t="Bloqueado: nadie puede borrarlo ni modificarlo";d="La directiva de inmutabilidad (WORM: escribir una vez, leer muchas) con retención por tiempo bloqueada impide borrar o cambiar el blob hasta que pasen 7 años, ni siquiera un Propietario. Una retención bloqueada se puede alargar, nunca acortar.";}
+    else{lvl="bad";t="El Propietario lo borra";d=`Sin inmutabilidad, un rol con permiso de datos puede borrarlo.${s?" Se podría recuperar 7 días, pero eso no cumple una norma de retención.":""}${l?" El bloqueo CanNotDelete protege la cuenta, no los blobs.":""}`;}
+    f=[["Inmutabilidad",w?"7 años, bloqueada":"No"],["Tipo","Retención por tiempo"],["Alternativa","Retención legal (sin fecha)"]];
+  }else if(incP==="cuenta"){
+    if(l){lvl="ok";t="El bloqueo impide borrar la cuenta";d="CanNotDelete bloquea el borrado del recurso, incluso para un Propietario (cap. 10). Para borrarla, primero hay que quitar el bloqueo.";}
+    else{lvl="bad";t="La cuenta se borra con todo";d=`${s||v||c?"La eliminación temporal y las versiones viven dentro de la cuenta: se van con ella. ":""}Protege la cuenta con un bloqueo CanNotDelete.`;}
+    f=[["Bloqueo",l?"CanNotDelete":"No"],["Plano","De control (Azure Resource Manager)"],["Protege datos internos","No"]];
+  }else{
+    lvl="bad";t="Sin acceso: la protección contra borrados no sirve aquí";d="Eliminación temporal, versiones e inmutabilidad protegen contra errores humanos, no contra fallas. Contra la caída de una región se usa la <b>redundancia geográfica</b> (GRS o GZRS) y la conmutación por error de la cuenta (<a href=\"../az900/cap07-almacenamiento.html\">cap. 7</a>).";
+    f=[["Redundancia","LRS (una región)"],["Solución","GRS / GZRS"],["Lectura en secundaria","RA-GRS / RA-GZRS"]];
+  }
+  status("statusP",lvl,t,d);facts("factsP",f);
+}
+
+renderT();renderS();renderL();renderP();iniciarQuiz("almacenamiento","az104");
+</script>
+</body>
+</html>
