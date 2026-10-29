@@ -166,5 +166,11 @@
     "opciones": ["Proporcionar una plataforma para la monitorización de seguridad a gran escala de recursos tanto en Azure como fuera de Azure", "Ofrecer a los clientes documentación sobre normativas y controles de seguridad de Azure", "Facilitar la autenticación para cuentas de Microsoft Entra ID basada en condiciones específicas relacionadas con intentos de inicio de sesión", "Monitorear la conformidad del entorno Azure con los requisitos normativos empresariales"],
     "correcta": 1,
     "explicacion": "El Service Trust Portal es una biblioteca de DOCUMENTOS: informes de auditoría, certificaciones (ISO, SOC) y cómo Microsoft protege SUS servicios. No mira tus recursos. Trampas: monitorear la conformidad de TU entorno = Azure Policy o el panel de cumplimiento de Defender for Cloud; monitorización de seguridad a gran escala = Microsoft Sentinel; autenticación según condiciones = acceso condicional. No está en el PDF; sí en Microsoft Learn."
+  },
+  {
+    "pregunta": "Siendo el administrador de Azure y teniendo un grupo de recursos, ¿cómo puedes asegurar que ningún otro administrador pueda crear redes virtuales dentro de este grupo de recursos específico?",
+    "opciones": ["Establecer una política de Azure", "Aplicar bloqueos de recursos", "Modificar las propiedades del recurso", "Implementar control de acceso basado en rol (RBAC) de Azure"],
+    "correcta": 0,
+    "explicacion": "Azure Policy decide QUÉ se puede crear: la directiva \"Tipos de recursos no permitidos\" con Microsoft.Network/virtualNetworks, asignada al grupo de recursos, rechaza (Deny) la creación para todos, incluso para Propietarios. RBAC decide QUIÉN puede actuar: los otros administradores ya tienen permiso y quitárselo los deja sin poder crear nada más. Un bloqueo no distingue tipos de recurso: CanNotDelete no impide crear y ReadOnly bloquearía todo el grupo."
   }
 ]
