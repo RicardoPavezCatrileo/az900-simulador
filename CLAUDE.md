@@ -128,7 +128,7 @@ Errores de esa guía que NO se deben copiar: dice que la secundaria de GZRS es Z
 - No están en el PDF: VNet-to-VNet, tránsito de gateway, estado Iniciado/Conectado, firewall en el hub, costos de peering y endpoints (sí: peering pág. 104, VPN 112–114, ExpressRoute 120, endpoints cap. 9 / AZ-104 171–172).
 - Enlazado desde la `.nav` de arquitectura, mapa, cap06 y az104/redes.
 
-## Lo que ya existe: az900/simulacro.html (examen de práctica)
+## Lo que ya existe: az900/simulacroAZ900.html (examen de práctica)
 - Enlazado como tarjeta destacada en `az900/index.html`. Carga los JSON de cap02–cap11 (no el laboratorio) y arma 20/40/50/60 preguntas con el peso de los dominios oficiales: 1 Conceptos de la nube 25–30% (cap02), 2 Arquitectura y servicios 35–40% (cap03, 05–09), 3 Gestión y gobernanza 30–35% (cap04, 10, 11); `reparto()` da el sobrante primero a Arquitectura.
 - Una pregunta por pantalla, opciones mezcladas (`orden` por pregunta), selección múltiple con `correcta` array, marcar para revisar, grilla de navegación, teclas 1–5 y ← →, cronómetro 45 min (real) / 60 / sin límite. No muestra si acertaste hasta terminar.
 - Resultado: puntaje = 1000 × aciertos / total (el real es escalado), aprobado con 700, % por dominio, aciertos por capítulo con enlace, revisión (errores / marcadas / todas) con la explicación, y "Practicar solo mis errores".
