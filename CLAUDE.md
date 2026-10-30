@@ -170,6 +170,7 @@ Errores de esa guía que NO se deben copiar: dice que la secundaria de GZRS es Z
 - `.ctl label.chk` en `estilos.css` evita que las casillas dentro de un `.ctl` se vean en mayúsculas.
 
 ## Convenciones de los simuladores
+- Varios archivos usan saltos de línea CRLF (los JSON de preguntas, `arquitectura.html`, `az900/peering.html`): `sed -i` de Git Bash los convierte a LF y el diff se vuelve el archivo entero. Editar con la herramienta Edit o con Python (`newline=''`), y revisar `git diff --stat` antes del commit.
 - `seg()` pone `data-k` en cada botón; en un `.seg.fail` la opción con clave `none` se pinta azul (no roja).
 - Para probar: `python -m http.server` en la carpeta y captura con Chrome headless (`--screenshot`). Chrome headless no baja de ~500 px de ancho; usar un `--user-data-dir` limpio para no ver CSS en caché.
 
