@@ -88,5 +88,11 @@
     "opciones": ["Solo Azure Portal", "Azure CLI y Azure PowerShell", "Solo Azure Advisor", "Azure Mobile App"],
     "correcta": 1,
     "explicacion": "Azure CLI y Azure PowerShell son de línea de comandos y permiten crear scripts para automatizar procesos. El portal es manual (clics)."
+  },
+  {
+    "pregunta": "¿Qué representan las plantillas de Azure Resource Manager (ARM)?",
+    "opciones": ["Infraestructura como código", "Una interfaz gráfica para administrar recursos", "Un servicio de supervisión del rendimiento", "Una herramienta de línea de comandos multiplataforma"],
+    "correcta": 0,
+    "explicacion": "Una plantilla ARM es infraestructura como código (IaC): un archivo JSON declarativo que describe los recursos y su configuración, para desplegarlos de forma repetible (la misma infraestructura en dev, test y prod) y guardarlos en control de versiones. Las trampas son otras herramientas: la interfaz gráfica es Azure Portal, la supervisión es Azure Monitor y la línea de comandos multiplataforma es Azure CLI. Bicep es otro lenguaje de IaC que se compila a ARM (AZ-104)."
   }
 ]

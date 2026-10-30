@@ -118,7 +118,7 @@ Errores de esa guía que NO se deben copiar: dice que la secundaria de GZRS es Z
 ## Lo que ya existe: cap04-fundamentos-herramientas.html (PDF págs. 48–58)
 - "Una tarea, siete herramientas": crear una VM en Portal (pasos), CLI (`az`), PowerShell (`New-AzVM`), Cloud Shell, plantilla ARM (JSON + `az deployment group create`), Mobile App y Advisor, con ficha de tipo/dónde/instalación/automatizable.
 - Panel de Azure Advisor: checkboxes de problemas → puntaje por las 5 categorías (Costo, Seguridad, Confiabilidad, Excelencia operativa, Rendimiento) y recomendaciones. Puntajes ilustrativos.
-- Tarjetas por herramienta y 15 preguntas en `data/preguntas-cap04.json`.
+- Tarjetas por herramienta y 16 preguntas en `data/preguntas-cap04.json` (la 16: qué representan las plantillas ARM → infraestructura como código, con Portal, Monitor y CLI de trampa).
 
 ## Lo que ya existe: cap05-computacion.html (PDF págs. 59–100)
 - Opciones de compra: duración × interrumpible × requisito especial (zona, host dedicado, aislada) × flexibilidad → pago por uso / plan de ahorro / reservada / spot / host dedicado / aislada / reserva de capacidad, con analogía del hotel del curso y tabla comparativa. Descuentos del curso (~65/72/90%) marcados como aproximados.
