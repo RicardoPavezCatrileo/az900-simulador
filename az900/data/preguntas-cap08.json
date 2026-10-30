@@ -130,5 +130,11 @@
     "opciones": ["Autenticación", "Autorización", "Regiones de Azure", "Microsoft Entra ID", "Suscripciones de Azure"],
     "correcta": 0,
     "explicacion": "\"Quienes afirman ser\" = identidad = autenticación (AuthN: ¿quién eres?). La autorización viene después: qué puedes hacer (AuthZ: ¿qué puedes hacer?). Microsoft Entra ID es el SERVICIO que hace ambas, pero la pregunta pide el MÉTODO. Regiones y suscripciones no tienen relación."
+  },
+  {
+    "pregunta": "¿Cuál es el método recomendado para sincronizar identidades de usuario entre un servidor Active Directory local y Microsoft Entra ID?",
+    "opciones": ["Implementa Microsoft Entra Connect en tu entorno local para sincronizar cuentas entre Active Directory local y Microsoft Entra ID", "Instala Azure Identity Protection en tu entorno local para realizar la sincronización entre cuentas locales y de Microsoft Entra ID", "Ejecuta Microsoft Entra Connect en el entorno de Azure para sincronizar cuentas entre el Active Directory local y Microsoft Entra ID", "La sincronización entre un servidor Active Directory local y Microsoft Entra ID no es posible; por cuestiones de seguridad, ambos deben mantenerse separados"],
+    "correcta": 0,
+    "explicacion": "Entra Connect se instala en un Windows Server del entorno local, junto a los controladores de dominio: lee el AD local y envía los cambios a Entra ID por HTTPS saliente, sin abrir puertos de entrada (PDF pág. 173). La trampa es \"en el entorno de Azure\": Entra ID es un servicio SaaS donde no se instala nada, y el que llega al AD es el servidor local. La alternativa liviana, Entra Connect Cloud Sync, también usa un agente local. Identity Protection detecta inicios de sesión riesgosos, no sincroniza. Y la identidad híbrida es justamente lo que se recomienda."
   }
 ]
