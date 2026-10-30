@@ -142,5 +142,11 @@
     "opciones": ["Azure Key Vault", "Azure Privileged Identity Management (PIM)", "Azure Firewall", "Azure Sentinel"],
     "correcta": 1,
     "explicacion": "PIM (hoy Microsoft Entra Privileged Identity Management) controla los roles poderosos: el administrador no los tiene siempre, sino que los activa justo a tiempo (just-in-time), por un tiempo limitado, con MFA, aprobación y justificación, y queda auditado; también hace revisiones de acceso. Requiere Entra ID P2. Pistas: \"acceso privilegiado\", \"recursos cruciales\", \"just-in-time\". Trampas: Key Vault guarda secretos y claves; Firewall filtra tráfico de red; Sentinel (hoy Microsoft Sentinel) es un SIEM. No está en el PDF de AZ-900; sí en el de AZ-104 (págs. 50 y 53)."
+  },
+  {
+    "pregunta": "Si se requiere implementar la autenticación multifactor (MFA) para las aplicaciones de Microsoft Cloud en toda la organización de manera centralizada y gradual (rolling out), ¿qué servicio de Azure debes utilizar para ejecutar esta tarea?",
+    "opciones": ["Microsoft Entra Connect", "Azure Information Protection", "Grupos de seguridad de red", "Implementar una política de acceso condicional para desplegar MFA en toda la organización"],
+    "correcta": 3,
+    "explicacion": "Una directiva de acceso condicional con la decisión \"requerir MFA\" se crea una vez en Entra ID (centralizada) y se asigna a usuarios o grupos: empiezas con un grupo piloto, la pruebas en modo \"solo informe\" y la amplías (gradual). Requiere Entra ID P1. Trampas: Entra Connect sincroniza el AD local con Entra ID, pero no exige MFA; Information Protection etiqueta documentos; un NSG filtra tráfico de red. Los valores predeterminados de seguridad también activan MFA, pero para todos a la vez y sin condiciones: no es gradual."
   }
 ]
