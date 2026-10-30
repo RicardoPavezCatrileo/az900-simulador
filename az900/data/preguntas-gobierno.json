@@ -1,0 +1,98 @@
+[
+  {
+    "pregunta": "Bruno tiene el rol Colaborador en el grupo de recursos rg-dev. Intenta crear una VM en rg-prod, de la misma empresa. ¿Qué pasa?",
+    "opciones": ["La crea: Colaborador puede crear recursos", "No puede: su rol solo vale en rg-dev y lo que hay debajo", "La crea, pero queda marcada como no conforme", "No puede, porque rg-prod tiene que tener un bloqueo"],
+    "correcta": 1,
+    "explicacion": "Un rol se hereda hacia abajo desde el ámbito donde se asigna; no sube ni pasa a un grupo de recursos vecino. Para crear en rg-prod necesita una asignación en rg-prod, en sub-prod o en el grupo de administración. \"No conforme\" es de Azure Policy en modo Audit."
+  },
+  {
+    "pregunta": "Se asigna la directiva \"Ubicaciones permitidas\" (solo Brazil South) con efecto Deny en el grupo de administración. Ana, Propietaria de una de sus suscripciones, intenta crear una VM en East US. ¿Qué pasa?",
+    "opciones": ["La crea, porque Propietario tiene control total", "Se rechaza: la directiva se hereda a la suscripción y aplica a todos, incluso al Propietario", "La crea y la directiva la mueve a Brazil South", "Se rechaza solo si además hay un bloqueo ReadOnly"],
+    "correcta": 1,
+    "explicacion": "Azure Policy revisa las propiedades del recurso (aquí, la región), no a la persona: le aplica también al Propietario. Asignada en el grupo de administración, llega a todas sus suscripciones. RBAC decide si puedes crear; Policy decide cómo tiene que ser lo que creas."
+  },
+  {
+    "pregunta": "Elena es Administradora global en Microsoft Entra ID, pero no ve ninguna VM en el portal de Azure. ¿Por qué?",
+    "opciones": ["Porque le falta MFA", "Porque Administrador global es un rol de Entra ID; para los recursos necesita un rol de Azure RBAC", "Porque las VMs tienen un bloqueo CanNotDelete", "Porque Azure Policy oculta los recursos que no cumplen"],
+    "correcta": 1,
+    "explicacion": "Hay dos sistemas de roles: los de Entra ID (Administrador global, de usuarios…) administran el tenant, los usuarios y las licencias; los de Azure RBAC (Propietario, Colaborador, Lector…) administran suscripciones y recursos. Un Administrador global puede elevarse a Administrador de acceso de usuarios en la raíz, pero no lo tiene por defecto (AZ-104). Ni los bloqueos ni Policy ocultan recursos."
+  },
+  {
+    "pregunta": "Necesitas impedir que se borren recursos en todas las suscripciones que cuelgan de un grupo de administración. ¿Qué haces?",
+    "opciones": ["Un bloqueo CanNotDelete en el grupo de administración", "Un bloqueo CanNotDelete en cada suscripción", "Etiquetas \"no-borrar\" en el grupo de administración", "Un NSG en cada suscripción"],
+    "correcta": 1,
+    "explicacion": "Los bloqueos se aplican a una suscripción, un grupo de recursos o un recurso, y se heredan hacia abajo; no existen en el grupo de administración. Las etiquetas no protegen nada y un NSG filtra tráfico de red, no operaciones de gestión."
+  },
+  {
+    "pregunta": "¿A qué se puede asociar un grupo de seguridad de red (NSG)? Selecciona TODAS las correctas.",
+    "opciones": ["A una subred", "A la interfaz de red (NIC) de una VM", "A una red virtual completa", "A un grupo de recursos", "A una suscripción"],
+    "correcta": [0, 1],
+    "explicacion": "Un NSG se asocia a subredes y a NIC. No se asocia a la VNet entera (se pone en cada subred), y el grupo de recursos o la suscripción solo son el lugar donde vive el NSG como recurso. Trampa típica: \"red virtual\"."
+  },
+  {
+    "pregunta": "El NSG de la subred permite el puerto 3389 desde Internet. La NIC de la VM tiene otro NSG, solo con las reglas por defecto. Alguien intenta RDP desde Internet a la IP pública de la VM. ¿Qué pasa?",
+    "opciones": ["Entra, porque el NSG de la subred lo permite", "No entra: el tráfico entrante debe pasar los dos NSG y el de la NIC lo deniega con la regla por defecto 65500", "Entra, porque el NSG de la NIC hereda las reglas del de la subred", "No entra, porque RBAC bloquea el RDP"],
+    "correcta": 1,
+    "explicacion": "Entrante: primero el NSG de la subred, después el de la NIC; los dos deben permitir. El de la NIC no tiene una regla propia para el 3389 desde Internet, así que cae en DenyAllInBound (65500). Los NSG no se heredan entre sí, y RBAC no filtra puertos."
+  },
+  {
+    "pregunta": "Necesitas impedir el acceso RDP (3389) desde Internet a las VMs de una subred. ¿Qué usas?",
+    "opciones": ["Azure RBAC", "Un bloqueo ReadOnly", "Un grupo de seguridad de red (NSG)", "Etiquetas"],
+    "correcta": 2,
+    "explicacion": "El tráfico de red se controla en el plano de red: NSG en la subred o en la NIC. RBAC y los bloqueos controlan operaciones de gestión (crear, cambiar, borrar recursos), no paquetes; las etiquetas solo organizan."
+  },
+  {
+    "pregunta": "Un usuario con rol Colaborador intenta crear una VM en East US dentro de un grupo de recursos que tiene un bloqueo CanNotDelete. En la suscripción hay una directiva Deny que solo permite Brazil South. ¿Qué detiene la creación?",
+    "opciones": ["El rol Colaborador", "El bloqueo CanNotDelete", "La directiva de Azure Policy", "Nada: la VM se crea"],
+    "correcta": 2,
+    "explicacion": "Colaborador sí puede crear (RBAC pasa). CanNotDelete solo impide borrar, no crear ni modificar. La directiva Deny rechaza la región East US. Para resolverlo, revisa en orden: ¿el rol lo permite? → ¿cumple las directivas? → ¿hay un bloqueo que aplique a esa operación?"
+  },
+  {
+    "pregunta": "Asignas una directiva de Azure Policy con efecto Audit que exige la etiqueta \"centro-de-costo\". Un usuario crea una VM sin esa etiqueta. ¿Qué pasa?",
+    "opciones": ["La creación se rechaza", "La VM se crea y queda marcada como no conforme", "Azure borra la VM al día siguiente", "La VM se crea con la etiqueta puesta automáticamente"],
+    "correcta": 1,
+    "explicacion": "Audit registra el incumplimiento sin bloquear; Deny es el que rechaza. Poner la etiqueta automáticamente es el efecto Modify (o Append), no Audit. Azure Policy nunca borra recursos."
+  },
+  {
+    "pregunta": "Asignas hoy una directiva Deny de ubicaciones permitidas a una suscripción que ya tiene VMs en una región no permitida. ¿Qué les pasa a esas VMs?",
+    "opciones": ["Se borran", "Se mueven a una región permitida", "Siguen funcionando y aparecen como no conformes", "Se apagan hasta que alguien las mueva"],
+    "correcta": 2,
+    "explicacion": "Deny solo frena las creaciones y modificaciones nuevas. Lo que ya existía se evalúa y aparece como no conforme en el panel de cumplimiento; se corrige a mano o, para algunos efectos, con una tarea de corrección (AZ-104)."
+  },
+  {
+    "pregunta": "¿Qué afirmación sobre las etiquetas (tags) es correcta?",
+    "opciones": ["Dan acceso a los recursos a quien tenga la misma etiqueta", "Sirven para organizar y agrupar costos, y no dan ni quitan permisos", "Se pueden aplicar a grupos de administración y se heredan a todo", "Impiden borrar un recurso si dicen \"prod\""],
+    "correcta": 1,
+    "explicacion": "Las etiquetas son pares clave-valor para organizar, filtrar y agrupar costos en Cost Management. No conceden permisos (eso es RBAC), no protegen (eso son los bloqueos) y no se heredan del grupo de recursos (salvo que Azure Policy las copie)."
+  },
+  {
+    "pregunta": "Un recurso está en un grupo de recursos con bloqueo CanNotDelete. Un Colaborador quiere quitar el bloqueo para borrar el recurso. ¿Puede?",
+    "opciones": ["Sí, Colaborador puede quitar bloqueos", "No: quitar un bloqueo requiere Propietario o Administrador de acceso de usuarios", "Sí, pero solo si el bloqueo es ReadOnly", "No, los bloqueos no se pueden quitar"],
+    "correcta": 1,
+    "explicacion": "Crear o quitar bloqueos requiere permisos de Microsoft.Authorization/locks/*, que tienen Propietario y Administrador de acceso de usuarios. Colaborador no los tiene (no administra el acceso). Una vez quitado el bloqueo, quien tenga permiso puede borrar."
+  },
+  {
+    "pregunta": "AZ-104: Diego tiene el rol Colaborador de máquinas virtuales en rg-prod. ¿Qué de esto NO puede hacer?",
+    "opciones": ["Reiniciar una VM de rg-prod", "Cambiar el tamaño de una VM de rg-prod", "Agregar una regla al NSG de la subred de esas VMs", "Borrar una VM de rg-prod"],
+    "correcta": 2,
+    "explicacion": "Colaborador de máquinas virtuales administra las VMs (crear, cambiar, reiniciar, borrar), pero no las redes, NSG ni cuentas de almacenamiento a las que se conectan: solo puede unirse a ellas. Para editar el NSG necesita, por ejemplo, Colaborador de red."
+  },
+  {
+    "pregunta": "AZ-104: El grupo de recursos de producción tiene un bloqueo ReadOnly. El Propietario intenta reiniciar una VM. ¿Qué pasa?",
+    "opciones": ["La reinicia: reiniciar no modifica el recurso", "No puede: ReadOnly también frena operaciones POST como reiniciar", "La reinicia, porque el Propietario ignora los bloqueos", "Solo puede apagarla, no reiniciarla"],
+    "correcta": 1,
+    "explicacion": "ReadOnly deja solo leer. Reiniciar o iniciar una VM es una operación POST, y el bloqueo también la frena; lo mismo pasa con listar las claves de una cuenta de almacenamiento. Los bloqueos le ganan a cualquier rol. No está en el PDF; sí en Microsoft Learn."
+  },
+  {
+    "pregunta": "AZ-104: La oficina está conectada a vnet-prod por VPN Gateway S2S. El NSG de la subred de datos solo tiene la regla 100 \"Permitir 1433 desde 10.0.2.0/24\". Un equipo de la oficina (192.168.1.20) se conecta al 1433 de la VM SQL. ¿Qué pasa?",
+    "opciones": ["No llega: ninguna regla propia lo permite", "Llega por la regla por defecto 65000 AllowVnetInBound: la etiqueta VirtualNetwork incluye la red local conectada por VPN", "Llega solo si la VM tiene IP pública", "No llega, porque la VPN no transporta el puerto 1433"],
+    "correcta": 1,
+    "explicacion": "La etiqueta de servicio VirtualNetwork abarca la VNet, las VNets emparejadas y las redes locales conectadas por el gateway. Por eso la regla por defecto 65000 deja pasar a la oficina. Para cerrarla, agrega una regla Deny con origen VirtualNetwork y prioridad menor que 65000 (por ejemplo, 200)."
+  },
+  {
+    "pregunta": "vm-dev está en vnet-dev (suscripción de desarrollo) y vm-sql en vnet-prod (suscripción de producción). No hay peering ni VPN entre ellas. Los NSG de las dos subredes permiten el 1433. ¿vm-dev llega a vm-sql?",
+    "opciones": ["Sí, porque los NSG lo permiten", "Sí, porque las dos suscripciones están en el mismo grupo de administración", "No: no hay camino de red entre las VNets, y ningún NSG puede crearlo", "No, porque RBAC impide el acceso entre suscripciones"],
+    "correcta": 2,
+    "explicacion": "Primero tiene que haber camino (peering, VPN, IP pública); el NSG solo filtra el tráfico que ya tiene camino. El grupo de administración organiza la gestión, no conecta redes, y RBAC no decide sobre paquetes. Con un peering (también entre suscripciones) sí llegaría."
+  }
+]

@@ -1,0 +1,593 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Gobierno y seguridad sobre la red</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="../assets/estilos.css">
+<style>
+.wrap{max-width:1240px}
+.dos{display:grid;gap:14px;grid-template-columns:1fr 1fr}
+@media (max-width:860px){.dos{grid-template-columns:1fr}}
+.plano{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px;display:grid;gap:6px;align-content:start}
+.plano h3{margin:0;font-family:var(--f-display);font-size:1rem}
+.plano h3 span{font-family:var(--f-mono);font-size:.75rem;color:var(--accent);margin-right:6px}
+.plano p{margin:0}
+.lienzo{background:var(--surface);border:1px solid var(--line);border-radius:10px;overflow-x:auto}
+.lienzo svg{display:block;min-width:960px;width:100%;height:auto}
+/* Marcos (grupo de administración, suscripción, grupo de recursos, VNet, subred) */
+.fr>rect{fill:none;stroke:var(--line);stroke-width:1.4}
+.fr>text{font-family:var(--f-mono);font-size:11px;fill:var(--muted)}
+.fr.mg>rect{stroke:var(--muted);stroke-dasharray:6 4}
+.fr.sub>rect{stroke:var(--muted)}
+.fr.rg>rect{fill:var(--zone)}
+.fr.vn>rect{fill:var(--surface);stroke-dasharray:4 3}
+.fr.sn>rect{fill:var(--bg)}
+.fr.reg-us>rect{stroke:var(--geo)}
+.nd rect{fill:var(--surface);stroke:var(--line)}
+.nd text.t{font-family:var(--f-body);font-weight:600;font-size:12.5px;fill:var(--ink)}
+.nd text.s{font-family:var(--f-mono);font-size:10px;fill:var(--muted)}
+.pl rect{fill:var(--bg);stroke:var(--line)}
+.pl text{font-family:var(--f-mono);font-size:10px;fill:var(--ink)}
+.pl.nsg rect{stroke:var(--warn)}
+.pl.lock rect{fill:var(--warn);stroke:var(--warn)} .pl.lock text{fill:#fff;font-weight:600}
+.pl.pol rect{fill:var(--geo);stroke:var(--geo)} .pl.pol text{fill:#fff;font-weight:600}
+.pl.pol.aud rect{fill:var(--surface)} .pl.pol.aud text{fill:var(--geo)}
+.pl.rol rect{fill:var(--ok);stroke:var(--ok)} .pl.rol text{fill:#fff;font-weight:600}
+/* Resaltados */
+.hl>rect,.nd.hl rect,.pl.hl rect{stroke:var(--accent);stroke-width:3}
+.nx>rect,.nd.nx rect,.pl.nx rect{stroke:var(--bad);stroke-width:2.4;stroke-dasharray:5 3}
+.asg>rect{stroke:var(--ok);stroke-width:3.2;stroke-dasharray:none}
+.tgt>rect,.nd.tgt rect,.pl.tgt rect{stroke:var(--accent);stroke-width:3.4;stroke-dasharray:none}
+.dim{opacity:.35}
+.ln{fill:none;stroke:var(--muted);stroke-width:1.6}
+.ln.peer{stroke:var(--ok);stroke-width:2}
+.ln.off{stroke:var(--line);stroke-dasharray:6 5}
+.ln.vpn{stroke-dasharray:3 3}
+.pk{fill:none;stroke-width:4.5;stroke-linecap:round;stroke-linejoin:round}
+.pk.ok{stroke:var(--ok)} .pk.bad{stroke:var(--bad)}
+.x circle{fill:var(--bad)} .x text{fill:#fff;font-family:var(--f-mono);font-weight:700;font-size:13px}
+.v circle{fill:var(--ok)} .v text{fill:#fff;font-family:var(--f-mono);font-weight:700;font-size:12px}
+.et{font-family:var(--f-body);font-size:10.5px;fill:var(--ink);paint-order:stroke;stroke:var(--surface);stroke-width:4px;stroke-linejoin:round}
+.et.m{fill:var(--muted)} .et.b{fill:var(--bad);font-weight:600} .et.o{fill:var(--ok);font-weight:600}
+/* Pasos de evaluación */
+.pasos{display:grid;gap:6px;margin:0;padding:0;list-style:none}
+.pasos li{display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:start;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:9px 12px}
+.pasos .ic{font-family:var(--f-mono);font-weight:700;width:1.6em;text-align:center}
+.pasos .ok .ic{color:var(--ok)} .pasos .bad .ic{color:var(--bad)} .pasos .warn .ic{color:var(--warn)} .pasos .skip{opacity:.5}
+.pasos b{font-family:var(--f-display)}
+.pasos p{margin:2px 0 0;color:var(--muted);font-size:.9rem}
+.pasos li.bad{border-color:var(--bad)}
+.panel{display:grid;gap:12px}
+.panel[hidden]{display:none}
+.chkP{display:grid;gap:8px}
+.chkP label{display:flex;gap:8px;align-items:flex-start;font-size:.9rem;cursor:pointer}
+.chkP input{accent-color:var(--accent);margin-top:4px}
+.chkP small{color:var(--muted)}
+.nsgs{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(330px,1fr))}
+.nsgs table{min-width:0;font-size:.82rem}
+.nsgs td,.nsgs th{padding:5px 8px}
+.nsgs caption{text-align:left;font-family:var(--f-display);font-weight:700;padding:8px 10px 4px}
+.nsgs tr.hit td{background:var(--accent-soft);font-weight:600}
+.nsgs tr.def td{color:var(--muted)}
+.nsgs td.al{color:var(--ok)} .nsgs td.de{color:var(--bad)}
+.ley{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:.85rem;color:var(--muted)}
+.ley i{display:inline-block;width:14px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+.az104{font-family:var(--f-mono);font-size:.68rem;color:var(--geo);border:1px solid var(--geo);border-radius:4px;padding:0 4px;margin-left:4px;white-space:nowrap}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="nav"><a class="volver" href="index.html">← Capítulos AZ-900</a><a class="volver" href="cap10-monitorizacion-gestion.html">Capítulo 10 · Gestión</a><a class="volver" href="cap06-redes.html">Capítulo 6 · Redes</a><a class="volver" href="cap09-seguridad.html">Capítulo 9 · Seguridad</a><a class="volver" href="../mapa.html">Mapa conceptual →</a><a class="volver" href="../arquitectura.html">Arquitectura →</a><a class="volver" href="peering.html">Laboratorio de conectividad →</a></div>
+  <header>
+    <div class="eyebrow">AZ-900 → AZ-104 · Laboratorio de gobierno y seguridad</div>
+    <h1>Gobierno y seguridad sobre la red: quién decide qué</h1>
+    <p>RBAC, Azure Policy, bloqueos, etiquetas y NSG sobre una misma empresa (Contoso) con producción, recuperación ante desastres (DR) y desarrollo. Tres preguntas sobre el mismo mapa: <b>¿dónde se aplica cada uno?</b>, <b>¿puede esta persona hacer esto?</b> y <b>¿llega este paquete?</b> Lo marcado <span class="az104">AZ-104</span> va más allá de AZ-900.</p>
+  </header>
+
+  <!-- 0 · Dos planos -->
+  <section class="bloque">
+    <h2 class="h">Dos planos que no se mezclan</h2>
+    <div class="dos">
+      <div class="plano"><h3><span>PLANO DE GESTIÓN</span>Personas y apps que operan recursos</h3>
+        <p>Crear, cambiar, borrar o ver recursos (portal, CLI, PowerShell, ARM). Todo pasa por Azure Resource Manager, que revisa en orden:</p>
+        <p><b>Entra ID</b> (¿quién eres?) → <b>RBAC</b> (¿tu rol lo permite aquí?) → <b>Azure Policy</b> (¿el recurso cumple las reglas?) → <b>bloqueo</b> (¿está protegido?).</p>
+        <p style="color:var(--muted)">Las <b>etiquetas</b> solo organizan y agrupan costos: no permiten ni bloquean nada.</p></div>
+      <div class="plano"><h3><span>PLANO DE RED</span>Paquetes que viajan entre recursos</h3>
+        <p>Una conexión HTTPS, RDP o SQL. Primero tiene que haber <b>camino</b> (IP pública, VPN, peering); después decide el <b>NSG</b> de la subred y el de la NIC, regla por regla según su prioridad.</p>
+        <p style="color:var(--muted)">Un NSG no sabe quién eres ni qué rol tienes; RBAC no sabe nada de puertos. Que un administrador sea Propietario no le abre el puerto 3389.</p></div>
+    </div>
+  </section>
+
+  <!-- 1 · El mapa -->
+  <section class="bloque">
+    <h2 class="h">1 · El mapa</h2>
+    <div class="ctl"><label>¿Qué quieres ver?</label><div class="seg" id="segModo"></div></div>
+    <div class="lienzo"><svg id="svg" viewBox="0 0 1200 722" role="img" aria-label="Contoso: grupo de administración con las suscripciones de producción y desarrollo, sus grupos de recursos, redes, subredes, VMs y NSG"></svg></div>
+
+    <!-- Lente -->
+    <div class="panel" id="pLente">
+      <div class="ctl"><label>Tecnología</label><div class="seg" id="segLente"></div></div>
+      <div class="ley"><span><i style="background:var(--accent)"></i>se puede aplicar aquí</span><span><i style="border:2px dashed var(--bad)"></i>aquí no se puede</span></div>
+      <div class="status" id="stLente"></div>
+      <div class="facts" id="fLente"></div>
+    </div>
+
+    <!-- Gestión -->
+    <div class="panel" id="pGest" hidden>
+      <div class="controls">
+        <div class="ctl"><label>Persona</label><div class="seg" id="segPers"></div><p class="fb" id="persTxt" style="margin:0"></p></div>
+        <div class="ctl"><label>Acción</label><div class="seg" id="segAcc"></div></div>
+      </div>
+      <div class="controls">
+        <div class="ctl"><label>Rol de Azure de esta persona</label><div class="seg" id="segRol"></div></div>
+        <div class="ctl"><label>…asignado en (ámbito)</label><div class="seg" id="segAmb"></div></div>
+      </div>
+      <div class="controls">
+        <div class="ctl"><label>Azure Policy "Ubicaciones permitidas" (Brazil South y South Central US) · asignada en</label><div class="seg" id="segPolA"></div>
+          <label style="margin-top:4px">Efecto</label><div class="seg" id="segPolE"></div></div>
+        <div class="ctl"><label>Bloqueo en rg-prod</label><div class="seg fail" id="segLock"></div>
+          <div><button type="button" class="btn" id="reGest">Volver a los valores iniciales</button></div></div>
+      </div>
+      <ol class="pasos" id="pasosG"></ol>
+      <div class="status" id="stGest"></div>
+    </div>
+
+    <!-- Red -->
+    <div class="panel" id="pRed" hidden>
+      <div class="controls">
+        <div class="ctl"><label>Paquete</label><div class="seg" id="segFlujo"></div></div>
+        <div class="ctl"><label>Cambios en la red</label>
+          <div class="chkP">
+            <label class="chk"><input type="checkbox" data-c="r120"><span>nsg-web: regla 120 "Permitir 3389 desde Internet" <small>(mala práctica: RDP abierto al mundo)</small></span></label>
+            <label class="chk"><input type="checkbox" data-c="nic"><span>NSG también en la NIC de vm-web1 <small>(nsg-nic: solo permite 443 desde Internet)</small></span></label>
+            <label class="chk"><input type="checkbox" data-c="r200"><span>nsg-datos: regla 200 "Denegar todo desde VirtualNetwork" <small>(cierra lo que deja pasar la regla por defecto 65000)</small></span></label>
+            <label class="chk"><input type="checkbox" data-c="peer"><span>Peering vnet-dev ↔ vnet-prod <small>(entre suscripciones; hoy DEV está aislada)</small></span></label>
+          </div></div>
+      </div>
+      <ol class="pasos" id="pasosR"></ol>
+      <div class="status" id="stRed"></div>
+      <div class="nsgs" id="nsgs"></div>
+    </div>
+  </section>
+
+  <!-- 2 · Tabla -->
+  <section class="bloque">
+    <h2 class="h">2 · Qué controla cada uno y dónde se aplica</h2>
+    <div class="tbl"><table>
+      <thead><tr><th>Servicio</th><th>Plano</th><th>Qué controla</th><th>Dónde se aplica</th><th>¿Se hereda?</th><th>Ejemplo</th></tr></thead>
+      <tbody>
+        <tr><td><b>Azure RBAC</b></td><td>Gestión</td><td>Qué puede <b>hacer una persona</b> con los recursos</td><td>Grupo de administración, suscripción, grupo de recursos, recurso</td><td>Sí, hacia abajo</td><td>Bruno es Colaborador en rg-dev</td></tr>
+        <tr><td><b>Azure Policy</b></td><td>Gestión</td><td>Cómo deben ser <b>los recursos</b> (región, SKU, etiquetas), para todos</td><td>Grupo de administración, suscripción, grupo de recursos</td><td>Sí, hacia abajo</td><td>Solo Brazil South y South Central US</td></tr>
+        <tr><td><b>Bloqueo</b> (lock)</td><td>Gestión</td><td>Que nadie borre (CanNotDelete) o cambie (ReadOnly), <b>ni el Propietario</b></td><td>Suscripción, grupo de recursos, recurso (<b>no</b> grupo de administración)</td><td>Sí, hacia abajo</td><td>CanNotDelete en rg-prod</td></tr>
+        <tr><td><b>Etiquetas</b></td><td>— (metadatos)</td><td>Organizar y <b>agrupar costos</b>; no dan ni quitan permisos</td><td>Suscripción, grupo de recursos, recurso</td><td><b>No</b> (salvo con Azure Policy)</td><td>entorno=prod, depto=Ventas</td></tr>
+        <tr><td><b>NSG</b></td><td>Red</td><td><b>Tráfico</b> entrante y saliente por IP, puerto y protocolo</td><td>Subred o interfaz de red (NIC)</td><td>No: la NIC no hereda; se evalúan los dos</td><td>Permitir 443, denegar 3389</td></tr>
+        <tr><td><b>Defender for Cloud</b></td><td>Los dos (observa)</td><td>Puntuación de seguridad, recomendaciones y alertas</td><td>Se activa por suscripción; también AWS, GCP y local (con Arc)</td><td>—</td><td>"Restringe el RDP abierto a Internet"</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <!-- 3 · Tarjetas -->
+  <section class="bloque">
+    <h2 class="h">3 · Lo que el examen pregunta</h2>
+    <div class="cards">
+      <div class="card"><h3>RBAC</h3><ul>
+        <li>Asignación = <b>quién</b> (usuario, grupo, entidad de servicio, identidad administrada) + <b>qué</b> (rol) + <b>dónde</b> (ámbito).</li>
+        <li>La herencia <b>baja</b>: un rol en rg-dev no sirve en rg-prod, ni en la suscripción de arriba.</li>
+        <li>Lector ve; Colaborador crea, cambia y borra, pero <b>no da acceso</b>; Propietario y Administrador de acceso de usuarios sí.</li>
+        <li>Varios roles se suman <span class="az104">AZ-104</span>: Colaborador + Administrador de acceso de usuarios ≈ Propietario.</li>
+      </ul></div>
+      <div class="card"><h3>Entra ID ≠ Azure RBAC</h3><ul>
+        <li><b>Roles de Entra ID</b> (Administrador global, de usuarios…): usuarios, grupos, licencias, el tenant.</li>
+        <li><b>Roles de Azure</b> (Propietario, Colaborador, Lector…): suscripciones y recursos.</li>
+        <li>Un Administrador global <b>no ve</b> las VMs si no tiene un rol de Azure. Puede elevarse a Administrador de acceso de usuarios en la raíz <span class="az104">AZ-104</span>.</li>
+      </ul></div>
+      <div class="card"><h3>Azure Policy</h3><ul>
+        <li>Mira las <b>propiedades del recurso</b>, no a la persona: también le aplica al Propietario.</li>
+        <li><b>Deny</b> rechaza la creación; <b>Audit</b> la deja pasar y la marca como no conforme.</li>
+        <li>Los recursos <b>que ya existían</b> no se borran: aparecen como no conformes (se corrigen con una tarea de corrección <span class="az104">AZ-104</span>).</li>
+        <li>Iniciativa = varias directivas juntas.</li>
+      </ul></div>
+      <div class="card"><h3>Bloqueos</h3><ul>
+        <li><b>CanNotDelete</b>: se puede leer y modificar, no borrar. <b>ReadOnly</b>: solo leer.</li>
+        <li>Le ganan a <b>cualquier rol</b>, incluso Propietario: primero hay que quitar el bloqueo.</li>
+        <li>No se ponen en grupos de administración.</li>
+        <li>ReadOnly también frena operaciones POST: no deja <b>reiniciar una VM</b> ni listar las claves de una cuenta de almacenamiento <span class="az104">AZ-104</span>.</li>
+      </ul></div>
+      <div class="card"><h3>NSG</h3><ul>
+        <li>Reglas con prioridad 100–4096: <b>gana el número menor</b> y la primera que coincide decide.</li>
+        <li>Por defecto: 65000 permite VirtualNetwork, 65001 el balanceador de Azure, 65500 deniega todo lo demás.</li>
+        <li><b>VirtualNetwork</b> incluye la oficina conectada por VPN y las VNets emparejadas <span class="az104">AZ-104</span>.</li>
+        <li>Con estado: si entra permitido, la respuesta vuelve sola. Entrante: primero el de la subred, después el de la NIC; los dos deben permitir.</li>
+      </ul></div>
+      <div class="card"><h3>Más allá del NSG <span class="az104">AZ-104</span></h3><ul>
+        <li><b>ASG</b>: agrupa VMs por función (ASG-Web) para escribir reglas sin IPs.</li>
+        <li><b>Azure Firewall</b>: servicio administrado para toda la red (FQDN, inspección, registros); el NSG filtra por IP y puerto, gratis.</li>
+        <li><b>Bastion</b> o acceso JIT de Defender en lugar de abrir el 3389 a Internet.</li>
+        <li>Azure <b>Blueprints</b> se retira en julio de 2026: hoy se usan especificaciones de plantilla y pilas de implementación.</li>
+      </ul></div>
+    </div>
+    <p class="fb" style="margin:0">En el PDF de AZ-900: RBAC, bloqueos y Azure Policy en el capítulo 10 (págs. 217–247), etiquetas en el 11 (pág. 266), NSG en el 6 (págs. 101–121). AZ-104: RBAC por dentro págs. 71–81, NSG pág. 165, ASG pág. 168. No están en el PDF (sí en Microsoft Learn): las operaciones POST que frena ReadOnly, la elevación del Administrador global, que VirtualNetwork incluye la red local y el retiro de Blueprints.</p>
+  </section>
+
+  <!-- 4 · Quiz -->
+  <section class="bloque">
+    <h2 class="h">4 · Preguntas de práctica</h2>
+    <div class="score" id="score"></div>
+    <div class="quiz" id="quiz"></div>
+  </section>
+</div>
+
+<script src="../assets/progreso.js"></script>
+<script src="../assets/quiz.js"></script>
+<script>
+function seg(id,obj,get,set,fn){
+  const el=document.getElementById(id);el.innerHTML="";
+  Object.keys(obj).forEach(k=>{const b=document.createElement("button");b.type="button";b.textContent=obj[k];b.dataset.k=k;
+    b.setAttribute("aria-pressed",String(get()===k));b.onclick=()=>{set(k);fn()};el.appendChild(b)});
+}
+function facts(id,rows){document.getElementById(id).innerHTML=rows.map(([k,v])=>`<div class="fact"><div class="k">${k}</div><div class="v">${v}</div></div>`).join("")}
+function status(id,lvl,t,d){
+  const col={ok:"var(--ok)",warn:"var(--warn)",bad:"var(--bad)",info:"var(--accent)"}[lvl],ico={ok:"✓",warn:"!",bad:"✕",info:"i"}[lvl];
+  document.getElementById(id).innerHTML=`<span class="dot" style="background:${col}" aria-hidden="true"></span><div><b>${ico} ${t}</b><p>${d}</p></div>`;
+}
+function pasos(id,arr){
+  const ico={ok:"✓",bad:"✕",warn:"!",skip:"–"};
+  document.getElementById(id).innerHTML=arr.map((p,i)=>`<li class="${p.e}"><span class="ic">${ico[p.e]}</span><div><b>${i+1}. ${p.t}</b><p>${p.d}</p></div></li>`).join("");
+}
+
+/* ---------- Modelo: jerarquía ---------- */
+const PAR={mg:null,sp:"mg",sd:"mg",rp:"sp",rr:"sp",rd:"sd"};
+const NOM={mg:"mg-contoso",sp:"sub-prod",sd:"sub-dev",rp:"rg-prod",rr:"rg-dr",rd:"rg-dev"};
+const NIVEL={mg:"grupo de administración",sp:"suscripción",sd:"suscripción",rp:"grupo de recursos",rr:"grupo de recursos",rd:"grupo de recursos"};
+const cadena=id=>{const c=[];for(let x=id;x;x=PAR[x])c.push(x);return c};
+
+/* ---------- Modelo: plano de gestión ---------- */
+const ROLES={none:"Sin rol",lector:"Lector",vmc:"Colaborador de VM",colab:"Colaborador",uaa:"Admin. de acceso de usuarios",owner:"Propietario"};
+const PERS={
+  ana:{n:"Ana",d:"Administradora de la plataforma.",rol:"owner",amb:"sp"},
+  bruno:{n:"Bruno",d:"Desarrollador del equipo de DEV.",rol:"colab",amb:"rd"},
+  carla:{n:"Carla",d:"Auditora: revisa todo, no cambia nada.",rol:"lector",amb:"mg"},
+  diego:{n:"Diego",d:"Operador: administra las VMs de producción.",rol:"vmc",amb:"rp"},
+  elena:{n:"Elena",d:"Administradora global de Entra ID (rol del tenant, no de Azure).",rol:"none",amb:"mg"}
+};
+// op: read · write · delete · action (POST, ej. reiniciar) · authz (dar acceso). cat: vm · red · rg · authz
+const ACC={
+  ver:{t:"Ver vm-web1",op:"read",cat:"vm",rg:"rp",obj:"vmw1",q:"Microsoft.Compute/virtualMachines/read"},
+  reini:{t:"Reiniciar vm-web1",op:"action",cat:"vm",rg:"rp",obj:"vmw1",q:"Microsoft.Compute/virtualMachines/restart/action (POST)"},
+  etq:{t:"Cambiar la etiqueta de vm-web1",op:"write",cat:"vm",rg:"rp",obj:"vmw1",q:"Microsoft.Compute/virtualMachines/write"},
+  nsg:{t:"Agregar una regla a nsg-web",op:"write",cat:"red",rg:"rp",obj:"nsgw",q:"Microsoft.Network/networkSecurityGroups/securityRules/write"},
+  vmBr:{t:"Crear VM en rg-dev · Brazil South",op:"write",cat:"vm",rg:"rd",obj:"rd",reg:"Brazil South",q:"Microsoft.Compute/virtualMachines/write"},
+  vmUs:{t:"Crear VM en rg-dev · East US",op:"write",cat:"vm",rg:"rd",obj:"rd",reg:"East US",q:"Microsoft.Compute/virtualMachines/write"},
+  vmPUs:{t:"Crear VM en rg-prod · East US",op:"write",cat:"vm",rg:"rp",obj:"rp",reg:"East US",q:"Microsoft.Compute/virtualMachines/write"},
+  delDev:{t:"Borrar vm-dev",op:"delete",cat:"vm",rg:"rd",obj:"vmdev",q:"Microsoft.Compute/virtualMachines/delete"},
+  delRg:{t:"Borrar el grupo rg-prod",op:"delete",cat:"rg",rg:"rp",obj:"rp",q:"Microsoft.Resources/subscriptions/resourceGroups/delete"},
+  rol:{t:"Dar el rol Lector a un compañero en sub-dev",op:"authz",cat:"authz",rg:"sd",obj:"sd",q:"Microsoft.Authorization/roleAssignments/write"}
+};
+const REG_OK=["Brazil South","South Central US"];
+const G0={per:"bruno",acc:"vmUs",polA:"mg",polE:"deny",lock:"cnd"};
+let modo="lente",lente="rbac",g={...G0},asig={};
+function iniAsig(){asig={};Object.keys(PERS).forEach(k=>asig[k]={rol:PERS[k].rol,amb:PERS[k].amb})}
+iniAsig();
+
+// ¿El rol permite la operación? → [sí/no, explicación]
+function permite(rol,a){
+  const n=ROLES[rol];
+  if(rol==="owner")return[true,"Propietario puede todo, incluso dar acceso."];
+  if(rol==="colab")return a.op==="authz"?[false,"Colaborador administra recursos, pero no puede dar acceso a otros (le falta Microsoft.Authorization/*/write). Eso es de Propietario o Administrador de acceso de usuarios."]:[true,"Colaborador puede crear, cambiar, borrar y operar recursos."];
+  if(rol==="uaa")return a.op==="read"||a.op==="authz"?[true,a.op==="authz"?"Administrador de acceso de usuarios da y quita roles.":"Puede leer los recursos."]:[false,"Administrador de acceso de usuarios solo lee recursos y administra el acceso: no crea, cambia ni borra recursos."];
+  if(rol==="vmc"){
+    if(a.op==="read")return[true,"Puede leer."];
+    if(a.cat==="vm")return[true,"Colaborador de máquinas virtuales administra VMs: crearlas, cambiarlas, borrarlas y reiniciarlas."];
+    if(a.cat==="red")return[false,"Colaborador de máquinas virtuales administra las VMs, pero no las redes ni los NSG a los que se conectan (solo puede unirse a ellos)."];
+    if(a.cat==="rg")return[false,"Colaborador de máquinas virtuales no puede borrar grupos de recursos: solo leerlos."];
+    return[false,"Colaborador de máquinas virtuales no puede dar acceso."];
+  }
+  if(rol==="lector")return a.op==="read"?[true,"Lector puede ver todo en su ámbito."]:[false,"Lector solo puede ver: no crea, cambia, borra ni reinicia nada."];
+  return[false,""];
+}
+
+function evalGest(){
+  const p=PERS[g.per],as=asig[g.per],a=ACC[g.acc],ch=cadena(a.rg),out=[];
+  let bloq=null,aviso=false;
+  out.push({e:"ok",t:"Entra ID · autenticación",d:`${p.n} inicia sesión (con MFA si el acceso condicional lo pide). Entra ID sabe quién es; todavía no sabe qué puede hacer.`});
+  // RBAC
+  if(as.rol==="none"){
+    bloq="RBAC";
+    out.push({e:"bad",t:"RBAC · sin rol de Azure",d:g.per==="elena"?"Administradora global es un rol de Entra ID: administra usuarios, grupos y el tenant, no los recursos. Sin una asignación de Azure no ve ni toca las VMs (podría elevarse a Administrador de acceso de usuarios en la raíz, AZ-104).":`${p.n} no tiene ningún rol de Azure: Azure Resource Manager responde 403 (AuthorizationFailed).`});
+  }else if(!ch.includes(as.amb)){
+    bloq="RBAC";
+    out.push({e:"bad",t:`RBAC · el rol no llega a ${NOM[a.rg]}`,d:`${ROLES[as.rol]} está asignado en ${NOM[as.amb]}, que no está por encima de ${NOM[a.rg]} (${ch.map(x=>NOM[x]).join(" ← ")}). La herencia baja; no sube ni pasa a una rama vecina.`});
+  }else{
+    const [ok,por]=permite(as.rol,a);
+    const her=as.amb===a.rg?`asignado directamente en ${NOM[as.amb]}`:`asignado en ${NOM[as.amb]} y heredado hasta ${NOM[a.rg]}`;
+    if(ok)out.push({e:"ok",t:`RBAC · ${ROLES[as.rol]} (${her})`,d:por});
+    else{bloq="RBAC";out.push({e:"bad",t:`RBAC · ${ROLES[as.rol]} no alcanza`,d:`${por} Operación pedida: ${a.q}.`})}
+  }
+  const sk=t=>out.push({e:"skip",t,d:"No se evalúa: la solicitud ya fue rechazada."});
+  // Policy
+  if(bloq)sk("Azure Policy");
+  else if(!a.reg)out.push({e:"ok",t:"Azure Policy · no aplica",d:"La directiva revisa la ubicación de los recursos que se crean; esta acción no crea nada en otra región."});
+  else if(g.polA==="none"||!ch.includes(g.polA))out.push({e:"ok",t:"Azure Policy · no asignada aquí",d:g.polA==="none"?"La directiva no está asignada en ningún lado: cualquier región sirve.":`La directiva está asignada en ${NOM[g.polA]}, que no está por encima de ${NOM[a.rg]}.`});
+  else if(REG_OK.includes(a.reg))out.push({e:"ok",t:`Azure Policy · ${a.reg} está permitida`,d:`Directiva asignada en ${NOM[g.polA]}${g.polA===a.rg?"":", heredada hasta "+NOM[a.rg]}: el recurso cumple.`});
+  else if(g.polE==="deny"){bloq="Policy";out.push({e:"bad",t:`Azure Policy · ${a.reg} no está permitida (Deny)`,d:`Asignada en ${NOM[g.polA]} y heredada hasta ${NOM[a.rg]}. Rechazo RequestDisallowedByPolicy, aunque el rol sí lo permitía: Policy mira el recurso, no a la persona.`})}
+  else{aviso=true;out.push({e:"warn",t:`Azure Policy · ${a.reg} no está permitida (Audit)`,d:"Con Audit la VM se crea igual, pero queda marcada como no conforme en el panel de cumplimiento."})}
+  // Bloqueo
+  if(bloq)sk("Bloqueo");
+  else if(g.lock==="none"||!ch.includes("rp"))out.push({e:"ok",t:"Bloqueo · ninguno en esta ruta",d:g.lock==="none"?"rg-prod no tiene bloqueo.":`El bloqueo está en rg-prod; ${NOM[a.rg]} está en otra rama.`});
+  else if(a.op==="read")out.push({e:"ok",t:`Bloqueo ${g.lock==="cnd"?"CanNotDelete":"ReadOnly"} · leer está permitido`,d:"Ningún bloqueo impide ver."});
+  else if(g.lock==="cnd"&&a.op!=="delete")out.push({e:"ok",t:"Bloqueo CanNotDelete · no es un borrado",d:"CanNotDelete solo impide borrar: modificar y operar se puede."});
+  else{
+    bloq="Bloqueo";
+    const t=g.lock==="cnd"?"CanNotDelete impide borrar":a.op==="action"?"ReadOnly también frena las operaciones POST como reiniciar (AZ-104)":"ReadOnly impide cualquier cambio";
+    out.push({e:"bad",t:`Bloqueo ${g.lock==="cnd"?"CanNotDelete":"ReadOnly"} en rg-prod`,d:`${t}, y vale para todos, también para ${as.rol==="owner"?"el Propietario":"cualquier rol"}. Hay que quitar el bloqueo primero (lo pueden hacer Propietario y Administrador de acceso de usuarios).`});
+  }
+  return{out,bloq,aviso};
+}
+
+/* ---------- Modelo: plano de red ---------- */
+const R0={flujo:"o3389",r120:false,nic:false,r200:true,peer:false};
+let r={...R0};
+const FLUJOS={
+  i443:{t:"Internet → vm-web1 · 443",s:"inet",d:"vmw1",p:"443"},
+  i3389:{t:"Internet → vm-web1 · 3389",s:"inet",d:"vmw1",p:"3389"},
+  o3389:{t:"Oficina → vm-web1 · 3389",s:"ofi",d:"vmw1",p:"3389"},
+  w1433:{t:"vm-web1 → vm-sql · 1433",s:"vmw1",d:"vmsql",p:"1433"},
+  o1433:{t:"Oficina → vm-sql · 1433",s:"ofi",d:"vmsql",p:"1433"},
+  i1433:{t:"Internet → vm-sql · 1433",s:"inet",d:"vmsql",p:"1433"},
+  d1433:{t:"vm-dev → vm-sql · 1433",s:"vmdev",d:"vmsql",p:"1433"},
+  wout:{t:"vm-web1 → Internet · 443 (salida)",s:"vmw1",d:"inet",p:"443"}
+};
+const EP={inet:"Internet",ofi:"Oficina (192.168.0.0/16)",vmw1:"vm-web1 (10.0.2.4)",vmsql:"vm-sql (10.0.3.4)",vmdev:"vm-dev (10.2.1.4)"};
+const DEF_IN=[[65000,"AllowVnetInBound","VirtualNetwork","*","allow"],[65001,"AllowAzureLoadBalancerInBound","AzureLoadBalancer","*","allow"],[65500,"DenyAllInBound","*","*","deny"]];
+const DEF_OUT=[[65000,"AllowVnetOutBound","VirtualNetwork","*","allow"],[65001,"AllowInternetOutBound","Internet","*","allow"],[65500,"DenyAllOutBound","*","*","deny"]];
+function NSG(k){
+  if(k==="nsgw")return{n:"nsg-web",en:"subred snet-web",in:[[100,"Permitir-HTTPS","Internet","443","allow"],[110,"Permitir-RDP-Oficina","192.168.0.0/16","3389","allow"],...(r.r120?[[120,"Permitir-RDP-Internet","Internet","3389","allow"]]:[])],out:[]};
+  if(k==="nsgnic")return{n:"nsg-nic",en:"NIC de vm-web1",in:[[100,"Permitir-HTTPS","Internet","443","allow"]],out:[]};
+  if(k==="nsgd")return{n:"nsg-datos",en:"subred snet-datos",in:[[100,"Permitir-SQL-desde-web","10.0.2.0/24","1433","allow"],...(r.r200?[[200,"Denegar-resto-VNet","VirtualNetwork","*","deny"]]:[])],out:[]};
+  return{n:"nsg-dev",en:"subred snet-dev",in:[],out:[]};
+}
+// ¿La dirección de la regla describe a este extremo? (desde el punto de vista de la VNet donde está el NSG)
+function coincide(dir,ep,vnet){
+  if(dir==="*")return true;
+  if(dir==="Internet")return ep==="inet";
+  if(dir==="AzureLoadBalancer")return false;
+  if(dir==="192.168.0.0/16")return ep==="ofi";
+  if(dir==="10.0.2.0/24")return ep==="vmw1";
+  if(dir==="VirtualNetwork"){
+    if(ep==="inet")return false;
+    if(ep==="ofi")return vnet==="prod";              // red local conocida por el VPN Gateway de vnet-prod
+    const v=ep==="vmdev"?"dev":"prod";
+    return v===vnet||r.peer;                         // la propia VNet o una emparejada
+  }
+  return false;
+}
+// Evalúa un NSG: devuelve {regla, permite}
+function evalNsg(k,dir,otro,puerto,vnet){
+  const n=NSG(k),reglas=[...(dir==="in"?n.in:n.out),...(dir==="in"?DEF_IN:DEF_OUT)];
+  const hit=reglas.find(([p,nom,ad,pt])=>coincide(ad,otro,vnet)&&(pt==="*"||pt===puerto));
+  return{k,n,dir,hit,ok:hit[4]==="allow",reglas};
+}
+const NSG_DE={vmw1:{sub:"nsgw",vnet:"prod"},vmsql:{sub:"nsgd",vnet:"prod"},vmdev:{sub:"nsgdev",vnet:"dev"}};
+function evalRed(){
+  const f=FLUJOS[r.flujo],out=[],evs=[];let x=null;
+  // 1. Camino
+  if(f.s==="inet"&&f.d==="vmsql"){out.push({e:"bad",t:"Camino · vm-sql no tiene IP pública",d:"Desde Internet solo se llega a lo que tiene IP pública (o detrás de un balanceador o un Application Gateway). El NSG ni siquiera se evalúa: no hay por dónde entrar."});x="pip";}
+  else if(f.s==="vmdev"&&!r.peer){out.push({e:"bad",t:"Camino · vnet-dev no está conectada con vnet-prod",d:"Son VNets distintas en suscripciones distintas y no hay peering: no hay ruta, y los NSG no llegan a evaluarse. Que las dos sean de Contoso no las une."});x="peer";}
+  else out.push({e:"ok",t:"Camino",d:{inet:"Internet → IP pública de vm-web1.",ofi:"Oficina → VPN Gateway · S2S → vnet-prod.",vmw1:f.d==="inet"?"vm-web1 → su salida a Internet.":"Las dos subredes están en vnet-prod: se ven sin configurar nada.",vmdev:"vnet-dev → peering → vnet-prod."}[f.s]});
+  if(x){out.push({e:"skip",t:"NSG",d:"No se evalúa: el paquete no tiene camino."});return{out,evs,ok:false,x}}
+  // 2. Salida desde una VM de origen: NIC y luego subred
+  if(NSG_DE[f.s]){
+    const o=NSG_DE[f.s];
+    if(f.s==="vmw1"&&r.nic)evs.push(evalNsg("nsgnic","out",f.d,f.p,o.vnet));
+    evs.push(evalNsg(o.sub,"out",f.d,f.p,o.vnet));
+  }
+  // 3. Entrada a la VM de destino: subred y luego NIC
+  if(NSG_DE[f.d]){
+    const o=NSG_DE[f.d];
+    evs.push(evalNsg(o.sub,"in",f.s,f.p,o.vnet));
+    if(f.d==="vmw1"&&r.nic)evs.push(evalNsg("nsgnic","in",f.s,f.p,o.vnet));
+  }
+  let ok=true;
+  evs.forEach(ev=>{
+    if(!ok){out.push({e:"skip",t:`${ev.n.n} (${ev.dir==="in"?"entrada":"salida"})`,d:"No se evalúa: ya se denegó antes."});return}
+    const [p,nom,ad,pt]=ev.hit,def=p>=65000;
+    let d=`Primera regla que coincide: ${p} ${nom} (origen o destino ${ad}, puerto ${pt}).`;
+    if(def&&nom==="AllowVnetInBound")d+=` Regla por defecto: ${f.s==="ofi"?"la oficina conectada por VPN":f.s==="vmdev"?"la VNet emparejada":"la propia VNet"} cuenta como VirtualNetwork.`;
+    if(def&&nom==="DenyAllInBound")d+=" Ninguna regla propia lo permite, así que cae en la denegación por defecto.";
+    if(nom==="Denegar-resto-VNet")d+=" Sin esta regla, la 65000 AllowVnetInBound lo dejaría pasar.";
+    out.push({e:ev.ok?"ok":"bad",t:`${ev.n.n} en la ${ev.n.en} (${ev.dir==="in"?"entrada":"salida"}) · ${ev.ok?"permite":"deniega"}`,d});
+    if(!ev.ok){ok=false;x=ev.k}
+  });
+  if(evs.length&&ok&&evs.some(e=>e.dir==="in"))out.push({e:"ok",t:"La respuesta",d:"El NSG es con estado: la respuesta vuelve sola, sin regla de salida propia."});
+  return{out,evs,ok,x};
+}
+
+/* ---------- Diagrama ---------- */
+// Marcos: id, clase, x, y, w, h, título (2.ª línea opcional)
+const FR=[
+  ["mg","mg",215,14,975,700,"Grupo de administración · mg-contoso"],
+  ["sp","sub",230,44,622,662,"Suscripción · sub-prod"],
+  ["rp","rg",244,74,404,622,"Grupo de recursos · rg-prod"],
+  ["vnp","vn",258,108,376,576,"vnet-prod · 10.0.0.0/16 · Brazil South"],
+  ["gws","sn",272,140,160,92,"GatewaySubnet"],
+  ["snw","sn",272,250,348,196,"snet-web · 10.0.2.0/24"],
+  ["snd","sn",272,464,348,206,"snet-datos · 10.0.3.0/24"],
+  ["rr","rg",662,74,178,622,"Grupo de recursos","rg-dr"],
+  ["vnr","vn reg-us",674,112,154,236,"vnet-dr · 10.1.0.0/16","South Central US"],
+  ["sd","sub",866,44,312,662,"Suscripción · sub-dev"],
+  ["rd","rg",880,74,284,622,"Grupo de recursos · rg-dev"],
+  ["vnd","vn",894,108,256,300,"vnet-dev · 10.2.0.0/16","Brazil South"],
+  ["snv","sn",906,150,232,130,"snet-dev · 10.2.1.0/24"],
+  ["inet","",20,110,170,74,"Internet"],
+  ["ofi","",20,330,170,92,"Oficina · 192.168.0.0/16"]
+];
+// Nodos: id, x, y, w, título, subtítulo
+const ND=[
+  ["vpngw",286,172,132,"VPN Gateway","S2S con la oficina"],
+  ["vmw1",286,292,152,"vm-web1","10.0.2.4"],
+  ["vmw2",462,292,144,"vm-web2","10.0.2.5"],
+  ["vmsql",286,512,170,"vm-sql","SQL Server · 10.0.3.4"],
+  ["vmdr",686,166,130,"vm-sql-dr","réplica"],
+  ["vmdev",922,192,150,"vm-dev","10.2.1.4"]
+];
+// Pastillas: id, clase, x, y, w, texto
+const PL=[
+  ["nsgw","nsg",536,256,76,"nsg-web"],
+  ["nsgnic","nsg",364,342,74,"nsg-nic"],
+  ["pip","",286,342,72,"IP pública"],
+  ["nsgd","nsg",528,470,84,"nsg-datos"],
+  ["nsgdev","nsg",1056,256,76,"nsg-dev"]
+];
+// Recorridos de los paquetes (puntos) según origen y destino
+function camino(f){
+  const k=f.s+">"+f.d;
+  return{
+    "inet>vmw1":[[190,147],[240,147],[240,316],[286,316]],
+    "ofi>vmw1":[[190,376],[230,376],[230,196],[286,196],[352,216],[352,262],[340,292]],
+    "ofi>vmsql":[[190,376],[230,376],[230,196],[286,196],[352,216],[352,240],[264,240],[264,454],[320,454],[320,512]],
+    "vmw1>vmsql":[[438,316],[450,316],[450,512]],
+    "inet>vmsql":[[190,160],[248,160],[248,536],[286,536]],
+    "vmdev>vmsql":[[997,236],[997,440],[640,440],[640,536],[456,536]],
+    "vmw1>inet":[[286,316],[240,316],[240,147],[190,147]]
+  }[k];
+}
+// Dónde dibujar la ✕ cuando no hay camino; si bloquea un NSG de subred, va en el borde de la subred, y si es el de la NIC, junto a la VM
+const XPOS={pip:[258,536],peer:[760,440]};
+const SUBRED={nsgw:"snw",nsgd:"snd",nsgdev:"snv"};
+// Qué resalta cada lente: [se puede, no se puede]
+const LENTES={
+  rbac:{n:"RBAC",si:["mg","sp","sd","rp","rr","rd","vmw1","vmw2","vmsql","vmdr","vmdev","nsgw","nsgd","nsgdev","vnp","vnr","vnd","vpngw"],no:[]},
+  pol:{n:"Azure Policy",si:["mg","sp","sd","rp","rr","rd"],no:[]},
+  lock:{n:"Bloqueos",si:["sp","sd","rp","rr","rd","vmw1","vmw2","vmsql","vmdr","vmdev","nsgw","nsgd","nsgdev","vnp","vnr","vnd","vpngw"],no:["mg"]},
+  tag:{n:"Etiquetas",si:["sp","sd","rp","rr","rd","vmw1","vmw2","vmsql","vmdr","vmdev","nsgw","nsgd","nsgdev","vnp","vnr","vnd","vpngw"],no:["mg"]},
+  nsg:{n:"NSG",si:["snw","snd","snv","nsgnic"],no:["vnp","vnr","vnd","gws","mg","sp","sd","rp","rr","rd"]},
+  def:{n:"Defender for Cloud",si:["sp","sd"],no:[]}
+};
+const TXT_L={
+  rbac:["Rol asignado en 4 niveles, heredado hacia abajo","Grupo de administración, suscripción, grupo de recursos o un recurso. Un rol en mg-contoso vale en todo lo de abajo; uno en rg-dev, solo dentro de rg-dev.",[["Niveles","4"],["Herencia","Hacia abajo"],["Controla","Personas"],["Plano","Gestión"]]],
+  pol:["Directiva asignada a un contenedor; revisa cada recurso de adentro","Grupo de administración, suscripción o grupo de recursos (en el portal). La regla se cumple para todos, Propietario incluido, y los recursos que ya existían solo se marcan como no conformes.",[["Niveles","MG · sub · RG"],["Herencia","Hacia abajo"],["Controla","Recursos"],["Efectos","Deny · Audit…"]]],
+  lock:["Bloqueo en suscripción, grupo de recursos o recurso","No existe en el grupo de administración. Un bloqueo en sub-prod protege todo rg-prod y rg-dr, y le gana a cualquier rol.",[["Niveles","sub · RG · recurso"],["Tipos","CanNotDelete · ReadOnly"],["Herencia","Hacia abajo"],["Le gana a","Propietario"]]],
+  tag:["Etiquetas en suscripción, grupo de recursos o recurso","No se heredan: una etiqueta en rg-prod no aparece en vm-web1, salvo que Azure Policy la copie. Sirven para agrupar costos y organizar; no dan permisos.",[["Niveles","sub · RG · recurso"],["Herencia","No"],["Sirven para","Costos y orden"],["Permisos","Ninguno"]]],
+  nsg:["NSG en una subred o en una NIC","No se asocia a la VNet entera, ni a una suscripción o grupo de recursos (ahí solo vive como recurso). La GatewaySubnet no admite NSG. Si hay NSG en la subred y en la NIC, el tráfico entrante debe pasar los dos.",[["Se asocia a","Subred · NIC"],["Evalúa","IP · puerto · protocolo"],["Gana","Número menor"],["Plano","Red"]]],
+  def:["Defender for Cloud se activa por suscripción","Evalúa todos los recursos de la suscripción (y también AWS, GCP y servidores locales con Azure Arc): puntuación de seguridad, recomendaciones y alertas. Por ejemplo, avisa si nsg-web abre el 3389 a Internet.",[["Se activa en","Suscripción"],["Mide","Puntuación"],["Multinube","Sí"],["Bloquea","No: recomienda"]]]
+};
+
+function dibujar(){
+  const L=LENTES[lente],cls={};
+  const add=(id,c)=>cls[id]=(cls[id]||"")+" "+c;
+  let gev=null,rev=null;
+  if(modo==="lente"){L.si.forEach(i=>add(i,"hl"));L.no.forEach(i=>add(i,"nx"))}
+  if(modo==="gest"){
+    gev=evalGest();const a=ACC[g.acc],as=asig[g.per];
+    if(as.rol!=="none")add(as.amb,"asg");
+    add(a.obj,"tgt");
+  }
+  if(modo==="red")rev=evalRed();
+  let s="";
+  const tit=(x,y,t,t2)=>`<text x="${x+10}" y="${y+17}">${t}</text>`+(t2?`<text x="${x+10}" y="${y+31}">${t2}</text>`:"");
+  FR.forEach(([id,c,x,y,w,h,t,t2])=>{
+    if(id==="inet"||id==="ofi")s+=`<g class="nd${cls[id]||""}"><rect x="${x}" y="${y}" width="${w}" height="${h}" rx="8"/><text class="t" x="${x+12}" y="${y+22}">${t}</text><text class="s" x="${x+12}" y="${y+40}">${id==="inet"?"cualquier IP pública":"red local de Contoso"}</text>${id==="ofi"?`<text class="s" x="${x+12}" y="${y+56}">dispositivo VPN</text>`:""}</g>`;
+    else s+=`<g class="fr ${c}${cls[id]||""}"><rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${c==="sn"?6:10}"/>${tit(x,y,t,t2)}</g>`;
+  });
+  // Conexiones fijas
+  s+=`<path class="ln vpn" d="M190,376 L230,376 L230,196 L286,196"/><text class="et m" x="194" y="368">VPN S2S</text>`;
+  s+=`<path class="ln" d="M190,147 L240,147 L240,316 L286,316"/>`;
+  s+=`<path class="ln peer" d="M634,226 L674,226"/><text class="et o" x="676" y="364">↔ peering global</text><text class="et o" x="676" y="378">con vnet-prod</text>`;
+  s+=`<path class="ln ${r.peer?"peer":"off"}" d="M997,408 L997,440 L634,440"/><text class="et ${r.peer?"o":"m"}" x="${r.peer?726:742}" y="432">${r.peer?"peering dev ↔ prod":"sin peering"}</text>`;
+  // Textos de rg-dr
+  s+=`<text class="et m" x="676" y="398">Región emparejada</text><text class="et m" x="676" y="412">de Brazil South</text>`;
+  ND.forEach(([id,x,y,w,t,st])=>s+=`<g class="nd${cls[id]||""}"><rect x="${x}" y="${y}" width="${w}" height="48" rx="6"/><text class="t" x="${x+12}" y="${y+20}">${t}</text><text class="s" x="${x+12}" y="${y+37}">${st}</text></g>`);
+  PL.forEach(([id,c,x,y,w,t])=>{
+    if(id==="nsgnic"&&!(r.nic||modo==="lente"&&lente==="nsg"))return;
+    s+=`<g class="pl ${c}${cls[id]||""}"><rect x="${x}" y="${y}" width="${w}" height="18" rx="9"/><text x="${x+w/2}" y="${y+13}" text-anchor="middle">${t}</text></g>`;
+  });
+  // Pastillas de gobierno: bloqueo, directiva, rol
+  const pill=(c,x,y,w,t)=>`<g class="pl ${c}"><rect x="${x}" y="${y}" width="${w}" height="18" rx="9"/><text x="${x+w/2}" y="${y+13}" text-anchor="middle">${t}</text></g>`;
+  const esq={mg:[1190,14],sp:[852,44],sd:[1178,44],rp:[648,74],rr:[840,74],rd:[1164,74]};
+  if(modo==="gest"){
+    let off={};
+    const pon=(amb,c,t)=>{const w=16+[...t].length*6.1,[x,y]=esq[amb],dx=off[amb]||0;off[amb]=dx+w+6;s+=pill(c,x-w-12-dx,y-9,w,t)};
+    if(g.lock!=="none")pon("rp","lock",g.lock==="cnd"?"🔒 CanNotDelete":"🔒 ReadOnly");
+    if(g.polA!=="none")pon(g.polA,"pol"+(g.polE==="audit"?" aud":""),`Policy (${g.polE==="deny"?"Deny":"Audit"})`);
+    const as=asig[g.per];
+    if(as.rol!=="none")pon(as.amb,"rol",`${PERS[g.per].n}: ${ROLES[as.rol]}`);
+  }
+  if(modo==="red"){
+    const f=FLUJOS[r.flujo],pts=camino(f);
+    let usar=pts,xp=null,xt="";
+    if(!rev.ok&&XPOS[rev.x]){  // sin camino: cortar en el punto más cercano a la ✕
+      xp=XPOS[rev.x];let best=0,bd=1e9;
+      pts.forEach(([px,py],i)=>{const dd=Math.hypot(px-xp[0],py-xp[1]);if(dd<bd){bd=dd;best=i}});
+      usar=[...pts.slice(0,Math.max(1,best)),xp];xt=rev.x==="pip"?"sin IP pública":"sin peering";
+    }else if(!rev.ok&&SUBRED[rev.x]){  // NSG de subred: cortar donde el recorrido entra a la subred
+      const [,,x0,y0,w0,h0]=FR.find(e=>e[0]===SUBRED[rev.x]),den=([x,y])=>x>=x0&&x<=x0+w0&&y>=y0&&y<=y0+h0;
+      const i=pts.findIndex(den);let [a,b]=[pts[i-1],pts[i]];
+      for(let k=0;k<30;k++){const m=[(a[0]+b[0])/2,(a[1]+b[1])/2];if(den(m))b=m;else a=m}
+      xp=b;usar=[...pts.slice(0,i),xp];xt=NSG(rev.x).n;
+    }else if(!rev.ok){xp=pts[pts.length-1];xt="nsg-nic"}  // NSG de la NIC: llega hasta la VM
+    s+=`<polyline class="pk ${rev.ok?"ok":"bad"}" points="${usar.map(p=>p.join(",")).join(" ")}"/>`;
+    if(xp){const [bx,by]=xp;s+=`<g class="x"><circle cx="${bx}" cy="${by}" r="11"/><text x="${bx}" y="${by+4.5}" text-anchor="middle">✕</text></g>${bx<=290?`<text class="et b" x="${bx-14}" y="${by-10}" text-anchor="end">${xt}</text>`:`<text class="et b" x="${bx+14}" y="${by-8}">${xt}</text>`}`}
+    if(rev.ok){const [ex,ey]=pts[pts.length-1];s+=`<g class="v"><circle cx="${ex}" cy="${ey}" r="10"/><text x="${ex}" y="${ey+4}" text-anchor="middle">✓</text></g>`}
+  }
+  document.getElementById("svg").innerHTML=s;
+  return{gev,rev};
+}
+
+/* ---------- Render ---------- */
+const MODOS={lente:"¿Dónde se aplica?",gest:"¿Puede hacerlo? (gestión)",red:"¿Llega el paquete? (red)"};
+const AMB={mg:"mg-contoso",sp:"sub-prod",rp:"rg-prod",rr:"rg-dr",sd:"sub-dev",rd:"rg-dev"};
+function tablaNsg(ev){
+  const pt=FLUJOS[r.flujo].p;
+  return`<div class="tbl"><table><caption>${ev.n.n} · ${ev.n.en} · ${ev.dir==="in"?"entrada":"salida"}</caption><thead><tr><th>Prior.</th><th>Nombre</th><th>${ev.dir==="in"?"Origen":"Destino"}</th><th>Puerto</th><th>Acción</th></tr></thead><tbody>`+
+    ev.reglas.map(x=>`<tr class="${x===ev.hit?"hit":""}${x[0]>=65000?" def":""}"><td>${x[0]}</td><td>${x[1]}</td><td>${x[2]}</td><td>${x[3]}</td><td class="${x[4]==="allow"?"al":"de"}">${x[4]==="allow"?"Permitir":"Denegar"}</td></tr>`).join("")+`</tbody></table></div>`;
+}
+function render(){
+  seg("segModo",MODOS,()=>modo,v=>modo=v,render);
+  document.getElementById("pLente").hidden=modo!=="lente";
+  document.getElementById("pGest").hidden=modo!=="gest";
+  document.getElementById("pRed").hidden=modo!=="red";
+  const {gev,rev}=dibujar();
+  if(modo==="lente"){
+    const L={};Object.keys(LENTES).forEach(k=>L[k]=LENTES[k].n);
+    seg("segLente",L,()=>lente,v=>lente=v,render);
+    const [t,d,f]=TXT_L[lente];status("stLente","info",t,d);facts("fLente",f);
+  }
+  if(modo==="gest"){
+    const P={};Object.keys(PERS).forEach(k=>P[k]=PERS[k].n);
+    seg("segPers",P,()=>g.per,v=>g.per=v,render);
+    document.getElementById("persTxt").textContent=PERS[g.per].d;
+    const A={};Object.keys(ACC).forEach(k=>A[k]=ACC[k].t);
+    seg("segAcc",A,()=>g.acc,v=>g.acc=v,render);
+    seg("segRol",ROLES,()=>asig[g.per].rol,v=>asig[g.per].rol=v,render);
+    seg("segAmb",AMB,()=>asig[g.per].amb,v=>asig[g.per].amb=v,render);
+    seg("segPolA",{mg:"mg-contoso",sp:"sub-prod",sd:"sub-dev",none:"Sin asignar"},()=>g.polA,v=>g.polA=v,render);
+    seg("segPolE",{deny:"Deny",audit:"Audit"},()=>g.polE,v=>g.polE=v,render);
+    seg("segLock",{none:"Ninguno",cnd:"CanNotDelete",ro:"ReadOnly"},()=>g.lock,v=>g.lock=v,render);
+    pasos("pasosG",gev.out);
+    const p=PERS[g.per].n,a=ACC[g.acc].t[0].toLowerCase()+ACC[g.acc].t.slice(1);
+    if(gev.bloq)status("stGest","bad",`${p} no puede ${a}`,`Lo detuvo: ${gev.bloq}. En el mapa: verde = dónde está su rol, azul = sobre qué actúa.`);
+    else if(gev.aviso)status("stGest","warn",`${p} puede ${a}, pero queda no conforme`,"Azure Policy en modo Audit registra el incumplimiento sin bloquear.");
+    else status("stGest","ok",`${p} puede ${a}`,"Pasó los cuatro controles. En el mapa: verde = dónde está su rol, azul = sobre qué actúa.");
+  }
+  if(modo==="red"){
+    const F={};Object.keys(FLUJOS).forEach(k=>F[k]=FLUJOS[k].t);
+    seg("segFlujo",F,()=>r.flujo,v=>r.flujo=v,render);
+    document.querySelectorAll("#pRed [data-c]").forEach(i=>i.checked=r[i.dataset.c]);
+    pasos("pasosR",rev.out);
+    const f=FLUJOS[r.flujo];
+    if(rev.ok)status("stRed","ok",`Llega: ${EP[f.s]} → ${EP[f.d]} por el ${f.p}`,"Hubo camino y todos los NSG del recorrido lo permitieron.");
+    else status("stRed","bad",`No llega: ${EP[f.s]} → ${EP[f.d]} por el ${f.p}`,rev.evs.length&&rev.x!=="pip"&&rev.x!=="peer"?"Lo denegó un NSG: mira abajo qué regla coincidió primero.":"No hay camino: ningún NSG puede arreglarlo.");
+    document.getElementById("nsgs").innerHTML=rev.evs.map(tablaNsg).join("");
+  }
+}
+document.querySelectorAll("#pRed [data-c]").forEach(i=>i.onchange=()=>{r[i.dataset.c]=i.checked;render()});
+document.getElementById("reGest").onclick=()=>{g={...G0};iniAsig();render()};
+
+render();
+iniciarQuiz("gobierno");
+</script>
+</body>
+</html>
