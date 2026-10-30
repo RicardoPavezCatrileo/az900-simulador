@@ -154,5 +154,11 @@
     "opciones": ["Zona de disponibilidad", "Almacenamiento con redundancia local (LRS)", "Almacenamiento con redundancia de zona (ZRS)", "Conjunto de disponibilidad"],
     "correcta": 3,
     "explicacion": "\"Fallos de hardware\" = dominios de error (racks distintos) y \"actualizaciones\" = dominios de actualización (se reinicia uno a la vez): las dos piezas del conjunto de disponibilidad. La zona de disponibilidad protege ante la caída de un centro de datos completo; LRS y ZRS son de almacenamiento. No está en el PDF; sí en Microsoft Learn (módulo de cómputo y redes de AZ-900)."
+  },
+  {
+    "pregunta": "¿Qué servicio de Azure permite a los usuarios crear y administrar clústeres de Kubernetes?",
+    "opciones": ["Azure Functions", "Azure Container Registry", "Azure Kubernetes Service", "Azure Container Instances"],
+    "correcta": 2,
+    "explicacion": "Si la pregunta dice \"Kubernetes\" o \"clúster\", la respuesta es AKS: Microsoft administra el plano de control y tú los nodos, que son VMs (PDF págs. 93–95). Los tres nombres con \"Container\" se confunden: Container Instances (ACI) ejecuta un contenedor suelto, sin clúster ni orquestador; Container Registry (ACR) guarda imágenes, no ejecuta nada; Kubernetes Service (AKS) orquesta muchos contenedores en un clúster. Functions es código serverless, sin contenedores que administrar."
   }
 ]
