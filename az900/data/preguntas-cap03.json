@@ -15,7 +15,7 @@
     "pregunta": "Cada región de Azure está emparejada con otra región…",
     "opciones": ["En otro continente, para máxima distancia", "Dentro del mismo límite geopolítico", "Elegida por el cliente al crear la suscripción", "Solo si la región tiene zonas de disponibilidad"],
     "correcta": 1,
-    "explicacion": "Las regiones emparejadas están en el mismo límite geopolítico y separadas geográficamente para resistir un error catastrófico."
+    "explicacion": "Las regiones emparejadas están en el mismo límite geopolítico y separadas geográficamente para resistir un error catastrófico. Es la regla que pide el examen, aunque tiene excepciones: Brazil South se empareja con South Central US (otra geografía) y muchas regiones nuevas no tienen par."
   },
   {
     "pregunta": "¿Qué característica tienen las regiones emparejadas para minimizar interrupciones?",
@@ -130,5 +130,11 @@
     "opciones": ["Grupos de administración", "Reserva", "Suscripción", "Plan de pago de Azure"],
     "correcta": 2,
     "explicacion": "La suscripción es el límite de facturación: cada una tiene su propio método de pago y su factura (PDF pág. 44). Los grupos de administración organizan suscripciones pero no pagan; una reserva es un descuento por compromiso de 1 o 3 años; \"plan de pago\" no es un recurso de Azure."
+  },
+  {
+    "pregunta": "¿Qué se entiende por 'pares de regiones' en Azure?",
+    "opciones": ["Dos geografías distintas que colaboran para hospedar una aplicación", "Una región vinculada a otra región dentro de la misma geografía para brindar resiliencia y disponibilidad", "Dos o más regiones agrupadas en un conjunto de disponibilidad", "Un método para dirigir el tráfico entre dos zonas de disponibilidad"],
+    "correcta": 1,
+    "explicacion": "Par de regiones = dos regiones de la misma geografía, a cientos de km, con actualizaciones secuenciales y prioridad de recuperación ante un desastre (PDF pág. 34). Matices que no cambian la respuesta del examen (no están en el PDF; sí en Microsoft Learn): Brazil South se empareja con South Central US, fuera de su geografía; el emparejamiento no siempre es recíproco (South Central US se empareja con North Central US), y muchas regiones nuevas no tienen par y usan zonas de disponibilidad. Trampas: \"dos geografías\" describe justo la excepción, no la regla; el conjunto de disponibilidad separa VMs dentro de un centro de datos; dirigir tráfico es Traffic Manager o Front Door."
   }
 ]

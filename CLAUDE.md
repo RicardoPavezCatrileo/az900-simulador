@@ -1,4 +1,19 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
 # AZ-900 Simulador — contexto del proyecto
+
+## Comandos
+No hay build, lint ni tests: son páginas estáticas.
+- Servir el sitio (necesario para el `fetch` de los JSON): `python -m http.server 8000` en la raíz, y abrir `http://localhost:8000/az900/cap07-almacenamiento.html` (o Live Server en VS Code).
+- Validar un JSON de preguntas tras editarlo: `node -e "const q=require('./az900/data/preguntas-cap07.json');q.forEach((p,i)=>{const c=[].concat(p.correcta);if(!p.pregunta||!p.explicacion||c.some(x=>x<0||x>=p.opciones.length))console.log('mal',i+1)});console.log(q.length,'preguntas')"`
+- Captura para revisar una página: `chrome --headless --user-data-dir=<carpeta-limpia> --window-size=1280,2000 --screenshot=out.png http://localhost:8000/<ruta>` (ver "Convenciones de los simuladores").
+
+## Arquitectura en una mirada
+- Cada página es autocontenida: el simulador (datos + lógica + `<style>` propio) vive en el mismo HTML; solo comparten `assets/`.
+- `assets/progreso.js` es la fuente de verdad de qué temas existen (`CAPITULOS`, `AZ104`, `CERTS`, flag `listo`); `portada.js` arma las portadas a partir de esas listas y `quiz.js` carga `data/preguntas-<id>.json` relativo a la página y guarda el avance con `Progreso`.
+- Agregar una pregunta = editar solo el JSON; el simulacro de AZ-900 la toma sola.
 
 ## Objetivo
 Sitio web personal para estudiar las certificaciones de Azure, con **AZ-900 (Microsoft Azure Fundamentals)** como base y luego AZ-104 (y más adelante DP-900 y AZ-305), con simuladores interactivos y quizzes por capítulo, y ver rápidamente qué temas tengo cubiertos.
@@ -30,7 +45,7 @@ az900-simulador/
 │   └── data/preguntas-capXX.json
 ├── az104/
 │   ├── index.html              ← portada de AZ-104 (5 dominios oficiales)
-│   └── data/preguntas-<tema>.json   (cuando existan)
+│   └── data/preguntas-<tema>.json   (identidad, almacenamiento, computo, redes, monitoreo)
 └── docs/                       ← PDFs de los cursos (NO se suben)
 ```
 - Las páginas dentro de `az900/` y `az104/` usan `../assets/…`, `../mapa.html` y `../arquitectura.html`. El quiz busca `data/…` relativo a la página, así que cada certificación tiene su propia carpeta `data/`.
@@ -97,7 +112,7 @@ Errores de esa guía que NO se deben copiar: dice que la secundaria de GZRS es Z
 ## Lo que ya existe: cap03-arquitectura.html (PDF págs. 30–47)
 - Simulador de despliegue (ejemplo Londres/Mumbai del curso): 1 centro de datos / 2 centros de datos / 2 regiones × evento (falla de centro de datos, caída de región) × ubicación del usuario → disponibilidad y latencia, con los 3 desafíos del curso marcados como resueltos o no.
 - Simulador de jerarquía: árbol grupo de administración → suscripción → grupo de recursos → recurso; asignar política o rol muestra la herencia hacia abajo; eliminar un grupo de recursos borra su contenido.
-- Tarjetas (regiones, emparejadas, soberanas, zonas, PoP, servicios globales vs regionales) y 22 preguntas en `data/preguntas-cap03.json` (la 22: una suscripción por departamento para pagar por separado; la 20 es grupos de administración para el acceso a múltiples suscripciones; la 21, afirmación verdadera sobre grupos de administración con Blueprints como trampa; la 18 y la 19 son de selección múltiple: entre qué se puede mover una VM → regiones, grupos de recursos y suscripciones, no viene del PDF; y dos afirmaciones correctas sobre zonas de disponibilidad).
+- Tarjetas (regiones, emparejadas, soberanas, zonas, PoP, servicios globales vs regionales) y 23 preguntas en `data/preguntas-cap03.json` (la 23: qué son los pares de regiones → misma geografía, con "dos geografías" de trampa; la explicación, la 2 y la tarjeta matizan las excepciones: Brazil South → South Central US porque Brasil no tenía otra región, pares no recíprocos, regiones sin par; la 22: una suscripción por departamento para pagar por separado; la 20 es grupos de administración para el acceso a múltiples suscripciones; la 21, afirmación verdadera sobre grupos de administración con Blueprints como trampa; la 18 y la 19 son de selección múltiple: entre qué se puede mover una VM → regiones, grupos de recursos y suscripciones, no viene del PDF; y dos afirmaciones correctas sobre zonas de disponibilidad).
 - El curso nombra "Azure Active Directory"; en el sitio se usa "Microsoft Entra ID (antes Azure Active Directory)".
 
 ## Lo que ya existe: cap04-fundamentos-herramientas.html (PDF págs. 48–58)
