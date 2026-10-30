@@ -172,5 +172,11 @@
     "opciones": ["Establecer una política de Azure", "Aplicar bloqueos de recursos", "Modificar las propiedades del recurso", "Implementar control de acceso basado en rol (RBAC) de Azure"],
     "correcta": 0,
     "explicacion": "Azure Policy decide QUÉ se puede crear: la directiva \"Tipos de recursos no permitidos\" con Microsoft.Network/virtualNetworks, asignada al grupo de recursos, rechaza (Deny) la creación para todos, incluso para Propietarios. RBAC decide QUIÉN puede actuar: los otros administradores ya tienen permiso y quitárselo los deja sin poder crear nada más. Un bloqueo no distingue tipos de recurso: CanNotDelete no impide crear y ReadOnly bloquearía todo el grupo."
+  },
+  {
+    "pregunta": "Tienes servidores en tu centro de datos y VMs en Azure. Necesitas recopilar sus métricas y registros en un solo lugar, consultarlos y recibir alertas. ¿Qué servicio cumple esa función?",
+    "opciones": ["Azure Arc", "Azure Monitor", "Azure Service Health", "Azure Advisor"],
+    "correcta": 1,
+    "explicacion": "Recopilar, analizar y actuar sobre la telemetría, de la nube y de local, es Azure Monitor. Azure Arc es la trampa: conecta los servidores locales para administrarlos desde Azure (Policy, RBAC, etiquetas, Defender) y facilita instalarles el agente, pero quien recopila y alerta es Monitor. Es la pareja de la pregunta 18 (administrar y aplicar Policy → Arc). Service Health informa el estado de los servicios de Azure, no de tus servidores; Advisor da recomendaciones."
   }
 ]
