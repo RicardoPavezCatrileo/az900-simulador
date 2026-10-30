@@ -75,7 +75,7 @@
     "pregunta": "¿Qué servicio recopila métricas y registros de casi todos los servicios de Azure y también de recursos locales?",
     "opciones": ["Azure Monitor", "Azure Key Vault", "Azure Policy", "Azure DNS"],
     "correcta": 0,
-    "explicacion": "Azure Monitor es la plataforma unificada de telemetría: métricas, registros, análisis, alertas, paneles y automatización."
+    "explicacion": "Azure Monitor es la plataforma unificada de telemetría: métricas, registros, análisis, alertas, paneles y automatización. Frase de Microsoft Learn: \"recopilar, analizar y actuar sobre la telemetría de entornos en la nube y locales\". Lo local (y otras nubes) llega instalando el Azure Monitor Agent en los servidores, normalmente conectados con Azure Arc."
   },
   {
     "pregunta": "¿Con qué lenguaje se consultan los datos en Log Analytics?",
