@@ -178,5 +178,11 @@
     "opciones": ["Azure Arc", "Azure Monitor", "Azure Service Health", "Azure Advisor"],
     "correcta": 1,
     "explicacion": "Recopilar, analizar y actuar sobre la telemetría, de la nube y de local, es Azure Monitor. Azure Arc es la trampa: conecta los servidores locales para administrarlos desde Azure (Policy, RBAC, etiquetas, Defender) y facilita instalarles el agente, pero quien recopila y alerta es Monitor. Es la pareja de la pregunta 18 (administrar y aplicar Policy → Arc). Service Health informa el estado de los servicios de Azure, no de tus servidores; Advisor da recomendaciones."
+    },
+  {
+    "pregunta": "¿Cuáles son los tipos de datos que Azure Monitor puede recopilar? (Selecciona DOS respuestas)",
+    "opciones": ["Métricas y logs", "Sólo métricas", "Sólo logs", "Datos de hardware físico", "Datos de monitorización de suscripciones"],
+    "correcta": [0, 4],
+    "explicacion": "Azure Monitor trabaja con dos tipos de datos: métricas (valores numéricos a intervalos, como el % de CPU) y logs (registros con marca de tiempo que se consultan con KQL en Log Analytics). Recopila de varios niveles: aplicación, sistema operativo, recursos de Azure y también la suscripción (registro de actividad: quién creó, cambió o borró qué; y Service Health). Trampas: \"Sólo métricas\" y \"Sólo logs\" se quedan con la mitad; el hardware físico de los centros de datos lo gestiona Microsoft: ves métricas de tus recursos (la CPU de una VM), no de los servidores físicos."
   }
 ]
