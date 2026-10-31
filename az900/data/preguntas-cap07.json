@@ -196,5 +196,11 @@
     "opciones": ["Almacenamiento con redundancia de zona (ZRS)", "Almacenamiento con redundancia local (LRS)", "Almacenamiento global por zonas (GZS)", "Almacenamiento con redundancia geográfica con acceso de lectura (RA-GRS)"],
     "correcta": [0,  1,  3],
     "explicacion": "Las seis opciones reales son LRS, ZRS, GRS, RA-GRS, GZRS y RA-GZRS (PDF, capítulo 7). \"GZS\" no existe: es una deformación de GZRS (redundancia geográfica y de zona: ZRS en la primaria + LRS en la región emparejada). Truco: todas terminan en \"RS\" (Redundant Storage); si una sigla no termina así, desconfía."
+  },
+  {
+    "pregunta": "Debes seleccionar una opción de rendimiento para una cuenta de almacenamiento de Azure. Esta cuenta almacenará pequeños objetos blob que se usarán para entrenar modelos de Machine Learning, necesitando el rendimiento más rápido posible. ¿Qué opción de rendimiento es la más adecuada?",
+    "opciones": ["Recursos compartidos de archivos Premium", "Blobs de bloque Premium", "Uso general v2 (General Purpose v2)", "Premium page blobs"],
+    "correcta": 1,
+    "explicacion": "Objetos blob (archivos, imágenes, datos de entrenamiento) = block blobs; \"el más rápido posible\" = Premium (SSD, baja latencia, ideal para muchos objetos pequeños y altas tasas de transacciones, como análisis o IA/ML). Por eso: Premium Block Blobs. Trampa: Premium Page Blobs también es Premium, pero los page blobs son para acceso aleatorio de lectura/escritura (discos de VM, pregunta 31), no para guardar objetos. Premium File Shares es para recursos compartidos SMB/NFS, no blobs. GPv2 estándar es HDD: la opción para mezclar tipos y optimizar costos (pregunta 32), no la más rápida. Regla: qué guardas (blob de objetos / disco / archivos compartidos) → Premium de ese tipo."
   }
 ]
