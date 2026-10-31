@@ -118,5 +118,11 @@
     "opciones": ["VPN Gateway", "Azure Virtual Network", "VNet peering", "Tablas de enrutamiento"],
     "correcta": [0, 1],
     "explicacion": "Local ↔ Azure (tramo 1) necesita una VNet donde vivan los recursos de Azure y un VPN Gateway en esa VNet, que hace el túnel cifrado con la oficina (PDF págs. 112–114). El peering une VNets entre sí dentro de Azure (tramo 2): no llega a la red local. Las tablas de rutas (UDR) son opcionales: Azure crea las rutas del gateway solo."
+  },
+  {
+    "pregunta": "Dada la creciente popularidad de tu empresa necesitas incorporar más máquinas virtuales para ejecutar tu aplicación web de manera eficiente. ¿Cuál es la estrategia óptima para asegurar una distribución equitativa del tráfico entre todas las máquinas virtuales, garantizando su uso óptimo?",
+    "opciones": ["Implementa Azure VPN Gateway para dirigir tanto las solicitudes seguras como no seguras hacia la máquina virtual correcta dentro de tu grupo backend", "Implementa Azure Load Balancer para distribuir de manera equitativa el tráfico entrante de Internet entre un conjunto de máquinas virtuales", "Emplea Azure Application Gateway para identificar la aplicación solicitada y canalizar el tráfico hacia la máquina virtual adecuada", "Constituye un conjunto de máquinas virtuales idénticas que sean capaces de recibir proporciones iguales de solicitudes entrantes"],
+    "correcta": 1,
+    "explicacion": "\"Distribución equitativa del tráfico entre VMs\" = balancear la carga → Azure Load Balancer (capa 4, TCP/UDP): reparte el tráfico entrante entre las VMs del grupo backend sanas según los sondeos. Trampas: VPN Gateway conecta redes (oficina o laptop ↔ VNet) por un túnel cifrado; no reparte tráfico entre VMs. Application Gateway también balancea, pero su función distintiva es enrutar por contenido (URL, host) hacia el servidor ADECUADO, no repartir parejo: eso es lo que describe la opción. Un conjunto de VMs idénticas (como un Scale Set) es lo que se balancea, pero por sí solo no reparte nada: necesita un balanceador delante. Pista: \"equitativa / entre VMs\" → Load Balancer; \"según la URL / WAF\" → Application Gateway (pregunta 11)."
   }
 ]
