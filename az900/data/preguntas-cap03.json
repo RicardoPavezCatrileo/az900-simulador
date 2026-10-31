@@ -99,7 +99,7 @@
     "pregunta": "¿Cuál de las siguientes funciones NO se realiza utilizando los grupos de administración en Azure dentro de nuestra organización?",
     "opciones": ["Gestionar políticas", "Gestionar el ciclo de vida de los recursos", "Gestionar el control de acceso", "Implementar políticas a gran escala"],
     "correcta": 1,
-    "explicacion": "Los grupos de administración organizan suscripciones y aplican Azure Policy y RBAC que se heredan hacia abajo (PDF pág. 45): eso cubre políticas, control de acceso y políticas a gran escala. El ciclo de vida de los recursos (desplegarlos, actualizarlos y borrarlos juntos) es la función de los GRUPOS DE RECURSOS."
+    "explicacion": "Los grupos de administración organizan suscripciones y aplican Azure Policy y RBAC que se heredan hacia abajo (PDF pág. 45): eso cubre políticas, control de acceso y políticas a gran escala. El ciclo de vida de los recursos (desplegarlos, actualizarlos y borrarlos juntos) es la función de los GRUPOS DE RECURSOS. Ojo: hay simulacros que marcan \"Gestionar el control de acceso\" como correcta con el argumento de que el RBAC detallado se asigna en recursos o suscripciones; es incorrecto: un rol asignado en el grupo de administración se hereda a todas sus suscripciones, y Microsoft Learn lista \"dar acceso a varias suscripciones\" como uno de sus usos (pregunta 20)."
   },
   {
     "pregunta": "¿Entre cuáles de los siguientes recursos de Azure pueden moverse las máquinas virtuales de Azure? Selecciona TODAS las que correspondan.",
