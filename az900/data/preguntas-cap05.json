@@ -160,5 +160,11 @@
     "opciones": ["Azure Functions", "Azure Container Registry", "Azure Kubernetes Service", "Azure Container Instances"],
     "correcta": 2,
     "explicacion": "Si la pregunta dice \"Kubernetes\" o \"clúster\", la respuesta es AKS: Microsoft administra el plano de control y tú los nodos, que son VMs (PDF págs. 93–95). Los tres nombres con \"Container\" se confunden: Container Instances (ACI) ejecuta un contenedor suelto, sin clúster ni orquestador; Container Registry (ACR) guarda imágenes, no ejecuta nada; Kubernetes Service (AKS) orquesta muchos contenedores en un clúster. Functions es código serverless, sin contenedores que administrar."
+  },
+  {
+    "pregunta": "¿Qué servicio de proceso de Azure puede usar para implementar y administrar un conjunto de máquinas virtuales idénticas?",
+    "opciones": ["Azure Kubernetes Service (AKS)", "Azure Functions", "Grupos de administración de Azure", "Conjuntos de escalado de máquinas virtuales de Azure (VMSS)"],
+    "correcta": 3,
+    "explicacion": "\"Conjunto de máquinas virtuales idénticas\" es casi la definición de un conjunto de escalado (VM Scale Set): crea las VMs desde la misma imagen y configuración, las escala sola (manual o automático) y las reparte detrás de un balanceador. Trampa: AKS también corre sobre VMs (los nodos), pero lo que tú administras son contenedores (pods) y el servicio es un orquestador de Kubernetes; si la pregunta dice \"contenedores\" o \"microservicios\" → AKS; si dice \"VMs idénticas\" → Scale Set. Functions es serverless: no ves ninguna VM. Los grupos de administración organizan suscripciones (gobierno), no son un servicio de proceso."
   }
 ]
