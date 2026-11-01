@@ -166,5 +166,11 @@
     "opciones": ["Azure Kubernetes Service (AKS)", "Azure Functions", "Grupos de administración de Azure", "Conjuntos de escalado de máquinas virtuales de Azure (VMSS)"],
     "correcta": 3,
     "explicacion": "\"Conjunto de máquinas virtuales idénticas\" es casi la definición de un conjunto de escalado (VM Scale Set): crea las VMs desde la misma imagen y configuración, las escala sola (manual o automático) y las reparte detrás de un balanceador. Trampa: AKS también corre sobre VMs (los nodos), pero lo que tú administras son contenedores (pods) y el servicio es un orquestador de Kubernetes; si la pregunta dice \"contenedores\" o \"microservicios\" → AKS; si dice \"VMs idénticas\" → Scale Set. Functions es serverless: no ves ninguna VM. Los grupos de administración organizan suscripciones (gobierno), no son un servicio de proceso."
+  },
+  {
+    "pregunta": "Se te solicita identificar las ventajas de utilizar una solución sin servidor con Azure Functions. ¿Cuáles de las siguientes opciones son ventajas de Azure Functions? (Selecciona DOS respuestas)",
+    "opciones": ["Escalabilidad automática", "Siempre en ejecución", "Ausencia total de tiempos de espera de ejecución", "No se requiere gestionar infraestructura"],
+    "correcta": [0, 3],
+    "explicacion": "Serverless = Azure escala solo según los eventos y tú no administras servidores. Trampas: las funciones se ejecutan ante un evento y luego se detienen (no están siempre en ejecución; por eso sin tráfico no pagas en el plan de consumo), y SÍ tienen tiempo de espera: en el plan de consumo, 5 minutos por defecto y 10 como máximo. Para procesos largos o siempre encendidos: plan Premium o App Service."
   }
 ]
