@@ -136,5 +136,11 @@
     "opciones": ["Dos geografías distintas que colaboran para hospedar una aplicación", "Una región vinculada a otra región dentro de la misma geografía para brindar resiliencia y disponibilidad", "Dos o más regiones agrupadas en un conjunto de disponibilidad", "Un método para dirigir el tráfico entre dos zonas de disponibilidad"],
     "correcta": 1,
     "explicacion": "Par de regiones = dos regiones de la misma geografía, a cientos de km, con actualizaciones secuenciales y prioridad de recuperación ante un desastre (PDF pág. 34). Matices que no cambian la respuesta del examen (no están en el PDF; sí en Microsoft Learn): Brazil South se empareja con South Central US, fuera de su geografía; el emparejamiento no siempre es recíproco (South Central US se empareja con North Central US), y muchas regiones nuevas no tienen par y usan zonas de disponibilidad. Trampas: \"dos geografías\" describe justo la excepción, no la regla; el conjunto de disponibilidad separa VMs dentro de un centro de datos; dirigir tráfico es Traffic Manager o Front Door."
+  },
+  {
+    "pregunta": "De las siguientes afirmaciones, ¿cuál es correcta en relación con la estructura y gestión en Azure?",
+    "opciones": ["Los grupos de administración actúan como la entidad principal de facturación para los costes asociados a los recursos de Azure", "Los grupos de recursos funcionan como contenedores de facturación para los costes asociados a los recursos de Azure", "Los grupos de administración no raíz pueden tener un solo grupo de administración padre y varios grupos de administración hijos", "Las cuentas de Azure están vinculadas únicamente a una suscripción de Azure"],
+    "correcta": 2,
+    "explicacion": "La jerarquía de grupos de administración es un árbol: cada grupo (salvo el raíz) cuelga de UN padre y puede tener varios hijos (otros grupos o suscripciones), con hasta 6 niveles bajo la raíz. Un solo padre es lo que hace posible la herencia sin conflictos. Trampas: la unidad de facturación es la SUSCRIPCIÓN, no el grupo de administración (gobierno: RBAC y Policy) ni el grupo de recursos (ciclo de vida; Cost Management puede mostrar el gasto por grupo de recursos, pero la factura es de la suscripción). Una cuenta de Azure puede tener varias suscripciones (Producción, Test, Dev)."
   }
 ]
