@@ -202,5 +202,11 @@
     "opciones": ["Recursos compartidos de archivos Premium", "Blobs de bloque Premium", "Uso general v2 (General Purpose v2)", "Premium page blobs"],
     "correcta": 1,
     "explicacion": "Objetos blob (archivos, imágenes, datos de entrenamiento) = block blobs; \"el más rápido posible\" = Premium (SSD, baja latencia, ideal para muchos objetos pequeños y altas tasas de transacciones, como análisis o IA/ML). Por eso: Premium Block Blobs. Trampa: Premium Page Blobs también es Premium, pero los page blobs son para acceso aleatorio de lectura/escritura (discos de VM, pregunta 31), no para guardar objetos. Premium File Shares es para recursos compartidos SMB/NFS, no blobs. GPv2 estándar es HDD: la opción para mezclar tipos y optimizar costos (pregunta 32), no la más rápida. Regla: qué guardas (blob de objetos / disco / archivos compartidos) → Premium de ese tipo."
+  },
+  {
+    "pregunta": "¿Qué dos escenarios son casos de uso comunes para Azure Blob Storage? Cada respuesta correcta presenta una solución completa.",
+    "opciones": ["Visualización de imágenes o documentos directamente en un explorador", "Almacenar datos para copias de seguridad y restauración", "Hospedar archivos ASPX para un sitio web", "Montaje de un recurso compartido de almacenamiento de archivos al que se va a acceder como una unidad virtual en varias máquinas virtuales"],
+    "correcta": [0, 1],
+    "explicacion": "Blob guarda OBJETOS a los que se accede por URL/HTTP: cada blob tiene su dirección (https://cuenta.blob.core.windows.net/fotos/logo.png) y el navegador la abre directo; y los backups son archivos grandes que casi no se leen, ideales para Blob con los niveles Cool, Cold y Archive. Trampas: ASPX es código que el servidor debe EJECUTAR (ASP.NET) → App Service; Blob solo entrega archivos tal cual y puede hospedar un sitio web ESTÁTICO (HTML, CSS, JS, imágenes), no páginas dinámicas. Montar un recurso compartido como unidad (Z:) en varias VMs es Azure Files (SMB/NFS). Regla: Blob se ve por URL; Files se monta; App Service ejecuta código web."
   }
 ]
