@@ -130,5 +130,11 @@
     "opciones": ["Híbrido como servicio (HaaS)", "Plataforma como servicio (PaaS)", "Infraestructura como servicio (IaaS)", "Software como servicio (SaaS)"],
     "correcta": 2,
     "explicacion": "Pregunta clave: ¿quién administra el sistema operativo? En una VM, TÚ instalas y parchas Windows Server y le agregas el rol AD DS → IaaS. Trampa: PaaS es cuando Microsoft administra también el SO y tú solo subes código o datos (App Service, Azure SQL Database, Functions); un dominio administrado por Microsoft sin VMs sería Entra Domain Services (PaaS). \"Híbrido como servicio (HaaS)\" no existe: híbrido es un MODELO DE DESPLIEGUE (local + nube), no un modelo de servicio; extender el centro de datos a Azure hace híbrido el despliegue, pero las VMs siguen siendo IaaS. Regla: VMs → IaaS; App Service → PaaS; Microsoft 365 → SaaS (preguntas 5 y 6)."
+  },
+  {
+    "pregunta": "Para implementar un modelo de nube híbrida, una empresa primero debe tener una nube privada.",
+    "opciones": ["Sí", "No"],
+    "correcta": 1,
+    "explicacion": "La nube híbrida combina la nube pública con infraestructura LOCAL (un centro de datos o una red interna), que no tiene por qué ser una nube privada en sentido estricto (virtualización, autoservicio, escalado). Tampoco hay un orden obligatorio: una empresa puede empezar en Azure y conectar lo local después. Trampa: \"primero debe\" / \"siempre debe migrar desde una nube privada\" → No. Sí es verdad que local + nube pública conectadas = híbrida."
   }
 ]
