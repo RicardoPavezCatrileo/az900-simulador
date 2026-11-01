@@ -124,5 +124,11 @@
     "opciones": ["Sí", "No"],
     "correcta": 1,
     "explicacion": "Las etiquetas NO se heredan: cada recurso lleva las suyas (PDF pág. 266). Para que los recursos las tomen del grupo hay que usar Azure Policy (por ejemplo, \"Heredar una etiqueta del grupo de recursos\"). Trampa: Azure Policy, RBAC y los bloqueos SÍ se heredan hacia abajo; las etiquetas son la excepción."
+  },
+  {
+    "pregunta": "¿Cuál de las siguientes afirmaciones es verdadera respecto a las Máquinas Virtuales de Azure?",
+    "opciones": ["Dos máquinas virtuales del mismo tamaño siempre tendrán el mismo costo mensual", "Una máquina virtual que permanece detenida y desasignada durante 30 días será eliminada automáticamente", "Las máquinas virtuales pueden redimensionarse automáticamente para gestionar el rendimiento del sistema", "Las máquinas virtuales eliminadas aún pueden generar cargos por almacenamiento"],
+    "correcta": 3,
+    "explicacion": "Una VM son varios recursos: cómputo, disco del SO, discos de datos, NIC e IP pública. Al eliminar la VM se va el cómputo, pero los discos administrados (y la IP pública) pueden quedar en el grupo de recursos si no marcaste \"eliminar con la VM\", y siguen cobrando. Trampas: el mismo tamaño no implica el mismo costo (región, horas, disco, licencia, modelo de compra y salida de datos: pregunta 19); Azure nunca borra recursos por inactividad (desasignada deja de cobrar el cómputo, pero los discos siguen cobrando); cambiar el tamaño (escalado vertical) lo haces tú y reinicia la VM: lo automático es el escalado horizontal con un Scale Set. Estados: encendida o detenida desde el SO = cobra cómputo + discos; detenida y desasignada = solo discos; eliminada con discos huérfanos = solo discos."
   }
 ]
