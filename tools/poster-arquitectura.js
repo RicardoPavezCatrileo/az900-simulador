@@ -1,5 +1,5 @@
 document.documentElement.setAttribute("data-theme","light");
-hasta=11;resaltar=false;flujo=null;sel=null;
+hasta=11;resaltar=false;flujo=null;sel=null;ident="hib";red="GRS";entrada="fd";
 document.fonts.ready.then(()=>{dibujar();aplicar();poster()});
 function poster(){
   const NS="http://www.w3.org/2000/svg",W=1372,H=970,DX=66,DY=72;
@@ -28,7 +28,8 @@ function poster(){
   r(0,0,W,H,"fill:#ffffff");
   t(DX,32,"AZ-900 · MICROSOFT AZURE FUNDAMENTALS",`${fM};font-size:11px;letter-spacing:.08em;fill:${v("--accent")}`);
   t(DX,60,"Arquitectura de referencia: web de 3 niveles con la oficina conectada",`${fD};font-size:24px;font-weight:800;fill:${v("--ink")}`);
-  t(W-DX,60,"Brazil South · 3 zonas · región emparejada South Central US",`${fM};font-size:11px;fill:${v("--muted")};text-anchor:end`);
+  // Regiones con su color (como en la leyenda de la página), alineadas a la derecha
+  {let xr=W-DX;[["--rus","región emparejada South Central US"],["--rbr","Brazil South · 3 zonas"]].forEach(([k,n],i)=>{const e=t(xr,32,n,`${fM};font-size:11px;fill:${v(k)};font-weight:600;text-anchor:end`);xr-=e.getComputedTextLength()+16;r(xr,23,11,11,`fill:none;stroke:${v(k)};stroke-width:1.6`,3);xr-=22})}
   const g=document.createElementNS(NS,"g");g.setAttribute("transform",`translate(${DX},${DY})`);
   g.appendChild(copia.querySelector("defs"));[...copia.childNodes].forEach(n=>g.appendChild(n));s.appendChild(g);
   // Leyenda
