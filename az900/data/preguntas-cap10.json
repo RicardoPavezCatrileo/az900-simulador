@@ -184,5 +184,11 @@
     "opciones": ["Métricas y logs", "Sólo métricas", "Sólo logs", "Datos de hardware físico", "Datos de monitorización de suscripciones"],
     "correcta": [0, 4],
     "explicacion": "Azure Monitor trabaja con dos tipos de datos: métricas (valores numéricos a intervalos, como el % de CPU) y logs (registros con marca de tiempo que se consultan con KQL en Log Analytics). Recopila de varios niveles: aplicación, sistema operativo, recursos de Azure y también la suscripción (registro de actividad: quién creó, cambió o borró qué; y Service Health). Trampas: \"Sólo métricas\" y \"Sólo logs\" se quedan con la mitad; el hardware físico de los centros de datos lo gestiona Microsoft: ves métricas de tus recursos (la CPU de una VM), no de los servidores físicos."
+  },
+  {
+    "pregunta": "¿Cuál de las siguientes afirmaciones es aplicable a Azure Service Health?",
+    "opciones": ["Ofrece soporte para interrupciones tanto planificadas como no planificadas", "Brinda información idéntica a la que ofrece Salud de los Recursos", "Muestra el estado de todos los servicios de Azure en todas las regiones del mundo, sin filtrar por tu suscripción", "Analiza el rendimiento y los errores de tu aplicación web"],
+    "correcta": 0,
+    "explicacion": "Azure Service Health (la familia) tiene 3 niveles: Azure Status (estado GLOBAL de todos los servicios y regiones, público), Service Health (solo los servicios y regiones QUE TÚ USAS: incidentes no planificados, mantenimiento planificado, avisos de salud y de seguridad, con alertas) y Resource Health (el estado de CADA recurso tuyo, por ejemplo tu VM concreta). Por eso cubre interrupciones planificadas y no planificadas. Trampa: Resource Health no da la misma información; es más fino (un recurso) y Service Health es más amplio (servicios y regiones de tu suscripción). La vista global de todo el mundo es Azure Status; el rendimiento de tu app es Application Insights. Las opciones 3 y 4 se agregaron como distractores: el simulacro externo solo mostraba dos."
   }
 ]
