@@ -190,5 +190,11 @@
     "opciones": ["Ofrece soporte para interrupciones tanto planificadas como no planificadas", "Brinda información idéntica a la que ofrece Salud de los Recursos", "Muestra el estado de todos los servicios de Azure en todas las regiones del mundo, sin filtrar por tu suscripción", "Analiza el rendimiento y los errores de tu aplicación web"],
     "correcta": 0,
     "explicacion": "Azure Service Health (la familia) tiene 3 niveles: Azure Status (estado GLOBAL de todos los servicios y regiones, público), Service Health (solo los servicios y regiones QUE TÚ USAS: incidentes no planificados, mantenimiento planificado, avisos de salud y de seguridad, con alertas) y Resource Health (el estado de CADA recurso tuyo, por ejemplo tu VM concreta). Por eso cubre interrupciones planificadas y no planificadas. Trampa: Resource Health no da la misma información; es más fino (un recurso) y Service Health es más amplio (servicios y regiones de tu suscripción). La vista global de todo el mundo es Azure Status; el rendimiento de tu app es Application Insights. Las opciones 3 y 4 se agregaron como distractores: el simulacro externo solo mostraba dos."
+  },
+  {
+    "pregunta": "¿Qué propósito principal persigue el Control de Acceso Basado en Roles (RBAC) en Azure?",
+    "opciones": ["Es un sistema de autorización integrado en Azure Resource Manager que ofrece gestión detallada del acceso a los recursos de Azure", "Crear reglas condicionales (if-then) para permitir o denegar la autenticación a diferentes aplicaciones, incluyendo condiciones para requerir autenticación multifactor", "Sincronizar identidades de usuario entre un entorno de Active Directory local y Microsoft Entra ID", "Organizar suscripciones en grupos, a los cuales se pueden asignar roles y políticas de acceso de manera consolidada"],
+    "correcta": 0,
+    "explicacion": "RBAC = AUTORIZACIÓN: qué puede hacer cada quien (rol) y dónde (ámbito: grupo de administración, suscripción, grupo de recursos o recurso), aplicado por Azure Resource Manager. Trampas: las reglas if-then que piden MFA al iniciar sesión son el ACCESO CONDICIONAL (autenticación, Entra ID); sincronizar el AD local con Entra ID es Entra Connect; agrupar suscripciones para asignar roles y políticas de una vez son los GRUPOS DE ADMINISTRACIÓN (dónde se asigna RBAC, no qué es RBAC)."
   }
 ]
