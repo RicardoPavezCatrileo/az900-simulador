@@ -97,8 +97,10 @@ td.bloq{color:var(--bad);font-weight:600}
         <li>Solo contraseña = baja seguridad. Contraseña + MFA = alta pero incómoda. Sin contraseña = alta y cómoda.</li>
       </ul></div>
       <div class="card"><h3>Usuarios externos (B2B)</h3><ul>
-        <li>Invitas al externo como <b>invitado</b>: usa su propia cuenta (Microsoft, Google, Facebook u otro proveedor).</li>
-        <li>Pasos: configurar el proveedor de identidad (si no es Microsoft) → invitar → asignar permisos con <b>mínimo privilegio</b> → opcional: apps y acceso condicional entre inquilinos.</li>
+        <li>Caso típico: un <b>consultor externo</b> debe ayudarte con tu Azure. Crearle una cuenta en tu organización lo obliga a manejar <b>dos cuentas</b>; mejor invitarlo como <b>invitado</b>: usa <b>su propia cuenta</b> (colaboración B2B).</li>
+        <li>Pasos: <b>1.</b> configurar el proveedor de identidad (si no es Microsoft: Google, Facebook, SAML…) → <b>2.</b> invitar a la parte externa → <b>3.</b> cuando acepte, asignar permisos con <b>mínimo privilegio</b> (RBAC) → <b>4.</b> opcional: asignar apps y acceso condicional entre inquilinos (exigir MFA o dispositivo administrado).</li>
+        <li>Pistas: "usar sus credenciales existentes" → invitado B2B con un <b>proveedor de identidad reconocido</b> (un correo cualquiera solo da un código de un solo uso). "Evitar dos cuentas" → invitar, no crear.</li>
+        <li>PDF págs. 188–190.</li>
       </ul></div>
       <div class="card"><h3>Entra Domain Services</h3><ul>
         <li>Dominio administrado (antes Azure AD DS): <b>dos controladores de dominio</b> por detrás, sin gestionar el SO.</li>
