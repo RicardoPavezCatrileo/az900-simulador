@@ -254,7 +254,7 @@ const EL=[
   p:"Una contraseña robada no alcanza para entrar."},
  {id:"ca",k:"nodo",a:0,cap:8,x:242,y:38,w:150,h:44,t:"Acceso condicional",s:"señales → decisión",
   q:"Directivas si-entonces: según usuario, ubicación, dispositivo y riesgo, permite, bloquea o exige MFA.",
-  p:"Exige MFA fuera de la oficina y bloquea inicios de sesión de alto riesgo."},
+  p:"Exige MFA fuera de la oficina y bloquea inicios de sesión de alto riesgo. Es una función de Microsoft Entra ID (requiere licencia P1). No confundir con Azure Policy: el acceso condicional decide si PUEDES ENTRAR (inicio de sesión); Azure Policy decide CÓMO deben ser los RECURSOS."},
  {id:"connect",k:"nodo",a:0,cap:8,x:24,y:228,w:198,h:46,t:"Entra Connect",s:"sincroniza identidades",
   q:"Herramienta local que sincroniza usuarios, grupos y hashes de contraseña del AD local con Entra ID.",
   p:"Gracias a ella los empleados usan la misma cuenta en la oficina y en Azure (identidad híbrida).",pg:"173"},
@@ -284,7 +284,7 @@ const EL=[
  // Capítulo 10: gobierno y monitorización
  {id:"policy",k:"pill",a:5,cap:10,x:1006,y:211,w:200,h:16,t:"Azure Policy · ubicaciones permitidas",
   q:"Reglas sobre CÓMO deben ser los recursos (región, SKU, etiquetas). Con efecto Deny bloquea; con Audit solo marca no conformidad.",
-  p:"Asignada en el grupo de administración, se hereda: nadie puede crear recursos fuera de las regiones permitidas.",pg:"232–236"},
+  p:"Asignada en el grupo de administración, se hereda: nadie puede crear recursos fuera de las regiones permitidas. No confundir con el acceso condicional (Entra ID): Policy no mira quién inicia sesión, sino qué se crea; quién puede hacerlo es RBAC.",pg:"232–236"},
  {id:"rbac",k:"pill",a:5,cap:10,x:634,y:263,w:118,h:16,t:"RBAC · Colaborador",
   q:"Control de acceso basado en roles: QUIÉN puede hacer QUÉ y en qué ámbito. Se hereda hacia abajo.",
   p:"El equipo de la app es Colaborador solo en este grupo de recursos: puede gestionar, pero no dar permisos.",pg:"222–226"},
