@@ -196,5 +196,11 @@
     "opciones": ["Es un sistema de autorización integrado en Azure Resource Manager que ofrece gestión detallada del acceso a los recursos de Azure", "Crear reglas condicionales (if-then) para permitir o denegar la autenticación a diferentes aplicaciones, incluyendo condiciones para requerir autenticación multifactor", "Sincronizar identidades de usuario entre un entorno de Active Directory local y Microsoft Entra ID", "Organizar suscripciones en grupos, a los cuales se pueden asignar roles y políticas de acceso de manera consolidada"],
     "correcta": 0,
     "explicacion": "RBAC = AUTORIZACIÓN: qué puede hacer cada quien (rol) y dónde (ámbito: grupo de administración, suscripción, grupo de recursos o recurso), aplicado por Azure Resource Manager. Trampas: las reglas if-then que piden MFA al iniciar sesión son el ACCESO CONDICIONAL (autenticación, Entra ID); sincronizar el AD local con Entra ID es Entra Connect; agrupar suscripciones para asignar roles y políticas de una vez son los GRUPOS DE ADMINISTRACIÓN (dónde se asigna RBAC, no qué es RBAC)."
+  },
+  {
+    "pregunta": "¿Cuál es el principal propósito de Azure Policy?",
+    "opciones": ["Establecer e imponer reglas de cumplimiento en un ámbito específico de Azure (como suscripciones, grupos de recursos, etc.)", "Implementar el Control de Acceso Basado en Roles (RBAC) a múltiples suscripciones agrupadas desde un solo lugar", "Exigir autenticación multifactor según la ubicación y el riesgo del inicio de sesión", "Impedir que un recurso se elimine o se modifique por accidente"],
+    "correcta": 0,
+    "explicacion": "Azure Policy = reglas sobre CÓMO deben ser los recursos (regiones permitidas, etiquetas obligatorias, tamaños de VM), asignadas en un ámbito y heredadas hacia abajo; con Deny bloquea y con Audit marca lo que no cumple. Trampa: \"RBAC a varias suscripciones agrupadas desde un solo lugar\" describe los GRUPOS DE ADMINISTRACIÓN (dónde se asignan RBAC y Policy), y RBAC decide QUIÉN puede hacer qué. Exigir MFA es el acceso condicional; impedir borrar o modificar es un bloqueo (lock). Las opciones 3 y 4 se agregaron como distractores."
   }
 ]
