@@ -76,6 +76,7 @@ Cerca del 60% repite AZ-900. Cada tema de `AZ104` en `progreso.js` lleva `pdf` (
 - Formato de pregunta en JSON: `{"pregunta","opciones":[...],"correcta":<índice>,"explicacion"}`. Para selección múltiple ("Selecciona TODAS"), `"correcta":[<índice>,...]`: se marcan opciones y se responde con "Comprobar"; solo es correcta si coincide exactamente (las correctas no marcadas se muestran con borde verde punteado).
 - Al publicar un capítulo o tema nuevo, marcar `listo:true` en su lista (`CAPITULOS` o `AZ104` en `progreso.js`) para que la portada lo enlace.
 - Avance guardado en la clave `az900:progreso:capXX` como `{respuestas, total, mejor}`; el % de la portada es `mejor/total`. Si cambia la cantidad de preguntas del JSON, las respuestas guardadas se descartan (se conserva `mejor`).
+- El quiz muestra las opciones en lista con letra a), b), c)… (clase `.opts.lista` de `estilos.css`; el `.opts` simple lo usa también el juego de clasificar controles del cap09).
 - `fetch` del JSON no funciona abriendo el archivo con doble clic (`file://`): usar Live Server.
 
 ## Capítulos del curso (PDF "Microsoft-Azure-Fundamentals-AZ-900-v7.pdf", 282 páginas)

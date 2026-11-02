@@ -33,17 +33,20 @@ async function iniciarQuiz(cap,cert="az900"){
   const marcadas={};  // selección en curso (sin comprobar) de las preguntas múltiples
   function responder(i,r){ans[i]=r;p.respuestas=ans;p.mejor=Math.max(p.mejor||0,correctas());Progreso.guardar(cap,p,cert);pintar()}
 
+  // Opción con su letra (a, b, c…) delante
+  function letra(b,j,o){const l=document.createElement("span");l.className="l";l.textContent="abcdefgh"[j]+")";const t=document.createElement("span");t.textContent=o;b.append(l,t)}
+
   function pintar(){
     el.innerHTML="";
     Q.forEach((x,i)=>{
       const d=document.createElement("div");d.className="q";
-      d.innerHTML=`<p></p><div class="opts"></div><div class="fb"></div>`;
+      d.innerHTML=`<p></p><div class="opts lista"></div><div class="fb"></div>`;
       d.querySelector("p").textContent=`${i+1}. ${x.pregunta}`;
       const opts=d.querySelector(".opts");
       if(multi(i)){
         const m=marcadas[i]||(marcadas[i]=new Set());
         x.opciones.forEach((o,j)=>{
-          const b=document.createElement("button");b.type="button";b.textContent=o;
+          const b=document.createElement("button");b.type="button";letra(b,j,o);
           if(i in ans){
             if(x.correcta.includes(j))b.className=ans[i].includes(j)?"right":"right missed";
             else if(ans[i].includes(j))b.className="wrong";
@@ -64,7 +67,7 @@ async function iniciarQuiz(cap,cert="az900"){
         }
       }else{
         x.opciones.forEach((o,j)=>{
-          const b=document.createElement("button");b.type="button";b.textContent=o;
+          const b=document.createElement("button");b.type="button";letra(b,j,o);
           if(i in ans){if(j===x.correcta)b.className="right";else if(j===ans[i])b.className="wrong";b.disabled=true}
           b.onclick=()=>responder(i,j);
           opts.appendChild(b);
