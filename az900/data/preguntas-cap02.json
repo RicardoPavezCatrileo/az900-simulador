@@ -136,5 +136,11 @@
     "opciones": ["Sí", "No"],
     "correcta": 1,
     "explicacion": "La nube híbrida combina la nube pública con infraestructura LOCAL (un centro de datos o una red interna), que no tiene por qué ser una nube privada en sentido estricto (virtualización, autoservicio, escalado). Tampoco hay un orden obligatorio: una empresa puede empezar en Azure y conectar lo local después. Trampa: \"primero debe\" / \"siempre debe migrar desde una nube privada\" → No. Sí es verdad que local + nube pública conectadas = híbrida."
+  },
+  {
+    "pregunta": "¿Cuáles son características destacadas de las nubes privadas? (Selecciona DOS respuestas)",
+    "opciones": ["Costes operativos reducidos", "Escalabilidad mejorada", "Mayor control y seguridad", "Flexibilidad limitada"],
+    "correcta": [1, 2],
+    "explicacion": "Una nube privada es infraestructura propia CON características de nube (virtualización, autoservicio): frente a un centro de datos tradicional escala mejor, y frente a la nube pública da más control y seguridad. Trampas: \"flexibilidad limitada\" es una desventaja, no una característica destacada (y la virtualización la mejora); \"costes operativos reducidos\" es propio de la nube pública: en la privada compras y mantienes el hardware (CapEx). Pareja de la 16."
   }
 ]
