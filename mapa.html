@@ -269,7 +269,10 @@ function ruta(a,b){
 }
 
 function dibujar(activos,aristas){
-  const svg=document.getElementById("svg"),Wt=X0+AREAS.length*COLX;
+  const svg=document.getElementById("svg");
+  // Ancho: las flechas entre servicios de la misma columna hacen una curva a la derecha; en la última columna (y su etiqueta) se saldrían del dibujo.
+  let Wt=X0+AREAS.length*COLX;
+  E.forEach(([a,b,l])=>{const ca=byId[a][2];if(ca!==byId[b][2])return;const pa=pos[a],pb=pos[b],o=28+Math.abs(pb.y-pa.y)*.15,x=pa.x+W;Wt=Math.max(Wt,x+o*.75+6,x+25+l.length*3.2+6)});
   svg.setAttribute("viewBox",`0 0 ${Wt} ${alto}`);
   const hay=activos&&activos.size;
   const esActiva=(a,b)=>aristas.some(([x,y])=>(x===a&&y===b));
