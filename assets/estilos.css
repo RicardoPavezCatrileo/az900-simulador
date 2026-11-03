@@ -112,5 +112,6 @@ a.cap.destacada{border-color:var(--accent)}
 .cap h2 a:hover{color:var(--accent)}
 .cap .det{font-family:var(--f-mono);font-size:.78rem;color:var(--muted);font-variant-numeric:tabular-nums}
 .pie{display:flex;justify-content:flex-end}
+.seccion-herr{font-family:var(--f-mono);font-size:.78rem;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:22px 0 8px}
 
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
