@@ -202,5 +202,11 @@
     "opciones": ["Establecer e imponer reglas de cumplimiento en un ámbito específico de Azure (como suscripciones, grupos de recursos, etc.)", "Implementar el Control de Acceso Basado en Roles (RBAC) a múltiples suscripciones agrupadas desde un solo lugar", "Exigir autenticación multifactor según la ubicación y el riesgo del inicio de sesión", "Impedir que un recurso se elimine o se modifique por accidente"],
     "correcta": 0,
     "explicacion": "Azure Policy = reglas sobre CÓMO deben ser los recursos (regiones permitidas, etiquetas obligatorias, tamaños de VM), asignadas en un ámbito y heredadas hacia abajo; con Deny bloquea y con Audit marca lo que no cumple. Trampa: \"RBAC a varias suscripciones agrupadas desde un solo lugar\" describe los GRUPOS DE ADMINISTRACIÓN (dónde se asignan RBAC y Policy), y RBAC decide QUIÉN puede hacer qué. Exigir MFA es el acceso condicional; impedir borrar o modificar es un bloqueo (lock). Las opciones 3 y 4 se agregaron como distractores."
+  },
+  {
+    "pregunta": "¿A qué objeto o nivel se aplica un rol de Control de Acceso Basado en Roles (RBAC) de Azure?",
+    "opciones": ["A un ámbito (grupo de administración, suscripción, grupo de recursos o recurso)", "A las etiquetas de recursos", "A una región de Azure", "Al tenant de Microsoft Entra ID completo"],
+    "correcta": 0,
+    "explicacion": "Una asignación de rol = QUIÉN (usuario, grupo o identidad) + QUÉ ROL (Lector, Colaborador, Propietario) + DÓNDE: el ámbito, que puede ser un grupo de administración, una suscripción, un grupo de recursos o un recurso; se hereda hacia abajo. Trampa: las etiquetas (tags) organizan recursos y agrupan costos (depto=Ventas), no dan permisos. Las regiones no son un ámbito de RBAC, y el tenant es el directorio de identidades (los roles de Entra ID son otra cosa). Solo \"Etiquetas de recursos\" viene del simulacro externo; los otros distractores se agregaron."
   }
 ]
