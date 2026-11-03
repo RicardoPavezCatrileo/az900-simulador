@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Las dudas del examen: resumen de resumen</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="../assets/estilos.css">
+<style>
+.wrap{max-width:1100px}
+.metodo{display:grid;gap:12px;grid-template-columns:repeat(3,1fr)}
+@media (max-width:820px){.metodo{grid-template-columns:1fr}}
+.paso{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px;display:grid;gap:6px;align-content:start}
+.paso b.n{font-family:var(--f-mono);font-size:.72rem;color:var(--accent);letter-spacing:.06em;text-transform:uppercase}
+.paso p{margin:0}
+.escalera{font-family:var(--f-mono);font-size:.82rem;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px;white-space:pre;overflow-x:auto;margin:0}
+.dudas table{min-width:640px}
+.dudas td:first-child{width:42%}
+.dudas td.r{font-weight:600;color:var(--ok)}
+.dudas td.t{color:var(--muted);font-size:.84rem}
+.dudas td.t::before{content:"✕ ";color:var(--warn)}
+.nota{font-family:var(--f-mono);font-size:.78rem;color:var(--muted)}
+.ojo{border-left:3px solid var(--accent);padding:6px 12px;margin:8px 0 0;background:var(--surface);border-radius:0 8px 8px 0}
+.filtro{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.filtro input{font:inherit;padding:7px 10px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink);min-width:260px}
+@media print{.nav,.filtro{display:none}.tbl{overflow:visible}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="nav"><a class="volver" href="index.html">← Capítulos AZ-900</a><a class="volver" href="simulacroAZ900.html">Simulacro AZ-900</a><a class="volver" href="peering.html">Conectividad en 3 tramos</a><a class="volver" href="gobierno.html">Gobierno y seguridad</a><a class="volver" href="../mapa.html">Mapa conceptual →</a><a class="volver" href="../arquitectura.html">Arquitectura →</a></div>
+  <header>
+    <div class="eyebrow">AZ-900 · Repaso final</div>
+    <h1>Las dudas del examen: resumen de resumen</h1>
+    <p>Los temas donde más dudas aparecen en los simulacros, sobre todo cuando una pregunta mezcla cómputo, red, endpoints, identidad y gobierno. Cada fila: <b>lo que dice la pregunta → la respuesta → la trampa típica</b>. Armado con las preguntas falladas en los simulacros externos.</p>
+  </header>
+
+  <section>
+    <h2>Método en 3 pasos</h2>
+    <div class="metodo">
+      <div class="paso"><b class="n">1 · El verbo</b><p>¿Qué pide hacer? Repartir, conectar, filtrar, autorizar, exigir, medir… El verbo decide, no el sustantivo ("archivos" no significa Azure Files).</p></div>
+      <div class="paso"><b class="n">2 · La capa</b><p>Cómputo (dónde corre) · Red (por dónde viaja) · Identidad (quién eres) · Gobierno (qué reglas se cumplen) · Monitoreo y costos.</p></div>
+      <div class="paso"><b class="n">3 · Descarta</b><p>La trampa casi siempre es un servicio <b>real</b> pero de <b>otra capa</b>: ZRS (Storage) en una pregunta de VMs, Arc en una de red, etiquetas en una de permisos.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>¿Qué falla? → ¿Qué te protege?</h2>
+<pre class="escalera">Un rack o actualizaciones del SO  →  Conjunto de disponibilidad   (mismo centro de datos)
+Un centro de datos completo       →  Zonas de disponibilidad      (misma región)
+La región entera                  →  Región emparejada / varias regiones
+                                     (si la normativa pide "misma ubicación": zonas, no regiones)</pre>
+  </section>
+
+  <section>
+    <h2>Los 3 tramos de la red</h2>
+<pre class="escalera">Oficina ──[1] VPN S2S / ExpressRoute──▶ VNet ──[2] peering──▶ otra VNet
+                                          └──[3] endpoint privado / de servicio──▶ Storage, SQL (PaaS)</pre>
+    <p class="ojo">El endpoint privado <b>no es un camino</b>: es una <b>dirección</b> (IP privada del Storage dentro de tu VNet). La oficina llega a él solo si ya llega a la VNet por VPN o ExpressRoute.</p>
+  </section>
+
+  <section>
+    <div class="filtro"><input id="buscar" type="search" placeholder="Buscar: blob, NTLM, endpoint, RBAC…" aria-label="Buscar en las dudas"><span id="cuenta" class="nota"></span></div>
+  </section>
+  <div id="dudas" class="dudas"></div>
+
+  <section>
+    <p class="nota">Las preguntas completas, con su explicación, están en el quiz de cada capítulo y entran al simulacro. Se puede imprimir esta página (Ctrl + P).</p>
+  </section>
+</div>
+
+<script>
+// [capa, cap, filas: [lo que dice la pregunta, respuesta, trampa]]
+const D=[
+["1 · Conceptos de la nube","cap02",[
+ ["Desplegar rápido a medida que cambian los requisitos del negocio","Agilidad","Elasticidad (crecer solo según la carga)"],
+ ["Se ajusta solo, automáticamente, a la carga","Elasticidad","Escalabilidad (poder crecer, no necesariamente solo)"],
+ ["El servicio sigue funcionando","Alta disponibilidad (SLA)","La ubicación"],
+ ["Características de la nube privada","Mayor control y seguridad + escalabilidad mejorada","\"Flexibilidad limitada\", \"costes operativos reducidos\""],
+ ["Nube híbrida","Local + pública, sin orden obligatorio","\"Primero hay que tener una nube privada\""],
+ ["VMs (aunque sean controladores de dominio)","IaaS","PaaS, \"HaaS\" (no existe)"],
+ ["En IaaS, ¿quién gestiona el host y el hardware físico?","Microsoft; tú el SO y las apps de la VM","\"Licencias del SO del host\""],
+ ["Office 365","SaaS","CASB (es seguridad, no un modelo)"]]],
+["2 · Cómputo","cap05",[
+ ["Conjunto de VMs idénticas que escalan solas","VM Scale Sets","AKS"],
+ ["Orquestar contenedores, Kubernetes, microservicios","AKS","ACI (un contenedor suelto)"],
+ ["Ventajas de Azure Functions","Escala sola + sin infraestructura que gestionar","\"Sin tiempos de espera\", \"siempre en ejecución\""],
+ ["Fallos de hardware o actualizaciones","Conjunto de disponibilidad","Zona de disponibilidad"],
+ ["Falla un centro de datos completo","Zonas de disponibilidad","ZRS (es redundancia de Storage, no de VMs)"],
+ ["Aislar una VM de otras VMs","VNet (red) · Dedicated Host si pide aislamiento físico","IP pública, Load Balancer"]]],
+["3 · Red","cap06",[
+ ["Repartir el tráfico equitativamente entre VMs","Load Balancer (capa 4)","VPN Gateway"],
+ ["Enviar según la URL (/image/, /video/)","Application Gateway (capa 7)","Load Balancer"],
+ ["Oficina ↔ Azure por Internet, túnel cifrado","VPN Gateway · S2S","ExpressRoute"],
+ ["Línea dedicada, sin pasar por Internet","ExpressRoute","VPN Gateway"],
+ ["VNet ↔ VNet (misma o distinta región)","Peering (no transitivo)","VPN Gateway"],
+ ["Componentes de una VPN S2S","Gateway en la VNet + gateway de red local + túnel","Load Balancer, VMs de backend"],
+ ["Ventajas de las subredes","Usar IPs mejor, asegurarlas por separado, agrupar servicios","\"Ahorran costos\", \"VMs más rápidas\""],
+ ["Filtrar por puerto o IP","NSG (en la subred o la NIC)","Azure Policy, Firewall"]]],
+["4 · Endpoints (tramo 3)","cap09",[
+ ["Storage o SQL sin Internet, deshabilitar el acceso público","Endpoint privado","Azure Arc, VPN S2S"],
+ ["La oficina (por VPN) debe llegar al Storage en privado","Endpoint privado en la VNet a la que llega la VPN","Azure Arc, endpoint de servicio"],
+ ["Solo una subred llega; el servicio sigue con su endpoint público","Endpoint de servicio","Endpoint privado"],
+ ["Azure Arc","Gestionar servidores fuera de Azure desde Azure","Nunca es conectividad ni endpoints"]]],
+["5 · Almacenamiento","cap07",[
+ ["Imágenes o datos no estructurados servidos en la web","Blob Storage","Azure Files"],
+ ["Unidad compartida que se monta (SMB/NFS)","Azure Files","Blob"],
+ ["Blobs pequeños con el rendimiento más rápido (ML)","Premium Block Blobs","Premium Page Blobs"],
+ ["Rendimiento de la cuenta para discos de VM","Premium Page Blobs","Azure Disk Storage (no es opción de la cuenta)"],
+ ["Varios tipos de datos + optimizar costos","Standard GPv2","Premium"]]],
+["6 · Identidad","cap08",[
+ ["Verificar que es quien dice ser","Autenticación","Autorización (qué puede hacer)"],
+ ["App NTLM/Kerberos + dominio local existente","DC en una VM de Azure / AD local + Entra Connect","Entra Domain Services"],
+ ["GPO o LDAP, todo en la nube, mínimo esfuerzo","Entra Domain Services","Entra ID + SSO"],
+ ["App moderna con OAuth 2.0 / SAML","Entra ID + SSO","AD local + Entra Connect"],
+ ["¿Puede iniciar sesión? (ubicación, dispositivo, MFA)","Acceso condicional (Entra ID P1)","Azure Policy"],
+ ["Usuarios externos con su propia cuenta","Entra External ID · B2B (invitado)","Crearles cuentas nuevas"],
+ ["\"Nunca confíes, verifica siempre\"","Zero Trust","Perímetro de confianza, acceso condicional"]]],
+["7 · Gobierno y seguridad","cap10",[
+ ["Quién puede hacer qué sobre los recursos","RBAC, asignado en un ámbito","Etiquetas, acceso condicional"],
+ ["Cómo deben ser los recursos (región, tipo, sin VNets)","Azure Policy","RBAC, bloqueos"],
+ ["Que nadie lo borre / ni lo modifique","Bloqueo CanNotDelete / ReadOnly","RBAC"],
+ ["Muchas suscripciones con las mismas reglas","Grupos de administración","Grupos de recursos"],
+ ["Unidad de facturación","Suscripción","Grupo de recursos o de administración"],
+ ["Clasificar costos por proyecto","Etiquetas (no se heredan)","Grupos de recursos"],
+ ["Evaluar rápido la postura de seguridad","Secure Score de Defender for Cloud","Azure Firewall, Sentinel"],
+ ["Detectar y responder a amenazas","Microsoft Sentinel (SIEM)","Defender for Cloud"]]],
+["8 · Monitoreo y costos","cap10 · cap11",[
+ ["Métricas y logs + alertas (Azure y local)","Azure Monitor","Azure Arc"],
+ ["Interrupciones de Azure, planificadas o no","Service Health","Resource Health (solo tu recurso)"],
+ ["Lenguaje de Log Analytics","KQL","SQL"],
+ ["Rendimiento de una app web","Application Insights","Service Health"],
+ ["VMs eliminadas","Los discos pueden seguir cobrando","\"Se borra todo y deja de costar\""],
+ ["Cuánto costará antes de crear / comparar con lo local","Calculadora de precios / TCO","Cost Management (es después)"]]]
+];
+const caja=document.getElementById("dudas"),q=document.getElementById("buscar"),cuenta=document.getElementById("cuenta");
+function norm(s){return s.normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase()}
+function pintar(){
+  const f=norm(q.value.trim());let n=0;caja.textContent="";
+  D.forEach(([capa,cap,filas])=>{
+    const vis=filas.filter(r=>!f||norm(r.join(" ")+" "+capa).includes(f));if(!vis.length)return;n+=vis.length;
+    const s=document.createElement("section"),h=document.createElement("h2");h.textContent=capa+" · "+cap;s.appendChild(h);
+    const w=document.createElement("div");w.className="tbl";const t=document.createElement("table");
+    t.innerHTML="<thead><tr><th>Si la pregunta dice…</th><th>Respuesta</th><th>Trampa típica</th></tr></thead>";
+    const b=document.createElement("tbody");
+    vis.forEach(([p,r,tr])=>{const tr_=document.createElement("tr");[[p,""],[r,"r"],[tr,"t"]].forEach(([x,c])=>{const td=document.createElement("td");td.textContent=x;if(c)td.className=c;tr_.appendChild(td)});b.appendChild(tr_)});
+    t.appendChild(b);w.appendChild(t);s.appendChild(w);caja.appendChild(s);
+  });
+  cuenta.textContent=f?`${n} coincidencias`:`${n} dudas`;
+}
+q.addEventListener("input",pintar);pintar();
+</script>
+</body>
+</html>
