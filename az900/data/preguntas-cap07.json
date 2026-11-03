@@ -208,5 +208,11 @@
     "opciones": ["Visualización de imágenes o documentos directamente en un explorador", "Almacenar datos para copias de seguridad y restauración", "Hospedar archivos ASPX para un sitio web", "Montaje de un recurso compartido de almacenamiento de archivos al que se va a acceder como una unidad virtual en varias máquinas virtuales"],
     "correcta": [0, 1],
     "explicacion": "Blob guarda OBJETOS a los que se accede por URL/HTTP: cada blob tiene su dirección (https://cuenta.blob.core.windows.net/fotos/logo.png) y el navegador la abre directo; y los backups son archivos grandes que casi no se leen, ideales para Blob con los niveles Cool, Cold y Archive. Trampas: ASPX es código que el servidor debe EJECUTAR (ASP.NET) → App Service; Blob solo entrega archivos tal cual y puede hospedar un sitio web ESTÁTICO (HTML, CSS, JS, imágenes), no páginas dinámicas. Montar un recurso compartido como unidad (Z:) en varias VMs es Azure Files (SMB/NFS). Regla: Blob se ve por URL; Files se monta; App Service ejecuta código web."
+  },
+  {
+    "pregunta": "¿Qué servicio de Azure Storage debe usar para almacenar archivos no estructurados, como imágenes, que se servirán en las páginas web?",
+    "opciones": ["Azure Blob Storage", "Azure File Storage", "Azure Queue Storage", "Azure Table Storage"],
+    "correcta": 0,
+    "explicacion": "Datos no estructurados (imágenes, video, documentos) servidos por HTTP a un navegador → Blob Storage: cada blob tiene su URL. Trampa: Azure Files también guarda 'archivos', pero es un recurso compartido que se monta como unidad (SMB/NFS) en VMs o PCs, no para servirlo en páginas web. Queue = mensajes entre componentes; Table = datos NoSQL clave-valor. Regla: 'no estructurado' o 'servir por web' → Blob; 'unidad compartida' o 'montar' → Files. Pareja de la 35 y de la de millones de imágenes y videos."
   }
 ]
