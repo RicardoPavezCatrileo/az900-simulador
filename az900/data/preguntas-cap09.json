@@ -115,8 +115,8 @@
   },
   {
     "pregunta": "¿Cuál es el método más directo y eficaz para evaluar rápidamente la postura de seguridad de tus recursos en Azure?",
-    "opciones": ["Revisar la puntuación de seguridad (Secure Score) de Microsoft Defender for Cloud", "Revisar las recomendaciones de Azure Advisor", "Consultar los incidentes en Microsoft Sentinel", "Revisar el cumplimiento de Azure Policy"],
+    "opciones": ["Revisar la puntuación de seguridad proporcionada por Microsoft Defender para Cloud", "Instalar y configurar Azure Firewall, luego monitorear la cantidad de solicitudes maliciosas que se interceptan", "Utilizar la calculadora de cobertura de seguridad en el Portal de Azure para evaluar la extensión de tus políticas de seguridad", "Implementar una nueva máquina virtual y analizar los problemas de seguridad iniciales identificados por Microsoft Defender para Cloud"],
     "correcta": 0,
-    "explicacion": "Defender for Cloud evalúa tus recursos de forma continua y resume la postura de seguridad en la puntuación de seguridad (Secure Score), con recomendaciones ordenadas por impacto. Trampa: Advisor es un consejero general (también costo, rendimiento y confiabilidad), Sentinel detecta y responde a amenazas (SIEM) y Policy solo revisa las reglas que tú defines. Regla: 'postura de seguridad' → Defender for Cloud; 'detectar y responder a amenazas' → Sentinel. Defender for Cloud: PDF págs. 210–213 (no nombra el Secure Score)."
+    "explicacion": "Defender for Cloud evalúa todos tus recursos de forma continua y resume la postura de seguridad en la puntuación de seguridad (Secure Score), con recomendaciones ordenadas por impacto. Trampas: Azure Firewall filtra tráfico, no evalúa la postura y además hay que desplegarlo (no es rápido); la 'calculadora de cobertura de seguridad' no existe; crear una VM nueva solo evalúa esa VM, no tus recursos. Regla: 'postura de seguridad' → Secure Score de Defender for Cloud; 'detectar y responder a amenazas' → Sentinel. Defender for Cloud: PDF págs. 210–213 (no nombra el Secure Score)."
   }
 ]
