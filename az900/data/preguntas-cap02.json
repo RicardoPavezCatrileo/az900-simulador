@@ -148,5 +148,11 @@
     "opciones": ["Alta disponibilidad", "Elasticidad", "Escalabilidad", "Agilidad"],
     "correcta": 3,
     "explicacion": "Agilidad = desplegar y configurar recursos rápido cuando cambia el negocio (minutos en vez de semanas comprando hardware). Trampa: alta disponibilidad = el servicio sigue funcionando (SLA); escalabilidad = poder agregar o quitar capacidad; elasticidad = que eso pase solo, de forma automática, según la demanda. Regla: 'rápido / a medida que cambian los requisitos' → agilidad; 'según la carga, automático' → elasticidad; 'sigue funcionando' → alta disponibilidad."
+  },
+  {
+    "pregunta": "¿Qué aspectos engloba el atributo de gestión en el Cloud?",
+    "opciones": ["Mantener control total, o decidir el nivel de control que deseas, sobre la configuración de seguridad de tus recursos en el Cloud", "Prever los costos asociados a tu aplicación mediante un seguimiento en tiempo real del uso de los recursos, asegurando además un rendimiento constante de la aplicación independientemente de la carga de trabajo", "La habilidad para desarrollar y aplicar entornos estandarizados, generalmente para cumplir con requisitos corporativos o gubernamentales", "La forma en que interactúas y gestionas los distintos recursos basados en el Cloud, así como las metodologías para implementarlos"],
+    "correcta": 3,
+    "explicacion": "Gestión (manejabilidad) = cómo administras e implementas los recursos: gestión DE la nube (escalar solo, desplegar desde plantillas, reemplazar recursos que fallan, alertas) y gestión EN la nube (portal, CLI, PowerShell, API). Trampa: 'prever costos y rendimiento constante' es previsibilidad; 'control sobre la configuración de seguridad' es seguridad; 'entornos estandarizados para cumplir requisitos' es gobernanza. Regla: interactuar / implementar / administrar → gestión; prever → previsibilidad; estandarizar / cumplir → gobernanza. PDF pág. 28 (una línea; la división de/en es de Microsoft Learn)."
   }
 ]
