@@ -172,5 +172,11 @@
     "opciones": ["Escalabilidad automática", "Siempre en ejecución", "Ausencia total de tiempos de espera de ejecución", "No se requiere gestionar infraestructura"],
     "correcta": [0, 3],
     "explicacion": "Serverless = Azure escala solo según los eventos y tú no administras servidores. Trampas: las funciones se ejecutan ante un evento y luego se detienen (no están siempre en ejecución; por eso sin tráfico no pagas en el plan de consumo), y SÍ tienen tiempo de espera: en el plan de consumo, 5 minutos por defecto y 10 como máximo. Para procesos largos o siempre encendidos: plan Premium o App Service."
+  },
+  {
+    "pregunta": "Si estás desplegando un conjunto de Máquinas Virtuales de Azure y deseas asegurar la disponibilidad continua de la aplicación, incluso en el caso de un fallo completo del centro de datos, ¿cuál concepto de Azure sería más útil para lograr esto?",
+    "opciones": ["Almacenamiento con redundancia de zona (ZRS)", "Conjunto de disponibilidad (Availability Set)", "Almacenamiento con redundancia local (LRS)", "Zonas de Disponibilidad (Availability Zones)"],
+    "correcta": 3,
+    "explicacion": "Si se cae el centro de datos completo, las VMs tienen que estar repartidas en otros centros de datos de la región: eso son las zonas de disponibilidad (centros de datos separados, con energía, red y refrigeración propias). Trampa: ZRS también usa zonas, pero es redundancia de Storage (copias de datos), no hace que tus VMs sigan atendiendo. El conjunto de disponibilidad reparte las VMs entre racks del MISMO centro de datos (fallos de hardware y actualizaciones), así que no sobrevive a la caída del centro de datos. LRS = 3 copias en un solo centro de datos. Regla: 'falla un rack o actualizaciones' → conjunto de disponibilidad; 'falla un centro de datos' → zonas; 'falla la región' → región emparejada. Pareja de la 26."
   }
 ]
