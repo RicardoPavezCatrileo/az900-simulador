@@ -142,5 +142,11 @@
     "opciones": ["Costes operativos reducidos", "Escalabilidad mejorada", "Mayor control y seguridad", "Flexibilidad limitada"],
     "correcta": [1, 2],
     "explicacion": "Una nube privada es infraestructura propia CON características de nube (virtualización, autoservicio): frente a un centro de datos tradicional escala mejor, y frente a la nube pública da más control y seguridad. Trampas: \"flexibilidad limitada\" es una desventaja, no una característica destacada (y la virtualización la mejora); \"costes operativos reducidos\" es propio de la nube pública: en la privada compras y mantienes el hardware (CapEx). Pareja de la 16."
+  },
+  {
+    "pregunta": "La implementación y configuración rápidas de recursos basados en la nube a medida que cambian los requisitos empresariales se denomina ___________________.",
+    "opciones": ["Alta disponibilidad", "Elasticidad", "Escalabilidad", "Agilidad"],
+    "correcta": 3,
+    "explicacion": "Agilidad = desplegar y configurar recursos rápido cuando cambia el negocio (minutos en vez de semanas comprando hardware). Trampa: alta disponibilidad = el servicio sigue funcionando (SLA); escalabilidad = poder agregar o quitar capacidad; elasticidad = que eso pase solo, de forma automática, según la demanda. Regla: 'rápido / a medida que cambian los requisitos' → agilidad; 'según la carga, automático' → elasticidad; 'sigue funcionando' → alta disponibilidad."
   }
 ]
