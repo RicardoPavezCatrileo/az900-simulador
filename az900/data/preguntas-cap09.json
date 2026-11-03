@@ -112,5 +112,11 @@
     "opciones": ["Conexión segura y cifrada a través de Internet que une una ubicación local con una Azure Virtual Network", "Interfaz de red gestionada situada en una red virtual que ofrece una conexión privada y segura a los servicios gestionados de Azure (PaaS)", "Conexión entre dos redes virtuales de Azure a través de la red troncal de Microsoft", "Filtro de tráfico con reglas de prioridad que permiten o deniegan conexiones a una subred"],
     "correcta": 1,
     "explicacion": "Endpoint privado = una NIC con IP privada DENTRO de tu VNet que representa a un servicio PaaS (Storage, SQL Database…): llegas al servicio sin pasar por Internet y puedes desactivar su acceso público. Trampa: \"conexión cifrada por Internet entre lo local y una VNet\" es VPN Gateway (S2S). Unir dos VNets es el peering; filtrar con reglas de prioridad es un NSG. Las opciones 3 y 4 se agregaron como distractores. Pareja de la 18."
+  },
+  {
+    "pregunta": "¿Cuál es el método más directo y eficaz para evaluar rápidamente la postura de seguridad de tus recursos en Azure?",
+    "opciones": ["Revisar la puntuación de seguridad (Secure Score) de Microsoft Defender for Cloud", "Revisar las recomendaciones de Azure Advisor", "Consultar los incidentes en Microsoft Sentinel", "Revisar el cumplimiento de Azure Policy"],
+    "correcta": 0,
+    "explicacion": "Defender for Cloud evalúa tus recursos de forma continua y resume la postura de seguridad en la puntuación de seguridad (Secure Score), con recomendaciones ordenadas por impacto. Trampa: Advisor es un consejero general (también costo, rendimiento y confiabilidad), Sentinel detecta y responde a amenazas (SIEM) y Policy solo revisa las reglas que tú defines. Regla: 'postura de seguridad' → Defender for Cloud; 'detectar y responder a amenazas' → Sentinel. Defender for Cloud: PDF págs. 210–213 (no nombra el Secure Score)."
   }
 ]
