@@ -160,5 +160,11 @@
     "opciones": ["Office 365 (Microsoft 365)", "Kubernetes (AKS)", "Microsoft Entra ID", "Máquinas virtuales"],
     "correcta": [0, 2],
     "explicacion": "Office 365 y Microsoft Entra ID son SaaS: los usas ya listos, sin gestionar servidores ni plataforma (Entra ID es identidad como servicio). Trampa: Kubernetes/AKS es un servicio de contenedores donde tú despliegas y gestionas tus apps (más cerca de PaaS/IaaS), y las máquinas virtuales son IaaS. Regla: si solo inicias sesión y configuras usuarios, es SaaS."
+  },
+  {
+    "pregunta": "Al migrar bases de datos SQL locales a Bases de Datos SQL de Azure, sin desplegar servidores de bases de datos SQL en máquinas virtuales de Azure, ¿qué tipo de servicio en la nube se está utilizando?",
+    "opciones": ["Infraestructura como servicio (IaaS)", "Plataforma como servicio (PaaS)", "Software como servicio (SaaS)", "Nube híbrida"],
+    "correcta": 1,
+    "explicacion": "Azure SQL Database es PaaS: Microsoft gestiona el SO, los parches, los backups y la alta disponibilidad; tú solo pones el esquema y los datos. Trampa: SQL Server dentro de una VM sería IaaS (la pregunta lo descarta con \"sin desplegar en máquinas virtuales\"); no es SaaS porque sigues diseñando tu propia base de datos, no usas una aplicación terminada; y nube híbrida es un modelo de despliegue, no de servicio. Regla: base de datos administrada = PaaS; si va en una VM = IaaS."
   }
 ]
