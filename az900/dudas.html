@@ -117,7 +117,8 @@ const D=[
  ["Varios tipos de almacenamiento + optimizar costos","Standard GPv2 (uso general)","Cualquier Premium: Block Blobs, Page Blobs o File Shares (cada uno admite UN solo tipo y es más caro)"]]],
 ["6 · Identidad","cap08",[
  ["Verificar que es quien dice ser","Autenticación","Autorización (qué puede hacer)"],
- ["App NTLM/Kerberos + dominio local existente","DC en una VM de Azure / AD local + Entra Connect","Entra Domain Services"],
+ ["App NTLM + dominio ACTUAL + eliminar todo lo local","DC en una VM de Azure","AD local + Entra Connect (choca con 'eliminar lo local'), Entra Domain Services (dominio nuevo)"],
+ ["App NTLM + dominio actual, sin pedir eliminar lo local (selecciona 2)","DC en una VM de Azure + AD local con Entra Connect","Entra Domain Services"],
  ["GPO o LDAP, todo en la nube, mínimo esfuerzo","Entra Domain Services","Entra ID + SSO"],
  ["App moderna con OAuth 2.0 / SAML","Entra ID + SSO","AD local + Entra Connect"],
  ["¿Puede iniciar sesión? (ubicación, dispositivo, MFA)","Acceso condicional (Entra ID P1)","Azure Policy"],
