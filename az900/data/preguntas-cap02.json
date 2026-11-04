@@ -154,5 +154,11 @@
     "opciones": ["Mantener control total, o decidir el nivel de control que deseas, sobre la configuración de seguridad de tus recursos en el Cloud", "Prever los costos asociados a tu aplicación mediante un seguimiento en tiempo real del uso de los recursos, asegurando además un rendimiento constante de la aplicación independientemente de la carga de trabajo", "La habilidad para desarrollar y aplicar entornos estandarizados, generalmente para cumplir con requisitos corporativos o gubernamentales", "La forma en que interactúas y gestionas los distintos recursos basados en el Cloud, así como las metodologías para implementarlos"],
     "correcta": 3,
     "explicacion": "Gestión (manejabilidad) = cómo administras e implementas los recursos: gestión DE la nube (escalar solo, desplegar desde plantillas, reemplazar recursos que fallan, alertas) y gestión EN la nube (portal, CLI, PowerShell, API). Trampa: 'prever costos y rendimiento constante' es previsibilidad; 'control sobre la configuración de seguridad' es seguridad; 'entornos estandarizados para cumplir requisitos' es gobernanza. Regla: interactuar / implementar / administrar → gestión; prever → previsibilidad; estandarizar / cumplir → gobernanza. PDF pág. 28 (una línea; la división de/en es de Microsoft Learn)."
+  },
+  {
+    "pregunta": "¿Cuál de los siguientes servicios se puede categorizar como Software como Servicio (SaaS)? (Selecciona DOS respuestas)",
+    "opciones": ["Office 365 (Microsoft 365)", "Kubernetes (AKS)", "Microsoft Entra ID", "Máquinas virtuales"],
+    "correcta": [0, 2],
+    "explicacion": "Office 365 y Microsoft Entra ID son SaaS: los usas ya listos, sin gestionar servidores ni plataforma (Entra ID es identidad como servicio). Trampa: Kubernetes/AKS es un servicio de contenedores donde tú despliegas y gestionas tus apps (más cerca de PaaS/IaaS), y las máquinas virtuales son IaaS. Regla: si solo inicias sesión y configuras usuarios, es SaaS."
   }
 ]
