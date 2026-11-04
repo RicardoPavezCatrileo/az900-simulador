@@ -94,5 +94,11 @@
     "opciones": ["Infraestructura como código", "Una interfaz gráfica para administrar recursos", "Un servicio de supervisión del rendimiento", "Una herramienta de línea de comandos multiplataforma"],
     "correcta": 0,
     "explicacion": "Una plantilla ARM es infraestructura como código (IaC): un archivo JSON declarativo que describe los recursos y su configuración, para desplegarlos de forma repetible (la misma infraestructura en dev, test y prod) y guardarlos en control de versiones. Las trampas son otras herramientas: la interfaz gráfica es Azure Portal, la supervisión es Azure Monitor y la línea de comandos multiplataforma es Azure CLI. Bicep es otro lenguaje de IaC que se compila a ARM (AZ-104)."
+  },
+  {
+    "pregunta": "Tu equipo planea usar la herramienta Azure Advisor. ¿Proporcionaría Azure Advisor recomendaciones sobre cómo configurar los ajustes de red para las máquinas virtuales de Azure?",
+    "opciones": ["Sí", "No"],
+    "correcta": 0,
+    "explicacion": "Sí. Advisor revisa la configuración y el uso de tus recursos, incluida la red de las VMs, y da recomendaciones en sus 5 categorías: por ejemplo, en Seguridad (vía Defender for Cloud) restringir puertos de administración abiertos o asociar un NSG, y en Confiabilidad o Rendimiento ajustes de red. Trampa: pensar que Advisor solo habla de costos; cubre Costo, Seguridad, Confiabilidad, Excelencia operativa y Rendimiento. Regla: '¿Advisor recomienda sobre X de mis recursos?' → casi siempre Sí."
   }
 ]
