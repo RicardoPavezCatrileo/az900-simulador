@@ -120,6 +120,7 @@ const D=[
  ["VNet ↔ VNet (misma o distinta región)","Peering (no transitivo)","VPN Gateway"],
  ["Comunicar local ↔ Azure: 2 componentes esenciales","Azure Virtual Network + VPN Gateway","VNet peering (es VNet ↔ VNet), tablas de rutas"],
  ["Componentes de una VPN S2S (túnel IPsec)","Dispositivo VPN local + VPN Gateway (puerta de enlace de red virtual) + GatewaySubnet; también la puerta de enlace de red local","ExpressRoute, Load Balancer"],
+ ["Componentes clave de VPN Gateway (3) — fallada 2 veces","VPN Gateway asociado a la VNet + red local con gateway que acepta datos cifrados + túnel cifrado","\"Grupo estático de VMs en el backend\" (eso es Load Balancer), Storage para solicitudes (Queue), Load Balancer"],
  ["Ventajas de las subredes","Usar IPs mejor, asegurarlas por separado, agrupar servicios","\"Ahorran costos\", \"VMs más rápidas\""],
  ["Que la VM sea accesible por HTTPS (o RDP / SSH) desde Internet","Regla de entrada en el NSG: 443 (o 3389 / 22)","Traffic Manager, Front Door (balancean, no abren puertos)"],
  ["Filtrar por puerto o IP","NSG (en la subred o la NIC)","Azure Policy, Firewall"]]],
