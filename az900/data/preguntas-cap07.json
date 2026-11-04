@@ -214,5 +214,11 @@
     "opciones": ["Azure Blob Storage", "Azure File Storage", "Azure Queue Storage", "Azure Table Storage"],
     "correcta": 0,
     "explicacion": "Datos no estructurados (imágenes, video, documentos) servidos por HTTP a un navegador → Blob Storage: cada blob tiene su URL. Trampa: Azure Files también guarda 'archivos', pero es un recurso compartido que se monta como unidad (SMB/NFS) en VMs o PCs, no para servirlo en páginas web. Queue = mensajes entre componentes; Table = datos NoSQL clave-valor. Regla: 'no estructurado' o 'servir por web' → Blob; 'unidad compartida' o 'montar' → Files. Pareja de la 35 y de la de millones de imágenes y videos."
+  },
+  {
+    "pregunta": "Si requieres crear una máquina virtual con una capacidad de hasta 64 TB en un solo disco y buscas el máximo rendimiento posible con una latencia inferior al milisegundo, ¿qué tipo de disco debes seleccionar para tu máquina virtual en Azure?",
+    "opciones": ["Disco de Alto Rendimiento", "SSD Premium", "SSD Estándar", "Disco Ultra"],
+    "correcta": 3,
+    "explicacion": "Máximo rendimiento + latencia inferior al milisegundo + hasta 64 TB en un disco → Disco Ultra (el tope de los discos administrados: hasta 64 TB y 400.000 IOPS). Trampa: SSD Premium es rápido y sirve para producción, pero llega a 32 TB y no es 'el máximo'; SSD Estándar es para cargas ligeras; 'Disco de Alto Rendimiento' no existe. Regla: 'máximo', 'submilisegundo' o '64 TB' → Ultra; 'producción con buen rendimiento' → SSD Premium. Pareja de la de la base de datos con latencia menor a 1 ms."
   }
 ]
