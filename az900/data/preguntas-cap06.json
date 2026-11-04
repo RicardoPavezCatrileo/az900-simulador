@@ -142,5 +142,11 @@
     "opciones": ["La VPN Gateway que debe estar asociada a una Azure Virtual Network", "Un grupo estático de máquinas virtuales en el backend para dirigir el tráfico acumulado", "Una red local con un Gateway que pueda interpretar y aceptar datos cifrados transmitidos", "Una cuenta Azure Storage para almacenar solicitudes que no se pueden procesar inmediatamente", "Un Azure Load Balancer para distribuir el tráfico entre las instalaciones locales y Azure de manera equitativa", "Una conexión segura y cifrada denominada túnel, para transmitir tráfico protegido"],
     "correcta": [0, 2, 5],
     "explicacion": "Una VPN tiene dos extremos y lo que los une: (1) el VPN Gateway en Azure, asociado a una VNet (vive en la GatewaySubnet); (2) el dispositivo VPN de la red local (en Azure se representa como puerta de enlace de red local), que descifra lo que llega; (3) el túnel IPsec cifrado por Internet. Trampas: el Load Balancer reparte tráfico entre VMs, no conecta la oficina con Azure (pregunta 21); el grupo de VMs en el backend es vocabulario de balanceadores; la cuenta de Storage para \"solicitudes pendientes\" describe una cola (Queue Storage), no una VPN."
+  },
+  {
+    "pregunta": "Selecciona todos los componentes necesarios para establecer un túnel IPsec seguro a través del Internet público, conectando una Azure Virtual Network con una ubicación on-premise (en las instalaciones locales). (Selecciona TRES respuestas)",
+    "opciones": ["Dispositivo VPN", "Conexión ExpressRoute", "Puerta de enlace de red virtual (Virtual network gateway)", "Subred de puerta de enlace (Gateway subnet)"],
+    "correcta": [0, 2, 3],
+    "explicacion": "Túnel IPsec por Internet = VPN S2S: dispositivo VPN en la oficina + puerta de enlace de red virtual (VPN Gateway) en Azure + la subred donde vive ese gateway (GatewaySubnet, obligatoria y con ese nombre). En la vida real también se crea la puerta de enlace de red local (el objeto que representa a la oficina) y la conexión. Trampa: ExpressRoute es una línea dedicada que NO pasa por Internet. Regla: 'IPsec' o 'por Internet' → VPN Gateway; 'línea dedicada' o 'sin Internet' → ExpressRoute. Pareja de la 24."
   }
 ]
