@@ -1,6 +1,6 @@
 // Porcentajes de los simulacros de Udemy (externos), compartidos por index.html y az900/index.html.
 // [examen, 1.ª vuelta, 2.ª vuelta]; null = pendiente. Actualizar aquí cada puntaje nuevo.
-const UDEMY=[[1,75,null],[2,66,72],[3,68,null],[4,74,null],[5,58,null],[6,64,null]];
+const UDEMY=[[1,75,null],[2,66,72],[3,68,78],[4,74,null],[5,58,null],[6,64,null]];
 (function(){
   const APR=70;
   const celda=v=>v==null?'<td class="n">—</td>':`<td class="${v>=APR?"y":"bajo"}">${v}%${v>=APR?" ✓":""}</td>`;
