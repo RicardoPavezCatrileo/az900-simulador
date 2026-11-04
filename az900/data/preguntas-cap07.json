@@ -220,5 +220,11 @@
     "opciones": ["Disco de Alto Rendimiento", "SSD Premium", "SSD Estándar", "Disco Ultra"],
     "correcta": 3,
     "explicacion": "Máximo rendimiento + latencia inferior al milisegundo + hasta 64 TB en un disco → Disco Ultra (el tope de los discos administrados: hasta 64 TB y 400.000 IOPS). Trampa: SSD Premium es rápido y sirve para producción, pero llega a 32 TB y no es 'el máximo'; SSD Estándar es para cargas ligeras; 'Disco de Alto Rendimiento' no existe. Regla: 'máximo', 'submilisegundo' o '64 TB' → Ultra; 'producción con buen rendimiento' → SSD Premium. Pareja de la de la base de datos con latencia menor a 1 ms."
+  },
+  {
+    "pregunta": "Si necesitas crear una unidad de red en Azure Storage que sea accesible desde varios ordenadores (computadoras) con Windows 8.1, ¿qué tipo de solución de almacenamiento deberías implementar?",
+    "opciones": ["Un servicio Blob en una cuenta de almacenamiento", "Un disco de datos de máquina virtual", "Un servicio de archivos en una cuenta de almacenamiento", "Un servicio de cola en una cuenta de almacenamiento"],
+    "correcta": 2,
+    "explicacion": "'Unidad de red' accesible desde varios PCs = recurso compartido que se monta (SMB, como una letra de unidad Z:) → Azure Files, el servicio de archivos de la cuenta de almacenamiento. Trampa: Blob guarda objetos que se leen por HTTP/URL, no se monta como unidad en Windows; el disco de datos pertenece a UNA VM; Queue son mensajes. Regla: 'unidad de red', 'montar', 'compartida', 'SMB' → Files; 'servir en web', 'no estructurado' → Blob. Espejo de la 36."
   }
 ]
