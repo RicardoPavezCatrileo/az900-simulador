@@ -156,6 +156,9 @@ Errores de esa guía que NO se deben copiar: dice que la secundaria de GZRS es Z
 - Páginas exactas del PDF sin verificar (casi sin texto): el pie cita el capítulo 10 (217–247), etiquetas pág. 266, cap. 6 (101–121) y AZ-104 71–81 / 165 / 168.
 - Enlazado como tarjeta destacada en `az900/index.html` y en "Herramientas de repaso" de la portada general, y en la `.nav` de cap06, cap09, cap10, peering, arquitectura, mapa, az104/identidad-gobierno y az104/redes.
 
+## Porcentajes de Udemy (simulacros externos)
+- Tabla en `az900/index.html` (arreglo `UDEMY` = [examen, 1.ª vuelta, 2.ª vuelta], `null` = pendiente; calcula diferencia y promedio, verde ≥ 70%). Cuando el usuario informe un puntaje nuevo, actualizar `UDEMY`.
+
 ## Lo que ya existe: az900/simulacroAZ900.html (examen de práctica)
 - Enlazado como tarjeta destacada en `az900/index.html`. Carga los JSON de cap02–cap11 (no el laboratorio) y arma 20/40/50/60 preguntas con el peso de los dominios oficiales: 1 Conceptos de la nube 25–30% (cap02), 2 Arquitectura y servicios 35–40% (cap03, 05–09), 3 Gestión y gobernanza 30–35% (cap04, 10, 11); `reparto()` da el sobrante primero a Arquitectura.
 - Una pregunta por pantalla, opciones mezcladas (`orden` por pregunta), selección múltiple con `correcta` array, marcar para revisar, grilla de navegación, teclas 1–5 y ← →, cronómetro 45 min (real) / 60 / sin límite. No muestra si acertaste hasta terminar.
