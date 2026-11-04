@@ -115,3 +115,8 @@ a.cap.destacada{border-color:var(--accent)}
 .seccion-herr{font-family:var(--f-mono);font-size:.78rem;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:22px 0 8px}
 
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+/* Tabla de porcentajes de Udemy (assets/udemy.js) */
+.udemy table{min-width:420px;font-variant-numeric:tabular-nums}
+.udemy td.bajo{color:var(--warn);font-weight:600}
+.udemy tr.prom td{font-weight:700;border-top:2px solid var(--line)}
+.nota-udemy{font-family:var(--f-mono);font-size:.78rem;color:var(--muted);margin:8px 0 0}
