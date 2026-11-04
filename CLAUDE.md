@@ -164,7 +164,7 @@ Errores de esa guía que NO se deben copiar: dice que la secundaria de GZRS es Z
 - `localStorage`: `az900:simulacro:actual` (intento en curso, se puede continuar) y `az900:simulacro:historial` (últimos 30). No cuenta en el avance de los capítulos.
 
 ## Lo que ya existe: az900/dudas.html (resumen de resumen para el examen)
-- Una tabla por capa (nube, cómputo, red, endpoints, Storage, identidad, gobierno, monitoreo y costos): "si la pregunta dice…" → respuesta → trampa, armada con las preguntas falladas en los simulacros externos. Datos en el arreglo `D` del script; buscador sin tildes. Arriba: método en 3 pasos (verbo, capa, descartar la trampa de otra capa), escalera "¿qué falla?" (rack → conjunto de disponibilidad, centro de datos → zonas, región → región emparejada) y los 3 tramos de la red.
+- Una tabla por capa (nube, cómputo, red, endpoints, Storage, identidad, gobierno, monitoreo y costos): "si la pregunta dice…" → respuesta → trampa, armada con las preguntas falladas en los simulacros externos. Datos en el arreglo `D` del script; buscador sin tildes. Arriba: método en 3 pasos (verbo, capa, descartar la trampa de otra capa), escalera "¿qué falla?" (rack → conjunto de disponibilidad, centro de datos → zonas, región → región emparejada) los 3 tramos de la red y el mapa SVG "Identidad: los 4 casos de la app que migra" (¿AD clásico? → ¿dominio actual? → ¿eliminar todo lo local? → Entra ID + SSO / Entra Domain Services / DC en VM / DC en VM + AD local con Connect, con la pregunta del cap08 de cada caso).
 - Al agregar una pregunta fallada que deje una regla nueva, sumar su fila a `D`.
 - Enlazada en la portada de AZ-900 y en "Herramientas de repaso" de la portada general.
 

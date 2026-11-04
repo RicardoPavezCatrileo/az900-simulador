@@ -20,6 +20,17 @@
 .dudas td.r{font-weight:600;color:var(--ok)}
 .dudas td.t{color:var(--muted);font-size:.84rem}
 .dudas td.t::before{content:"✕ ";color:var(--warn)}
+.mapa-id{background:var(--surface);border:1px solid var(--line);border-radius:10px;overflow-x:auto}
+.mapa-id svg{display:block;width:100%;min-width:820px;height:auto}
+.mapa-id .q rect{fill:var(--bg);stroke:var(--accent);stroke-width:1.5}
+.mapa-id .q text{font-family:var(--f-body);font-weight:600;font-size:13px;fill:var(--ink)}
+.mapa-id .q text.s{font-family:var(--f-mono);font-weight:400;font-size:10.5px;fill:var(--muted)}
+.mapa-id path{fill:none;stroke:var(--muted);stroke-width:1.4}
+.mapa-id text.ram{font-family:var(--f-mono);font-size:10.5px;fill:var(--accent)}
+.mapa-id .h rect{fill:var(--bg);stroke:var(--ok);stroke-width:1.5}
+.mapa-id .h text{font-family:var(--f-mono);font-size:10.5px;fill:var(--muted)}
+.mapa-id .h text.t{font-family:var(--f-body);font-weight:700;font-size:13px;fill:var(--ok)}
+.mapa-id .h text.x{fill:var(--warn)}
 .nota{font-family:var(--f-mono);font-size:.78rem;color:var(--muted)}
 .ojo{border-left:3px solid var(--accent);padding:6px 12px;margin:8px 0 0;background:var(--surface);border-radius:0 8px 8px 0}
 .filtro{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
@@ -58,6 +69,13 @@ La región entera                  →  Región emparejada / varias regiones
 <pre class="escalera">Oficina ──[1] VPN S2S / ExpressRoute──▶ VNet ──[2] peering──▶ otra VNet
                                           └──[3] endpoint privado / de servicio──▶ Storage, SQL (PaaS)</pre>
     <p class="ojo">El endpoint privado <b>no es un camino</b>: es una <b>dirección</b> (IP privada del Storage dentro de tu VNet). La oficina llega a él solo si ya llega a la VNet por VPN o ExpressRoute.</p>
+  </section>
+
+  <section>
+    <h2>Identidad: los 4 casos de la app que migra</h2>
+    <p>Las cuatro opciones son siempre las mismas; decide una frase del enunciado. Responde las preguntas en orden.</p>
+    <div class="mapa-id"><svg viewBox="0 0 1000 480" role="img" aria-label="Mapa de decisión: qué servicio de identidad elegir en los 4 casos"><defs><marker id="fl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--muted);stroke:none"/></marker></defs><g class="q"><rect x="300.0" y="14" width="400" height="46" rx="8"/><text x="500" y="33" text-anchor="middle">1 · ¿La app usa el AD clásico?</text><text class="s" x="500" y="50" text-anchor="middle">NTLM · Kerberos · LDAP · GPO</text></g><g class="q"><rect x="420.0" y="124" width="360" height="46" rx="8"/><text x="600" y="143" text-anchor="middle">2 · ¿Debe usar el dominio ACTUAL?</text><text class="s" x="600" y="160" text-anchor="middle">"utilizando el dominio actual de AD"</text></g><g class="q"><rect x="590.0" y="234" width="340" height="46" rx="8"/><text x="760" y="253" text-anchor="middle">3 · ¿Pide eliminar TODO lo local?</text><text class="s" x="760" y="270" text-anchor="middle">"eliminar eventualmente todos los recursos locales"</text></g><path d="M300,37 C130,37 130,200 130,368" marker-end="url(#fl)"/><text class="ram" x="206" y="70" text-anchor="start">No: OAuth 2.0 / SAML</text><path d="M620,60 C620,90 620,100 620,120" marker-end="url(#fl)"/><text class="ram" x="632" y="96" text-anchor="start">Sí</text><path d="M420,147 C370,147 370,250 370,368" marker-end="url(#fl)"/><text class="ram" x="385" y="200" text-anchor="start">No: dominio nuevo sirve,</text><text class="ram" x="385" y="214" text-anchor="start">todo en la nube, mínimo esfuerzo</text><path d="M780,170 C780,200 780,210 780,230" marker-end="url(#fl)"/><text class="ram" x="792" y="206" text-anchor="start">Sí</text><path d="M640,280 C630,320 630,340 630,368" marker-end="url(#fl)"/><text class="ram" x="620" y="330" text-anchor="end">Sí</text><path d="M880,280 C880,320 875,340 875,368" marker-end="url(#fl)"/><text class="ram" x="890" y="330" text-anchor="start">No (selecciona 2)</text><g class="h"><rect x="16.0" y="372" width="228" height="96" rx="8"/><text class="t" x="130" y="394" text-anchor="middle">Entra ID + SSO</text><text x="130" y="414" text-anchor="middle">App moderna: no necesita</text><text x="130" y="429" text-anchor="middle">dominio ni controladores</text><text class="x" x="130" y="449" text-anchor="middle">✕ AD local + Entra Connect</text><text x="130" y="463" text-anchor="middle">cap08 · 27</text></g><g class="h"><rect x="256.0" y="372" width="228" height="96" rx="8"/><text class="t" x="370" y="394" text-anchor="middle">Entra Domain Services</text><text x="370" y="414" text-anchor="middle">Dominio NUEVO administrado</text><text x="370" y="429" text-anchor="middle">por Microsoft (PaaS)</text><text class="x" x="370" y="449" text-anchor="middle">✕ Entra ID + SSO (sin NTLM)</text><text x="370" y="463" text-anchor="middle">cap08 · 28</text></g><g class="h"><rect x="516.0" y="372" width="228" height="96" rx="8"/><text class="t" x="630" y="394" text-anchor="middle">DC en una VM de Azure</text><text x="630" y="414" text-anchor="middle">Mismo dominio, en IaaS;</text><text x="630" y="429" text-anchor="middle">al final se apaga lo local</text><text class="x" x="630" y="449" text-anchor="middle">✕ AD local + Connect · Entra DS</text><text x="630" y="463" text-anchor="middle">cap08 · 21</text></g><g class="h"><rect x="761.0" y="372" width="228" height="96" rx="8"/><text class="t" x="875" y="394" text-anchor="middle">DC en VM + AD local</text><text x="875" y="414" text-anchor="middle">Mismo dominio; lo local se</text><text x="875" y="429" text-anchor="middle">queda y Connect sincroniza</text><text class="x" x="875" y="449" text-anchor="middle">✕ Entra Domain Services</text><text x="875" y="463" text-anchor="middle">cap08 · 26</text></g></svg></div>
+    <p class="ojo">"Dominio <b>actual</b>" descarta Entra Domain Services (crea uno nuevo). "Eliminar <b>todo</b> lo local" descarta mantener el AD local. NTLM descarta SSO.</p>
   </section>
 
   <section>
