@@ -100,5 +100,11 @@
     "opciones": ["Sí", "No"],
     "correcta": 0,
     "explicacion": "Sí. Advisor revisa la configuración y el uso de tus recursos, incluida la red de las VMs, y da recomendaciones en sus 5 categorías: por ejemplo, en Seguridad (vía Defender for Cloud) restringir puertos de administración abiertos o asociar un NSG, y en Confiabilidad o Rendimiento ajustes de red. Trampa: pensar que Advisor solo habla de costos; cubre Costo, Seguridad, Confiabilidad, Excelencia operativa y Rendimiento. Regla: '¿Advisor recomienda sobre X de mis recursos?' → casi siempre Sí."
+  },
+  {
+    "pregunta": "¿Qué representa las plantillas de Azure Resource Manager (ARM)?",
+    "opciones": ["La solución nativa de Azure para Infraestructura como Código (IaC)", "Una entidad de gestión en Azure que supervisa y regula el acceso a todas las interacciones con los servicios de Azure", "Un componente de Microsoft Entra ID diseñado para facilitar la autenticación basada en condiciones, estableciendo criterios que deben cumplirse para permitir o denegar el acceso", "Un enfoque declarativo para orquestar la implementación de conjuntos de recursos y otros elementos como asignaciones de roles, políticas, plantillas de recursos y grupos de recursos"],
+    "correcta": 0,
+    "explicacion": "Plantilla ARM = archivo JSON que describe tus recursos para desplegarlos igual cada vez: la IaC nativa de Azure (Bicep es su versión más legible). Trampa: 'orquestar conjuntos de recursos + asignaciones de roles + políticas + plantillas + grupos de recursos' es Azure Blueprints (un paquete que CONTIENE plantillas ARM, se retira en julio de 2026); 'entidad que regula todas las interacciones con Azure' es Azure Resource Manager, el servicio, no sus plantillas; 'autenticación basada en condiciones' es el acceso condicional. Regla: plantilla ARM → IaC; paquete de plantillas + roles + políticas → Blueprints. Pareja de la 16."
   }
 ]
