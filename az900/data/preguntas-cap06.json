@@ -148,5 +148,11 @@
     "opciones": ["Dispositivo VPN", "Conexión ExpressRoute", "Puerta de enlace de red virtual (Virtual network gateway)", "Subred de puerta de enlace (Gateway subnet)"],
     "correcta": [0, 2, 3],
     "explicacion": "Túnel IPsec por Internet = VPN S2S: dispositivo VPN en la oficina + puerta de enlace de red virtual (VPN Gateway) en Azure + la subred donde vive ese gateway (GatewaySubnet, obligatoria y con ese nombre). En la vida real también se crea la puerta de enlace de red local (el objeto que representa a la oficina) y la conexión. Trampa: ExpressRoute es una línea dedicada que NO pasa por Internet. Regla: 'IPsec' o 'por Internet' → VPN Gateway; 'línea dedicada' o 'sin Internet' → ExpressRoute. Pareja de la 24."
+  },
+  {
+    "pregunta": "Una empresa planea alojar una aplicación en una Máquina Virtual de Azure. Se necesita asegurar que la aplicación alojada en la máquina virtual sea accesible desde Internet a través de HTTPS. Decides implementar un perfil de Azure Traffic Manager. ¿Cumpliría esto con el requisito?",
+    "opciones": ["Sí", "No"],
+    "correcta": 1,
+    "explicacion": "No. Para que una VM sea accesible por HTTPS desde Internet hace falta un camino (IP pública o un balanceador delante) y que el NSG permita el puerto 443 de entrada: esa es la solución de esta serie de preguntas. Traffic Manager solo responde consultas DNS para elegir entre varios endpoints; no abre puertos ni deja pasar tráfico, así que si el NSG bloquea el 443 la VM sigue inaccesible. Trampa: Front Door tampoco es la respuesta esperada (es un balanceador global para varias regiones y igual necesita que el backend acepte el tráfico). Regla: 'que sea accesible por HTTPS / RDP / SSH' → regla de entrada en el NSG para ese puerto (443 / 3389 / 22)."
   }
 ]
