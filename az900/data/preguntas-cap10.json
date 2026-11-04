@@ -214,5 +214,11 @@
     "opciones": ["Envía las métricas de utilización de la CPU a un espacio de trabajo de Log Analytics y utiliza Cosmos DB para consultar y analizar las métricas para identificar tendencias a lo largo del tiempo", "Envía las métricas de utilización de la CPU a Azure Monitor Application Insights. Luego, dentro de Log Analytics, ejecuta consultas sobre las métricas para observar las tendencias a lo largo del tiempo", "Envía las métricas de utilización de la CPU a un espacio de trabajo de Log Analytics. Dentro de Log Analytics, ejecuta consultas sobre las métricas para analizar las tendencias a lo largo del tiempo", "Envía las métricas de utilización de la CPU a un contenedor blob en una cuenta de almacenamiento. Luego, desde una máquina virtual en Azure, instala KQL y consulta los datos recopilados"],
     "correcta": 2,
     "explicacion": "Datos de VMs (infraestructura) + análisis histórico → se envían a un espacio de trabajo de Log Analytics y se consultan ahí mismo con KQL. Trampa: Application Insights es para el rendimiento de una APLICACIÓN (tiempos de respuesta, excepciones), no para la CPU de las VMs; además la opción mezcla dos destinos. Cosmos DB es una base de datos, no consulta Log Analytics; KQL no se 'instala' en una VM, es el lenguaje de Log Analytics. Regla: CPU/métricas de VMs + histórico o tendencias → Log Analytics + KQL; errores o lentitud de la app → Application Insights."
+  },
+  {
+    "pregunta": "Para implementar una asignación de Control de Acceso Basado en Roles (RBAC), ¿cuáles son los tres componentes esenciales necesarios? (Selecciona TRES respuestas)",
+    "opciones": ["Principal de seguridad", "Ámbito", "Política de acceso condicional", "Definición del rol"],
+    "correcta": [0, 1, 3],
+    "explicacion": "Una asignación de RBAC = QUIÉN (principal de seguridad: usuario, grupo, entidad de servicio o identidad administrada) + QUÉ puede hacer (definición del rol: Propietario, Colaborador, Lector…) + DÓNDE (ámbito: grupo de administración, suscripción, grupo de recursos o recurso). Trampa: el acceso condicional es de Entra ID y decide si puedes INICIAR SESIÓN; no forma parte de una asignación de RBAC. Regla: RBAC = quién + qué + dónde. Pareja de la 33 y la 35."
   }
 ]
