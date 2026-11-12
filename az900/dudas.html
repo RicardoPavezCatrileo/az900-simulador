@@ -156,6 +156,7 @@ const D=[
  ["Que nadie lo borre / ni lo modifique","Bloqueo CanNotDelete / ReadOnly","RBAC"],
  ["Que NADIE (ni otros admins) cree cierto tipo de recurso, p. ej. VNets","Azure Policy (Deny / tipos no permitidos)","Bloqueos (protegen lo que ya existe, no impiden crear), RBAC"],
  ["Muchas suscripciones con las mismas reglas","Grupos de administración","Grupos de recursos"],
+ ["Aplicar POLÍTICAS e INICIATIVAS a todas las suscripciones de un grupo de administración","Azure Policy (iniciativa = conjunto de políticas)","RBAC (se hereda igual, pero son ROLES: quién puede hacer qué), ARM (es la capa donde se evalúan, no lo que las aplica)"],
  ["Unidad de facturación","Suscripción","Grupo de recursos o de administración"],
  ["Clasificar costos por proyecto","Etiquetas (no se heredan)","Grupos de recursos"],
  ["¿Las etiquetas del grupo de recursos se heredan?","No (solo con una Azure Policy que las copie)","\"Sí, como RBAC y Policy\""],

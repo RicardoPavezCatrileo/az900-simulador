@@ -142,5 +142,11 @@
     "opciones": ["Los grupos de administración actúan como la entidad principal de facturación para los costes asociados a los recursos de Azure", "Los grupos de recursos funcionan como contenedores de facturación para los costes asociados a los recursos de Azure", "Los grupos de administración no raíz pueden tener un solo grupo de administración padre y varios grupos de administración hijos", "Las cuentas de Azure están vinculadas únicamente a una suscripción de Azure"],
     "correcta": 2,
     "explicacion": "La jerarquía de grupos de administración es un árbol: cada grupo (salvo el raíz) cuelga de UN padre y puede tener varios hijos (otros grupos o suscripciones), con hasta 6 niveles bajo la raíz. Un solo padre es lo que hace posible la herencia sin conflictos. Trampas: la unidad de facturación es la SUSCRIPCIÓN, no el grupo de administración (gobierno: RBAC y Policy) ni el grupo de recursos (ciclo de vida; Cost Management puede mostrar el gasto por grupo de recursos, pero la factura es de la suscripción). Una cuenta de Azure puede tener varias suscripciones (Producción, Test, Dev)."
+  },
+  {
+    "pregunta": "Los grupos de administración permiten aplicar políticas e iniciativas de forma consistente a todas las suscripciones que contienen. ¿A qué tecnología de Azure se refiere esto?",
+    "opciones": ["Azure Policy", "Control de acceso basado en roles (RBAC)", "Azure Resource Manager (ARM)", "Bloqueos de recursos"],
+    "correcta": 0,
+    "explicacion": "\"Políticas\" e \"iniciativas\" son de Azure Policy: una iniciativa es un conjunto de políticas (p. ej., ubicaciones permitidas + etiquetas obligatorias). Asignadas a un grupo de administración, se heredan a todas sus suscripciones, grupos de recursos y recursos. Policy controla CÓMO deben ser los recursos, sin importar quién los cree. Trampas: RBAC también se asigna en el grupo de administración y se hereda, pero trabaja con ROLES (quién puede hacer qué), no con políticas ni iniciativas; ARM es la capa por la que pasa toda solicitud y donde se evalúan Policy y RBAC, pero no es lo que aplica las políticas; los bloqueos solo impiden borrar o modificar."
   }
 ]
