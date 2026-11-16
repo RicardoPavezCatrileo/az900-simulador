@@ -168,6 +168,16 @@ const EL=[
  {id:"ps",k:"nodo",a:4,cap:4,x:892,y:38,w:100,h:44,t:"PowerShell",s:"New-AzVM",q:"Módulo Az de PowerShell (cmdlets verbo-sustantivo).",p:"Para quien automatiza con PowerShell."},
  {id:"shell",k:"nodo",a:4,cap:4,x:1002,y:38,w:100,h:44,t:"Cloud Shell",s:"en el navegador",q:"Terminal en el navegador, con CLI y PowerShell ya instalados y autenticados. No instalas nada.",p:"Para ejecutar comandos desde cualquier PC."},
  {id:"arm",k:"nodo",a:4,cap:4,x:1112,y:38,w:100,h:44,t:"ARM / Bicep",s:"plantillas IaC",q:"Plantillas declarativas (JSON o Bicep): describes el resultado y Resource Manager lo crea, de forma repetible e idempotente.",p:"Toda la arquitectura del grupo de recursos se despliega desde una plantilla."},
+ // Solo durante el recorrido "Despliegue con IaC" (SOLO_IAC): no aparecen en el póster
+ {id:"devops",k:"marco",cls:"solido",cap:4,x:884,y:134,w:338,h:70,t:"Código y CI/CD · fuera de la suscripción",pg:"— (no está en el PDF)",
+  q:"GitHub y Azure DevOps son servicios de Microsoft para el código y la automatización, pero no son recursos de tu suscripción: no viven en un grupo de recursos ni en una región de tu arquitectura.",
+  p:"Aquí empieza el despliegue con IaC: el código se guarda y se revisa fuera de Azure, y un pipeline lo envía a Resource Manager."},
+ {id:"repo",k:"nodo",a:4,cap:4,x:894,y:158,w:140,h:40,t:"Repositorio git",s:"main.bicep · PR",pg:"— (no está en el PDF)",
+  q:"Repositorio de control de versiones (GitHub o Azure Repos) donde vive el código de la infraestructura: archivos Bicep, plantillas ARM o Terraform. No está en el PDF del curso.",
+  p:"Cada cambio entra por un pull request que otra persona revisa y queda en el historial: la infraestructura se audita y se puede volver atrás como cualquier código."},
+ {id:"pipe",k:"nodo",a:4,cap:4,x:1064,y:158,w:148,h:40,t:"Pipeline CI/CD",s:"validar · desplegar",pg:"— (no está en el PDF)",
+  q:"Pipeline de CI/CD (Azure Pipelines de Azure DevOps o GitHub Actions): ejecuta pasos automáticos cada vez que cambia el repositorio. No está en el PDF del curso.",
+  p:"Valida la plantilla y la despliega con una conexión de servicio: una identidad con un rol de RBAC limitado (p. ej., Colaborador en rg-web). Así nadie crea recursos a mano."},
  {id:"gov",k:"marco",cls:"solido",cap:4,x:904,y:422,w:290,h:392,t:"Servicios de la suscripción",
   q:"Servicios que supervisan y optimizan los recursos de toda la suscripción.",
   p:"No están dentro del grupo de recursos de la app: miran todo desde arriba."},
@@ -354,7 +364,9 @@ const AR=[
  {id:"e_emp_ca",f:0,cap:8,d:[[222,387],[242,387],[242,100],[317,100],[317,82]],lab:["inicia sesión",250,104,"start"]},
  {id:"e_inet_ca",f:0,cap:8,d:[[470,60],[392,60]],lab:["inicia sesión",431,54]},
  {id:"e_tags_cost",f:5,cap:11,d:[[553,263],[553,250],[892,250],[892,784],[916,784]]},
- {id:"e_arm_rg",f:4,cap:4,d:[[1162,82],[1162,100],[864,100],[864,258]],lab:["despliega el grupo de recursos",870,126,"start"]}
+ {id:"e_arm_rg",f:4,cap:4,d:[[1162,82],[1162,100],[864,100],[864,258]],lab:["despliega el grupo de recursos",870,126,"start"]},
+ {id:"e_repo_pipe",f:4,cap:4,d:[[1034,178],[1064,178]]},
+ {id:"e_pipe_arm",f:4,cap:4,d:[[1192,158],[1192,82]],lab:["envía a Resource Manager",1186,122,"end"]}
 ];
 
 const FLUJOS=[
@@ -396,6 +408,15 @@ const FLUJOS=[
    "Advisor y Defender for Cloud recomiendan mejoras de costo y de seguridad.",
    "Cada recurso lleva etiquetas (depto=Ventas, oficina=Stgo) y Azure Policy puede exigirlas: así Cost Management muestra el gasto por departamento y por oficina.",
    "El presupuesto avisa al 80% y al 100% del gasto, pero no detiene nada; Cost Management muestra el gasto real."]},
+ {id:"iac",n:"Despliegue con IaC",
+  ids:["devops","repo","e_repo_pipe","pipe","e_pipe_arm","arm","tools","e_arm_rg","mg","sub","rg","policy","rbac","lock","region","vnet","appgw","ss","vmw1","vmw2","vmw3","lb","be","vma1","vma2","vma3","pe","sql","kv","st"],
+  pasos:["El equipo escribe la infraestructura como código (Bicep, plantilla ARM o Terraform) y la guarda en un repositorio git (GitHub o Azure Repos). Cada cambio entra por un pull request que otra persona revisa: el historial muestra quién cambió qué y cuándo.",
+   "Al aprobar el pull request en main, el pipeline (Azure Pipelines de Azure DevOps o GitHub Actions) se ejecuta solo: primero valida (bicep build, what-if o terraform plan) y después despliega.",
+   "El pipeline se autentica con una conexión de servicio: una identidad (entidad de servicio o identidad administrada) con un rol de RBAC, por ejemplo Colaborador solo en rg-web. Sin ese rol, Resource Manager rechaza el despliegue.",
+   "Todo llega a Azure Resource Manager, la misma puerta que usan el Portal, la CLI y PowerShell. ARM y Bicep envían la plantilla completa (Bicep se convierte antes en el JSON de ARM). Terraform, en cambio, llama a la API de ARM recurso por recurso y anota lo creado en su archivo de estado (state).",
+   "Antes de crear nada, Resource Manager revisa RBAC (¿la identidad puede?), Azure Policy (¿está permitido? p. ej., ubicaciones permitidas con Deny) y los bloqueos. Si una política lo prohíbe, el despliegue falla aunque la identidad tenga el rol.",
+   "Resource Manager crea o actualiza los recursos del grupo de recursos; en modo Incremental (el predeterminado) deja intacto lo que la plantilla no menciona. Desplegar dos veces la misma plantilla da el mismo resultado: es idempotente. Si alguien cambia a mano algo que la plantilla define, el próximo despliegue lo vuelve a dejar como dice el código.",
+   "Pista de examen AZ-900: \"plantillas ARM\" = infraestructura como código, y Resource Manager = la capa de despliegue y administración de Azure. El repositorio, el pipeline y Terraform no están en el PDF: son de DevOps (y en AZ-104 aparecen ARM y Bicep)."]},
  {id:"black",n:"Black Friday: escalar",
   ids:["inet","e_inet_fd","edge","fd","e_fd_ag","appgw","e_ag_ss","ss","vmw1","vmw2","vmw3","z1","z2","z3","e_ss_lb","lb","e_lb_be","be","vma1","vma2","vma3","e_be_pe","pe","e_pe_sql","sql","gov","monitor","advisor","cost","budget"],
   pasos:["08:00 · Tráfico normal: el Scale Set web tiene 3 VMs, una por zona, al 30% de CPU. Su regla de autoescalado: si la CPU media pasa del 70% durante 10 minutos, agrega VMs (mínimo 3, máximo 12).",
@@ -442,8 +463,10 @@ const ID_FLUJO={
 };
 // Entrada global: Front Door (proxy capa 7) o Traffic Manager (solo DNS)
 const SOLO_FD=new Set(["edge","fd","e_inet_fd","e_fd_ag"]),SOLO_TM=new Set(["tm","e_inet_tm","e_inet_ag2"]);
+// Repositorio y pipeline: solo se dibujan durante el recorrido "Despliegue con IaC"
+const SOLO_IAC=new Set(["devops","repo","pipe","e_repo_pipe","e_pipe_arm"]);
 function excluido(id){
-  return (SOLO_GEO.has(id)&&!RED[red].geo)||(SOLO_FD.has(id)&&entrada!=="fd")||(SOLO_TM.has(id)&&entrada!=="tm")||(SOLO_DC.has(id)&&ident!=="dc")||(SOLO_EDS.has(id)&&ident!=="eds");
+  return (SOLO_IAC.has(id)&&flujo!=="iac")||(SOLO_GEO.has(id)&&!RED[red].geo)||(SOLO_FD.has(id)&&entrada!=="fd")||(SOLO_TM.has(id)&&entrada!=="tm")||(SOLO_DC.has(id)&&ident!=="dc")||(SOLO_EDS.has(id)&&ident!=="eds");
 }
 
 const NS="http://www.w3.org/2000/svg";
