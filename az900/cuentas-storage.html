@@ -1,0 +1,296 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Tipos de cuenta de Storage</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="../assets/estilos.css">
+<style>
+.wrap{max-width:1240px}
+[hidden]{display:none!important}
+.lienzo{background:var(--surface);border:1px solid var(--line);border-radius:10px;overflow-x:auto}
+.lienzo svg{display:block;min-width:940px;width:100%;height:auto}
+.col{font-family:var(--f-mono);font-size:11px;letter-spacing:.06em;fill:var(--accent)}
+.col.m{fill:var(--muted)}
+.cta>rect{fill:var(--zone);stroke:var(--accent);stroke-width:1.6}
+.cta text.t{font-family:var(--f-display);font-weight:700;font-size:15px;fill:var(--ink)}
+.cta text.s{font-family:var(--f-mono);font-size:10px;fill:var(--muted)}
+.cta{cursor:pointer}
+.banda rect{fill:none;stroke:var(--geo);stroke-width:1.4;stroke-dasharray:6 4}
+.banda text{font-family:var(--f-mono);font-size:10px;fill:var(--geo)}
+.leyenda rect{fill:none;stroke:var(--line);stroke-dasharray:4 4}
+.leyenda text{font-family:var(--f-mono);font-size:10.5px;fill:var(--muted)}
+.leyenda text.h{fill:var(--ink);font-weight:500;letter-spacing:.06em}
+.nd{cursor:pointer}
+.nd rect{fill:var(--surface);stroke:var(--line);stroke-width:1.4}
+.nd.srv rect{fill:var(--bg)}
+.nd.pre rect{stroke:var(--geo)}
+.nd.fuera rect{stroke:var(--warn)}
+.nd.no rect{fill:none;stroke-dasharray:4 4}
+.nd.no text{fill:var(--muted)!important}
+.nd text.t{font-family:var(--f-body);font-weight:600;font-size:13px;fill:var(--ink)}
+.nd text.s{font-family:var(--f-mono);font-size:10px;fill:var(--muted)}
+.nd:hover rect,.cta:hover>rect{stroke:var(--accent)}
+.ln{fill:none;stroke:var(--line);stroke-width:2}
+.ln.no{stroke-dasharray:4 4}
+.et{font-family:var(--f-mono);font-size:10px;fill:var(--muted);paint-order:stroke;stroke:var(--zone);stroke-width:4px;stroke-linejoin:round}
+svg.foco .nd,svg.foco .ln,svg.foco .et{opacity:.28}
+svg.foco .on{opacity:1!important}
+.nd.on rect,.cta.on>rect{stroke:var(--accent);stroke-width:3}
+.ln.on{stroke:var(--accent);stroke-width:4}
+.nd.bien rect{stroke:var(--ok);stroke-width:3.4}
+.nd.mal rect{stroke:var(--bad);stroke-width:3.4}
+.cta.bien>rect{stroke:var(--ok);stroke-width:3.4}
+.cta.mal>rect{stroke:var(--bad);stroke-width:3.4}
+.seg button:disabled{opacity:.4;cursor:not-allowed}
+.ficha{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;display:grid;gap:8px}
+.ficha h3{margin:0;font-family:var(--f-display);font-size:1.1rem}
+.ficha .es{font-family:var(--f-mono);font-size:.78rem;color:var(--geo)}
+.ficha dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:6px 14px}
+.ficha dt{font-family:var(--f-mono);font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);padding-top:2px}
+.ficha dd{margin:0}
+@media (max-width:600px){.ficha dl{grid-template-columns:1fr}.ficha dd{margin-bottom:6px}}
+.esc{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px;font-family:var(--f-display);font-weight:700;font-size:1.12rem}
+.esc small{display:block;font-family:var(--f-mono);font-size:.72rem;font-weight:400;color:var(--muted);margin-bottom:6px}
+.fila-btn{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.btn{font:inherit;font-family:var(--f-mono);font-size:.85rem;padding:7px 14px;border:1px solid var(--accent);background:var(--accent);color:#fff;border-radius:6px;cursor:pointer}
+.marcador{font-family:var(--f-mono);font-size:.85rem;color:var(--muted)}
+.bloque{display:grid;gap:12px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="nav"><a class="volver" href="index.html">← Capítulos AZ-900</a><a class="volver" href="cap07-almacenamiento.html">Capítulo 7 · Almacenamiento</a><a class="volver" href="dudas.html">Dudas del examen →</a><a class="volver" href="../arquitectura.html">Arquitectura →</a></div>
+  <header>
+    <div class="eyebrow">AZ-900 · Capítulo 7 · Laboratorio</div>
+    <h1>Servicio y tipo de cuenta de Storage</h1>
+    <p>Dos preguntas distintas: <b>¿qué guardas?</b> (el servicio: Blob, Files, Queue, Table o disco) y <b>¿en qué cuenta lo pones?</b> (Standard GPv2 o una de las tres Premium). En Premium, cada cuenta admite <b>un solo servicio</b> y por eso se llama como él: <i>Premium File Shares</i> es la cuenta que solo guarda Azure Files.</p>
+  </header>
+
+  <section class="bloque">
+    <h2 class="h">1 · Créala como en el portal</h2>
+    <div class="controls">
+      <div class="ctl"><label>Paso 1 · Rendimiento</label><div class="seg" id="cRend"></div></div>
+      <div class="ctl"><label>Paso 2 · Tipo de cuenta Premium (solo si elegiste Premium)</label><div class="seg" id="cTipo"></div></div>
+    </div>
+    <div class="facts" id="facts"></div>
+  </section>
+
+  <section class="bloque">
+    <div class="controls">
+      <div class="ctl"><label>Modo</label><div class="seg" id="cModo"></div></div>
+      <div class="ctl" id="ctlMarc" hidden><label>Marcador</label><div class="marcador" id="marc"></div></div>
+    </div>
+    <div id="practica" hidden class="bloque">
+      <div class="esc" id="esc"></div>
+      <div class="status" id="estado"></div>
+      <div class="fila-btn"><button class="btn" type="button" id="sig">Siguiente escenario →</button></div>
+    </div>
+    <div class="lienzo"><svg id="mapa" viewBox="0 0 1240 690" role="img" aria-label="Matriz de servicios de almacenamiento y tipos de cuenta"></svg></div>
+    <div class="ficha" id="ficha"></div>
+  </section>
+
+  <section class="bloque">
+    <h2 class="h">2 · Los nombres que aparecen en el examen</h2>
+    <div class="tbl"><table>
+      <thead><tr><th>En el portal (inglés)</th><th>En español</th><th>Tipo interno (kind)</th><th>Qué guarda</th><th>Redundancia</th></tr></thead>
+      <tbody>
+        <tr><td><b>Standard General Purpose v2</b></td><td>Uso general v2</td><td>StorageV2</td><td>Blob, Files (SMB), Queue, Table</td><td>LRS · ZRS · GRS · GZRS (+ RA-)</td></tr>
+        <tr><td><b>Premium Block Blobs</b></td><td>Blobs en bloques Premium</td><td>BlockBlobStorage</td><td>Solo blobs (objetos)</td><td>LRS · ZRS</td></tr>
+        <tr><td><b>Premium File Shares</b></td><td>Archivos compartidos Premium</td><td>FileStorage</td><td>Solo Azure Files (SMB <b>y NFS</b>)</td><td>LRS · ZRS</td></tr>
+        <tr><td><b>Premium Page Blobs</b></td><td>Blobs en páginas Premium</td><td>StorageV2 (Premium)</td><td>Solo page blobs (discos de VM)</td><td>LRS · ZRS</td></tr>
+      </tbody>
+    </table></div>
+    <div class="note"><h3>Regla para el examen</h3><p><b>block = objetos · page = discos · file = compartidos</b>. Si dice <b>NFS</b> → Premium File Shares. Si pide <b>varios servicios, menor costo, GRS/GZRS o niveles Hot/Cool/Archive</b> → Standard GPv2. Si pide el <b>tipo de disco</b> más rápido → Ultra (disco administrado, no una cuenta). Que NFS exija Premium y los nombres internos (kind) no están en el PDF; sí en Microsoft Learn.</p></div>
+  </section>
+</div>
+
+<script>
+function seg(id,obj,get,set,fn,dis){
+  const el=document.getElementById(id);el.innerHTML="";
+  Object.keys(obj).forEach(k=>{const b=document.createElement("button");b.type="button";b.textContent=obj[k];b.dataset.k=k;
+    b.disabled=!!dis;b.setAttribute("aria-pressed",String(!dis&&get()===k));b.onclick=()=>{set(k);fn()};el.appendChild(b)});
+}
+function status(id,lvl,t,d){
+  const col={ok:"var(--ok)",bad:"var(--bad)",info:"var(--accent)"}[lvl],ico={ok:"✓",bad:"✕",info:"i"}[lvl];
+  document.getElementById(id).innerHTML=`<span class="dot" style="background:${col}" aria-hidden="true"></span><div><b>${ico} ${t}</b><p>${d}</p></div>`;
+}
+
+/* ---------- Geometría (viewBox 1240×670) ---------- */
+const FILAS={blob:165,files:265,queue:365,table:465,disk:595};   // centro vertical de cada fila
+const SRV={blob:["Blob Storage","objetos · se leen por URL","fotos, videos, backups"],
+  files:["Azure Files","recurso compartido que se monta","SMB (Windows) · NFS (Linux)"],
+  queue:["Queue Storage","mensajes entre apps",""],
+  table:["Table Storage","NoSQL clave-valor",""],
+  disk:["Disco de VM","SO y datos de UNA VM",""]};
+const STD={blob:["Blob","block · append · page","Hot · Cool · Cold · Archive"],
+  files:["Files","solo SMB (sin NFS)",""],
+  queue:["Queue","",""],table:["Table","",""],
+  disk:["page blobs Standard","discos no administrados","(modelo antiguo, HDD)"]};
+const PRE={blob:["Premium Block Blobs","Blobs en bloques Premium","kind BlockBlobStorage"],
+  files:["Premium File Shares","Archivos compartidos Premium","kind FileStorage · SMB y NFS"],
+  disk:["Premium Page Blobs","Blobs en páginas Premium","page = discos de VM"],
+  queue:["✕ Queue no tiene Premium","siempre en GPv2",""],
+  table:["✕ Table no tiene Premium","siempre en GPv2",""]};
+const PID={blob:"pBlock",files:"pFiles",disk:"pPage",queue:"pQueue",table:"pTable"};
+const cap=s=>s[0].toUpperCase()+s.slice(1);
+
+/* ---------- Fichas ---------- */
+const INFO={
+  sBlob:{t:"Blob Storage (servicio)",q:"Objetos no estructurados: fotos, videos, respaldos, logs. Se leen por URL (HTTP/REST); no se montan como unidad.",c:"Servir contenido a una web, guardar backups, data lake. Cuenta: GPv2, o Premium Block Blobs si pide latencia muy baja.",x:"\"Archivos\" en la pregunta no siempre es Files: si se leen por URL, es Blob."},
+  sFiles:{t:"Azure Files (servicio)",q:"Recursos compartidos que se montan como unidad de red (Z:) por SMB, o por NFS desde Linux.",c:"\"Servidor de archivos\", \"compartido\", \"montar\", reemplazar un file server local. Cuenta: GPv2 (solo SMB) o Premium File Shares (SMB y NFS).",x:"NFS solo existe en Premium File Shares."},
+  sQueue:{t:"Queue Storage (servicio)",q:"Mensajes entre componentes de una aplicación, para desacoplarlos.",c:"\"Cola\", \"procesar pedidos en segundo plano\".",x:"No tiene Premium: siempre va en Standard GPv2."},
+  sTable:{t:"Table Storage (servicio)",q:"Datos NoSQL clave-valor, sin esquema fijo.",c:"Datos semiestructurados simples y baratos.",x:"No tiene Premium. No confundir con Azure SQL (relacional) ni con Cosmos DB."},
+  sDisk:{t:"Disco de VM",q:"Disco del sistema operativo o de datos; se conecta a una sola VM.",c:"Hoy se usan discos administrados (recurso aparte). Los page blobs son el formato en que se guardan esos discos.",x:"\"Tipo de disco más rápido\" → Ultra (disco administrado). \"Rendimiento de la cuenta de almacenamiento para discos\" → Premium Page Blobs."},
+  gpv2:{t:"Standard General Purpose v2",es:"Uso general v2 · kind StorageV2",q:"La cuenta por defecto: una sola cuenta con los 4 servicios (Blob, Files, Queue, Table) en almacenamiento estándar.",c:"Varios servicios en la misma cuenta, menor costo, redundancia geográfica (GRS/GZRS) o niveles Hot/Cool/Cold/Archive.",x:"No ofrece NFS en Files ni la latencia de Premium."},
+  gBlob:{t:"Blob en Standard GPv2",es:"Uso general v2",q:"Block, append y page blobs. Es el único lugar con niveles Hot / Cool / Cold / Archive (solo block blobs).",c:"Contenido web, backups, archivo a largo plazo al menor precio por GB.",x:"Las cuentas Premium no tienen niveles de acceso."},
+  gFiles:{t:"Files en Standard GPv2",es:"Uso general v2",q:"Azure Files con rendimiento estándar, solo por SMB.",c:"La unidad de red compartida de la oficina al menor costo.",x:"Si la pregunta dice NFS o alto rendimiento → Premium File Shares."},
+  gQueue:{t:"Queue en Standard GPv2",es:"Uso general v2",q:"Queue Storage solo existe en cuentas Standard GPv2.",c:"Siempre que la pregunta sea de colas.",x:"No hay \"Premium Queue\"."},
+  gTable:{t:"Table en Standard GPv2",es:"Uso general v2",q:"Table Storage solo existe en cuentas Standard GPv2.",c:"Siempre que la pregunta sea de tablas NoSQL.",x:"No hay \"Premium Table\"."},
+  gDisk:{t:"Page blobs en Standard GPv2",es:"Uso general v2",q:"Discos no administrados: el VHD de la VM guardado como page blob en tu propia cuenta.",c:"Modelo antiguo; hoy se usan discos administrados.",x:"No confundir \"page blob\" con un nivel de acceso: los niveles solo aplican a block blobs."},
+  pBlock:{t:"Premium Block Blobs",es:"Blobs en bloques Premium · kind BlockBlobStorage",q:"Cuenta Premium (SSD) solo para blobs de bloques (y append).",c:"Muchas transacciones con objetos pequeños y latencia muy baja: IoT, IA/ML, análisis.",x:"No admite Files, Queue ni Table, ni niveles Hot/Cool/Archive. Solo LRS o ZRS."},
+  pFiles:{t:"Premium File Shares",es:"Archivos compartidos Premium · kind FileStorage",q:"Cuenta Premium (SSD) solo para Azure Files. Es la única que ofrece NFS, además de SMB.",c:"\"NFS\", \"Linux\", \"servidor de archivos de alto rendimiento\", bases de datos o SAP sobre recursos compartidos.",x:"\"File shares\" es el nombre del tipo de cuenta porque solo guarda Azure Files. Page Blobs suena a \"alto rendimiento\", pero son discos."},
+  pPage:{t:"Premium Page Blobs",es:"Blobs en páginas Premium",q:"Cuenta Premium (SSD) solo para page blobs, el formato de los discos de VM (VHD).",c:"\"Rendimiento de una cuenta de almacenamiento para discos de VM\" con E/S intensiva.",x:"No sirve para compartir archivos ni para objetos: page = discos."},
+  pQueue:{t:"Queue no tiene Premium",q:"No existe una cuenta Premium para colas.",c:"Aunque pidan \"el mejor rendimiento\" para colas, la cuenta es Standard GPv2.",x:"Ninguna de las tres Premium guarda colas."},
+  pTable:{t:"Table no tiene Premium",q:"No existe una cuenta Premium para tablas.",c:"Tablas → Standard GPv2.",x:"Ninguna de las tres Premium guarda tablas."},
+  mDisk:{t:"Discos administrados",es:"Managed disks",q:"Azure gestiona el almacenamiento por ti: el disco es un recurso propio y no vive en tu cuenta de almacenamiento.",c:"Tipos: HDD estándar (pruebas) · SSD estándar · SSD Premium (producción) · Ultra (lo más rápido, menos de 1 ms).",x:"Si preguntan por el tipo de disco, la respuesta es un disco (Ultra, SSD Premium), no un tipo de cuenta."}
+};
+// Qué resaltar al elegir cada pieza
+const REL={};
+Object.keys(FILAS).forEach(f=>{
+  REL["s"+cap(f)]=["s"+cap(f),"g"+cap(f),PID[f],"e-s-"+f,"e-p-"+f].concat(f==="disk"?["mDisk","e-d"]:[]);
+  REL["g"+cap(f)]=["s"+cap(f),"g"+cap(f),"e-s-"+f,"gpv2"];
+  REL[PID[f]]=["s"+cap(f),PID[f],"e-p-"+f];
+});
+REL.gpv2=["gpv2"].concat(...Object.keys(FILAS).map(f=>["s"+cap(f),"g"+cap(f),"e-s-"+f]));
+REL.mDisk=["sDisk","mDisk","e-d"];
+// Cuenta que representa cada pieza (para practicar y para el portal)
+const CUENTA={gpv2:"g",gBlob:"g",gFiles:"g",gQueue:"g",gTable:"g",gDisk:"g",pBlock:"pB",pFiles:"pF",pPage:"pP",mDisk:"mD"};
+const NOMC={g:"Standard GPv2",pB:"Premium Block Blobs",pF:"Premium File Shares",pP:"Premium Page Blobs",mD:"un disco administrado"};
+const NODO={g:"gpv2",pB:"pBlock",pF:"pFiles",pP:"pPage",mD:"mDisk"};
+
+/* ---------- Dibujo ---------- */
+const svg=document.getElementById("mapa");
+function txt(x,y,cls,s,anchor){return s?`<text class="${cls}" x="${x}" y="${y}"${anchor?` text-anchor="${anchor}"`:""}>${s}</text>`:""}
+function nodo(id,x,y,w,h,cls,[t,s1,s2]){
+  return `<g class="nd ${cls}" data-id="${id}" tabindex="0" role="button" aria-label="${t}"><rect x="${x}" y="${y}" width="${w}" height="${h}" rx="8"/>`+
+    txt(x+12,y+(s1?24:h/2+5),"t",t)+txt(x+12,y+42,"s",s1)+txt(x+12,y+57,"s",s2)+`</g>`;
+}
+function dibujar(){
+  let h="";
+  h+=txt(20,40,"col","1 · ¿QUÉ GUARDAS?")+txt(20,56,"col m","el servicio");
+  h+=txt(310,40,"col","2a · STANDARD")+txt(310,56,"col m","una cuenta, todos los servicios");
+  h+=txt(645,40,"col","2b · PREMIUM")+txt(645,56,"col m","una cuenta por servicio");
+  h+=txt(990,40,"col","FUERA DE LA CUENTA");
+  // Cuenta GPv2 (una sola cuenta con todo)
+  h+=`<g class="cta" data-id="gpv2" tabindex="0" role="button" aria-label="Standard General Purpose v2"><rect x="300" y="70" width="320" height="602" rx="12"/>`+
+     txt(316,94,"t","Standard General Purpose v2")+txt(316,111,"s","Uso general v2 · HDD · LRS a GZRS")+`</g>`;
+  // Banda Premium (tres cuentas separadas)
+  h+=`<g class="banda"><rect x="645" y="70" width="325" height="602" rx="12"/>`+
+     txt(660,92,"","SSD · baja latencia · solo LRS / ZRS")+txt(660,108,"","cada cuenta guarda UN servicio")+`</g>`;
+  // Leyenda
+  const L=[["h","CÓMO LEERLO"],["","fila = qué guardas"],["","columna = qué cuenta eliges"],["",""],
+    ["h","REDUNDANCIA"],["","Standard: LRS · ZRS · GRS · GZRS"],["","  (+ RA- para leer la secundaria)"],["","Premium: solo LRS · ZRS"],["",""],
+    ["h","NIVELES DE ACCESO"],["","Hot · Cool · Cold · Archive"],["","solo block blobs en Standard"],["",""],
+    ["h","REGLA"],["","block = objetos"],["","page  = discos"],["","file  = compartidos"],["","NFS → Premium File Shares"]];
+  h+=`<g class="leyenda"><rect x="990" y="70" width="235" height="440" rx="10"/>`+L.map((l,i)=>txt(1004,100+i*22.5,l[0],l[1])).join("")+`</g>`;
+  // Conexiones (antes que los nodos para que queden debajo)
+  Object.entries(FILAS).forEach(([f,cy])=>{
+    h+=`<path class="ln" id="e-s-${f}" d="M250,${cy} H330"/>`;
+    const no=f==="queue"||f==="table";
+    h+=`<path class="ln${no?" no":""}" id="e-p-${f}" d="M250,${cy+22} H282 V${cy+50} H640 V${cy+18} H660"/>`;
+    if(!no)h+=`<text class="et" id="t-p-${f}" x="470" y="${cy+54}" text-anchor="middle">Premium →</text>`;
+  });
+  const cd=FILAS.disk;
+  h+=`<path class="ln" id="e-d" d="M250,${cd-22} H282 V${cd-56} H982 V${cd-18} H1000"/>`;
+  h+=`<text class="et" id="t-d" x="800" y="${cd-52}" text-anchor="middle">disco administrado (lo habitual hoy) →</text>`;
+  // Nodos
+  Object.entries(FILAS).forEach(([f,cy])=>{
+    h+=nodo("s"+cap(f),20,cy-35,230,70,"srv",SRV[f]);
+    h+=nodo("g"+cap(f),330,cy-35,260,70,"std",STD[f]);
+    const no=f==="queue"||f==="table";
+    h+=nodo(PID[f],660,cy-(no?30:38),300,no?60:76,no?"no":"pre",PRE[f]);
+  });
+  h+=nodo("mDisk",1000,cd-38,225,76,"fuera",["Discos administrados","recurso aparte (no en la cuenta)","HDD · SSD · SSD Premium · Ultra"]);
+  svg.innerHTML=h;
+  svg.querySelectorAll("[data-id]").forEach(g=>{
+    g.addEventListener("click",e=>{e.stopPropagation();elegir(g.dataset.id)});
+    g.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();elegir(g.dataset.id)}});
+  });
+}
+
+/* ---------- Estado ---------- */
+let modo="ver",sel="pFiles",rend="prem",tipo="file";
+const ESC=[
+  {t:"Servidor de archivos en la nube para una aplicación Linux de alto rendimiento que requiere recursos compartidos NFS.",ok:"pF",f:"files",x:"Servidor de archivos + compartidos = Azure Files, y NFS solo existe en Premium File Shares. Page Blobs son discos, no recursos compartidos."},
+  {t:"Una sola cuenta para guardar blobs, colas y tablas de la misma aplicación, al menor costo.",ok:"g",f:"queue",x:"Varios servicios en una cuenta y menor costo → Standard GPv2. Cada Premium admite un solo servicio."},
+  {t:"Unidad de red Z: compartida por los PC de la oficina, por SMB, al menor costo.",ok:"g",f:"files",x:"Files por SMB funciona en GPv2, que es lo más económico. Premium File Shares sería para NFS o alto rendimiento."},
+  {t:"Millones de objetos pequeños de sensores IoT con latencia muy baja y muchas transacciones.",ok:"pB",f:"blob",x:"Objetos = blobs; latencia muy baja = Premium → Premium Block Blobs."},
+  {t:"Elegir el rendimiento de una cuenta de almacenamiento que alojará discos de VM con E/S intensiva.",ok:"pP",f:"disk",x:"\"Cuenta de almacenamiento\" + discos → Premium Page Blobs (page = discos)."},
+  {t:"El tipo de disco más rápido para la base de datos de una VM, con latencia menor a 1 ms.",ok:"mD",f:"disk",x:"Pide un tipo de disco, no de cuenta → disco administrado Ultra."},
+  {t:"Una cola de mensajes entre dos aplicaciones con el mejor rendimiento posible.",ok:"g",f:"queue",x:"Queue no tiene Premium: siempre Standard GPv2."},
+  {t:"Videos que se sirven por URL y casi no se consultan; quieres moverlos a Cool o Archive para pagar menos.",ok:"g",f:"blob",x:"Niveles Hot/Cool/Cold/Archive solo en block blobs de Standard GPv2. Las cuentas Premium no tienen niveles."},
+  {t:"Blobs que deben tener copia en otra región (GZRS).",ok:"g",f:"blob",x:"Premium solo admite LRS y ZRS. La redundancia geográfica exige Standard GPv2."},
+  {t:"Disco del sistema operativo de una VM nueva, sin tener que gestionar cuentas de almacenamiento.",ok:"mD",f:"disk",x:"Discos administrados: Azure gestiona el almacenamiento; no van en tu cuenta."}
+];
+let orden=[],pos=0,resp=null,aciertos=0,hechos=0;
+function barajar(){orden=ESC.map((_,i)=>i).sort(()=>Math.random()-.5);pos=0}
+
+function resaltar(ids,clase){
+  svg.classList.toggle("foco",ids.length>0);
+  svg.querySelectorAll(".on,.bien,.mal").forEach(n=>n.classList.remove("on","bien","mal"));
+  ids.forEach(i=>{const n=document.getElementById(i)||svg.querySelector(`[data-id="${i}"]`);if(n)n.classList.add("on");
+    const t=document.getElementById(i.replace("e-","t-"));if(t&&i.startsWith("e-"))t.classList.add("on")});
+  if(clase)Object.entries(clase).forEach(([i,c])=>{const n=svg.querySelector(`[data-id="${i}"]`);if(n)n.classList.add(c,"on")});
+}
+function ficha(id){
+  const d=INFO[id];
+  document.getElementById("ficha").innerHTML=`<h3>${d.t}</h3>${d.es?`<div class="es">${d.es}</div>`:""}<dl><dt>Qué es</dt><dd>${d.q}</dd><dt>Cuándo</dt><dd>${d.c}</dd><dt>Trampa</dt><dd>${d.x}</dd></dl>`;
+}
+const FACTS={g:[["Servicios","Blob · Files · Queue · Table"],["Redundancia","LRS · ZRS · GRS · GZRS"],["Files por","Solo SMB"],["Niveles de acceso","Hot · Cool · Cold · Archive"]],
+  pB:[["Servicios","Solo blobs"],["Redundancia","Solo LRS · ZRS"],["Files por","— (no tiene Files)"],["Niveles de acceso","No"]],
+  pF:[["Servicios","Solo Azure Files"],["Redundancia","Solo LRS · ZRS"],["Files por","SMB y NFS"],["Niveles de acceso","No"]],
+  pP:[["Servicios","Solo page blobs (discos)"],["Redundancia","Solo LRS · ZRS"],["Files por","— (no tiene Files)"],["Niveles de acceso","No"]]};
+function portal(){
+  seg("cRend",{std:"Standard",prem:"Premium"},()=>rend,k=>{rend=k;sel=rend==="std"?"gpv2":NODO[{block:"pB",file:"pF",page:"pP"}[tipo]]},render);
+  seg("cTipo",{block:"Block blobs",file:"File shares",page:"Page blobs"},()=>tipo,k=>{tipo=k;sel=NODO[{block:"pB",file:"pF",page:"pP"}[k]]},render,rend==="std");
+  const c=rend==="std"?"g":{block:"pB",file:"pF",page:"pP"}[tipo];
+  document.getElementById("facts").innerHTML=FACTS[c].map(([k,v])=>`<div class="fact"><div class="k">${k}</div><div class="v">${v}</div></div>`).join("");
+}
+function elegir(id){
+  if(modo==="ver"){
+    sel=id;const c=CUENTA[id];
+    if(c==="g")rend="std";else if(c&&c!=="mD"){rend="prem";tipo={pB:"block",pF:"file",pP:"page"}[c]}
+    render();return;
+  }
+  if(resp!==null)return;
+  const c=CUENTA[id],e=ESC[orden[pos]];
+  if(!c){status("estado","info","Elige una cuenta, no un servicio","Las filas de la izquierda son lo que guardas. Haz clic en la cuenta (Standard GPv2, una Premium o el disco administrado).");return}
+  resp=c;hechos++;if(c===e.ok)aciertos++;
+  render();
+}
+function render(){
+  seg("cModo",{ver:"Explorar",prac:"Practicar con escenarios"},()=>modo,k=>{if(k!==modo){modo=k;if(k==="prac"){barajar();resp=null;aciertos=hechos=0}}},render);
+  portal();
+  document.getElementById("practica").hidden=modo!=="prac";
+  document.getElementById("ctlMarc").hidden=modo!=="prac";
+  if(modo==="ver"){resaltar(REL[sel]||[sel]);ficha(sel);return}
+  const e=ESC[orden[pos]];
+  document.getElementById("esc").innerHTML=`<small>ESCENARIO ${pos+1} DE ${ESC.length} · haz clic en la cuenta que elegirías</small>${e.t}`;
+  document.getElementById("marc").textContent=`${aciertos} de ${hechos} correctas`;
+  document.getElementById("sig").hidden=resp===null;
+  document.getElementById("sig").textContent=pos+1<ESC.length?"Siguiente escenario →":"Volver a empezar ↺";
+  if(resp===null){resaltar([]);status("estado","info","¿Qué cuenta eliges?","Primero identifica el servicio (la fila) y después el rendimiento (la columna).");document.getElementById("ficha").innerHTML="";return}
+  const ok=NODO[e.ok],cam=e.ok==="g"?["s"+cap(e.f),"g"+cap(e.f),"e-s-"+e.f]:e.ok==="mD"?["sDisk","e-d"]:["s"+cap(e.f),"e-p-"+e.f];
+  const cl={[ok]:"bien"};if(resp!==e.ok)cl[NODO[resp]]="mal";
+  resaltar(cam,cl);
+  status("estado",resp===e.ok?"ok":"bad",resp===e.ok?"Correcto: "+NOMC[e.ok]:`Elegiste ${NOMC[resp]}; la respuesta es ${NOMC[e.ok]}`,e.x);
+  ficha(ok);
+}
+document.getElementById("sig").onclick=()=>{pos++;if(pos>=ESC.length){barajar();aciertos=hechos=0}resp=null;render()};
+dibujar();render();
+</script>
+</body>
+</html>
