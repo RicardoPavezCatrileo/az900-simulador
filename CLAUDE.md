@@ -8,7 +8,7 @@ Sitio web personal (en español) para estudiar certificaciones de Azure: **AZ-90
 
 ## Comandos
 No hay build, lint ni tests: son páginas estáticas.
-- Servir el sitio (necesario para el `fetch` de los JSON; con `file://` no funciona): `python -m http.server 8000` en la raíz y abrir `http://localhost:8000/az900/cap07-almacenamiento.html` (o Live Server en VS Code).
+- Servir el sitio (necesario para el `fetch` de los JSON; con `file://` no funciona): `python -m http.server 8000` en la raíz y abrir `http://localhost:8000/az900/cap07-almacenamiento.html` (o Live Server en VS Code, puerto 5502 según `.vscode/settings.json`, que no está versionado).
 - Validar un JSON de preguntas tras editarlo: `node -e "const q=require('./az900/data/preguntas-cap07.json');q.forEach((p,i)=>{const c=[].concat(p.correcta);if(!p.pregunta||!p.explicacion||c.some(x=>x<0||x>=p.opciones.length))console.log('mal',i+1)});console.log(q.length,'preguntas')"`
 - Validar todos los JSON (Git Bash): `for f in az900/data/*.json az104/data/*.json; do node -e "const q=require('./$f');let m=q.filter(p=>{const c=[].concat(p.correcta);return !p.pregunta||!p.explicacion||c.some(x=>x<0||x>=p.opciones.length)}).length;console.log('$f',q.length,m?'MAL '+m:'')"; done`
 - Captura para revisar una página: `chrome --headless --user-data-dir=<carpeta-limpia> --window-size=1280,2000 --screenshot=out.png http://localhost:8000/<ruta>`. Usar un `--user-data-dir` distinto por prueba (si se reutiliza, Chrome sirve CSS o copias anteriores desde la caché). Chrome headless no baja de ~500 px de ancho.
@@ -81,7 +81,7 @@ Cada página tiene su quiz con el JSON del mismo id. El detalle de cada pregunta
 - `dudas.html`: tablas "si la pregunta dice… → respuesta → trampa" por capa (arreglo `D`, buscador sin tildes), método en 3 pasos, escalera "¿qué falla?" y mapa SVG de los 4 casos de identidad.
 
 ### AZ-104 (`az104/`)
-Una página por dominio oficial (`identidad-gobierno`, `almacenamiento`, `computo`, `redes`, `monitoreo-backup`), con quiz `iniciarQuiz("<id>","az104")`. Mucho de lo que simulan (SAS, ciclo de vida, protección de datos, Bicep, Backup/Site Recovery) no está en el PDF y va marcado.
+Una página por dominio oficial, con quiz `iniciarQuiz("<id>","az104")`. El id no siempre es el nombre del archivo: `identidad-gobierno.html` → `identidad`, `monitoreo-backup.html` → `monitoreo` (JSON `preguntas-identidad.json` / `preguntas-monitoreo.json`); `almacenamiento`, `computo` y `redes` coinciden. Mucho de lo que simulan (SAS, ciclo de vida, protección de datos, Bicep, Backup/Site Recovery) no está en el PDF y va marcado.
 
 ## Conceptos clave ya fijados (para redactar preguntas)
 - **Storage:** LRS (3 copias, 1 centro de datos, 11 nueves), ZRS (3 zonas, 12 nueves), GRS = LRS + LRS secundaria (6 copias, 16 nueves), GZRS = ZRS + LRS secundaria; RA- permite leer la secundaria (endpoint `-secondary`); replicación geo asíncrona. Brazil South → South Central US, no recíproco (South Central US → North Central US).

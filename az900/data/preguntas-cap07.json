@@ -226,5 +226,11 @@
     "opciones": ["Un servicio Blob en una cuenta de almacenamiento", "Un disco de datos de máquina virtual", "Un servicio de archivos en una cuenta de almacenamiento", "Un servicio de cola en una cuenta de almacenamiento"],
     "correcta": 2,
     "explicacion": "'Unidad de red' accesible desde varios PCs = recurso compartido que se monta (SMB, como una letra de unidad Z:) → Azure Files, el servicio de archivos de la cuenta de almacenamiento. Trampa: Blob guarda objetos que se leen por HTTP/URL, no se monta como unidad en Windows; el disco de datos pertenece a UNA VM; Queue son mensajes. Regla: 'unidad de red', 'montar', 'compartida', 'SMB' → Files; 'servir en web', 'no estructurado' → Blob. Espejo de la 36."
+  },
+  {
+    "pregunta": "Necesitas elegir el rendimiento de una cuenta de almacenamiento que funcionará como servidor de archivos en la nube para una aplicación Linux de alto rendimiento. La aplicación requiere recursos compartidos de archivos NFS. ¿Qué opción de rendimiento eliges?",
+    "opciones": ["Premium Page Blobs", "Premium File Shares (archivos compartidos Premium)", "Premium Block Blobs", "Standard General-Purpose v2"],
+    "correcta": 1,
+    "explicacion": "'Servidor de archivos' + 'recursos compartidos' = Azure Files, y NFS (Linux) solo se ofrece en cuentas Premium File Shares; Standard GPv2 da Azure Files solo por SMB. Trampa: Premium Page Blobs es para discos de VM (page = discos), no para compartir archivos; Premium Block Blobs es para objetos con baja latencia. Que NFS exija Premium no está en el PDF; sí en Microsoft Learn."
   }
 ]
