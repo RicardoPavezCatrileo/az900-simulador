@@ -23,7 +23,7 @@ No hay build, lint ni tests: son páginas estáticas.
 
 ## Arquitectura
 - Cada página es autocontenida: el simulador (datos + lógica + `<style>` propio) vive en su HTML; solo comparten `assets/`. Lo reutilizable va a `assets/estilos.css` (tokens claro/oscuro, controles, tablas, quiz, barras, portadas).
-- `assets/progreso.js` es la fuente de verdad de qué temas existen: `CAPITULOS` (AZ-900), `AZ104` (cada tema con `pdf` = páginas y `base` = capítulos de AZ-900 a repasar), `CERTS` (con `carpeta`) y el flag `listo`. También define el objeto `Progreso`: `leer/guardar/borrar/porcentaje(id, cert="az900")` y `porcentajeCert(cert)`.
+- `assets/progreso.js` es la fuente de verdad de qué temas existen: `CAPITULOS` (AZ-900), `AZ104` (cada tema con `pdf` = páginas y `base` = capítulos de AZ-900 a repasar), `CERTS` (con `carpeta`; DP-900 y AZ-305 ya figuran con `carpeta:null` y `temas:[]`) y el flag `listo`. También define el objeto `Progreso`: `leer/borrar/porcentaje(id, cert)`, `guardar(id, datos, cert)` (sin `cert` se usa `"az900"`) y `porcentajeCert(c)`, que recibe el objeto de `CERTS`, no el id.
 - `assets/portada.js`: `portadaCert("az900"|"az104")` arma las tarjetas de temas con su avance a partir de esas listas.
 - `assets/quiz.js`: `iniciarQuiz("capXX")` o `iniciarQuiz("<tema>","az104")` carga `data/preguntas-<id>.json` **relativo a la página** (cada certificación tiene su carpeta `data/`) y guarda el avance.
 - `assets/udemy.js`: tabla de puntajes de simulacros externos (arreglo `UDEMY` = [examen, 1.ª vuelta, 2.ª vuelta], `null` = pendiente) en cada `<section class="udemy">`. Cuando el usuario informe un puntaje nuevo, actualizar `UDEMY`.
