@@ -256,7 +256,7 @@ const EL=[
   p:"Si toda Brazil South se cae, los datos siguen existiendo aquí (tras el failover)."},
  {id:"files",k:"nodo",a:3,cap:7,x:24,y:432,w:198,h:46,t:"Servidor de archivos",s:"Azure File Sync",
   q:"Azure File Sync convierte un servidor de archivos local en caché de Azure Files: rendimiento local con los archivos en la nube.",
-  p:"Los empleados siguen usando su carpeta compartida de siempre, pero los archivos quedan en la Storage Account.",pg:"150–152"},
+  p:"Los empleados siguen usando su carpeta compartida de siempre, pero los archivos quedan en la Storage Account. No confundir con Azure Arc (la etiqueta de abajo): File Sync trabaja a nivel de CARPETAS y archivos (los copia y sincroniza con Azure Files); Arc gestiona el SERVIDOR entero (políticas, monitoreo, seguridad) y no mueve ni un archivo.",pg:"150–152"},
 
  // Capítulo 8: identidad
  {id:"entraT",k:"marco",cls:"solido",cap:8,x:10,y:10,w:442,h:82,t:"Entra ID · 1 tenant (global) → N suscripciones",
@@ -323,7 +323,7 @@ const EL=[
   p:"El grupo de acción de la alerta ejecuta este flujo: publica el aviso en el canal de Teams del equipo y abre un ticket, sin escribir código.",pg:"239"},
  {id:"arc",k:"pill",a:4,cap:10,x:24,y:481,w:198,h:16,t:"Azure Arc · servidores locales",
   q:"Azure Arc lleva la gestión de Azure a servidores (y Kubernetes o bases de datos) que están FUERA de Azure: en tu centro de datos o en otra nube como AWS. Cada servidor aparece en el portal como un recurso más, dentro de un grupo de recursos.",
-  p:"El servidor de archivos y el AD de la oficina siguen en la oficina, pero con Arc quedan gobernados como los de Azure: les llega Azure Policy (heredada), RBAC y etiquetas, envían métricas y logs a Azure Monitor y los evalúa Defender for Cloud. Trampas: Arc NO migra el servidor (eso es Azure Migrate) ni conecta la red (eso es la VPN o ExpressRoute)."},
+  p:"El servidor de archivos y el AD de la oficina siguen en la oficina, pero con Arc quedan gobernados como los de Azure: les llega Azure Policy (heredada), RBAC y etiquetas, envían métricas y logs a Azure Monitor y los evalúa Defender for Cloud. Trampas: Arc NO migra el servidor (eso es Azure Migrate), no conecta la red (eso es la VPN o ExpressRoute) y no sincroniza carpetas: eso es Azure File Sync (la pieza de arriba), que copia los ARCHIVOS a Azure Files. Regla: ¿archivos y carpetas? → File Sync. ¿Gobernar o monitorear el servidor? → Arc. El mismo servidor puede usar los dos."},
  {id:"sh",k:"nodo",a:4,cap:10,x:916,y:710,w:266,h:44,t:"Service Health",s:"incidentes de Azure",
   q:"Informa de incidentes, mantenimientos planificados y avisos de Azure que afectan a TUS servicios y regiones.",
   p:"Si la app cae por un problema de Azure en Brazil South, lo verás aquí."},

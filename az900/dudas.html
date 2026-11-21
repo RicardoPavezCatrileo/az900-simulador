@@ -129,7 +129,7 @@ const D=[
  ["Storage o SQL sin Internet, deshabilitar el acceso público","Endpoint privado","Azure Arc, VPN S2S"],
  ["La oficina (por VPN) debe llegar al Storage en privado","Endpoint privado en la VNet a la que llega la VPN","Azure Arc, endpoint de servicio"],
  ["Solo una subred llega; el servicio sigue con su endpoint público","Endpoint de servicio","Endpoint privado"],
- ["Azure Arc","Gestionar servidores fuera de Azure desde Azure","Nunca es conectividad ni endpoints"]]],
+ ["Azure Arc","Gestionar servidores fuera de Azure desde Azure","Nunca es conectividad ni endpoints, ni sincroniza carpetas (eso es Azure File Sync)"]]],
 ["5 · Almacenamiento","cap07",[
  ["Imágenes o datos no estructurados servidos en la web","Blob Storage","Azure Files"],
  ["Unidad de red compartida entre varios PCs, que se monta (SMB)","Azure Files (servicio de archivos)","Blob (se lee por URL, no se monta), disco de VM (es de una sola VM)"],
@@ -137,6 +137,7 @@ const D=[
  ["Servidor de archivos para Linux, recursos compartidos NFS o de alto rendimiento","Premium File Shares (NFS solo existe en Premium)","Premium Page Blobs (son discos de VM), Standard GPv2 (Files solo por SMB)"],
  ["Rendimiento de la cuenta para discos de VM","Premium Page Blobs (page = discos)","Premium Block Blobs (block = archivos y objetos), Azure Disk Storage"],
  ["Disco de VM: máximo rendimiento, < 1 ms, hasta 64 TB","Disco Ultra","SSD Premium (rápido, pero no el máximo)"],
+ ["Servidor de archivos local que sigue como caché, con las carpetas sincronizadas en Azure Files","Azure File Sync (trabaja con carpetas y archivos)","Azure Arc (gestiona el servidor entero: políticas y monitoreo; no mueve archivos)"],
  ["Varios tipos de almacenamiento + optimizar costos","Standard GPv2 (uso general)","Cualquier Premium: Block Blobs, Page Blobs o File Shares (cada uno admite UN solo tipo y es más caro)"]]],
 ["6 · Identidad","cap08",[
  ["Verificar que es quien dice ser","Autenticación","Autorización (qué puede hacer)"],
