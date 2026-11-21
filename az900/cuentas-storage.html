@@ -57,6 +57,14 @@
 .discos div{display:flex;justify-content:space-between;gap:8px;border-bottom:1px solid var(--line);padding:3px 0}
 .discos b{font-weight:600}
 .discos span{color:var(--muted);font-family:var(--f-mono);font-size:.75rem;text-align:right}
+.otro{--c:var(--muted)}
+.panel.otro{--pc:var(--muted);border-style:dashed}
+.dbs{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+@media (max-width:900px){.dbs{grid-template-columns:1fr 1fr}}
+@media (max-width:520px){.dbs{grid-template-columns:1fr}}
+.dbs div{border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:.86rem;display:grid;gap:3px;align-content:start}
+.dbs b{font-family:var(--f-display);font-size:.98rem}
+.dbs .vm{border-left:5px solid var(--c-disk)}
 .marca{outline:3px solid var(--ok);outline-offset:3px}
 .marca.mal{outline-color:var(--bad)}
 
@@ -156,6 +164,17 @@
           </div>
         </div>
       </div>
+      <div class="panel otro" id="k-ot">
+        <h3>¿Y una base de datos? No es una cuenta de Storage</h3>
+        <div class="lema">relacional (SQL) o NoSQL global → un servicio de base de datos propio</div>
+        <div class="dbs">
+          <div><b>Azure SQL Database</b><span>SQL relacional PaaS: Azure administra el servidor, parches y backups.</span></div>
+          <div><b>Azure Database for MySQL / PostgreSQL</b><span>Lo mismo para motores open source.</span></div>
+          <div><b>Cosmos DB</b><span>NoSQL global, latencia baja en todo el mundo, escrituras multirregión.</span></div>
+          <div class="vm"><b>SQL Server en una VM</b><span>IaaS: los datos quedan en los <b>discos administrados</b> de la VM (SSD Premium o Ultra).</span></div>
+        </div>
+        <p class="sin">Trampa: <b>Table</b> también es NoSQL, pero simple, regional y barato. <b>Page Blobs</b> no son para guardar una base de datos.</p>
+      </div>
     </section>
 
     <section class="paso">
@@ -198,7 +217,7 @@ document.querySelectorAll("[data-ico]").forEach(i=>{
 });
 
 /* Práctica: escenarios tipo examen */
-const OPC={g:["Standard GPv2",""],pB:["Premium Block Blobs","blob"],pF:["Premium File Shares","files"],pP:["Premium Page Blobs","disk"],mD:["Disco administrado","disk"]};
+const OPC={g:["Standard GPv2",""],pB:["Premium Block Blobs","blob"],pF:["Premium File Shares","files"],pP:["Premium Page Blobs","disk"],mD:["Disco administrado","disk"],ot:["No es Storage: base de datos","otro"]};
 const ESC=[
   {t:"Servidor de archivos en la nube para una aplicación Linux de alto rendimiento que requiere recursos compartidos NFS.",ok:"pF",x:"Compartidos = Files, y NFS solo existe en Premium File Shares. Page Blobs son discos."},
   {t:"Una sola cuenta para guardar blobs, colas y tablas de la misma aplicación, al menor costo.",ok:"g",x:"Varios servicios en una cuenta y menor costo → Standard GPv2. Cada Premium guarda un solo servicio."},
@@ -209,7 +228,15 @@ const ESC=[
   {t:"Una cola de mensajes entre dos aplicaciones con el mejor rendimiento posible.",ok:"g",x:"Queue no tiene Premium: siempre Standard GPv2."},
   {t:"Videos que casi no se consultan; quieres moverlos a Cool o Archive para pagar menos.",ok:"g",x:"Los niveles Hot/Cool/Cold/Archive solo existen en Standard GPv2 (block blobs)."},
   {t:"Blobs que deben tener copia en otra región (GZRS).",ok:"g",x:"Premium solo admite LRS y ZRS. La copia en otra región exige Standard GPv2."},
-  {t:"Disco del sistema operativo de una VM nueva, sin tener que gestionar cuentas de almacenamiento.",ok:"mD",x:"Discos administrados: Azure gestiona el almacenamiento y no van en tu cuenta."}
+  {t:"Disco del sistema operativo de una VM nueva, sin tener que gestionar cuentas de almacenamiento.",ok:"mD",x:"Discos administrados: Azure gestiona el almacenamiento y no van en tu cuenta."},
+  {t:"Una base de datos SQL relacional para una aplicación web, sin administrar servidores ni parches.",ok:"ot",x:"Relacional + PaaS → Azure SQL Database, un servicio propio. No se guarda en blobs ni en Table."},
+  {t:"SQL Server instalado por ti en una VM (IaaS). ¿Dónde quedan los archivos de datos y de log de la base?",ok:"mD",x:"Una VM guarda todo en sus discos: discos administrados SSD Premium (o Ultra si pide latencia mínima). Premium Page Blobs es la forma antigua, en una cuenta que gestionas tú."},
+  {t:"Base de datos NoSQL de documentos con usuarios en varios continentes y escrituras en múltiples regiones.",ok:"ot",x:"NoSQL global y multirregión → Cosmos DB. Trampa: Table también es NoSQL, pero simple y de una región."},
+  {t:"Guardar telemetría NoSQL clave-valor, simple y al menor costo.",ok:"g",x:"Clave-valor barato → Table Storage, que solo existe en Standard GPv2. Cosmos DB sería para escala global."},
+  {t:"Una aplicación PHP necesita una base MySQL administrada por Azure.",ok:"ot",x:"MySQL como PaaS → Azure Database for MySQL, un servicio de base de datos, no una cuenta de Storage."},
+  {t:"Copias .bak de una base SQL que se guardan 7 años y casi nunca se leen, al menor costo.",ok:"g",x:"Un .bak es un archivo (objeto) → Blob en nivel Archive, que solo existe en Standard GPv2."},
+  {t:"Disco de una VM de pruebas que se usa poco; lo importante es que sea lo más barato.",ok:"mD",x:"Disco de VM → disco administrado, tipo HDD estándar (el más barato). No se elige una cuenta."},
+  {t:"Varias VMs necesitan la misma carpeta compartida por SMB para sus archivos de configuración, al menor costo.",ok:"g",x:"Un disco es de UNA VM; compartir entre varias por SMB → Azure Files en Standard GPv2."}
 ];
 let orden=[],pos=0,resp=null,aciertos=0,hechos=0;
 function barajar(){orden=ESC.map((_,i)=>i).sort(()=>Math.random()-.5);pos=0;aciertos=hechos=0}
@@ -217,7 +244,7 @@ function marcar(id,cls){document.querySelectorAll(".marca").forEach(n=>n.classLi
   if(id){const n=document.getElementById("k-"+id);n.classList.add("marca");if(cls)n.classList.add(cls)}}
 function render(){
   const e=ESC[orden[pos]];
-  document.getElementById("esc").innerHTML=`<small>ESCENARIO ${pos+1} DE ${ESC.length} · ¿qué cuenta eliges?</small>${e.t}`;
+  document.getElementById("esc").innerHTML=`<small>ESCENARIO ${pos+1} DE ${ESC.length} · ¿dónde va?</small>${e.t}`;
   const caja=document.getElementById("resp");caja.innerHTML="";
   Object.entries(OPC).forEach(([k,[n,c]])=>{
     const b=document.createElement("button");b.type="button";b.textContent=n;if(c)b.className=c;
