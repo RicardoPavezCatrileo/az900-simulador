@@ -70,6 +70,37 @@
 - **Policy y RBAC se heredan; las etiquetas no** (solo si una Policy las copia).
 - Una VM se puede mover entre grupos de recursos, suscripciones y regiones (entre regiones, replicándola).
 
+# Cap. 04 · Herramientas de Azure (PDF págs. 48–58)
+
+## Las herramientas para administrar Azure
+
+| Herramienta | Qué es | Si la pregunta dice… |
+|---|---|---|
+| **Azure Portal** | Consola web gráfica (portal.azure.com). Está en cada centro de datos: resiste fallas y se actualiza sin cortes | "interfaz gráfica", "consola web unificada", clics |
+| **Cloud Shell** | Shell en el navegador, **Bash o PowerShell**, sin instalar nada; se abre desde el Portal o la Mobile App | "PC prestado", "sin instalar nada", "desde el navegador" |
+| **Azure CLI** | Línea de comandos multiplataforma; comandos que empiezan con **az** | "az vm create", Windows, Mac y Linux |
+| **Azure PowerShell** | Cmdlets **Verbo-Sustantivo**; funciona en Windows, Linux y macOS | "New-AzVM", "Get-AzResourceGroup" |
+| **Mobile App** | Ver el estado, recibir alertas y usar Cloud Shell desde el teléfono | "de viaje", "en el celular" |
+| **Plantillas ARM** | Archivo **JSON** declarativo: describes qué quieres y Azure lo crea | "la misma infraestructura en dev, test y prod" |
+
+- **Automatizar con scripts** = Azure CLI o Azure PowerShell. El Portal es manual (clics).
+- **Trampa CLI vs PowerShell:** "az …" = CLI; "New-Az…", "Get-Az…" = PowerShell. Las dos funcionan en los 3 sistemas.
+- Cloud Shell puede guardar scripts y archivos en una cuenta de almacenamiento asociada.
+
+## Plantillas ARM = infraestructura como código (IaC)
+
+- La **IaC nativa de Azure**: JSON declarativo (QUÉ quieres, no CÓMO), repetible y se guarda en control de versiones. **Bicep** es su versión más legible (no está en el PDF).
+- **Trampa:** "orquestar recursos + asignaciones de roles + políticas" describe **Blueprints** (retirado), no ARM.
+- **Azure Resource Manager** es la capa de gestión por donde pasan todas las herramientas (Portal, CLI, PowerShell, plantillas).
+
+## Azure Advisor
+
+- Consultor personalizado: analiza la configuración y el uso de tus recursos y **recomienda** mejoras.
+- **5 categorías:** Costo · Seguridad · Confiabilidad · Excelencia operativa · Rendimiento. "Facturación por suscripción" no es una.
+- VM con muy poca CPU durante semanas → redimensionar → categoría **Costo**.
+- **Trampa:** Advisor no solo habla de costos. ¿Recomienda sobre la red o la seguridad de mis VMs? → **Sí** (p. ej., cerrar puertos de administración abiertos).
+- Advisor **recomienda**, no aplica ni obliga: imponer reglas es Azure Policy (cap. 10).
+
 # Cap. 07 · Almacenamiento (PDF págs. 122–167)
 
 ## Qué guarda una cuenta de almacenamiento
