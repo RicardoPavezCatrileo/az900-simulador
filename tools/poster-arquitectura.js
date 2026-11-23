@@ -1,5 +1,15 @@
 document.documentElement.setAttribute("data-theme","light");
 hasta=11;resaltar=false;flujo=null;sel=null;ident="hib";red="GRS";entrada="fd";
+// Front Door y Traffic Manager juntos (en la página son excluyentes): Front Door se angosta con su borde
+// y Traffic Manager va a la derecha como alternativa, con "1 · consulta DNS" y "2 · HTTPS directo" por fuera del PoP.
+SOLO_TM.clear();
+Object.assign(POR_ID.edge,{w:146,t:"PoP de Microsoft",lb:1});
+Object.assign(POR_ID.fd,{x:410,w:136});
+Object.assign(POR_ID.tm,{x:720,w:130,s:"DNS · alternativa"});
+Object.assign(POR_ID.e_inet_fd,{d:[[530,84],[530,134]],lab:["HTTPS",524,118,"end"],l11:["entrada: gratis · salida: se cobra",524,104,"end"]});
+Object.assign(POR_ID.e_fd_ag,{d:[[530,180],[530,380]],lab:["al back-end de la región",524,350,"end"]});
+Object.assign(POR_ID.e_inet_tm,{d:[[626,84],[626,108],[785,108],[785,134]],lab:["1 · consulta DNS",634,103,"start"]});
+Object.assign(POR_ID.e_inet_ag2,{lab:["2 · HTTPS directo",562,150,"start"],l11:["no pasa por Traffic Manager",562,164,"start"]});
 document.fonts.ready.then(()=>{dibujar();aplicar();poster()});
 function poster(){
   const NS="http://www.w3.org/2000/svg",W=1372,H=970,DX=66,DY=72;
