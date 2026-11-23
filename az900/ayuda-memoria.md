@@ -1,5 +1,14 @@
 # Cap. 02 · Qué es el Cloud Computing (PDF págs. 9–29)
 
+## Qué vimos en este capítulo
+
+- **Cloud computing**: suministro bajo demanda de cómputo, almacenamiento, bases de datos y apps, con pago por uso.
+- **Modelos de despliegue**: privado (una sola organización), público (del proveedor, por Internet) e híbrido (local + público).
+- **5 características**: autoservicio bajo demanda, amplio acceso a la red, elasticidad y escalabilidad, alquiler múltiple, servicio medido.
+- **6 ventajas**: economías de escala, velocidad y agilidad, CapEx → OpEx, no mantener centros de datos, no adivinar capacidad, global en minutos.
+- **Tipos de servicio**: IaaS, PaaS y SaaS, y el **modelo de responsabilidad compartida** (quién gestiona cada capa).
+- **Precios del cloud**: pagas cómputo, almacenamiento y datos que salen. **Pilares**: confiabilidad, previsibilidad, gobernanza, seguridad, manejabilidad.
+
 ## Modelos de servicio: ¿quién administra el sistema operativo?
 
 | Modelo | Tú gestionas | Ejemplos |
@@ -39,6 +48,15 @@
 
 # Cap. 03 · Arquitectura de Azure (PDF págs. 30–47)
 
+## Qué vimos en este capítulo
+
+- **Regiones**: zonas geográficas donde están los centros de datos de Azure. **Regiones emparejadas**: pares para continuidad y recuperación.
+- **Regiones soberanas**: cumplen requisitos legales y de residencia de datos de un país.
+- **Zonas de disponibilidad**: centros de datos separados físicamente dentro de una región, para resistir fallas.
+- **Puntos de presencia (PoP)**: ubicaciones de red para conectarse rápido a los servicios de Azure.
+- **Recursos y grupos de recursos**: los servicios y su agrupación lógica. **Suscripciones**: acceso, costos y facturación.
+- **Grupos de administración**: jerarquía para administrar muchas suscripciones. **Servicios globales y regionales**.
+
 ## Infraestructura física (de menor a mayor)
 
 | Pieza | Qué es | Te protege de |
@@ -72,6 +90,12 @@
 
 # Cap. 04 · Herramientas de Azure (PDF págs. 48–58)
 
+## Qué vimos en este capítulo
+
+- **Azure Portal**: interfaz web. **Azure CLI**: línea de comandos. **Azure PowerShell**: línea de comandos con scripting más avanzado.
+- **Cloud Shell**: shell en el navegador (Bash o PowerShell). **Mobile App**: tus recursos en el teléfono, en cualquier lugar.
+- **Plantillas ARM**: desplegar y gestionar recursos con plantillas (JSON). **Azure Advisor**: recomendaciones personalizadas.
+
 ## Las herramientas para administrar Azure
 
 | Herramienta | Qué es | Si la pregunta dice… |
@@ -102,6 +126,13 @@
 - Advisor **recomienda**, no aplica ni obliga: imponer reglas es Azure Policy (cap. 10).
 
 # Cap. 05 · Computación (PDF págs. 59–100)
+
+## Qué vimos en este capítulo
+
+- **Azure Virtual Machines**: servidores virtuales escalables, con distintas **opciones de compra** (precios según la necesidad).
+- **Scale Sets**: administrar VMs a gran escala. **Alta disponibilidad vs escalabilidad (vertical y horizontal) vs elasticidad vs agilidad**.
+- **App Service**: construir, hospedar y escalar apps web. **ACI**: ejecutar contenedores. **ACR**: guardar imágenes de contenedores.
+- **AKS**: orquestar contenedores en apps complejas. **Virtual Desktop**: escritorios y apps virtuales. **Functions**: sin servidor, pago por uso.
 
 ## Formas de pagar una VM (la VM es IaaS)
 
@@ -140,6 +171,13 @@
 - Virtual Desktop: varios usuarios pueden compartir la misma VM.
 
 # Cap. 06 · Redes (PDF págs. 101–121)
+
+## Qué vimos en este capítulo
+
+- **Virtual Network**: red privada en Azure. **Espacio de direcciones**: rango de IP de la red. **NSG**: filtra el tráfico con reglas.
+- **Load Balancer**: reparte el tráfico entre servidores. **Application Gateway**: balanceador avanzado para apps web.
+- **VPN Gateway**: conexión segura de lo local a la VNet. **ExpressRoute**: conexión privada entre lo local y Azure.
+- **CDN**: entrega contenido de forma eficiente a usuarios en distintas ubicaciones. También: **peering**, **Traffic Manager** y **Front Door**.
 
 ## Red virtual (VNet) y subredes
 
@@ -181,6 +219,13 @@
 - **Trampa:** la terminación SSL es de **Application Gateway**, no de Load Balancer (el PDF se equivoca).
 
 # Cap. 07 · Almacenamiento (PDF págs. 122–167)
+
+## Qué vimos en este capítulo
+
+- **Blob**: para cualquier dato; tipos block, append y page; vive en un contenedor dentro de una cuenta; niveles Hot, Cool, Cold y Archive.
+- **Disco**: almacenamiento en bloque para VMs (HDD, SSD, SSD Premium, Ultra). **Files**: compartir archivos y reducir servidores locales.
+- **Archive**: guardar mucho dato muy barato (es un nivel de Blob). **Redundancia**: al menos 3 copias, en una o varias zonas y regiones.
+- **Mover datos**: AzCopy, Storage Explorer, File Sync. **Migrar**: Data Box (sin conexión) y Migrate. **Premium**: SSD, menos redundancia.
 
 ## Qué guarda una cuenta de almacenamiento
 
@@ -233,6 +278,13 @@
 
 # Cap. 08 · Autenticación y autorización (PDF págs. 168–197)
 
+## Qué vimos en este capítulo
+
+- **Microsoft Entra ID**: identidad y acceso en la nube. **Confianza cero**: no confiar en nadie por defecto, ni dentro de la red.
+- **MFA**: dos o más métodos de verificación. **Acceso condicional**: permite o niega según condiciones (ubicación, dispositivo…).
+- **Sin contraseña**: biometría o llaves en vez de contraseña. **Usuarios externos**: acceso de clientes y socios (B2B).
+- **Entra Domain Services** (el PDF dice Azure AD DS): servicios de dominio en la nube. **SSO**: un solo inicio de sesión para varias apps.
+
 ## Conceptos base
 
 - **Autenticación** = ¿quién eres? (demostrar que eres quien dices ser). **Autorización** = ¿qué puedes hacer? (viene después).
@@ -267,6 +319,13 @@
 - Gestionar usuarios y grupos: **Centro de administración de Microsoft Entra** (entra.microsoft.com).
 
 # Cap. 09 · Seguridad (PDF págs. 198–216)
+
+## Qué vimos en este capítulo
+
+- **Defensa en profundidad**: seguridad en varias capas, de lo físico hasta los datos.
+- **Endpoints de servicio**: acceso controlado a servicios de Azure por sus IP públicas. **Endpoints privados**: acceso con IP privada desde la VNet.
+- **Key Vault**: secretos, claves y certificados. **Defender for Cloud**: detectar y mitigar amenazas y vulnerabilidades.
+- **Microsoft Sentinel** (el PDF dice Azure Sentinel): SIEM, visión y respuesta automatizada ante amenazas.
 
 ## Defensa en profundidad (de afuera hacia adentro)
 
@@ -308,6 +367,14 @@
 
 # Cap. 10 · Monitorización y gestión (PDF págs. 217–247)
 
+## Qué vimos en este capítulo
+
+- **Gobernanza**: reglas, prácticas y políticas para dirigir los recursos. **Azure Policy**: reglas de cumplimiento sobre los recursos.
+- **RBAC**: roles que definen qué puede y no puede hacer cada usuario. **Locks**: evitan modificar o borrar recursos por accidente.
+- **Azure Blueprints** (retirado): conjuntos repetibles de recursos. **Cloud Adoption Framework**: guías y herramientas para adoptar la nube.
+- **Azure Monitor**: recopilar, analizar y actuar sobre la telemetría. **Log Analytics**: consultar los registros. **Application Insights**: rendimiento de apps.
+- **Alertas**: avisos cuando se cumple una condición. **Service Health**: estado de Azure, caídas y mantenimientos. **Azure Arc**: gestionar fuera de Azure.
+
 ## Gobierno: RBAC, Policy y bloqueos
 
 | Si la pregunta dice… | Respuesta | No confundir con |
@@ -323,8 +390,7 @@
 - **Ámbitos de RBAC:** grupo de administración, suscripción, grupo de recursos o recurso; se hereda hacia abajo.
 - **Roles:** Lector = solo ver · Colaborador = administrar, pero **no dar acceso** · Propietario = todo, incluido dar acceso.
 - **Bloqueos:** en recurso, grupo de recursos o suscripción; se heredan y frenan **incluso al Propietario** (hay que quitar el bloqueo primero).
-- **Blueprints** (retirado en julio 2026): era el "plan maestro" que juntaba plantillas ARM, políticas y roles.
-- **Cloud Adoption Framework** = guía con prácticas y herramientas para adoptar la nube. **Service Trust Portal** = documentos de cumplimiento de Microsoft (ISO, SOC, auditorías).
+- **Blueprints** (retirado en julio 2026) juntaba plantillas ARM + políticas + roles. **Service Trust Portal** = documentos de cumplimiento de Microsoft (ISO, SOC).
 
 ## Monitoreo: si la pregunta dice…
 
@@ -341,6 +407,13 @@
 - Familia Service Health: **Azure Status** (todo Azure, público) · **Service Health** (tus servicios y regiones) · **Resource Health** (un recurso tuyo).
 
 # Cap. 11 · Precios, costos y el examen (PDF págs. 248–282)
+
+## Qué vimos en este capítulo
+
+- **Cost Management**: monitorizar, controlar y optimizar costos. **Calculadora de precios**: estimar lo que crearás. **TCO**: local vs Azure.
+- **Zona de facturación**: regiones con el mismo precio de tráfico. Tráfico **entre regiones**: se cobra (el PDF dice que dentro de la zona no).
+- **Buenas prácticas**: límite de gasto, cuotas, etiquetas y Azure Advisor.
+- **Modelos de precios**: pago por uso, instancias reservadas (descuento) y reserva de capacidad (asegura disponibilidad, **no** es descuento).
 
 ## Herramientas de costos
 
