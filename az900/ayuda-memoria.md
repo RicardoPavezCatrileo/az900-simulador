@@ -139,6 +139,47 @@
 - **Trampa Functions:** no está "siempre en ejecución": se activa con un evento y se detiene.
 - Virtual Desktop: varios usuarios pueden compartir la misma VM.
 
+# Cap. 06 · Redes (PDF págs. 101–121)
+
+## Red virtual (VNet) y subredes
+
+- **VNet** = red privada y aislada en Azure; se divide en **subredes**. Las subredes no se superponen y caben dentro del espacio de la VNet.
+- Ventajas de las subredes: **usar mejor las IP**, **asegurarlas por separado** (NSG) y **agrupar servicios** (web, app, datos). No "ahorran costos" ni "hacen más rápidas las VMs".
+- Cálculo: /16 = 2^16 = **65.536** IP. Una /24 = 256, pero Azure reserva 5 por subred → **251 asignables** (el PDF se equivoca con 256).
+
+## NSG (grupo de seguridad de red): filtra por puerto e IP
+
+- Se asocia a una **subred** o a una **NIC** (una VM). Reglas de entrada y de salida.
+- **Número de prioridad más bajo = se evalúa primero** (100 antes que 200). La primera regla que coincide decide; el resto no se mira.
+- Si hay NSG en la subred y en la NIC, **los dos deben permitir** el tráfico. No se pone NSG en la GatewaySubnet (no está en el PDF).
+- Que la VM se vea desde Internet por HTTPS / RDP / SSH → regla de entrada **443 / 3389 / 22** (y una IP pública o un balanceador delante). **Trampa:** Traffic Manager o Front Door balancean, no abren puertos.
+
+## Conectar redes
+
+| Si la pregunta dice… | Respuesta | No confundir con |
+|---|---|---|
+| VNet ↔ VNet, misma u otra región, por la red de Microsoft | **VNet peering** (no transitivo; sin CIDR superpuestos) | VPN Gateway |
+| Oficina ↔ Azure por Internet, túnel cifrado | **VPN Gateway sitio a sitio (S2S)** | ExpressRoute |
+| Un trabajador remoto desde su laptop | **VPN punto a sitio (P2S)** | S2S |
+| Línea privada y dedicada, **sin pasar por Internet** | **ExpressRoute** | VPN Gateway |
+
+- Peering A–B y B–C **no** conecta A con C: hay que emparejar A con C.
+- Local ↔ Azure necesita 2 cosas: **una VNet + un VPN Gateway** en esa VNet.
+- Piezas de una VPN S2S (túnel IPsec): **dispositivo VPN local** + **VPN Gateway** (puerta de enlace de red virtual) + **GatewaySubnet** + el **túnel cifrado**. **Trampa** (la fallaste 2 veces): "grupo de VMs en el backend" es de Load Balancer, no de VPN.
+
+## Repartir el tráfico
+
+| Servicio | Alcance y capa | Si la pregunta dice… |
+|---|---|---|
+| **Load Balancer** | Regional, **capa 4** (TCP/UDP) | "repartir equitativamente entre VMs" |
+| **Application Gateway** | Regional, **capa 7** (HTTP): rutas URL, WAF, terminación SSL | "/images a unos servidores, /video a otros" |
+| **Traffic Manager** | Global, **solo DNS** (el tráfico no pasa por él) | "repartir usuarios entre regiones por DNS" |
+| **Front Door** | Global, **capa 7**, WAF y CDN (sí es proxy) | "global + HTTP + WAF" |
+| **CDN** | Copias en caché en servidores cerca del usuario | "entregar contenido más rápido" |
+
+- Los balanceadores saben a qué servidor enviar con **sondeos de estado** (p. ej., HTTP a /health).
+- **Trampa:** la terminación SSL es de **Application Gateway**, no de Load Balancer (el PDF se equivoca).
+
 # Cap. 07 · Almacenamiento (PDF págs. 122–167)
 
 ## Qué guarda una cuenta de almacenamiento
