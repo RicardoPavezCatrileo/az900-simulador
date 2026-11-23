@@ -338,6 +338,20 @@ const CASOS=[
     por:"Es para apps que necesitan AD clásico. Con OAuth es un recurso superfluo y se paga por hora."}],
   regla:"<b>OAuth, SAML, OpenID Connect</b> (apps modernas) → <b>Entra ID</b> con SSO. <b>NTLM, Kerberos, LDAP, GPO</b> (AD clásico) → un dominio: Entra Domain Services, DC en VM o AD local, según las otras frases.",
   az104:"Se crea un <b>registro de aplicación</b> en Entra ID (id. de cliente, URI de redirección, secreto o certificado) y la app pide tokens. Si la app corre en Azure, mejor una <b>identidad administrada</b> para acceder a otros recursos sin guardar secretos."},
+ {id:"arm",tit:"Por dónde pasa todo: ARM",cap:"cap04",src:"Udemy · examen 6, 2.ª vuelta",
+  q:"¿Cómo se denomina el componente de Azure que es responsable de todas las interacciones con este, incluido el acceso a través del portal de Azure, programático y mediante línea de comandos?",
+  esc:["plano","entra"],
+  op:[
+   {t:"Azure Cloud Shell",pieza:null,ver:["arm"],nota:["Cloud Shell es una consola: sus comandos van a ARM",752,95],
+    por:"Es una consola en el navegador (Bash o PowerShell). Es una de las herramientas que le hablan a ARM, no el componente que recibe todo."},
+   {t:"Azure Resource Manager (ARM)",ok:true,pieza:"arm",ver:["plano","arm","entra","rbac","policy","lock"],nota:["portal, CLI, PowerShell y API: todo pasa por aquí",752,95],
+    por:"Es la capa de administración: recibe cada solicitud (del portal, la CLI, PowerShell o la API), autentica con Entra ID y revisa RBAC, Policy y bloqueos antes de tocar el recurso."},
+   {t:"Azure Portal",pieza:null,ver:["arm"],nota:["el portal también le habla a ARM",752,95],
+    por:"Es la interfaz gráfica: solo una de las puertas. Lo programático y la línea de comandos no pasan por el portal."},
+   {t:"Microsoft Entra ID",pieza:"entra",ver:["entra"],nota:["Entra ID dice quién eres; no gestiona recursos",292,95],
+    por:"Autentica (quién eres), pero no crea ni modifica recursos."}],
+  regla:"\"Todas las interacciones\", \"capa de administración\", \"portal, CLI y API por igual\" → <b>Azure Resource Manager</b>. Portal, CLI, PowerShell y Cloud Shell son <b>herramientas</b> que le hablan a ARM; las plantillas ARM o Bicep son <b>archivos</b> que se le envían.",
+  az104:"Todo lo que ves en ARM es un <b>proveedor de recursos</b> (Microsoft.Compute, Microsoft.Storage…) que debe estar <b>registrado</b> en la suscripción. ARM valida en orden: autenticación (Entra ID) → <b>RBAC</b> → <b>Policy</b> → <b>bloqueos</b>. Cada operación queda en el <b>registro de actividad</b>. Despliegues por plantilla: modo incremental (por defecto) o completo."},
  {id:"mdi",tit:"Fuerza bruta contra credenciales",cap:"cap09",src:"Udemy · examen 6, 2.ª vuelta (no está en el PDF)",
   q:"Detectas varios intentos de comprometer las credenciales de usuario de tu cuenta Azure mediante ataques de fuerza bruta. ¿Qué servicio de Azure podría alertarte sobre estas actividades sospechosas?",
   esc:["entra","adds","plano"],
@@ -431,7 +445,7 @@ function dibujar(){
 
 /* ---------- Panel ---------- */
 const LET="abcd";
-const PAG={cap02:"cap02-cloud.html",cap06:"cap06-redes.html",cap08:"cap08-autenticacion-autorizacion.html",cap09:"cap09-seguridad.html",cap10:"cap10-monitorizacion-gestion.html"};
+const PAG={cap02:"cap02-cloud.html",cap04:"cap04-fundamentos-herramientas.html",cap06:"cap06-redes.html",cap08:"cap08-autenticacion-autorizacion.html",cap09:"cap09-seguridad.html",cap10:"cap10-monitorizacion-gestion.html"};
 function estado(lvl,t,d){
   const el=document.getElementById("estado");
   if(!t){el.hidden=true;return}

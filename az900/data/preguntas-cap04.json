@@ -106,5 +106,11 @@
     "opciones": ["La solución nativa de Azure para Infraestructura como Código (IaC)", "Una entidad de gestión en Azure que supervisa y regula el acceso a todas las interacciones con los servicios de Azure", "Un componente de Microsoft Entra ID diseñado para facilitar la autenticación basada en condiciones, estableciendo criterios que deben cumplirse para permitir o denegar el acceso", "Un enfoque declarativo para orquestar la implementación de conjuntos de recursos y otros elementos como asignaciones de roles, políticas, plantillas de recursos y grupos de recursos"],
     "correcta": 0,
     "explicacion": "Plantilla ARM = archivo JSON que describe tus recursos para desplegarlos igual cada vez: la IaC nativa de Azure (Bicep es su versión más legible). Trampa: 'orquestar conjuntos de recursos + asignaciones de roles + políticas + plantillas + grupos de recursos' es Azure Blueprints (un paquete que CONTIENE plantillas ARM, se retira en julio de 2026); 'entidad que regula todas las interacciones con Azure' es Azure Resource Manager, el servicio, no sus plantillas; 'autenticación basada en condiciones' es el acceso condicional. Regla: plantilla ARM → IaC; paquete de plantillas + roles + políticas → Blueprints. Pareja de la 16."
+  },
+  {
+    "pregunta": "¿Cómo se denomina el componente de Azure que es responsable de todas las interacciones con este, incluido el acceso a través del portal de Azure, programático y mediante línea de comandos?",
+    "opciones": ["Azure Cloud Shell", "Azure Resource Manager (ARM)", "Azure Portal", "Microsoft Entra ID"],
+    "correcta": 1,
+    "explicacion": "Azure Resource Manager es la capa de administración: el portal, la CLI, PowerShell, Cloud Shell, las API REST y los SDK le envían sus solicitudes, y ARM autentica (con Entra ID), revisa RBAC, Policy y bloqueos, y crea o cambia el recurso. El PDF solo lo nombra por sus plantillas (pág. 55) y frente a Blueprints (pág. 226); que toda interacción pasa por ARM está en Microsoft Learn. Trampa: Cloud Shell y el portal son herramientas que USAN ARM; Entra ID solo autentica (quién eres). Regla: 'todas las interacciones', 'capa de administración', 'portal, CLI y API por igual' → Azure Resource Manager."
   }
 ]
