@@ -1,2 +1,5 @@
 # PDF del curso: solo para uso local, no se sube a GitHub
 docs/
+
+# Librería para generar el Word de la ayuda memoria (npm install --prefix tools docx)
+tools/node_modules/
