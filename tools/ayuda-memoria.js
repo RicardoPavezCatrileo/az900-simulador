@@ -14,7 +14,7 @@ const raiz = path.join(__dirname, "..");
 const entrada = path.join(raiz, "az900", "ayuda-memoria.md");
 const salida = process.argv[2] || path.join(raiz, "docs", "ayuda-memoria-az900.docx");
 
-const FUENTE = "Calibri";
+const FUENTE = "Calibri"; // tamaños (en medios puntos): título 12, sección 10,5, texto y tablas 9
 const ANCHO = 12240 - 2 * 1080; // carta con márgenes de 0,75"
 const borde = { style: BorderStyle.SINGLE, size: 4, color: "999999" };
 const bordes = { top: borde, bottom: borde, left: borde, right: borde };
@@ -48,7 +48,7 @@ function tabla(filas) {
         width: { size: anchos[i], type: WidthType.DXA },
         shading: r === 0 ? { fill: "E7E6E6", type: ShadingType.CLEAR } : undefined,
         margins: { top: 40, bottom: 40, left: 90, right: 90 },
-        children: [new Paragraph({ spacing: { after: 0 }, children: texto(c, r === 0 ? { bold: true, size: 20 } : { size: 20 }) })],
+        children: [new Paragraph({ spacing: { after: 0 }, children: texto(c, r === 0 ? { bold: true, size: 18 } : { size: 18 }) })],
       })),
     })),
   });
@@ -83,15 +83,15 @@ const doc = new Document({
   creator: "AZ-900 Simulador",
   title: "AZ-900 · Ayuda memoria",
   styles: {
-    default: { document: { run: { font: FUENTE, size: 22 }, paragraph: { spacing: { after: 60 } } } },
+    default: { document: { run: { font: FUENTE, size: 18 }, paragraph: { spacing: { after: 60 } } } },
     paragraphStyles: [
       { id: "Heading1", name: "Heading 1", basedOn: "Normal", next: "Normal", quickFormat: true,
-        run: { font: FUENTE, size: 32, bold: true, color: "1F3864" },
+        run: { font: FUENTE, size: 24, bold: true, color: "1F3864" },
         paragraph: { spacing: { before: 0, after: 60 }, keepNext: true, outlineLevel: 0,
           border: { bottom: { style: BorderStyle.SINGLE, size: 8, color: "1F3864", space: 2 } } } },
       { id: "Heading2", name: "Heading 2", basedOn: "Normal", next: "Normal", quickFormat: true,
-        run: { font: FUENTE, size: 24, bold: true, color: "1F3864" },
-        paragraph: { spacing: { before: 160, after: 60 }, keepNext: true, outlineLevel: 1 } },
+        run: { font: FUENTE, size: 21, bold: true, color: "1F3864" },
+        paragraph: { spacing: { before: 140, after: 60 }, keepNext: true, outlineLevel: 1 } },
     ],
   },
   numbering: { config: [{ reference: "vinetas", levels: [{ level: 0, format: LevelFormat.BULLET, text: "•",

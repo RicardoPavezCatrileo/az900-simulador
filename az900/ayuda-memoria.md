@@ -101,6 +101,44 @@
 - **Trampa:** Advisor no solo habla de costos. ¿Recomienda sobre la red o la seguridad de mis VMs? → **Sí** (p. ej., cerrar puertos de administración abiertos).
 - Advisor **recomienda**, no aplica ni obliga: imponer reglas es Azure Policy (cap. 10).
 
+# Cap. 05 · Computación (PDF págs. 59–100)
+
+## Formas de pagar una VM (la VM es IaaS)
+
+| Opción | Cuándo | Si la pregunta dice… |
+|---|---|---|
+| **Pago por uso** | Sin compromiso, por segundo; el precio por hora más alto | "corta duración", "impredecible", "sin pago adelantado" |
+| **Instancias reservadas** | Compromiso de 1 o 3 años con la misma VM: gran descuento | "24/7 durante 3 años", "base de datos constante" |
+| **Plan de ahorro** | Te comprometes a un gasto por hora (1 o 3 años), no a una VM; no se cancela | "gasto fijo por hora, pero cambiar de tamaño o región" |
+| **Instancias spot** | El mayor descuento, pero Azure puede quitártela en cualquier momento | "lotes que toleran interrupciones" |
+| **Dedicated Host** | Servidor físico solo para ti; el más caro | "regulación", "aislamiento físico", "control del hardware" |
+| **Reserva de capacidad** | Asegura capacidad en una zona, sin permanencia. **No es un descuento** | "asegurar capacidad por unas semanas" |
+
+## Escalado y disponibilidad de VMs
+
+- **Vertical** (hacia arriba): más RAM y vCPU a la misma VM; tiene tope. **Horizontal** (hacia fuera): más VMs iguales detrás de un balanceador; preferido.
+- **Elástico** = escala **solo**, según la carga. Agilidad = recursos nuevos en minutos.
+- **VM Scale Set** = conjunto de **VMs idénticas** que escala solo. Sin costo extra (pagas las VMs). Hasta 100 VMs, configurable a 1000.
+- **Conjunto de disponibilidad** = **fallas de hardware y actualizaciones** dentro de un centro de datos (dominios de error y de actualización).
+- **Zonas de disponibilidad** = sobrevivir a la **caída de un centro de datos completo** (alta disponibilidad = al menos 2 zonas).
+- **Trampa:** ZRS es redundancia de Storage, no de VMs. Aislar una VM de otras = **VNet**; aislamiento físico = **Dedicated Host**.
+
+## Otros servicios de cómputo
+
+| Si la pregunta dice… | Respuesta | No confundir con |
+|---|---|---|
+| Solo subir el código de la web, con balanceo y autoescalado incluidos | **App Service** (PaaS) | VMs |
+| Un contenedor suelto, lo más simple, sin VMs ni orquestador | **Container Instances (ACI)** | AKS |
+| Guardar imágenes de contenedor en privado | **Container Registry (ACR)** | Docker Hub (público) |
+| Orquestar muchos contenedores, Kubernetes, clúster, microservicios | **AKS** | ACI |
+| Código que corre solo cuando llega un evento; sin tráfico no pagas | **Azure Functions** | App Service |
+| Escritorio o apps de Windows desde cualquier dispositivo (Mac, Android) | **Azure Virtual Desktop** | Entra ID, VPN |
+
+- **AKS:** nodo = **VM** donde corren los pods (eso pagas); pod = uno o más contenedores. Microsoft gestiona gratis el **plano de control** (no está en el PDF).
+- **Serverless** = los servidores existen pero no los gestionas; escala solo y pagas por ejecución. Son serverless: **Functions, Logic Apps** (flujos sin código) y **Event Grid** (eventos).
+- **Trampa Functions:** no está "siempre en ejecución": se activa con un evento y se detiene.
+- Virtual Desktop: varios usuarios pueden compartir la misma VM.
+
 # Cap. 07 · Almacenamiento (PDF págs. 122–167)
 
 ## Qué guarda una cuenta de almacenamiento
