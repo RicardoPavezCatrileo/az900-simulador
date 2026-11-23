@@ -230,3 +230,78 @@
 - Servidor local como caché de Azure Files → **Azure File Sync** (Arc gestiona servidores, no archivos)
 - Muchos TB con conexión lenta, o datos que no pueden ir por Internet → **Data Box**
 - Descubrir servidores, dependencias y costos antes de migrar → **Azure Migrate**
+
+# Cap. 08 · Autenticación y autorización (PDF págs. 168–197)
+
+## Conceptos base
+
+- **Autenticación** = ¿quién eres? (demostrar que eres quien dices ser). **Autorización** = ¿qué puedes hacer? (viene después).
+- **Microsoft Entra ID** (antes Azure Active Directory) = identidad en la **nube**. **No** es el AD local (AD DS, en servidores propios).
+- **Tenant** = instancia de Entra ID de una organización. Un usuario es **miembro de 1** tenant e **invitado en hasta 499** más (500 en total).
+- **SSO** = una sola cuenta y un solo inicio de sesión para varias apps.
+- **MFA** = factores de **categorías distintas**: algo que sabes, que tienes, que eres (huella). Contraseña + PIN **no** es MFA (los dos "sabes").
+- **Sin contraseña**: Windows Hello, Microsoft Authenticator y llaves de seguridad FIDO2.
+- **Zero Trust** = "nunca confíes, verifica siempre"; no confía por ubicación. Ventajas: acceso desde cualquier lugar con identidad verificada + frena a los atacantes. Es una estrategia, no un producto.
+
+## Acceso condicional (Entra ID P1)
+
+- Función de Entra ID: reúne **señales** (usuario o grupo, IP/ubicación, dispositivo, aplicación, riesgo) → toma una **decisión** (conceder, conceder pidiendo MFA, **bloquear** = la más restrictiva).
+- "¿Puede **iniciar sesión**?" → acceso condicional. "¿Cómo deben ser los **recursos**?" → Azure Policy.
+- Exigir MFA a toda la organización → una política de acceso condicional (centralizada).
+- **Trampa:** roles que se activan por tiempo y con aprobación = **PIM** (Entra ID P2), no acceso condicional.
+
+## Servicios de identidad: si la pregunta dice…
+
+| Si la pregunta dice… | Respuesta | No confundir con |
+|---|---|---|
+| Mismas cuentas del AD local en Azure y Microsoft 365 (identidad híbrida) | **Entra Connect** (se instala en local) | Domain Services |
+| Supervisar la identidad local con un agente | **Entra Connect Health** | Entra Connect |
+| Consultor externo con **su propia cuenta** | **B2B / External ID** (invitado) | Crearle una cuenta nueva |
+| Roles poderosos solo cuando se necesitan (just-in-time) | **PIM** | Acceso condicional |
+| App moderna con OAuth 2.0 / SAML | **Entra ID + SSO** | AD local + Entra Connect |
+| GPO, LDAP, Kerberos/NTLM, todo en la nube, mínimo esfuerzo | **Entra Domain Services** (dominio administrado) | Entra ID solo |
+| App NTLM + dominio **actual** + **eliminar lo local** | **Controlador de dominio en una VM de Azure** | Domain Services (dominio nuevo) |
+| App NTLM + dominio actual, sin eliminar lo local (elige 2) | **DC en VM de Azure** + **AD local con Entra Connect** | Domain Services |
+
+- **Entra Domain Services** sincroniza en **una sola dirección**: de Entra ID hacia Domain Services. Es un dominio aparte, no extiende el AD local.
+- Gestionar usuarios y grupos: **Centro de administración de Microsoft Entra** (entra.microsoft.com).
+
+# Cap. 09 · Seguridad (PDF págs. 198–216)
+
+## Defensa en profundidad (de afuera hacia adentro)
+
+**Física → Identidad y acceso → Perímetro → Red → Proceso → Aplicación → Datos** (los datos, en el centro)
+
+| Si la pregunta dice… | Capa |
+|---|---|
+| Guardias, cámaras, acceso al edificio (la más externa) | **Física** |
+| MFA, acceso condicional, quién entra | **Identidad y acceso** |
+| Protección DDoS, firewall en el borde | **Perímetro** |
+| NSG que limita el tráfico entre subredes | **Red** |
+| Parches del SO de las VMs, puertos cerrados | **Proceso** (hosts) |
+| El activo más valioso, la "cámara del tesoro" | **Datos** |
+
+- Idea: si una capa falla, las otras siguen protegiendo.
+
+## Endpoints: llegar a un servicio PaaS (Storage, SQL) sin Internet
+
+| | **Endpoint privado** | **Endpoint de servicio** |
+|---|---|---|
+| Qué es | Una **NIC con IP privada** del servicio dentro de tu VNet | Acceso optimizado desde **una subred** |
+| Alcance | **Un recurso** concreto (esa cuenta, esa base de datos) | El **servicio completo** (todo Storage) |
+| Acceso público | **Se puede deshabilitar** | El endpoint público **sigue existiendo** |
+| Desde la oficina (VPN / ExpressRoute) | **Sí** llega | **No** |
+
+- La oficina por VPN debe llegar al Storage en privado → **endpoint privado en la VNet a la que llega la VPN** (y deshabilitar el acceso público).
+- **Trampa:** Azure **Arc** gestiona servidores fuera de Azure; nunca es conectividad ni endpoints.
+
+## Servicios de seguridad
+
+| Si la pregunta dice… | Respuesta |
+|---|---|
+| Guardar contraseñas, cadenas de conexión, claves de cifrado y certificados | **Key Vault** (cada app accede solo a lo suyo) |
+| Evaluar la postura de seguridad, recomendaciones, alertas; híbrido y multinube | **Microsoft Defender for Cloud** |
+| Ver rápido qué tan segura está tu suscripción | **Puntuación de seguridad** (Secure Score) de Defender for Cloud |
+| SIEM: reunir registros de toda la empresa (Azure y AWS) y detectar amenazas con IA | **Microsoft Sentinel** |
+
+- Ciclo de Defender for Cloud: **definir políticas → proteger → responder a alertas** (y volver a ajustar).
