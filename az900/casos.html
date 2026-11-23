@@ -1,0 +1,438 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Casos del examen</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="../assets/estilos.css">
+<style>
+:root{--a0:#2a78d6;--a1:#eb6834;--a2:#1baf7a;--a3:#eda100;--a4:#e87ba4;--a5:#6250d6}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--a0:#3987e5;--a1:#d95926;--a2:#199e70;--a3:#c98500;--a4:#d55181;--a5:#9085e9}}
+:root[data-theme="dark"]{--a0:#3987e5;--a1:#d95926;--a2:#199e70;--a3:#c98500;--a4:#d55181;--a5:#9085e9}
+.wrap{max-width:1240px}
+[hidden]{display:none!important}
+/* Lista de casos */
+.lista{display:grid;gap:8px;grid-template-columns:repeat(auto-fill,minmax(270px,1fr))}
+.lista button{font:inherit;text-align:left;display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;padding:10px 12px;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:10px;cursor:pointer}
+.lista button:hover{border-color:var(--accent)}
+.lista button[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.lista .n{font-family:var(--f-mono);font-weight:700;color:var(--accent)}
+.lista .t{font-size:.9rem}
+.lista .t small{display:block;font-family:var(--f-mono);font-size:.7rem;color:var(--muted)}
+.lista .r{font-family:var(--f-mono);font-weight:700}
+.lista .r.ok{color:var(--ok)}.lista .r.mal{color:var(--bad)}
+/* Pregunta y opciones */
+.preg{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;display:grid;gap:10px}
+.preg .src{font-family:var(--f-mono);font-size:.72rem;color:var(--muted)}
+.preg p.q{margin:0;font-size:1.02rem}
+.ops{display:grid;gap:6px}
+.op{font:inherit;text-align:left;display:grid;grid-template-columns:auto 1fr;gap:4px 10px;padding:8px 12px;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:8px;cursor:pointer}
+.op:hover{border-color:var(--accent)}
+.op .l{font-family:var(--f-mono);font-weight:700;color:var(--muted)}
+.op .por{grid-column:2;font-size:.86rem;color:var(--muted)}
+.op.sel{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.op.ok{border-color:var(--ok)}.op.ok .l{color:var(--ok)}
+.op.mal{border-color:var(--bad)}.op.mal .l{color:var(--bad)}
+.op.visto{background:var(--accent-soft)}
+.acc{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.btn{font:inherit;font-family:var(--f-mono);font-size:.85rem;padding:7px 12px;border:1px solid var(--accent);background:var(--accent);color:#fff;border-radius:6px;cursor:pointer}
+.btn.sec{background:var(--surface);color:var(--accent)}
+.btn:disabled{opacity:.45;cursor:default}
+/* Mapa */
+.lienzo{background:var(--surface);border:1px solid var(--line);border-radius:10px;overflow-x:auto}
+.lienzo svg{display:block;min-width:940px;width:100%;height:auto}
+.mc rect{fill:none;stroke:var(--muted);stroke-width:1.1;stroke-dasharray:5 4}
+.mc.sol rect{stroke-dasharray:none;stroke:var(--line);stroke-width:1.4}
+.mc text{font-family:var(--f-mono);font-size:10.5px;fill:var(--muted)}
+.nd rect.c{fill:var(--surface);stroke:var(--line);stroke-width:1.2}
+.nd text.t{font-family:var(--f-body);font-weight:600;font-size:12.5px;fill:var(--ink)}
+.nd text.s{font-family:var(--f-mono);font-size:9.5px;fill:var(--muted)}
+.pl rect{stroke:none}
+.pl text{font-family:var(--f-mono);font-size:9.5px;font-weight:500;fill:#fff}
+.nd,.pl,.mc{cursor:pointer;transition:opacity .15s}
+.ar path{fill:none;stroke:var(--muted);stroke-width:2}
+.ar text,.nota{font-family:var(--f-body);font-size:10.5px;fill:var(--ink);paint-order:stroke;stroke:var(--surface);stroke-width:4px;stroke-linejoin:round}
+.dim{opacity:.22}
+.nd.ok rect.c,.mc.ok rect{stroke:var(--ok);stroke-width:2.6;stroke-dasharray:none}
+.nd.mal rect.c,.mc.mal rect{stroke:var(--bad);stroke-width:2.6;stroke-dasharray:none}
+.nd.ac rect.c,.mc.ac rect{stroke:var(--accent);stroke-width:2.6;stroke-dasharray:none}
+.pl.ok rect{stroke:var(--ok);stroke-width:2.5}.pl.mal rect{stroke:var(--bad);stroke-width:2.5}.pl.ac rect{stroke:var(--accent);stroke-width:2.5}
+.ar.ok path{stroke:var(--ok);stroke-width:3.2}
+.ar.mal path{stroke:var(--bad);stroke-width:3.2}
+.ar.ac path{stroke:var(--accent);stroke-width:3.2}
+.ar.cut path{stroke:var(--bad);stroke-width:2.6;stroke-dasharray:5 4}
+.ar.cut text{fill:var(--bad)}
+.nota.ok{fill:var(--ok);font-weight:600}.nota.mal{fill:var(--bad);font-weight:600}
+.bd circle{stroke:var(--surface);stroke-width:2}
+.bd text{font-family:var(--f-mono);font-weight:700;font-size:11px;fill:#fff}
+.leyenda{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:.82rem;color:var(--muted)}
+.leyenda b{font-weight:600}
+.dos{display:grid;gap:12px;grid-template-columns:1fr 1fr}
+@media (max-width:760px){.dos{grid-template-columns:1fr}}
+.regla{background:var(--accent-soft);border-radius:10px;padding:12px 14px}
+.regla h3,.az104 h3{margin:0 0 4px;font-family:var(--f-display);font-size:.98rem}
+.regla p,.az104 p{margin:0;font-size:.92rem}
+.az104{background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--a5);border-radius:10px;padding:12px 14px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="nav"><a class="volver" href="index.html">← Capítulos AZ-900</a><a class="volver" href="dudas.html">Las dudas del examen</a><a class="volver" href="peering.html">Conectividad en 3 tramos</a><a class="volver" href="gobierno.html">Gobierno y seguridad</a><a class="volver" href="../arquitectura.html">Arquitectura →</a></div>
+  <header>
+    <div class="eyebrow">AZ-900 → AZ-104 · Casos del examen</div>
+    <h1>Casos del examen sobre un mismo mapa</h1>
+    <p>Cada caso es una pregunta de simulacro que costó. El mapa es siempre el mismo: la oficina conectada por VPN a <b>hub-vnet</b>, la app en <b>vnet-web</b>, los servicios PaaS y, arriba, Entra ID y la administración de Azure. Elige un caso: en <b>Estudiar</b> ves dónde cae cada respuesta en el mapa; en <b>Practicar</b> respondes tú (con los botones o tocando la pieza en el mapa).</p>
+  </header>
+
+  <section class="bloque" style="display:grid;gap:12px">
+    <div class="acc" style="justify-content:space-between">
+      <h2 class="h" style="margin:0">Los casos</h2>
+      <div class="ctl" style="grid-auto-flow:column;align-items:center;gap:10px"><label>Modo</label><div class="seg" id="segModo"></div></div>
+    </div>
+    <div class="lista" id="lista"></div>
+  </section>
+
+  <section class="bloque" style="display:grid;gap:12px">
+    <div class="preg" id="preg"></div>
+    <div class="lienzo"><svg id="svg" viewBox="0 0 1200 712" role="img" aria-label="Mapa: oficina, hub-vnet, vnet-web, servicios PaaS, Entra ID y administración de Azure"></svg></div>
+    <div class="leyenda"><span><b style="color:var(--ok)">Verde</b>: la respuesta correcta y su camino</span><span><b style="color:var(--bad)">Rojo</b>: una respuesta incorrecta (o un acceso cortado)</span><span><b style="color:var(--accent)">Azul</b>: tu elección, antes de corregir</span><span>Toca cualquier pieza para ver qué es.</span></div>
+    <div class="status" id="estado" hidden></div>
+    <div class="dos" id="reglas"></div>
+  </section>
+</div>
+
+<script>
+/* ---------- Mapa ---------- */
+// k: marco (m) · nodo (n) · pill (p). a: área (color de la barra) · q: qué es.
+const M=[
+ {id:"tenant",k:"m",sol:1,x:280,y:10,w:440,h:90,t:"Entra ID · tenant (identidades)",q:"El directorio de la empresa: usuarios, grupos y roles del directorio. Es global, no vive en una región."},
+ {id:"plano",k:"m",sol:1,x:740,y:10,w:450,h:90,t:"Administración de Azure",q:"El plano de administración: todo lo que haces en el portal, CLI o PowerShell pasa por Azure Resource Manager."},
+ {id:"onprem",k:"m",sol:1,x:10,y:150,w:250,h:280,t:"Oficina · nube privada",q:"El centro de datos propio: hardware comprado por la empresa (CapEx), control total y capacidad limitada a lo que compraste. Es la nube privada del caso."},
+ {id:"azure",k:"m",sol:1,x:280,y:130,w:790,h:578,t:"Nube pública de Azure",q:"Nube pública: hardware de Microsoft compartido entre clientes, pago por uso (OpEx) y escalado casi inmediato."},
+ {id:"sub",k:"m",x:292,y:160,w:766,h:540,t:"Suscripción · Producción",q:"La suscripción: límite de facturación y de acceso. Lo que asignes aquí (Policy, RBAC, bloqueos) lo heredan sus grupos de recursos y recursos."},
+ {id:"rg",k:"m",x:304,y:200,w:742,h:486,t:"Grupo de recursos · rg-web",q:"Contenedor lógico de los recursos de la app. Un recurso está en un solo grupo de recursos."},
+ {id:"hub",k:"m",sol:1,x:316,y:240,w:270,h:260,t:"hub-vnet · 10.0.0.0/16",q:"La VNet central: recibe la VPN o ExpressRoute de la oficina y comparte servicios con las demás VNets."},
+ {id:"gwsub",k:"m",x:326,y:266,w:240,h:76,t:"GatewaySubnet",q:"Subred reservada para los gateways (VPN y ExpressRoute). Se llama así obligatoriamente."},
+ {id:"snsh",k:"m",x:326,y:356,w:240,h:130,t:"snet-shared · 10.0.2.0/24",q:"Subred del hub para servicios compartidos: aquí viven el endpoint privado y una VM de administración."},
+ {id:"spoke",k:"m",sol:1,x:616,y:240,w:250,h:260,t:"vnet-web · 10.1.0.0/16",q:"La VNet de la app (un radio). Se une al hub con un peering."},
+ {id:"snweb",k:"m",x:626,y:266,w:230,h:150,t:"snet-web · 10.1.1.0/24",q:"La subred de las VMs web. Tiene un NSG asociado y puede tener endpoints de servicio."},
+ {id:"paas",k:"m",x:880,y:240,w:156,h:260,t:"Servicios PaaS",q:"Servicios administrados: no están dentro de tu VNet. Por defecto se llega a ellos por un endpoint público."},
+ {id:"entra",k:"n",a:0,x:292,y:36,w:130,t:"Entra ID",s:"usuarios · grupos",q:"Microsoft Entra ID (antes Azure Active Directory): identidad en la nube, inicio de sesión, MFA y acceso condicional."},
+ {id:"ana",k:"n",a:0,x:434,y:36,w:120,t:"Ana",s:"usuaria",q:"Una usuaria de Entra ID. Para que administre recursos hay que asignarle un rol de Azure RBAC en un ámbito."},
+ {id:"rolesent",k:"n",a:0,x:566,y:36,w:142,t:"Roles de Entra ID",s:"Admin. global…",q:"Roles del DIRECTORIO (Administrador global, Administrador de usuarios…): administran usuarios, grupos y licencias, no las VMs ni el Storage."},
+ {id:"arm",k:"n",a:4,x:752,y:36,w:200,t:"Azure Resource Manager",s:"portal · CLI · API",q:"La capa de administración de Azure: cada creación, cambio o borrado pasa por ARM, que aplica RBAC, Policy y bloqueos."},
+ {id:"mon",k:"n",a:4,x:964,y:36,w:214,t:"Azure Monitor · Defender",s:"métricas · logs · postura",q:"Azure Monitor recoge métricas y logs; Defender for Cloud evalúa la seguridad. Con Arc también ven los servidores de la oficina."},
+ {id:"pcs",k:"n",a:0,x:22,y:176,w:226,t:"Empleados",s:"PC de la oficina",q:"Los equipos de la oficina. Llegan a Azure a través del dispositivo VPN (o de ExpressRoute)."},
+ {id:"adds",k:"n",a:0,x:22,y:228,w:226,t:"AD DS local",s:"Kerberos · LDAP",q:"El Active Directory de la oficina. Con Entra Connect sincroniza sus usuarios a Entra ID."},
+ {id:"srv",k:"n",a:2,x:22,y:280,w:226,t:"Servidores locales",s:"Windows · Linux · archivos",q:"Servidores de la oficina: no están en Azure. Arc los gestiona desde Azure; File Sync sincroniza sus carpetas con Azure Files."},
+ {id:"arc",k:"p",a:4,x:22,y:330,w:226,t:"Agente Azure Arc",q:"Azure Arc: gestiona desde Azure servidores que están FUERA de Azure (Policy, RBAC, etiquetas, Monitor, Defender). No conecta redes, no migra y no sincroniza archivos."},
+ {id:"fsync",k:"p",a:3,x:22,y:350,w:226,t:"Agente Azure File Sync",q:"Azure File Sync: sincroniza carpetas del servidor de archivos con un recurso compartido de Azure Files, dejando caché local. No gestiona el servidor."},
+ {id:"vpndev",k:"n",a:1,x:22,y:374,w:226,t:"Dispositivo VPN",s:"IP pública de la oficina",q:"El extremo local de la VPN Site-to-Site. El túnel va cifrado (IPsec) pero viaja por Internet."},
+ {id:"er",k:"n",a:1,x:22,y:470,w:226,t:"ExpressRoute",s:"circuito del proveedor",q:"Circuito privado contratado con un proveedor: une la oficina con Azure sin pasar por Internet. Llega al ExpressRoute Gateway."},
+ {id:"internet",k:"n",a:1,x:1082,y:250,w:108,t:"Internet",s:"IP públicas",q:"Cualquier origen público. Llega a los servicios PaaS por su endpoint público, si está habilitado."},
+ {id:"vpngw",k:"n",a:1,x:334,y:290,w:108,t:"VPN Gateway",s:"S2S · P2S",q:"VPN Gateway: recibe túneles IPsec por Internet. Site-to-Site = toda la oficina; Point-to-Site = un solo equipo."},
+ {id:"ergw",k:"n",a:1,x:450,y:290,w:108,t:"ER Gateway",s:"ExpressRoute",q:"ExpressRoute Gateway: conecta el circuito ExpressRoute del proveedor con la VNet."},
+ {id:"pe",k:"n",a:1,x:334,y:380,w:118,t:"Endpoint privado",s:"IP 10.0.2.4",q:"Endpoint privado (Private Link): una tarjeta de red con IP PRIVADA de tu VNet que apunta a un servicio PaaS. Todo lo que llega a la VNet (oficina por VPN, VNets emparejadas) llega al servicio. Tiene costo."},
+ {id:"vmhub",k:"n",a:2,x:460,y:380,w:98,t:"VM admin",s:"10.0.2.5",q:"Una VM del hub (por ejemplo, de administración o un DNS)."},
+ {id:"vm1",k:"n",a:2,x:634,y:296,w:106,t:"VM web 1",s:"10.1.1.4",q:"VM de la app en snet-web (IaaS)."},
+ {id:"vm2",k:"n",a:2,x:744,y:296,w:106,t:"VM web 2",s:"10.1.1.5",q:"VM de la app en snet-web (IaaS)."},
+ {id:"nsg",k:"p",a:1,x:634,y:348,w:120,t:"NSG · snet-web",q:"Grupo de seguridad de red: reglas que permiten o deniegan tráfico por IP, puerto y protocolo. Se asocia a una subred o a una NIC."},
+ {id:"sep",k:"p",a:1,x:634,y:370,w:216,t:"Endpoint de servicio · Storage",q:"Endpoint de servicio: se activa en una SUBRED de Azure. El servicio sigue con su IP pública, pero su firewall deja entrar solo a esa subred, por la red de Microsoft. Gratis. No sirve desde la oficina."},
+ {id:"sql",k:"n",a:3,x:888,y:270,w:140,t:"Azure SQL",s:"base de datos",q:"Base de datos PaaS. Igual que Storage: endpoint público por defecto; privado con Private Link."},
+ {id:"storage",k:"n",a:3,x:888,y:420,w:140,h:50,t:"Storage Account",s:"stclientes · Files",q:"La cuenta de almacenamiento con datos de clientes (Blob y Azure Files). Es PaaS: no está dentro de tu VNet."},
+ {id:"lock",k:"p",a:5,x:888,y:476,w:140,t:"Bloqueo (lock)",q:"Bloqueo de recurso: CanNotDelete (Eliminación: se puede usar y modificar, no borrar) o ReadOnly (Solo lectura). Aplica a todos, incluso al Propietario."},
+ {id:"policy",k:"p",a:5,x:540,y:166,w:230,t:"Azure Policy · regiones permitidas",q:"Azure Policy: reglas sobre QUÉ se puede crear o cómo debe configurarse (regiones, SKUs, etiquetas obligatorias). No dice quién, no filtra tráfico."},
+ {id:"rbac",k:"p",a:5,x:540,y:206,w:160,t:"RBAC · asignación de rol",q:"Azure RBAC: QUIÉN puede hacer QUÉ y DÓNDE (rol + ámbito). Se hereda hacia abajo. No filtra tráfico de red."}
+];
+// d: puntos · lab: [texto, x, y, anchor] · base: se ve siempre (premisa común)
+const A=[
+ {id:"e_lan",base:1,d:[[22,198],[14,198],[14,396],[22,396]]},
+ {id:"e_vpn",base:1,d:[[248,396],[300,396],[300,312],[334,312]],lab:["VPN S2S",304,348,"start"]},
+ {id:"e_peer",base:1,d:[[586,322],[616,322]],lab:["peering",601,234,"middle"]},
+ {id:"e_er_of",d:[[135,430],[135,470]]},
+ {id:"e_er",d:[[248,492],[288,492],[288,540],[576,540],[576,326],[558,326]],lab:["ExpressRoute: privado, sin Internet",296,556,"start"]},
+ {id:"e_pe",d:[[452,402],[600,402],[600,520],[868,520],[868,458],[888,458]],lab:["Private Link: IP privada 10.0.2.4",606,514,"start"]},
+ {id:"e_se",d:[[850,378],[876,378],[876,434],[888,434]]},
+ {id:"e_pub",d:[[1028,434],[1060,434],[1060,272],[1082,272]],lab:["endpoint público",1064,318,"start"]},
+ {id:"e_rdp",d:[[1136,250],[1136,230],[690,230],[690,296]],lab:["RDP 3389 desde Internet",1130,224,"end"]},
+ {id:"e_arc",d:[[248,338],[274,338],[274,116],[740,116],[740,58],[752,58]],lab:["Azure Arc: el servidor aparece como recurso (gestión, no red)",300,112,"start"]},
+ {id:"e_sync",d:[[248,358],[266,358],[266,694],[1040,694],[1040,452],[1028,452]],lab:["Azure File Sync: carpetas ↔ Azure Files",620,690,"start"]},
+ {id:"e_rbac",d:[[494,80],[494,142],[620,142],[620,206]],lab:["asignación",626,154,"start"]}
+];
+
+/* ---------- Casos ---------- */
+// op: {t, ok, por, ver:[ids] ("!id" = acceso cortado), pieza (lo que se toca en el mapa), nota:[texto,x,y]}
+const CASOS=[
+ {id:"pe",tit:"Storage privado desde la oficina",cap:"cap09",src:"Udemy · fallada dos veces (también es la n.º 18 del quiz del cap. 09)",
+  q:"Tu oficina está conectada a una Azure Virtual Network denominada hub-vnet mediante una conexión VPN. Posees una cuenta de almacenamiento Azure con información sensible de clientes. Necesitas deshabilitar el acceso público a la cuenta de almacenamiento y permitir el acceso privado desde tu oficina. ¿Qué pasos debes seguir?",
+  esc:["pcs","e_lan","vpndev","e_vpn","vpngw","hub","storage"],
+  op:[
+   {t:"Implementa Azure Arc para establecer una conexión privada a la cuenta de almacenamiento y desactiva el acceso público a la misma",pieza:"arc",ver:["srv","arc","e_arc","arm"],
+    por:"Arc gestiona servidores que están fuera de Azure (va hacia la administración, arriba). No crea conexiones de red ni toca el Storage."},
+   {t:"Implementa un endpoint de servicio en hub-vnet conectado a la cuenta de almacenamiento y desactiva el acceso público a dicha cuenta",pieza:"sep",ver:["sep","e_se","storage","e_pub"],nota:["la oficina no entra por aquí",660,410],
+    por:"El endpoint de servicio es para una subred de Azure: la cuenta sigue con su IP pública y solo abre su firewall a esa subred. El tráfico de la oficina por VPN no lo usa."},
+   {t:"No es posible crear conexiones privadas a servicios PaaS; estos servicios siempre deben tener un punto final público por diseño",pieza:null,ver:["storage","e_pub"],
+    por:"Falso: para eso existe Private Link (endpoint privado). Con él puedes deshabilitar el acceso público."},
+   {t:"Implementa un endpoint privado en hub-vnet que se conecte a la cuenta de almacenamiento y desactiva el acceso público a la misma",ok:true,pieza:"pe",ver:["pcs","e_lan","vpndev","e_vpn","vpngw","hub","pe","e_pe","storage","!e_pub"],nota:["acceso público: deshabilitado",1196,346,"end"],
+    por:"La cuenta recibe una IP privada (10.0.2.4) en hub-vnet. La oficina ya llega a hub-vnet por la VPN, así que llega a esa IP; el endpoint público se puede cerrar."}],
+  regla:"\"Deshabilitar el acceso público\", \"desde la oficina\" o \"IP privada\" → <b>endpoint privado</b>. \"Solo una subred\", \"gratis\", \"el servicio sigue público\" → <b>endpoint de servicio</b>. Azure Arc nunca es la respuesta de conectividad.",
+  az104:"Crear el endpoint privado (subrecurso <b>blob</b> o <b>file</b>) en una subred del hub, integrado con la zona DNS privada <b>privatelink.blob.core.windows.net</b> vinculada a hub-vnet; la oficina necesita resolver ese nombre (reenviador condicional o DNS Private Resolver). En la cuenta: Redes → Acceso de red público: <b>Deshabilitado</b>. No está en el PDF de AZ-900."},
+ {id:"arc",tit:"Gestionar servidores de la oficina",cap:"cap10",src:"Patrón de Las dudas del examen (Arc vs File Sync)",
+  q:"Tu empresa tiene servidores Windows y Linux en su centro de datos local. Quieres verlos en el portal de Azure y aplicarles las mismas Azure Policy y etiquetas que a tus VMs de Azure, sin migrarlos. ¿Qué usas?",
+  esc:["srv","onprem","policy"],
+  op:[
+   {t:"Azure Arc",ok:true,pieza:"arc",ver:["srv","arc","e_arc","arm","mon","policy"],
+    por:"Arc proyecta cada servidor como un recurso de Azure: le llegan Policy, RBAC, etiquetas, Azure Monitor y Defender. El servidor sigue en la oficina."},
+   {t:"Azure File Sync",pieza:"fsync",ver:["srv","fsync","e_sync","storage"],
+    por:"File Sync sincroniza CARPETAS con Azure Files. No hace que el servidor aparezca en el portal ni le aplica Policy."},
+   {t:"Azure Migrate",pieza:null,ver:["srv"],nota:["Migrate lo movería a Azure",30,322],
+    por:"Migrate evalúa y MUEVE servidores a Azure. El caso dice \"sin migrarlos\"."},
+   {t:"VPN Gateway (Site-to-Site)",pieza:"vpngw",ver:["vpndev","e_vpn","vpngw"],
+    por:"La VPN conecta la RED de la oficina con la VNet. No sirve para gestionar los servidores desde el portal."}],
+  regla:"Servidores fuera de Azure + \"portal / Policy / gestionar / monitorear\" → <b>Azure Arc</b>. \"Sincronizar carpetas con Azure Files\" → <b>Azure File Sync</b>. \"Mover a Azure\" → <b>Azure Migrate</b>. \"Conectar la red\" → VPN o ExpressRoute.",
+  az104:"Se instala el agente <b>Connected Machine</b> (azcmagent) en cada servidor; queda como recurso <b>Microsoft.HybridCompute/machines</b> en un grupo de recursos. Desde ahí: Policy (configuración de invitado), RBAC, etiquetas, Azure Monitor Agent y Defender for Servers."},
+ {id:"er",tit:"Oficina → Azure sin Internet",cap:"cap06",src:"Patrón de Las dudas del examen (VPN vs ExpressRoute)",
+  q:"Por regulación, el tráfico entre tu oficina y Azure no puede viajar por Internet, ni siquiera cifrado. ¿Qué usas?",
+  esc:["pcs","onprem","hub"],
+  op:[
+   {t:"VPN Gateway con conexión Site-to-Site",pieza:"vpngw",ver:["pcs","e_lan","vpndev","e_vpn","vpngw"],nota:["cifrada, pero por Internet",304,366],
+    por:"La S2S va cifrada (IPsec), pero el túnel viaja por Internet. No cumple la regulación."},
+   {t:"ExpressRoute",ok:true,pieza:"er",ver:["onprem","e_er_of","er","e_er","ergw","hub"],
+    por:"Circuito privado de un proveedor que llega al ExpressRoute Gateway: no pasa por Internet. Más ancho de banda y latencia estable."},
+   {t:"VPN Gateway con conexión Point-to-Site",pieza:null,ver:["pcs","vpngw"],
+    por:"P2S conecta UN equipo (cliente VPN), no la oficina, y también va por Internet."},
+   {t:"VNet peering",pieza:"e_peer",ver:["e_peer","hub","spoke"],
+    por:"El peering une dos VNets de Azure entre sí. No conecta la oficina."}],
+  regla:"\"Sin pasar por Internet\", \"privada\", \"dedicada\", \"proveedor\" → <b>ExpressRoute</b>. \"Cifrada por Internet\" / \"toda la oficina\" → <b>VPN S2S</b>. \"Un trabajador desde casa\" → <b>VPN P2S</b>.",
+  az104:"Se necesitan el <b>circuito</b> (con el proveedor, peering privado), un <b>ExpressRoute Gateway</b> en la GatewaySubnet y la <b>conexión</b>. Es común dejar una VPN S2S como respaldo. ExpressRoute no cifra por defecto: si se exige cifrado, se agrega IPsec o MACsec."},
+ {id:"peer",tit:"VNet ↔ VNet por IP privada",cap:"cap06",src:"Patrón de Las dudas del examen (tramo 2)",
+  q:"Una VM de vnet-web debe comunicarse con una VM de hub-vnet por IP privada, por la red troncal de Microsoft y sin gateways. ¿Qué configuras?",
+  esc:["vm1","vmhub","hub","spoke"],
+  op:[
+   {t:"VNet peering entre hub-vnet y vnet-web",ok:true,pieza:"e_peer",ver:["vm1","snweb","spoke","e_peer","hub","snsh","vmhub"],
+    por:"El peering une las dos VNets por la red de Microsoft, sin gateways: las VMs se hablan por IP privada."},
+   {t:"VPN Gateway (Site-to-Site)",pieza:"vpngw",ver:["vpngw","e_vpn","vpndev"],
+    por:"Es para conectar la oficina. Entre VNets existe VNet-to-VNet, pero necesita un VPN Gateway en cada lado (y el caso dice sin gateways)."},
+   {t:"Un endpoint privado",pieza:"pe",ver:["pe","e_pe","storage"],
+    por:"El endpoint privado lleva un servicio PaaS a tu VNet. No une dos VNets."},
+   {t:"ExpressRoute",pieza:"er",ver:["er","e_er","ergw"],
+    por:"ExpressRoute conecta la oficina con Azure, no dos VNets entre sí."}],
+  regla:"Dos VNets por IP privada, sin gateways → <b>VNet peering</b> (local o global). Se crea en los <b>dos lados</b>, sin espacios de direcciones superpuestos y <b>no es transitivo</b>.",
+  az104:"Estado <b>Conectado</b> en ambos lados (si queda Iniciado, falta el otro lado). Para que vnet-web llegue a la oficina por el VPN Gateway del hub: <b>tránsito de gateway</b> (el hub permite usar su gateway y el radio marca usar el gateway remoto). Entre radios: Azure Firewall o NVA en el hub con UDR."},
+ {id:"nsg",tit:"Bloquear RDP desde Internet",cap:"cap09",src:"Patrón de Las dudas del examen (qué capa controla qué)",
+  q:"Las VMs de snet-web no deben aceptar conexiones RDP (puerto 3389) desde Internet. ¿Qué configuras?",
+  esc:["internet","vm1","vm2","snweb"],
+  op:[
+   {t:"Un grupo de seguridad de red (NSG) en snet-web con una regla que deniega 3389",ok:true,pieza:"nsg",ver:["nsg","internet","!e_rdp","vm1","vm2","snweb"],nota:["denegado por el NSG",760,361],
+    por:"El NSG filtra el tráfico por IP, puerto y protocolo en la subred (o la NIC). Es la capa de red."},
+   {t:"Un bloqueo CanNotDelete en las VMs",pieza:"lock",ver:["lock"],
+    por:"Un bloqueo evita borrar o modificar recursos en el plano de administración. No filtra paquetes."},
+   {t:"Una Azure Policy",pieza:"policy",ver:["policy"],
+    por:"Policy decide qué se puede crear o cómo debe configurarse (podría exigir que exista un NSG), pero no filtra el tráfico."},
+   {t:"Azure RBAC",pieza:"rbac",ver:["rbac","ana","e_rbac"],
+    por:"RBAC decide quién administra los recursos en el portal, no qué tráfico de red entra a la VM."}],
+  regla:"Permitir o denegar <b>tráfico</b> (puerto, IP) → <b>NSG</b>. <b>Quién</b> puede administrar → RBAC. <b>Qué</b> se puede crear → Policy. Que <b>no se borre</b> → bloqueo.",
+  az104:"Regla entrante con <b>prioridad</b> 100–4096 (gana el número menor) y etiqueta de servicio <b>Internet</b> como origen. Reglas por defecto: AllowVnetInBound, AllowAzureLoadBalancerInBound y DenyAllInBound (65000–65500). Con NSG en subred y en NIC, <b>los dos deben permitir</b>. Para administrar sin abrir RDP: <b>Azure Bastion</b>."},
+ {id:"rbac",tit:"Permisos justos para Ana",cap:"cap08",src:"Patrón de Las dudas del examen (RBAC vs roles de Entra ID)",
+  q:"Ana debe crear y administrar VMs en rg-web, pero no debe poder dar permisos a otras personas ni tocar otros grupos de recursos. ¿Qué le asignas?",
+  esc:["ana","rg"],
+  op:[
+   {t:"El rol Colaborador en el grupo de recursos rg-web",ok:true,pieza:"rbac",ver:["ana","e_rbac","rbac","rg"],
+    por:"Colaborador hace todo con los recursos menos asignar permisos, y el ámbito rg-web lo limita a ese grupo de recursos (mínimo privilegio)."},
+   {t:"El rol Propietario en la suscripción",pieza:"sub",ver:["ana","sub"],
+    por:"Propietario sí puede asignar permisos, y en la suscripción alcanza todos los grupos de recursos."},
+   {t:"El rol Administrador global de Entra ID",pieza:"rolesent",ver:["rolesent","tenant"],
+    por:"Es un rol del directorio (usuarios, licencias). No da permisos sobre VMs; además es demasiado poder."},
+   {t:"El rol Lector en rg-web",pieza:null,ver:["ana","e_rbac","rbac","rg"],nota:["Lector: solo ver",626,168],
+    por:"Lector solo ve los recursos: no puede crear ni administrar VMs."}],
+  regla:"Administrar <b>recursos</b> de Azure → <b>Azure RBAC</b> (Propietario, Colaborador, Lector) en el ámbito más chico posible. Administrar el <b>directorio</b> (usuarios, licencias) → <b>roles de Entra ID</b>.",
+  az104:"Una asignación es <b>entidad de seguridad + definición de rol + ámbito</b> (grupo de administración, suscripción, grupo de recursos o recurso) y se hereda hacia abajo. Colaborador = todo menos asignar acceso; Propietario = todo + asignar; Lector = ver; Administrador de acceso de usuario = solo asignar acceso. Mejor asignar a grupos que a personas."},
+ {id:"lock",tit:"Que nadie borre la cuenta",cap:"cap10",src:"Patrón de Las dudas del examen (Policy vs bloqueos)",
+  q:"Nadie debe poder borrar por error la cuenta stclientes, ni siquiera un Propietario, pero el equipo debe seguir usándola y modificándola. ¿Qué aplicas?",
+  esc:["storage"],
+  op:[
+   {t:"Un bloqueo de tipo CanNotDelete (Eliminación)",ok:true,pieza:"lock",ver:["lock","storage"],nota:["CanNotDelete: usar y modificar sí, borrar no",888,512],
+    por:"El bloqueo aplica a todos, incluso al Propietario: para borrar, primero hay que quitar el bloqueo. Con CanNotDelete se sigue usando y modificando."},
+   {t:"Un bloqueo de tipo ReadOnly (Solo lectura)",pieza:null,ver:["lock","storage"],nota:["ReadOnly: tampoco se puede modificar",888,512],
+    por:"También impide modificarla (y operaciones como listar las claves). El caso pide poder modificarla."},
+   {t:"Una Azure Policy",pieza:"policy",ver:["policy"],
+    por:"Policy controla qué se crea y cómo se configura; no es la herramienta para impedir que se borre un recurso concreto."},
+   {t:"Asignar el rol Lector a todo el equipo",pieza:"rbac",ver:["rbac"],
+    por:"Nadie podría modificarla, y un Propietario igual podría borrarla. RBAC no protege contra el Propietario."}],
+  regla:"\"Que nadie borre, ni el Propietario\" → <b>bloqueo CanNotDelete</b>. \"Que no se pueda cambiar nada\" → <b>ReadOnly</b>. \"Que solo se cree en Brazil South\" o \"etiqueta obligatoria\" → <b>Policy</b>.",
+  az104:"Los bloqueos se ponen en suscripción, grupo de recursos o recurso y se <b>heredan</b>. Para crearlos o quitarlos hace falta <b>Microsoft.Authorization/locks</b> (Propietario o Administrador de acceso de usuario). ReadOnly puede romper cosas: listar las claves de Storage es una operación POST y queda bloqueada."},
+ {id:"nube",tit:"Nube privada vs pública",cap:"cap02",src:"Udemy · examen 6, 2.ª vuelta (23 nov)",multi:true,
+  q:"¿Cuáles son características destacadas de las nubes privadas? (Selecciona DOS respuestas)",
+  esc:["onprem","azure"],
+  op:[
+   {t:"Mayor control y seguridad",ok:true,pieza:"onprem",ver:["onprem","srv","adds"],nota:["hardware solo tuyo: tú decides",30,444],
+    por:"El hardware es solo de tu empresa: tú decides la configuración, la seguridad y el cumplimiento."},
+   {t:"Escalabilidad mejorada",pieza:"azure",ver:["azure"],nota:["escalar al instante = nube pública",700,604],
+    por:"Escalar casi sin límite y al instante es la ventaja de la nube pública."},
+   {t:"Flexibilidad limitada",ok:true,pieza:"onprem",ver:["onprem","srv"],nota:["crecer = comprar más hardware",30,459],
+    por:"Solo puedes crecer hasta donde llega el hardware que compraste; ampliar significa comprar más equipos."},
+   {t:"Costes operativos reducidos",pieza:"azure",ver:["azure"],nota:["pago por uso (OpEx) = nube pública",700,604],
+    por:"En la privada pagas el hardware (CapEx) y su mantenimiento: sale más cara. El pago por uso es de la pública."}],
+  regla:"<b>Privada</b> = control y seguridad, pero CapEx y límite del hardware propio. <b>Pública</b> = escalar al instante, pago por uso (OpEx), sin mantener hardware. Ojo: \"flexible\" a veces significa \"configurable a tu medida\" (eso sí lo tiene la privada); aquí significa crecer o achicarse rápido.",
+  az104:"No se pregunta directo, pero es la base del modelo <b>híbrido</b> de este mapa (oficina + Azure): en Azure escalas con conjuntos de escalado de VMs y escalado automático, y pagas por uso."}
+];
+
+/* ---------- Estado ---------- */
+const CLAVE="az900:casos:resultado";
+let res={};try{res=JSON.parse(localStorage.getItem(CLAVE))||{}}catch(e){}
+function guardar(){try{localStorage.setItem(CLAVE,JSON.stringify(res))}catch(e){}}
+let modo="est",ci=0,visto=null,sel=[],corregido=false,info=null;
+const POR={};M.forEach(e=>POR[e.id]=e);A.forEach(e=>POR[e.id]=e);
+const C=()=>CASOS[ci];
+const correctas=c=>c.op.map((o,i)=>o.ok?i:-1).filter(i=>i>=0);
+
+/* ---------- SVG ---------- */
+const NS="http://www.w3.org/2000/svg",svg=document.getElementById("svg");
+function mk(t,a,p){const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);if(p)p.appendChild(e);return e}
+function txt(p,x,y,s,cls,anchor){const e=mk("text",{x,y,class:cls||""},p);if(anchor)e.setAttribute("text-anchor",anchor);e.textContent=s;return e}
+function ajustar(el,ancho){if(el.getComputedTextLength()>ancho){el.setAttribute("textLength",ancho);el.setAttribute("lengthAdjust","spacingAndGlyphs")}}
+
+// Qué se ve: {id: "ok"|"mal"|"ac"|"cut"} y notas
+function vista(){
+  const c=C(),est={},notas=[];
+  const pon=(o,cl)=>{o.ver.forEach(v=>{if(v[0]==="!")est[v.slice(1)]="cut";else if(est[v]!=="ok"&&est[v]!=="cut")est[v]=cl});if(o.nota)notas.push([o.nota,cl])};
+  if(modo==="est"){
+    if(visto==null)correctas(c).forEach(i=>pon(c.op[i],"ok"));
+    else pon(c.op[visto],c.op[visto].ok?"ok":"mal");
+  }else if(!corregido){
+    sel.forEach(i=>{const o=c.op[i];o.ver.forEach(v=>{const k=v.replace("!","");if(!est[k])est[k]="ac"})});
+  }else if(visto!=null){pon(c.op[visto],c.op[visto].ok?"ok":"mal");
+  }else{
+    sel.filter(i=>!c.op[i].ok).forEach(i=>pon(c.op[i],"mal"));
+    correctas(c).forEach(i=>pon(c.op[i],"ok"));
+  }
+  return {est,notas};
+}
+
+function dibujar(){
+  svg.innerHTML="";
+  const c=C(),{est,notas}=vista(),esc=new Set(c.esc);
+  const visible=id=>est[id]||esc.has(id);
+  const clase=id=>est[id]?est[id]:(esc.has(id)?"":"dim");
+  const gM=mk("g",{},svg),gA=mk("g",{},svg),gN=mk("g",{},svg),gT=mk("g",{},svg);
+  M.forEach(e=>{
+    const sel=info===e.id?" ac":"";
+    if(e.k==="m"){
+      const g=mk("g",{class:"mc"+(e.sol?" sol":"")+" "+clase(e.id)+sel,"data-id":e.id},gM);
+      mk("rect",{x:e.x,y:e.y,width:e.w,height:e.h,rx:8},g);
+      txt(g,e.x+8,e.y+14,e.t);
+    }else if(e.k==="n"){
+      const h=e.h||44,g=mk("g",{class:"nd "+clase(e.id)+sel,"data-id":e.id},gN);
+      mk("rect",{class:"c",x:e.x,y:e.y,width:e.w,height:h,rx:6},g);
+      mk("rect",{x:e.x,y:e.y,width:4,height:h,rx:2,fill:`var(--a${e.a})`},g);
+      ajustar(txt(g,e.x+12,e.y+19,e.t,"t"),e.w-18);
+      ajustar(txt(g,e.x+12,e.y+35,e.s,"s"),e.w-18);
+    }else{
+      const g=mk("g",{class:"pl "+clase(e.id)+sel,"data-id":e.id},gN);
+      mk("rect",{x:e.x,y:e.y,width:e.w,height:16,rx:8,fill:`var(--a${e.a})`},g);
+      ajustar(txt(g,e.x+e.w/2,e.y+11.5,e.t,"","middle"),e.w-12);
+    }
+  });
+  A.forEach(a=>{
+    if(!(a.base||visible(a.id)))return;
+    const cl=est[a.id]||(esc.has(a.id)||a.base?"":"dim");
+    const g=mk("g",{class:"ar "+(a.base&&!est[a.id]&&!esc.has(a.id)?"dim":cl),"data-id":a.id},gA);
+    mk("path",{d:"M"+a.d.map(p=>p.join(",")).join("L"),"marker-end":a.id==="e_lan"||a.id==="e_peer"?"":"url(#punta)"},g);
+    if(a.lab&&(est[a.id]||esc.has(a.id)))txt(g,a.lab[1],a.lab[2],a.lab[0],"",a.lab[3]);
+  });
+  notas.forEach(([[t,x,y,an],cl])=>txt(gT,x,y,t,"nota "+(cl==="ac"?"":cl),an));
+  // ✓ / ✕ en la pieza de cada opción corregida
+  const marcas=[];
+  if(modo==="est"){const idx=visto==null?correctas(c):[visto];idx.forEach(i=>marcas.push([c.op[i].pieza,c.op[i].ok]))}
+  else if(corregido){(visto!=null?[visto]:[...new Set([...sel,...correctas(c)])]).forEach(i=>marcas.push([c.op[i].pieza,!!c.op[i].ok]))}
+  marcas.forEach(([id,ok])=>{const e=POR[id];if(!e)return;let x,y;
+    if(e.d){const m=e.d[Math.floor(e.d.length/2)];x=m[0];y=m[1]-12}else{x=e.x+e.w-4;y=e.y+(e.k==="m"?18:2)}
+    const g=mk("g",{class:"bd"},gT);mk("circle",{cx:x,cy:y,r:9,fill:ok?"var(--ok)":"var(--bad)"},g);txt(g,x,y+4,ok?"✓":"✕","","middle")});
+  const defs=mk("defs",{},svg);defs.innerHTML='<marker id="punta" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" fill="context-stroke"/></marker>';
+  svg.querySelectorAll("[data-id]").forEach(g=>g.addEventListener("click",ev=>{ev.stopPropagation();tocar(g.dataset.id)}));
+}
+
+/* ---------- Panel ---------- */
+const LET="abcd";
+const PAG={cap02:"cap02-cloud.html",cap06:"cap06-redes.html",cap08:"cap08-autenticacion-autorizacion.html",cap09:"cap09-seguridad.html",cap10:"cap10-monitorizacion-gestion.html"};
+function estado(lvl,t,d){
+  const el=document.getElementById("estado");
+  if(!t){el.hidden=true;return}
+  const col={ok:"var(--ok)",bad:"var(--bad)",info:"var(--accent)"}[lvl];
+  el.hidden=false;el.innerHTML=`<span class="dot" style="background:${col}" aria-hidden="true"></span><div><b>${t}</b><p>${d}</p></div>`;
+}
+function panel(){
+  const c=C(),pr=document.getElementById("preg");
+  const mostrarPor=modo==="est"||corregido;
+  let h=`<div class="src">Caso ${ci+1} de ${CASOS.length} · <a href="${PAG[c.cap]}">capítulo ${+c.cap.slice(3)}</a> · ${c.src}</div><p class="q">${c.q}</p><div class="ops">`;
+  c.op.forEach((o,i)=>{
+    let cl="op";
+    if(modo==="est"){cl+=o.ok?" ok":" mal";if(visto===i)cl+=" visto"}
+    else if(corregido){if(o.ok)cl+=" ok";else if(sel.includes(i))cl+=" mal";if(visto===i)cl+=" visto"}
+    else if(sel.includes(i))cl+=" sel";
+    const ic=mostrarPor?(o.ok?"✓":"✕"):LET[i]+")";
+    h+=`<button type="button" class="${cl}" data-o="${i}"><span class="l">${ic}</span><span>${o.t}</span>${mostrarPor?`<span class="por">${o.por}${o.pieza?"":" (no es una pieza del mapa)"}</span>`:""}</button>`;
+  });
+  h+=`</div><div class="acc">`;
+  if(modo==="prac"&&c.multi&&!corregido)h+=`<button type="button" class="btn" id="comprobar" ${sel.length===correctas(c).length?"":"disabled"}>Comprobar (${sel.length}/${correctas(c).length})</button>`;
+  if(modo==="prac"&&corregido)h+=`<button type="button" class="btn sec" id="otra">Intentar de nuevo</button>`;
+  if(ci<CASOS.length-1)h+=`<button type="button" class="btn sec" id="sig">Siguiente caso →</button>`;
+  if(modo==="est")h+=`<span class="fb">Toca una opción para verla en el mapa.</span>`;
+  else if(!corregido)h+=`<span class="fb">Elige una opción o toca en el mapa la pieza que resuelve el caso.</span>`;
+  h+=`</div>`;
+  pr.innerHTML=h;
+  pr.querySelectorAll("[data-o]").forEach(b=>b.onclick=()=>elegir(+b.dataset.o));
+  const cb=document.getElementById("comprobar");if(cb)cb.onclick=corregir;
+  const ot=document.getElementById("otra");if(ot)ot.onclick=()=>{sel=[];corregido=false;visto=null;info=null;todo()};
+  const sg=document.getElementById("sig");if(sg)sg.onclick=()=>irA(ci+1);
+  const rg=document.getElementById("reglas");
+  rg.innerHTML=mostrarPor?`<div class="regla"><h3>La regla</h3><p>${c.regla}</p></div><div class="az104"><h3>Para AZ-104</h3><p>${c.az104}</p></div>`:"";
+}
+function elegir(i){
+  const c=C();info=null;
+  if(modo==="est"){visto=visto===i?null:i;estado();todo();return}
+  if(corregido){visto=visto===i?null:i;todo();return}
+  if(c.multi){sel=sel.includes(i)?sel.filter(x=>x!==i):(sel.length<correctas(c).length?[...sel,i]:sel);todo();return}
+  sel=[i];corregir();
+}
+function corregir(){
+  const c=C(),ok=correctas(c),bien=sel.length===ok.length&&sel.every(i=>ok.includes(i));
+  corregido=true;visto=null;res[c.id]=bien;guardar();
+  const txtOk=ok.map(i=>LET[i]+") "+c.op[i].t).join(" y ");
+  estado(bien?"ok":"bad",bien?"✓ Correcto":"✕ No era esa",bien?c.op[ok[0]].por:`La respuesta es ${txtOk}. En el mapa, en verde el camino correcto y en rojo lo que elegiste.`);
+  todo();
+}
+function tocar(id){
+  const c=C(),e=POR[id];if(!e)return;
+  const idx=c.op.map((o,i)=>o.pieza===id?i:-1).filter(i=>i>=0);
+  if(modo==="prac"&&!corregido&&idx.length){
+    const i=idx.find(j=>c.op[j].ok)??idx[0];
+    estado("info","Elegiste: "+(e.t||id),"");
+    elegir(i);return;
+  }
+  info=info===id?null:id;
+  const nombre=e.t||({e_peer:"VNet peering",e_vpn:"VPN Site-to-Site",e_er:"ExpressRoute (camino privado)",e_pe:"Private Link",e_se:"Endpoint de servicio",e_pub:"Endpoint público",e_rdp:"RDP desde Internet",e_arc:"Azure Arc",e_sync:"Azure File Sync",e_rbac:"Asignación de rol",e_lan:"Red de la oficina",e_er_of:"Oficina → proveedor"})[id]||id;
+  const q=e.q||({e_peer:"Une dos VNets por la red de Microsoft, sin gateways. No es transitivo.",e_vpn:"Túnel IPsec cifrado entre la oficina y el VPN Gateway, por Internet.",e_er:"Camino privado del proveedor hasta el ExpressRoute Gateway: no pasa por Internet.",e_pe:"Tráfico hacia la IP privada del endpoint, que llega al servicio por Private Link.",e_se:"Desde la subred, por la red de Microsoft, al endpoint público del servicio (que solo deja entrar a esa subred).",e_pub:"El nombre público del servicio (p. ej. stclientes.blob.core.windows.net). Se puede deshabilitar.",e_rdp:"Conexión de escritorio remoto al puerto 3389 desde cualquier IP pública.",e_arc:"Plano de administración: el servidor se gestiona desde Azure. No lleva tráfico de la app.",e_sync:"Sincroniza las carpetas del servidor con un recurso compartido de Azure Files.",e_rbac:"Ana recibe un rol en un ámbito.",e_lan:"La LAN de la oficina hasta el dispositivo VPN.",e_er_of:"La oficina se conecta al circuito del proveedor."})[id]||"";
+  if(info)estado("info",nombre,q);else estado();
+  if(modo==="est"&&idx.length){visto=idx[0]}
+  todo();
+}
+function lista(){
+  const el=document.getElementById("lista");
+  el.innerHTML=CASOS.map((c,i)=>{const r=res[c.id];return `<button type="button" data-c="${i}" aria-pressed="${i===ci}"><span class="n">${i+1}</span><span class="t">${c.tit}<small>${c.src.split("(")[0].trim()}</small></span><span class="r ${r===true?"ok":r===false?"mal":""}">${r===true?"✓":r===false?"✕":""}</span></button>`}).join("");
+  el.querySelectorAll("[data-c]").forEach(b=>b.onclick=()=>irA(+b.dataset.c));
+}
+function irA(i){ci=i;sel=[];corregido=false;visto=null;info=null;estado();todo();try{localStorage.setItem("az900:casos:actual",String(i))}catch(e){}}
+function segModo(){
+  const el=document.getElementById("segModo");el.innerHTML="";
+  [["est","Estudiar"],["prac","Practicar"]].forEach(([k,n])=>{const b=document.createElement("button");b.type="button";b.textContent=n;b.dataset.k=k;b.setAttribute("aria-pressed",String(modo===k));
+    b.onclick=()=>{modo=k;sel=[];corregido=false;visto=null;info=null;estado();todo();try{localStorage.setItem("az900:casos:modo",k)}catch(e){}};el.appendChild(b)});
+}
+function todo(){segModo();lista();panel();dibujar()}
+try{const m=localStorage.getItem("az900:casos:modo");if(m==="est"||m==="prac")modo=m;const a=+localStorage.getItem("az900:casos:actual");if(a>=0&&a<CASOS.length)ci=a}catch(e){}
+document.fonts.ready.then(todo);todo();
+</script>
+</body>
+</html>
