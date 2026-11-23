@@ -113,9 +113,10 @@ const M=[
  {id:"azure",k:"m",sol:1,x:280,y:130,w:790,h:578,t:"Nube pública de Azure",q:"Nube pública: hardware de Microsoft compartido entre clientes, pago por uso (OpEx) y escalado casi inmediato."},
  {id:"sub",k:"m",x:292,y:160,w:766,h:540,t:"Suscripción · Producción",q:"La suscripción: límite de facturación y de acceso. Lo que asignes aquí (Policy, RBAC, bloqueos) lo heredan sus grupos de recursos y recursos."},
  {id:"rg",k:"m",x:304,y:200,w:742,h:486,t:"Grupo de recursos · rg-web",q:"Contenedor lógico de los recursos de la app. Un recurso está en un solo grupo de recursos."},
- {id:"hub",k:"m",sol:1,x:316,y:240,w:270,h:260,t:"hub-vnet · 10.0.0.0/16",q:"La VNet central: recibe la VPN o ExpressRoute de la oficina y comparte servicios con las demás VNets."},
+ {id:"hub",k:"m",sol:1,x:316,y:240,w:270,h:340,t:"hub-vnet · 10.0.0.0/16",q:"La VNet central: recibe la VPN o ExpressRoute de la oficina y comparte servicios con las demás VNets."},
  {id:"gwsub",k:"m",x:326,y:266,w:240,h:76,t:"GatewaySubnet",q:"Subred reservada para los gateways (VPN y ExpressRoute). Se llama así obligatoriamente."},
  {id:"snsh",k:"m",x:326,y:356,w:240,h:130,t:"snet-shared · 10.0.2.0/24",q:"Subred del hub para servicios compartidos: aquí viven el endpoint privado y una VM de administración."},
+ {id:"snid",k:"m",x:326,y:496,w:240,h:76,t:"snet-identidad · 10.0.3.0/24",q:"Subred para la identidad en Azure: aquí va Entra Domain Services (exige su propia subred) o una VM controladora de dominio."},
  {id:"spoke",k:"m",sol:1,x:616,y:240,w:250,h:260,t:"vnet-web · 10.1.0.0/16",q:"La VNet de la app (un radio). Se une al hub con un peering."},
  {id:"snweb",k:"m",x:626,y:266,w:230,h:150,t:"snet-web · 10.1.1.0/24",q:"La subred de las VMs web. Tiene un NSG asociado y puede tener endpoints de servicio."},
  {id:"paas",k:"m",x:880,y:240,w:156,h:260,t:"Servicios PaaS",q:"Servicios administrados: no están dentro de tu VNet. Por defecto se llega a ellos por un endpoint público."},
@@ -136,6 +137,8 @@ const M=[
  {id:"ergw",k:"n",a:1,x:450,y:290,w:108,t:"ER Gateway",s:"ExpressRoute",q:"ExpressRoute Gateway: conecta el circuito ExpressRoute del proveedor con la VNet."},
  {id:"pe",k:"n",a:1,x:334,y:380,w:118,t:"Endpoint privado",s:"IP 10.0.2.4",q:"Endpoint privado (Private Link): una tarjeta de red con IP PRIVADA de tu VNet que apunta a un servicio PaaS. Todo lo que llega a la VNet (oficina por VPN, VNets emparejadas) llega al servicio. Tiene costo."},
  {id:"vmhub",k:"n",a:2,x:460,y:380,w:98,t:"VM admin",s:"10.0.2.5",q:"Una VM del hub (por ejemplo, de administración o un DNS)."},
+ {id:"eds",k:"n",a:0,x:334,y:520,w:140,t:"Entra Domain Services",s:"dominio administrado",q:"Microsoft Entra Domain Services (el PDF dice Azure AD DS): un dominio AD clásico (GPO, LDAP, Kerberos, NTLM) que administra Microsoft. Es un dominio NUEVO, no una extensión del local; sus usuarios llegan sincronizados desde Entra ID."},
+ {id:"dcvm",k:"n",a:0,x:480,y:520,w:78,t:"DC en VM",s:"AD DS · IaaS",q:"Windows Server en una VM de Azure como controlador de dominio. Puede unirse a tu dominio ACTUAL (réplica por la VPN), pero lo administras tú: parches, copias, disponibilidad."},
  {id:"vm1",k:"n",a:2,x:634,y:296,w:106,t:"VM web 1",s:"10.1.1.4",q:"VM de la app en snet-web (IaaS)."},
  {id:"vm2",k:"n",a:2,x:744,y:296,w:106,t:"VM web 2",s:"10.1.1.5",q:"VM de la app en snet-web (IaaS)."},
  {id:"nsg",k:"p",a:1,x:634,y:348,w:120,t:"NSG · snet-web",q:"Grupo de seguridad de red: reglas que permiten o deniegan tráfico por IP, puerto y protocolo. Se asocia a una subred o a una NIC."},
@@ -152,7 +155,8 @@ const A=[
  {id:"e_vpn",base:1,d:[[248,396],[300,396],[300,312],[334,312]],lab:["VPN S2S",304,348,"start"]},
  {id:"e_peer",base:1,d:[[586,322],[616,322]],lab:["peering",601,234,"middle"]},
  {id:"e_er_of",d:[[135,430],[135,470]]},
- {id:"e_er",d:[[248,492],[288,492],[288,540],[576,540],[576,326],[558,326]],lab:["ExpressRoute: privado, sin Internet",296,556,"start"]},
+ {id:"e_er",d:[[248,492],[288,492],[288,604],[576,604],[576,326],[558,326]],lab:["ExpressRoute: privado, sin Internet",296,620,"start"]},
+ {id:"e_connect",d:[[248,244],[263,244],[263,58],[292,58]],lab:["Entra Connect: sincroniza los usuarios del AD local a Entra ID",300,118,"start"]},
  {id:"e_pe",d:[[452,402],[600,402],[600,520],[868,520],[868,458],[888,458]],lab:["Private Link: IP privada 10.0.2.4",606,514,"start"]},
  {id:"e_se",d:[[850,378],[876,378],[876,434],[888,434]]},
  {id:"e_pub",d:[[1028,434],[1060,434],[1060,272],[1082,272]],lab:["endpoint público",1064,318,"start"]},
@@ -276,7 +280,63 @@ const CASOS=[
    {t:"Costes operativos reducidos",pieza:"azure",ver:["azure"],nota:["pago por uso (OpEx) = nube pública",700,604],
     por:"En la privada pagas el hardware (CapEx) y su mantenimiento: sale más cara. El pago por uso es de la pública."}],
   regla:"<b>Privada</b> = control y seguridad, pero CapEx y límite del hardware propio. <b>Pública</b> = escalar al instante, pago por uso (OpEx), sin mantener hardware. Ojo: \"flexible\" a veces significa \"configurable a tu medida\" (eso sí lo tiene la privada); aquí significa crecer o achicarse rápido.",
-  az104:"No se pregunta directo, pero es la base del modelo <b>híbrido</b> de este mapa (oficina + Azure): en Azure escalas con conjuntos de escalado de VMs y escalado automático, y pagas por uso."}
+  az104:"No se pregunta directo, pero es la base del modelo <b>híbrido</b> de este mapa (oficina + Azure): en Azure escalas con conjuntos de escalado de VMs y escalado automático, y pagas por uso."},
+ {id:"id1",tit:"Identidad · GPO y LDAP, todo en la nube",cap:"cap08",src:"Udemy · fallada dos veces (es la n.º 28 del quiz del cap. 08)",
+  q:"Tu empresa está en proceso de migración de aplicaciones existentes a Azure. Dichas aplicaciones serán transferidas a máquinas virtuales en Azure y necesitarán funciones clásicas de Active Directory (AD), tales como directivas de grupo y LDAP. Si decides retirar todos los recursos locales y optar por tener todos los servicios alojados en la nube, y deseas autenticar tu aplicación con el mínimo esfuerzo administrativo, ¿cuál sería la mejor opción para configurar tus Servicios de Directorio Activo para la aplicación?",
+  esc:["vm1","entra","adds"],
+  op:[
+   {t:"Reconfigura la aplicación para autenticarse usando credenciales de Microsoft Entra ID mediante el inicio de sesión único (SSO)",pieza:"entra",ver:["entra","vm1"],nota:["Entra ID: sin directivas de grupo ni LDAP",292,95],
+    por:"Entra ID habla protocolos modernos (OAuth, SAML, OpenID Connect). No tiene directivas de grupo ni LDAP, que es lo que pide la app."},
+   {t:"Implementa el servicio Microsoft Entra Domain Services (anteriormente Azure AD DS) para tener un entorno de Active Directory totalmente gestionado. Asigna un espacio de nombres único a la instancia y reconfigura la aplicación para autenticarse mediante esta instancia",ok:true,pieza:"eds",ver:["vm1","snid","eds","entra"],nota:["AD clásico que administra Microsoft",334,594],
+    por:"Da GPO y LDAP (AD clásico) sin controladores de dominio que mantener: mínimo esfuerzo y todo en la nube. Que sea un dominio nuevo (\"espacio de nombres único\") no importa: el caso no pide conservar el dominio actual."},
+   {t:"Instala Windows Server en una VM de Azure y configúralo como controlador de dominio de Active Directory",pieza:"dcvm",ver:["snid","dcvm","vm1"],nota:["funciona, pero lo administras tú",334,594],
+    por:"Cumple GPO y LDAP, pero tú parchas, respaldas y mantienes el DC: no es el mínimo esfuerzo. Es la respuesta cuando piden el dominio ACTUAL (caso siguiente)."},
+   {t:"Mantén el AD local y sincronízalo con Microsoft Entra ID mediante Microsoft Entra Connect",pieza:"adds",ver:["onprem","adds","e_connect","entra"],nota:["choca con \"retirar todo lo local\"",30,444],
+    por:"Es la identidad híbrida, pero el caso dice retirar todos los recursos locales."}],
+  regla:"Lee tres frases: ¿qué <b>protocolo o función</b> (GPO, LDAP, NTLM, Kerberos = AD clásico · OAuth, SAML = Entra ID)? ¿<b>Dominio actual</b> o da igual? ¿<b>Eliminar lo local</b>? Aquí: AD clásico + todo en la nube + mínimo esfuerzo → <b>Entra Domain Services</b>.",
+  az104:"Entra Domain Services se despliega en una <b>subred propia</b> de una VNet y crea un dominio administrado nuevo con dos controladores que parcha Microsoft. Los usuarios llegan <b>sincronizados desde Entra ID</b> (en un solo sentido) y se administra con el grupo <b>AAD DC Administrators</b>: no eres Domain Admin. Hay que apuntar el DNS de la VNet a sus IP para que las VMs se unan al dominio."},
+ {id:"id2",tit:"Identidad · NTLM, dominio actual, sin nada local",cap:"cap08",src:"Udemy (es la n.º 21 del quiz del cap. 08)",
+  q:"La empresa está en la fase inicial de migración de aplicaciones a Azure. Una aplicación crítica de contabilidad, que requiere autenticación mediante protocolo NTLM, será trasladada a una máquina virtual (VM) en Azure. Con la intención de eliminar eventualmente todos los recursos locales, se planea una solución totalmente alojada en la nube, utilizando el dominio actual de Active Directory (AD). ¿Cuál es la opción adecuada para alojar esta aplicación en Azure manteniendo la autenticación con Active Directory?",
+  esc:["vm1","entra","adds"],
+  op:[
+   {t:"Ajusta la aplicación para que utilice credenciales de Microsoft Entra ID mediante inicio de sesión único (SSO)",pieza:"entra",ver:["entra","vm1"],nota:["Entra ID no habla NTLM",292,95],
+    por:"NTLM es un protocolo heredado: Entra ID no lo habla."},
+   {t:"Implementa Microsoft Entra Domain Services (anteriormente Azure AD DS) para crear un entorno AD totalmente gestionado. Asigna un nombre de dominio único y configura la aplicación para autenticarse con esta instancia",pieza:"eds",ver:["snid","eds"],nota:["crea un dominio NUEVO, no el actual",334,594],
+    por:"Habla NTLM, pero crea un dominio nuevo y aparte (\"nombre de dominio único\"). El caso exige el dominio ACTUAL."},
+   {t:"Instala Windows Server en una VM de Azure y configúralo como controlador de dominio de Active Directory. Asegura que la aplicación se autentique a través del servidor AD en la VM",ok:true,pieza:"dcvm",ver:["vm1","snid","dcvm","e_vpn","vpndev","vpngw","adds"],nota:["se une al dominio ACTUAL; después se apagan los DC locales",334,594],
+    por:"El DC en la VM se une al dominio actual (replica por la VPN). Cuando todo esté en Azure, se apagan los DC de la oficina."},
+   {t:"Mantén tu servidor AD local, sincronízalo con Microsoft Entra ID mediante Microsoft Entra Connect y configura la aplicación para autenticarse a través del servidor AD local",pieza:"adds",ver:["onprem","adds","e_connect","entra"],nota:["no elimina lo local",30,444],
+    por:"Usa el dominio actual, pero deja el AD en la oficina: choca con eliminar todos los recursos locales."}],
+  regla:"\"Dominio <b>actual</b>\" descarta Entra Domain Services (crea uno nuevo). \"Eliminar <b>todo</b> lo local\" descarta el AD local. NTLM descarta Entra ID. Queda: <b>DC en una VM de Azure</b>.",
+  az104:"Para un DC en VM: IP privada <b>estática</b>, discos de datos sin caché de escritura para la base de AD, el DNS de la VNet apuntando al DC, y dos DC en zonas o en un conjunto de disponibilidad. Se promueve como DC adicional del dominio actual, con conectividad a la oficina (VPN o ExpressRoute)."},
+ {id:"id3",tit:"Identidad · NTLM con el dominio local (DOS)",cap:"cap08",src:"Udemy (es la n.º 26 del quiz del cap. 08)",multi:true,
+  q:"Tu empresa está comenzando a migrar aplicaciones a Azure, incluida una crucial aplicación de contabilidad que requiere autenticación mediante el protocolo NTLM. Esta aplicación se trasladará a una máquina virtual (VM) en Azure. La solución de autenticación debe integrarse con el dominio Active Directory (AD) local existente. ¿Cuáles son las opciones viables para alojar esta aplicación en Azure mientras mantiene la autenticación con Active Directory? (Selecciona DOS respuestas)",
+  esc:["vm1","entra","adds"],
+  op:[
+   {t:"Despliega una VM en Azure con Windows Server configurado como controlador de dominio de Active Directory. Configura la aplicación para autenticarse con el servidor AD en la VM",ok:true,pieza:"dcvm",ver:["vm1","snid","dcvm","e_vpn","vpndev","vpngw","adds"],nota:["DC del mismo dominio, replicado por la VPN",334,594],
+    por:"Un DC más del dominio existente, en Azure y cerca de la app."},
+   {t:"Implementa Microsoft Entra Domain Services (anteriormente Azure AD DS) como una extensión del dominio Active Directory local existente y configura la aplicación para autenticarse mediante Microsoft Entra Domain Services",pieza:"eds",ver:["snid","eds"],nota:["NO es una extensión: es otro dominio",334,594],
+    por:"Entra Domain Services no extiende el dominio local: crea uno nuevo y aparte. La frase \"como una extensión\" la hace falsa."},
+   {t:"Utiliza Microsoft Entra ID B2C para autenticar a los usuarios contra el dominio Active Directory local",pieza:null,ver:["entra"],nota:["B2C: clientes externos de una app",292,95],
+    por:"B2C es para clientes externos (cuentas sociales o propias de la app). No habla NTLM ni autentica contra AD."},
+   {t:"Mantén el servidor AD local y sincronízalo con Microsoft Entra ID utilizando Microsoft Entra Connect. Configura la aplicación para autenticarse con el servidor AD local",ok:true,pieza:"adds",ver:["vm1","e_vpn","vpndev","vpngw","adds","onprem","e_connect","entra"],nota:["la app llega al AD local por la VPN",30,444],
+    por:"Aquí NO se pide eliminar lo local: la app en la VM se autentica contra el AD de la oficina a través de la VPN."}],
+  regla:"Misma familia, distinta frase: sin \"eliminar lo local\", el <b>AD local</b> también sirve. Las dos que usan el <b>mismo dominio</b> son correctas: DC en VM y AD local. Entra Domain Services nunca es \"extensión\" del dominio local.",
+  az104:"Para que la VM se una al dominio local: conectividad (VPN o ExpressRoute) y el <b>DNS de la VNet</b> apuntando a los DC (los locales o el de la VM). Sin DNS correcto, la unión al dominio falla aunque la red llegue."},
+ {id:"id4",tit:"Identidad · OAuth 2.0, mínimo esfuerzo",cap:"cap08",src:"Udemy (es la n.º 27 del quiz del cap. 08)",
+  q:"Tu empresa está comenzando a migrar aplicaciones existentes a Azure. Una aplicación contable crítica reciente que utiliza OAuth 2.0 para autenticación será trasladada a una Máquina Virtual (VM) en Azure. Para minimizar el esfuerzo administrativo, los costos y los recursos superfluos en el soporte a esta aplicación, ¿cuál es la mejor manera de autenticar esta aplicación migrada utilizando recursos nativos de Azure?",
+  esc:["vm1","entra","adds"],
+  op:[
+   {t:"Continúa utilizando tu servidor Active Directory (AD) local y sincronízalo con Microsoft Entra ID mediante Microsoft Entra Connect. Luego, configura la aplicación para autenticarse con tu servidor AD local",pieza:"adds",ver:["onprem","adds","e_connect","entra"],nota:["servidores de más para OAuth",30,444],
+    por:"Un AD (local o en VM) solo hace falta para protocolos heredados. Para OAuth agrega servidores y costos."},
+   {t:"Configura la aplicación para autenticarse mediante credenciales de Microsoft Entra ID, utilizando Inicio de Sesión Único (SSO)",ok:true,pieza:"entra",ver:["entra","vm1"],nota:["OAuth = protocolo moderno, nativo de Entra ID",292,95],
+    por:"OAuth 2.0 es lo que Entra ID habla de forma nativa: se registra la app y usa SSO, sin servidores que mantener."},
+   {t:"Instala Windows Server en una VM de Azure, configúralo como controlador de dominio y haz que la aplicación se autentique con él",pieza:"dcvm",ver:["snid","dcvm"],nota:["un DC que mantener, sin necesidad",334,594],
+    por:"Un DC es para NTLM o Kerberos. Aquí suma una VM, parches y costo."},
+   {t:"Implementa Microsoft Entra Domain Services y configura la aplicación para autenticarse con ese dominio administrado",pieza:"eds",ver:["snid","eds"],nota:["se paga por hora y no hace falta",334,594],
+    por:"Es para apps que necesitan AD clásico. Con OAuth es un recurso superfluo y se paga por hora."}],
+  regla:"<b>OAuth, SAML, OpenID Connect</b> (apps modernas) → <b>Entra ID</b> con SSO. <b>NTLM, Kerberos, LDAP, GPO</b> (AD clásico) → un dominio: Entra Domain Services, DC en VM o AD local, según las otras frases.",
+  az104:"Se crea un <b>registro de aplicación</b> en Entra ID (id. de cliente, URI de redirección, secreto o certificado) y la app pide tokens. Si la app corre en Azure, mejor una <b>identidad administrada</b> para acceder a otros recursos sin guardar secretos."}
 ];
 
 /* ---------- Estado ---------- */
@@ -413,8 +473,8 @@ function tocar(id){
     elegir(i);return;
   }
   info=info===id?null:id;
-  const nombre=e.t||({e_peer:"VNet peering",e_vpn:"VPN Site-to-Site",e_er:"ExpressRoute (camino privado)",e_pe:"Private Link",e_se:"Endpoint de servicio",e_pub:"Endpoint público",e_rdp:"RDP desde Internet",e_arc:"Azure Arc",e_sync:"Azure File Sync",e_rbac:"Asignación de rol",e_lan:"Red de la oficina",e_er_of:"Oficina → proveedor"})[id]||id;
-  const q=e.q||({e_peer:"Une dos VNets por la red de Microsoft, sin gateways. No es transitivo.",e_vpn:"Túnel IPsec cifrado entre la oficina y el VPN Gateway, por Internet.",e_er:"Camino privado del proveedor hasta el ExpressRoute Gateway: no pasa por Internet.",e_pe:"Tráfico hacia la IP privada del endpoint, que llega al servicio por Private Link.",e_se:"Desde la subred, por la red de Microsoft, al endpoint público del servicio (que solo deja entrar a esa subred).",e_pub:"El nombre público del servicio (p. ej. stclientes.blob.core.windows.net). Se puede deshabilitar.",e_rdp:"Conexión de escritorio remoto al puerto 3389 desde cualquier IP pública.",e_arc:"Plano de administración: el servidor se gestiona desde Azure. No lleva tráfico de la app.",e_sync:"Sincroniza las carpetas del servidor con un recurso compartido de Azure Files.",e_rbac:"Ana recibe un rol en un ámbito.",e_lan:"La LAN de la oficina hasta el dispositivo VPN.",e_er_of:"La oficina se conecta al circuito del proveedor."})[id]||"";
+  const nombre=e.t||({e_peer:"VNet peering",e_vpn:"VPN Site-to-Site",e_er:"ExpressRoute (camino privado)",e_pe:"Private Link",e_se:"Endpoint de servicio",e_pub:"Endpoint público",e_rdp:"RDP desde Internet",e_arc:"Azure Arc",e_sync:"Azure File Sync",e_rbac:"Asignación de rol",e_connect:"Entra Connect",e_lan:"Red de la oficina",e_er_of:"Oficina → proveedor"})[id]||id;
+  const q=e.q||({e_peer:"Une dos VNets por la red de Microsoft, sin gateways. No es transitivo.",e_vpn:"Túnel IPsec cifrado entre la oficina y el VPN Gateway, por Internet.",e_er:"Camino privado del proveedor hasta el ExpressRoute Gateway: no pasa por Internet.",e_pe:"Tráfico hacia la IP privada del endpoint, que llega al servicio por Private Link.",e_se:"Desde la subred, por la red de Microsoft, al endpoint público del servicio (que solo deja entrar a esa subred).",e_pub:"El nombre público del servicio (p. ej. stclientes.blob.core.windows.net). Se puede deshabilitar.",e_rdp:"Conexión de escritorio remoto al puerto 3389 desde cualquier IP pública.",e_arc:"Plano de administración: el servidor se gestiona desde Azure. No lleva tráfico de la app.",e_sync:"Sincroniza las carpetas del servidor con un recurso compartido de Azure Files.",e_rbac:"Ana recibe un rol en un ámbito.",e_connect:"Sincroniza usuarios (y hash de contraseñas) del AD local a Entra ID: identidad híbrida. El AD local sigue existiendo.",e_lan:"La LAN de la oficina hasta el dispositivo VPN.",e_er_of:"La oficina se conecta al circuito del proveedor."})[id]||"";
   if(info)estado("info",nombre,q);else estado();
   if(modo==="est"&&idx.length){visto=idx[0]}
   todo();
