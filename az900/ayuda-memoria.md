@@ -37,6 +37,39 @@
 | Políticas, estándares, cumplimiento | **Gobernanza** | Seguridad |
 | Cómo administras e implementas (portal, CLI, plantillas) | **Gestión (manejabilidad)** | Previsibilidad |
 
+# Cap. 03 · Arquitectura de Azure (PDF págs. 30–47)
+
+## Infraestructura física (de menor a mayor)
+
+| Pieza | Qué es | Te protege de |
+|---|---|---|
+| Conjunto de disponibilidad (cap. 5) | VMs repartidas en racks de un centro de datos | Fallas de hardware y actualizaciones |
+| **Zona de disponibilidad** | 1 o más centros de datos con energía, refrigeración y red propias. Mínimo 3 por región; no todas las regiones tienen | Caída de un centro de datos, sin salir de la región |
+| **Región** | Centros de datos cercanos, unidos con baja latencia | Elegirla bien: ley, latencia, servicios, precio |
+| **Par de regiones** | Otra región de la misma geografía, a cientos de km | Caída de toda la región |
+
+- Se elige región por **ley y datos, cercanía (latencia), servicios y precio**. No por cantidad de suscripciones.
+- Los datos no salen de la región sin tu permiso explícito.
+- Par de regiones: actualizaciones **secuenciales** y prioridad para recuperarse. Brazil South → South Central US (no recíproco).
+- **Regiones soberanas**: Azure Government (EE. UU.) y Azure China 21Vianet; para requisitos de un país, acceso restringido.
+- **PoP** (punto de presencia): entrega contenido cerca del usuario → menos latencia.
+- Servicios **globales**: Entra ID, Traffic Manager, Front Door. VMs, App Service y Functions son **regionales**.
+
+## Jerarquía de gestión
+
+**Grupo de administración → suscripción → grupo de recursos → recurso**
+
+| Nivel | Para qué | Si la pregunta dice… |
+|---|---|---|
+| **Grupo de administración** | Agrupa suscripciones en árbol (un solo padre, hasta 6 niveles); Policy y RBAC se heredan | "muchas suscripciones con las mismas reglas, desde un solo lugar" |
+| **Suscripción** | Límite de **facturación** y de acceso | "separar costos por departamento o prod/dev/test" |
+| **Grupo de recursos** | Contenedor lógico (guarda metadatos) para recursos con el **mismo ciclo de vida** | "se crean y se borran juntos" |
+
+- **Trampa:** el grupo de administración no gestiona el ciclo de vida de los recursos; eso es el grupo de recursos.
+- "Políticas e iniciativas" = **Azure Policy** (iniciativa = conjunto de políticas). "Crear entornos conformes" = Blueprints (retirado).
+- **Policy y RBAC se heredan; las etiquetas no** (solo si una Policy las copia).
+- Una VM se puede mover entre grupos de recursos, suscripciones y regiones (entre regiones, replicándola).
+
 # Cap. 07 · Almacenamiento (PDF págs. 122–167)
 
 ## Qué guarda una cuenta de almacenamiento
