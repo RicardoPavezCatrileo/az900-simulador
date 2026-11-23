@@ -108,7 +108,7 @@
 // k: marco (m) · nodo (n) · pill (p). a: área (color de la barra) · q: qué es.
 const M=[
  {id:"tenant",k:"m",sol:1,x:280,y:10,w:440,h:90,t:"Entra ID · tenant (identidades)",q:"El directorio de la empresa: usuarios, grupos y roles del directorio. Es global, no vive en una región."},
- {id:"plano",k:"m",sol:1,x:740,y:10,w:450,h:90,t:"Administración de Azure",q:"El plano de administración: todo lo que haces en el portal, CLI o PowerShell pasa por Azure Resource Manager."},
+ {id:"plano",k:"m",sol:1,x:740,y:10,w:450,h:90,t:"Administración de Azure",q:"El plano de administración: todo lo que haces en el portal, CLI o PowerShell pasa por Azure Resource Manager. Aquí también están Azure Monitor y Defender for Identity."},
  {id:"onprem",k:"m",sol:1,x:10,y:150,w:250,h:280,t:"Oficina · nube privada",q:"El centro de datos propio: hardware comprado por la empresa (CapEx), control total y capacidad limitada a lo que compraste. Es la nube privada del caso."},
  {id:"azure",k:"m",sol:1,x:280,y:130,w:790,h:578,t:"Nube pública de Azure",q:"Nube pública: hardware de Microsoft compartido entre clientes, pago por uso (OpEx) y escalado casi inmediato."},
  {id:"sub",k:"m",x:292,y:160,w:766,h:540,t:"Suscripción · Producción",q:"La suscripción: límite de facturación y de acceso. Lo que asignes aquí (Policy, RBAC, bloqueos) lo heredan sus grupos de recursos y recursos."},
@@ -123,8 +123,9 @@ const M=[
  {id:"entra",k:"n",a:0,x:292,y:36,w:130,t:"Entra ID",s:"usuarios · grupos",q:"Microsoft Entra ID (antes Azure Active Directory): identidad en la nube, inicio de sesión, MFA y acceso condicional."},
  {id:"ana",k:"n",a:0,x:434,y:36,w:120,t:"Ana",s:"usuaria",q:"Una usuaria de Entra ID. Para que administre recursos hay que asignarle un rol de Azure RBAC en un ámbito."},
  {id:"rolesent",k:"n",a:0,x:566,y:36,w:142,t:"Roles de Entra ID",s:"Admin. global…",q:"Roles del DIRECTORIO (Administrador global, Administrador de usuarios…): administran usuarios, grupos y licencias, no las VMs ni el Storage."},
- {id:"arm",k:"n",a:4,x:752,y:36,w:200,t:"Azure Resource Manager",s:"portal · CLI · API",q:"La capa de administración de Azure: cada creación, cambio o borrado pasa por ARM, que aplica RBAC, Policy y bloqueos."},
- {id:"mon",k:"n",a:4,x:964,y:36,w:214,t:"Azure Monitor · Defender",s:"métricas · logs · postura",q:"Azure Monitor recoge métricas y logs; Defender for Cloud evalúa la seguridad. Con Arc también ven los servidores de la oficina."},
+ {id:"arm",k:"n",a:4,x:752,y:36,w:142,t:"Resource Manager",s:"portal · CLI · API",q:"La capa de administración de Azure: cada creación, cambio o borrado pasa por ARM, que aplica RBAC, Policy y bloqueos."},
+ {id:"mon",k:"n",a:4,x:902,y:36,w:130,t:"Azure Monitor",s:"métricas · logs",q:"Azure Monitor recoge métricas y logs y dispara las alertas que TÚ configuras; no detecta ataques por sí mismo. Con Arc también ve los servidores de la oficina (y Defender for Cloud los evalúa)."},
+ {id:"mdi",k:"n",a:4,x:1040,y:36,w:140,t:"Defender for Identity",s:"ataques a identidades",q:"Microsoft Defender for Identity (antes Azure ATP): vigila las identidades (sensores en los controladores de dominio) y alerta de fuerza bruta, pass-the-hash, reconocimiento y movimiento lateral. No está en el PDF."},
  {id:"pcs",k:"n",a:0,x:22,y:176,w:226,t:"Empleados",s:"PC de la oficina",q:"Los equipos de la oficina. Llegan a Azure a través del dispositivo VPN (o de ExpressRoute)."},
  {id:"adds",k:"n",a:0,x:22,y:228,w:226,t:"AD DS local",s:"Kerberos · LDAP",q:"El Active Directory de la oficina. Con Entra Connect sincroniza sus usuarios a Entra ID."},
  {id:"srv",k:"n",a:2,x:22,y:280,w:226,t:"Servidores locales",s:"Windows · Linux · archivos",q:"Servidores de la oficina: no están en Azure. Arc los gestiona desde Azure; File Sync sincroniza sus carpetas con Azure Files."},
@@ -336,7 +337,21 @@ const CASOS=[
    {t:"Implementa Microsoft Entra Domain Services y configura la aplicación para autenticarse con ese dominio administrado",pieza:"eds",ver:["snid","eds"],nota:["se paga por hora y no hace falta",334,594],
     por:"Es para apps que necesitan AD clásico. Con OAuth es un recurso superfluo y se paga por hora."}],
   regla:"<b>OAuth, SAML, OpenID Connect</b> (apps modernas) → <b>Entra ID</b> con SSO. <b>NTLM, Kerberos, LDAP, GPO</b> (AD clásico) → un dominio: Entra Domain Services, DC en VM o AD local, según las otras frases.",
-  az104:"Se crea un <b>registro de aplicación</b> en Entra ID (id. de cliente, URI de redirección, secreto o certificado) y la app pide tokens. Si la app corre en Azure, mejor una <b>identidad administrada</b> para acceder a otros recursos sin guardar secretos."}
+  az104:"Se crea un <b>registro de aplicación</b> en Entra ID (id. de cliente, URI de redirección, secreto o certificado) y la app pide tokens. Si la app corre en Azure, mejor una <b>identidad administrada</b> para acceder a otros recursos sin guardar secretos."},
+ {id:"mdi",tit:"Fuerza bruta contra credenciales",cap:"cap09",src:"Udemy · examen 6, 2.ª vuelta (no está en el PDF)",
+  q:"Detectas varios intentos de comprometer las credenciales de usuario de tu cuenta Azure mediante ataques de fuerza bruta. ¿Qué servicio de Azure podría alertarte sobre estas actividades sospechosas?",
+  esc:["entra","adds","plano"],
+  op:[
+   {t:"Azure Information Protection",pieza:null,ver:["storage"],nota:["Information Protection: etiqueta documentos",888,512],
+    por:"Clasifica, etiqueta y protege documentos y correos. No mira inicios de sesión."},
+   {t:"Microsoft Defender for Identity (anteriormente conocido como Protección Avanzada Contra Amenazas)",ok:true,pieza:"mdi",ver:["mdi","adds","entra"],nota:["alerta de fuerza bruta, pass-the-hash y movimiento lateral",1180,95,"end"],
+    por:"Vigila las identidades: con sensores en los controladores de dominio y las señales de inicio de sesión detecta fuerza bruta y robo de credenciales, y te alerta."},
+   {t:"Azure Key Vault",pieza:null,ver:[],nota:["Key Vault guarda secretos; no vigila inicios de sesión",292,95],
+    por:"Guarda secretos, claves y certificados. No detecta ataques."},
+   {t:"Azure Monitor",pieza:"mon",ver:["mon"],nota:["junta logs; las alertas las defines tú",1032,95,"end"],
+    por:"Junta métricas y logs y dispara alertas que tú configuras, pero no reconoce un ataque de fuerza bruta por sí mismo. Es la trampa más tentadora."}],
+  regla:"\"Fuerza bruta\", \"credenciales comprometidas\", \"Advanced Threat Protection\" → <b>Defender for Identity</b>. \"Postura de seguridad\", \"puntuación segura\" → <b>Defender for Cloud</b>. \"SIEM\", \"correlacionar alertas de todo\" → <b>Microsoft Sentinel</b>. Azure Monitor solo avisa de lo que tú le configures.",
+  az104:"Defender for Identity no es materia de AZ-104 (es de SC-200). Lo cercano en AZ-104: los <b>registros de inicio de sesión</b> de Entra ID enviados a Log Analytics con una <b>alerta de Azure Monitor</b>, y Entra ID Protection (inicios de sesión riesgosos) junto al acceso condicional."}
 ];
 
 /* ---------- Estado ---------- */
