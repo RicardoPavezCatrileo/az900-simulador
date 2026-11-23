@@ -14,6 +14,7 @@ No hay build, lint ni tests: son páginas estáticas.
 - Captura para revisar una página: `chrome --headless --user-data-dir=<carpeta-limpia> --window-size=1280,2000 --screenshot=out.png http://localhost:8000/<ruta>`. Usar un `--user-data-dir` distinto por prueba (si se reutiliza, Chrome sirve CSS o copias anteriores desde la caché). Chrome headless no baja de ~500 px de ancho.
 - Probar un estado distinto al inicial: copiar la página a `_prueba.html` cambiando las variables `let …` iniciales, capturar y borrar la copia.
 - Póster A2 de la arquitectura: ver `tools/README.md`.
+- Ayuda memoria imprimible (Word, carta, una página por capítulo, letra 9): el texto está en `az900/ayuda-memoria.md` (`#` capítulo = página nueva, `##`, `-`, tablas `|`, `**negrita**`); `node tools/ayuda-memoria.js` genera `docs/ayuda-memoria-az900.docx` (la primera vez: `npm install --prefix tools docx`). Revisar que cada capítulo siga en una página (si se pasa, recortar texto, no achicar la letra) y subir la versión nueva a la carpeta AZ900 del Drive del usuario.
 
 ## Decisiones tomadas
 - Solo HTML + CSS + JavaScript, sin build ni frameworks. El foco es estudiar Azure, no desarrollo web.

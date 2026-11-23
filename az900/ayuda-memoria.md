@@ -305,3 +305,66 @@
 | SIEM: reunir registros de toda la empresa (Azure y AWS) y detectar amenazas con IA | **Microsoft Sentinel** |
 
 - Ciclo de Defender for Cloud: **definir políticas → proteger → responder a alertas** (y volver a ajustar).
+
+# Cap. 10 · Monitorización y gestión (PDF págs. 217–247)
+
+## Gobierno: RBAC, Policy y bloqueos
+
+| Si la pregunta dice… | Respuesta | No confundir con |
+|---|---|---|
+| **Quién** puede hacer **qué** y **dónde** (autorización) | **RBAC** | Acceso condicional (inicio de sesión) |
+| **Cómo deben ser** los recursos: regiones, etiquetas obligatorias, tamaños, tipos no permitidos | **Azure Policy** | RBAC, bloqueos |
+| Normas de cumplimiento en **varias suscripciones** | **Azure Policy** asignada en un **grupo de administración** | Políticas de acceso condicional |
+| Que nadie lo **borre** (pero se pueda modificar) | Bloqueo **CanNotDelete** | ReadOnly |
+| Que nadie lo **borre ni lo modifique** | Bloqueo **ReadOnly** | CanNotDelete |
+| Que nadie (ni otros admins) **cree** cierto tipo de recurso | **Azure Policy** (Deny) | Bloqueos (protegen lo que ya existe) |
+
+- **Asignación de RBAC** = **principal de seguridad** (quién: usuario, grupo, entidad de servicio, identidad administrada) + **definición de rol** (qué) + **ámbito** (dónde). Un grupo de recursos es un ámbito, no un principal.
+- **Ámbitos de RBAC:** grupo de administración, suscripción, grupo de recursos o recurso; se hereda hacia abajo.
+- **Roles:** Lector = solo ver · Colaborador = administrar, pero **no dar acceso** · Propietario = todo, incluido dar acceso.
+- **Bloqueos:** en recurso, grupo de recursos o suscripción; se heredan y frenan **incluso al Propietario** (hay que quitar el bloqueo primero).
+- **Blueprints** (retirado en julio 2026): era el "plan maestro" que juntaba plantillas ARM, políticas y roles.
+- **Cloud Adoption Framework** = guía con prácticas y herramientas para adoptar la nube. **Service Trust Portal** = documentos de cumplimiento de Microsoft (ISO, SOC, auditorías).
+
+## Monitoreo: si la pregunta dice…
+
+| Si la pregunta dice… | Respuesta | No confundir con |
+|---|---|---|
+| Métricas y logs de Azure **y de local**, alertas, paneles | **Azure Monitor** (engloba Log Analytics, alertas y App Insights) | Azure Arc |
+| Consultar logs; CPU de muchas VMs en el tiempo | **Log Analytics** con **KQL** | Application Insights, SQL |
+| Rendimiento, errores y usuarios de una **app web** | **Application Insights** | Service Health |
+| Avisar cuando la CPU pase de 90 % por 5 minutos | **Alerta de Azure Monitor** + **grupo de acción** (email, SMS, Logic Apps) | Service Health |
+| Incidentes y mantenimiento de **Azure** que te afectan (planificados o no) | **Service Health** | Resource Health (solo tu recurso) |
+| Gestionar servidores **locales o en AWS** desde Azure (Policy, RBAC, Defender) | **Azure Arc** | Azure Monitor |
+
+- Azure Monitor recoge 2 tipos de datos: **métricas** (números a intervalos) y **logs** (registros con fecha).
+- Familia Service Health: **Azure Status** (todo Azure, público) · **Service Health** (tus servicios y regiones) · **Resource Health** (un recurso tuyo).
+
+# Cap. 11 · Precios, costos y el examen (PDF págs. 248–282)
+
+## Herramientas de costos
+
+| Si la pregunta dice… | Respuesta | No confundir con |
+|---|---|---|
+| Cuánto costarán unos recursos **antes de crearlos** | **Calculadora de precios** | TCO |
+| Comparar el centro de datos **local** (luz, mantenimiento) **vs Azure** | **Calculadora TCO** | Calculadora de precios |
+| Cuánto llevo gastado, repartirlo por área, avisarme al llegar a un monto | **Cost Management** + **presupuestos** | Calculadoras |
+| Recomendaciones para gastar menos (apagar VMs ociosas) | **Azure Advisor** | Cost Management |
+| Saber cuánto gasta cada proyecto o departamento | **Etiquetas** (no se heredan) | Grupos de recursos |
+
+- **Presupuesto** al 100 % → **solo avisa**, no detiene nada. **Límite de gasto** → sí detiene los recursos (solo en ciertas ofertas, como la cuenta gratuita; no en pago por uso).
+- **Cuotas** = máximo de ciertos recursos (p. ej., vCPU por región).
+- **Descuentos:** instancias reservadas y planes de ahorro. La reserva de capacidad **no** es un descuento.
+
+## Qué cambia el precio
+
+- Afectan: **tipo de recurso, tamaño, región** (cambio de moneda, costos locales), **ancho de banda** y horas encendida. **No** afecta el nombre del grupo de recursos.
+- Datos que **entran** a Azure: **gratis**. Datos que **salen** de Azure y **entre regiones**: se cobran (según la **zona de facturación**, que no es una zona de disponibilidad).
+- Dos VMs del mismo tamaño **no** cuestan siempre lo mismo (horas, región, discos, tráfico). Una VM desasignada no cobra cómputo.
+- **VM eliminada:** sus **discos** (y la IP pública) pueden seguir cobrando.
+- **Cuenta gratuita:** una sola por persona y solo para clientes nuevos.
+
+## El día del examen
+
+- Se aprueba con **700 de 1000**. Equivocarse **no resta**: responde todo (en blanco cuenta como incorrecta).
+- En selección múltiple el enunciado dice cuántas elegir, pero el sistema **no avisa** si te falta una.
