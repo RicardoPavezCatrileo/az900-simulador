@@ -695,8 +695,9 @@ function panelFlujo(){
     <ol class="pasos">${pasosFlujo(f).map(p=>`<li>${esc(p)}</li>`).join("")}</ol>`;
 }
 // Quién administra cada pieza: ancla de az104/administracion.html (complemento de esta página)
-const ADM={entra:"portales",entraT:"portales",portal:"portales",emp:"soporte",mfa:"soporte",ca:"soporte",connect:"soporte",adds:"soporte",
- mg:"ambitos",sub:"ambitos",subTest:"ambitos",subDev:"ambitos",rg:"ambitos",rbac:"roles",lock:"tareas",policy:"tareas",cost:"tareas",budget:"tareas"};
+const ADM={entra:"pieza=tenant",entraT:"pieza=tenant",portal:"pieza=p_azure",emp:"caso=noentra",mfa:"pieza=mfa",ca:"pieza=ca",connect:"pieza=connect",adds:"pieza=adds",
+ mg:"pieza=mg",sub:"pieza=sub",subTest:"pieza=subTest",subDev:"pieza=subDev",rg:"pieza=rg",rbac:"pieza=iamRg",lock:"pieza=lock",policy:"pieza=policy",
+ cost:"caso=costos",budget:"pieza=budget",ss:"caso=vms",be:"caso=vms",vnet:"pieza=vnet",sql:"pieza=sql",st:"pieza=st",kv:"pieza=kv",monitor:"pieza=monitor"};
 function panelElemento(id){
   const e=POR_ID[id];
   const area=e.a!=null?AREAS[e.a].n+" · ":"";
@@ -705,7 +706,7 @@ function panelElemento(id){
     <h2>${esc(nombre(e).split("|").join(" "))}</h2>
     <p><b>Qué es:</b> ${esc(e.q)}</p>
     <p><b>Por qué está aquí:</b> ${esc(e.p)}</p>
-    ${ADM[id]?`<p><b>¿Quién la administra?</b> <a href="az104/administracion.html#${ADM[id]}">Portal, rol y nivel de soporte en Administración →</a></p>`:""}
+    ${ADM[id]?`<p><b>¿Quién la administra?</b> <a href="az104/administracion.html#${ADM[id]}">Verlo en el diagrama de administración →</a></p>`:""}
     ${avance(e.cap)}
     <p><a href="${archivo(e.cap)}">Repasar el capítulo ${e.cap}: ${esc(tituloCap(e.cap))} →</a> · <button type="button" class="btn" data-volver>${flujo?"Volver al recorrido":"Volver al capítulo"}</button></p>`;
 }

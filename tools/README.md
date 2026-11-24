@@ -12,3 +12,13 @@ PNG de 7025×4966 (≈ 300 dpi) y SVG autónomo de `arquitectura.html`, guardado
 - Si el PNG está abierto en un visor, `cp` falla con "Permission denied"; `Copy-Item -Force` de PowerShell sí lo reemplaza.
 - Último póster: 24 nov 2026 (con las dos redes unidas por VNet peering, rangos de red (Red 1 10.0.0.0/16, GatewaySubnet 10.0.255.0/27, oficina 192.168.0.0/16) y el recuadro "Rutas de la Red 2", Azure Arc y Front Door + Traffic Manager juntos: en la página son excluyentes, pero `poster-arquitectura.js` angosta Front Door y su PoP y pone Traffic Manager a la derecha como alternativa, con "1 · consulta DNS" y "2 · HTTPS directo").
 - Alternativa descartada por ahora, pero que gustó: archivos `.drawio` con íconos de Azure editados en VS Code (extensión Draw.io Integration).
+
+# Póster A2 de la administración
+
+`az104/administracion.html` ("Quién administra qué y desde dónde") usa el mismo proceso, con su script y su línea de arranque:
+
+1. `python tools/poster-pagina.py az104/administracion.html tools/poster-administracion.js az104/_poster.html "dibujar();aplicar();panelInicio();"` (la página va en `az104/` para que carguen `../assets/`).
+2. PNG y SVG igual que arriba, con `http://localhost:8000/az104/_poster.html`, guardados como `docs/poster-administracion-A2.png` y `.svg`.
+3. Borrar `az104/_poster.html`.
+
+- Último póster: 24 nov 2026 (portales, tenant de Entra ID, jerarquía de recursos con IAM, bloqueo y Policy, la oficina con Entra Connect, la línea roja Entra │ RBAC y las 5 personas con su rol mínimo).
