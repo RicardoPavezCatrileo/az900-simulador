@@ -39,6 +39,7 @@
 .nodo rect.caja{fill:var(--surface);stroke:var(--line)}
 .nodo text.t{font-family:var(--f-body);font-weight:600;font-size:12.5px;fill:var(--ink)}
 .nodo text.s{font-family:var(--f-mono);font-size:10px;fill:var(--muted)}
+.nodo text.f{font-family:var(--f-mono);font-size:10px;fill:var(--ink)}
 .pill rect{stroke:none}
 .pill text{font-family:var(--f-mono);font-size:9.5px;font-weight:500;fill:#fff}
 .modelo rect{fill:var(--ink)}
@@ -127,9 +128,9 @@ const EL=[
  {id:"azure",k:"marco",cls:"nube",cap:2,x:250,y:110,w:980,h:740,t:"Nube pública de Azure",
   q:"Recursos de cómputo, red y almacenamiento de Microsoft que se alquilan por consumo (OpEx), con autoservicio y escalado rápido.",
   p:"Todo lo que está dentro de este marco lo ejecuta Microsoft en sus centros de datos. Junto con el centro de datos local de la izquierda forman una nube híbrida."},
- {id:"onprem",k:"marco",cls:"solido",cap:2,x:10,y:206,w:226,h:356,t:"Centro de datos local",lb:1,
+ {id:"onprem",k:"marco",cls:"solido",cap:2,x:10,y:206,w:226,h:356,t:"Centro de datos local · 192.168.0.0/16",lb:1,
   q:"La infraestructura propia de la empresa (on-premises): la compras tú (CapEx), la mantienes tú y su capacidad es fija.",
-  p:"La empresa no se muda entera a la nube: mantiene la oficina con su AD, su servidor de archivos y los empleados. Por eso la arquitectura es híbrida."},
+  p:"La empresa no se muda entera a la nube: mantiene la oficina con su AD, su servidor de archivos y los empleados. Por eso la arquitectura es híbrida. Su red usa 192.168.0.0/16: no puede repetirse con los rangos de las redes de Azure, o la VPN no sabría a dónde enviar cada paquete."},
  {id:"inet",k:"nodo",a:0,cap:2,x:470,y:36,w:170,h:48,t:"Usuarios de Internet",s:"clientes · navegador",
   q:"Las personas que usan la aplicación web desde cualquier lugar.",
   p:"Son el origen del tráfico público. Entran por HTTPS a la única puerta expuesta: Front Door, o directo al Application Gateway si la entrada global es Traffic Manager (antes del cap. 6, imagina que entran directo a la región)."},
@@ -204,8 +205,8 @@ const EL=[
  {id:"vnet",k:"marco",cls:"solido",cap:6,x:310,y:332,w:546,h:356,t:"VNet · 10.1.0.0/16",lb:3,
   q:"Red virtual privada y aislada, con su espacio de direcciones. Abarca todas las zonas de la región.",
   p:"Todas las VMs y gateways tienen IP privada dentro de esta red."},
- {id:"gwsub",k:"marco",cap:6,x:322,y:470,w:98,h:206,t:"GatewaySubnet",lb:1,
-  q:"Subred especial y obligatoria para los gateways de VPN y ExpressRoute.",
+ {id:"gwsub",k:"marco",cap:6,x:322,y:470,w:98,h:206,t:"GatewaySubnet|10.1.255.0/27",lb:1,
+  q:"Subred especial y obligatoria para los gateways de VPN y ExpressRoute. Se llama exactamente GatewaySubnet y se recomienda /27 o más grande (no está en el PDF).",
   p:"Aquí viven el VPN Gateway y el gateway de ExpressRoute."},
  {id:"snweb",k:"marco",cap:6,x:432,y:360,w:412,h:100,t:"snet-web · 10.1.1.0/24",lb:2,
   q:"Subred: una parte del espacio de la VNet. Azure reserva 5 IPs, así que una /24 deja 251 asignables.",
@@ -245,12 +246,16 @@ const EL=[
   p:"Alternativa a la VPN si la oficina necesita mucho ancho de banda o no puede usar Internet. Por eso la flecha es punteada.",pg:"120"},
 
  // Solo con "Dos redes unidas" (SOLO_HUB): la puerta de la VPN pasa a la Red 1 y la app queda en la Red 2
- {id:"hub",k:"marco",cls:"solido",cap:6,x:302,y:332,w:114,h:356,t:"Red 1 · hub",pg:"— (no está en el PDF)",
+ {id:"hub",k:"marco",cls:"solido",cap:6,x:302,y:332,w:114,h:356,t:"Red 1 · hub|10.0.0.0/16",pg:"— (no está en el PDF)",
   q:"Red virtual central (hub): guarda lo que comparten las demás redes, como la puerta de la VPN o de ExpressRoute. Las otras redes (spokes) se unen a ella con peering. El diseño hub-spoke no está en el PDF.",
   p:"Tiene la puerta hacia la oficina. Si mañana aparece otra app en una Red 3, se une con peering a esta red y usa la misma VPN, sin pagar otra."},
- {id:"peer",k:"pill",a:1,cap:6,x:316,y:437,w:88,h:16,t:"⇄ Peering",pg:"104",
+ {id:"peer",k:"pill",a:1,cap:6,x:308,y:437,w:100,h:16,t:"⇄ Peering (sin IP)",pg:"104",
   q:"VNet peering: une dos redes virtuales de Azure para que se vean con IP privadas, por la red de Microsoft (sin Internet y sin VPN). Puede ser en la misma región o entre regiones (peering global). No es transitivo, y las dos redes no pueden repetir direcciones IP.",
   p:"Une la Red 1 (con la puerta de la VPN) con la Red 2 (la app). Así la oficina llega a la app pasando por la Red 1, y la Red 2 no necesita una VPN propia."},
+ {id:"rutas",k:"tabla",cls:"nodo",a:1,cap:6,x:24,y:640,w:198,h:114,t:"Rutas de la Red 2",s:"rutas efectivas de sus VMs",pg:"— (no está en el PDF)",
+  filas:[["10.1.0.0/16","Red virtual"],["10.0.0.0/16","Peering"],["192.168.0.0/16","Gateway · Red 1"],["0.0.0.0/0","Internet"]],
+  q:"Las rutas efectivas de una VM dicen, para cada destino (prefijo), por dónde sale el paquete: el siguiente salto. Azure las crea solo: la propia red, las redes con peering, los rangos que aprende el gateway y la ruta por defecto a Internet.",
+  p:"Explica cómo la Red 2 llega a todos lados sin que el peering tenga IP: 10.0.0.0/16 sale por el peering, y la oficina (192.168.0.0/16) sale por el gateway de la Red 1 gracias al tránsito de gateway."},
 
  // Capítulo 7: datos
  {id:"paas",k:"nota",cap:7,x:310,y:722,w:104,h:30,t:"Servicios PaaS|(fuera de la VNet)",q:"",p:""},
@@ -365,7 +370,7 @@ const AR=[
  {id:"e_vpn",f:1,cap:6,d:[[222,523],[330,523]],lab:["VPN S2S · cifrada",228,516,"start"]},
  {id:"e_er",f:1,cap:6,cls:"rayas",d:[[222,603],[330,603]],lab:["privada, sin Internet",228,596,"start"]},
  {id:"e_gw_lb",f:1,cap:6,d:[[412,523],[436,523]]},
- {id:"e_peer",f:1,cap:6,dos:true,d:[[404,445],[426,445]]},
+ {id:"e_peer",f:1,cap:6,dos:true,d:[[408,445],[426,445]],lab:["tránsito de gateway",358,466]},
  {id:"e_files_st",f:3,cap:7,d:[[222,455],[246,455],[246,810],[776,810],[776,778]],lab:["File Sync",640,805,"start"]},
  {id:"e_st_st2",f:3,cap:7,d:[[856,737],[892,737],[892,325],[924,325]],lab:["← réplica asíncrona",924,376,"start"],l11:["transferencia entre regiones: se cobra",924,394,"start"]},
  {id:"e_al_logic",f:4,cap:10,d:[[1117,546],[1117,554]]},
@@ -482,16 +487,16 @@ const SOLO_FD=new Set(["edge","fd","e_inet_fd","e_fd_ag"]),SOLO_TM=new Set(["tm"
 const SOLO_IAC=new Set(["devops","repo","pipe","e_repo_pipe","e_pipe_arm"]);
 // Redes de Azure: una sola VNet, o dos unidas con peering (Red 1 = hub con la puerta de la VPN, Red 2 = la app)
 const TOPO={una:"Una red",hub:"Dos redes unidas (peering)"};
-const SOLO_HUB=new Set(["hub","peer","e_peer"]);
+const SOLO_HUB=new Set(["hub","peer","e_peer","rutas"]);
 // Con "hub" la columna de la puerta se corre 10 px a la izquierda para dejar espacio entre las dos redes
 const HUB_GEO={
  vnet:{x:426,w:430,t:"Red 2 · la app · 10.1.0.0/16",p:"Aquí vive la app (web, aplicación y datos). No tiene VPN propia: llega a la oficina por el peering con la Red 1."},
- gwsub:{x:312},vpngw:{x:320},ergw:{x:320},dcvm:{x:318},eds:{x:318}
+ gwsub:{x:312,t:"GatewaySubnet|10.0.255.0/27"},vpngw:{x:320},ergw:{x:320},dcvm:{x:318,y:372},eds:{x:318,y:372}
 };
 const HUB_AR={
  e_vpn:{d:[[222,523],[320,523]]},e_er:{d:[[222,603],[320,603]]},e_gw_lb:{d:[[402,523],[436,523]]},
- e_ad_dc:{d:[[222,319],[290,319],[290,391],[318,391]]},
- e_entra_eds:{d:[[332,92],[332,364]],lab:["sincroniza 1 vía",337,324,"start"]}
+ e_ad_dc:{d:[[222,319],[290,319],[290,399],[318,399]]},
+ e_entra_eds:{d:[[332,92],[332,372]],lab:["sincroniza 1 vía",337,324,"start"]}
 };
 const ORIG_GEO={};
 [HUB_GEO,HUB_AR].forEach(t=>{for(const id in t){const e=[...EL,...AR].find(x=>x.id===id);ORIG_GEO[id]={};for(const k in t[id])ORIG_GEO[id][k]=e[k]}});
@@ -543,13 +548,17 @@ function dibujar(){
   EL.forEach(e=>{
     const padre=e.k==="marco"||e.k==="zona"?capaMarcos:capaNodos;
     const g=mk("g",{class:`el ${e.k} ${e.cls||""}`,"data-id":e.id},padre);
-    if(e.k!=="nota"){g.setAttribute("tabindex","0");g.setAttribute("role","button");g.setAttribute("aria-label",(e.t||nombre(e)).replace("|"," "))}
+    if(e.k!=="nota"){g.setAttribute("tabindex","0");g.setAttribute("role","button");g.setAttribute("aria-label",(e.t||nombre(e)).split("|").join(" "))}
     if(e.k==="marco"){
       mk("rect",{x:e.x,y:e.y,width:e.w,height:e.h,rx:8},g);
       if(e.t){
-        const yl=e.lb&&e.lb<3?e.y+e.h-8:e.y+16;   // lb: 1 abajo izq. · 2 abajo der. · 3 arriba der.
+        // lb: 1 abajo izq. · 2 abajo der. · 3 arriba der. · "|" separa líneas
+        const ls=e.t.split("|"),abajo=e.lb&&e.lb<3;
         const xl=e.lb>=2?e.x+e.w-8:e.x+10;
-        ajustar(texto(g,"",xl,yl,e.t,e.lb>=2?"end":null),e.w-16);
+        ls.forEach((l,i)=>{
+          const yl=abajo?e.y+e.h-8-(ls.length-1-i)*13:e.y+16+i*13;
+          ajustar(texto(g,"",xl,yl,l,e.lb>=2?"end":null),e.w-16);
+        });
       }
     }else if(e.k==="zona"){
       mk("rect",{x:e.x,y:e.y,width:e.w,height:e.h,rx:6},g);
@@ -565,6 +574,13 @@ function dibujar(){
         mk("rect",{x:e.x+e.w-36,y:e.y-7,width:32,height:14,rx:7},p);
         texto(p,"",e.x+e.w-20,e.y+3,e.m,"middle");
       }
+    }else if(e.k==="tabla"){
+      mk("rect",{class:"caja",x:e.x,y:e.y,width:e.w,height:e.h,rx:6},g);
+      mk("rect",{x:e.x,y:e.y,width:5,height:e.h,rx:2,fill:AREAS[e.a].c},g);
+      ajustar(texto(g,"t",e.x+13,e.y+19,e.t),e.w-20);
+      ajustar(texto(g,"s",e.x+13,e.y+33,e.s),e.w-20);
+      texto(g,"s",e.x+13,e.y+52,"Destino");texto(g,"s",e.x+111,e.y+52,"Siguiente salto");
+      e.filas.forEach(([a,b],i)=>{texto(g,"f",e.x+13,e.y+67+i*14,a);ajustar(texto(g,"f",e.x+111,e.y+67+i*14,b),e.w-118)});
     }else if(e.k==="pill"){
       mk("rect",{x:e.x,y:e.y,width:e.w,height:e.h,rx:e.h/2,fill:AREAS[e.a].c},g);
       ajustar(texto(g,"",e.x+e.w/2,e.y+e.h/2+3.5,e.t,"middle"),e.w-10);
@@ -682,7 +698,7 @@ function panelElemento(id){
   const area=e.a!=null?AREAS[e.a].n+" · ":"";
   document.getElementById("panel").innerHTML=`
     <div class="area">${area}Capítulo ${e.cap} · PDF págs. ${e.pg||PAGS[e.cap]}${e.m?" · "+e.m:""}</div>
-    <h2>${esc(nombre(e).replace("|"," "))}</h2>
+    <h2>${esc(nombre(e).split("|").join(" "))}</h2>
     <p><b>Qué es:</b> ${esc(e.q)}</p>
     <p><b>Por qué está aquí:</b> ${esc(e.p)}</p>
     ${avance(e.cap)}
@@ -691,7 +707,29 @@ function panelElemento(id){
 function elegir(id){
   const e=POR_ID[id];
   if(!e||!e.q)return;
-  sel=id;aplicar();panelElemento(id);
+  sel=id;aplicar();
+  (id==="peer"||id==="rutas")?panelPeering():panelElemento(id);
+}
+// El peering por dentro (AZ-104): no tiene IP; configuración de cada lado y rutas efectivas de la Red 2
+function panelPeering(){
+  const R=POR_ID.rutas.filas,O=["Predeterminada (la propia red)","Peering con la Red 1","Gateway de la Red 1 (tránsito de gateway)","Predeterminada"];
+  document.getElementById("panel").innerHTML=`
+    <div class="area">Red · Capítulo 6 · PDF pág. 104 · AZ-104 págs. 161–163</div>
+    <h2>El peering por dentro</h2>
+    <p><b>El peering no tiene IP.</b> No es un equipo ni una interfaz de red: es una conexión entre dos redes por la red de Microsoft, y en el portal no tiene ningún campo de dirección. Las IP las tienen los recursos dentro de las subredes (por ejemplo, el endpoint privado 10.1.3.4) y cada red tiene su <b>rango</b>: Red 1 10.0.0.0/16, Red 2 10.1.0.0/16 y la oficina 192.168.0.0/16. Los tres son distintos: si se solaparan, Azure no deja crear el peering.</p>
+    <div class="tbl"><table><tr><th></th><th>Peering en la Red 1 (hub)</th><th>Peering en la Red 2 (app)</th></tr>
+      <tr><td>Dirección</td><td>Red 1 → Red 2</td><td>Red 2 → Red 1</td></tr>
+      <tr><td>Tránsito de gateway</td><td>Permitir tránsito de puerta de enlace (Allow gateway transit)</td><td>Usar puertas de enlace remotas (Use remote gateways)</td></tr>
+      <tr><td>Estado</td><td class="y">Conectado</td><td class="y">Conectado</td></tr>
+    </table></div>
+    <p>Se crean <b>los dos lados</b>: si solo existe uno, el peering queda en estado <b>Iniciado</b> y no pasa tráfico. Con el tránsito de gateway, la Red 2 usa la VPN de la Red 1 y no necesita su propio gateway.</p>
+    <p><b>Rutas efectivas de una VM de la Red 2</b> (cómo sabe por dónde salir):</p>
+    <div class="tbl"><table><tr><th>Destino</th><th>Siguiente salto</th><th>De dónde sale la ruta</th></tr>
+      ${R.map(([a,b],i)=>`<tr><td>${a}</td><td>${b}</td><td>${O[i]}</td></tr>`).join("")}
+    </table></div>
+    <p><b>Para el examen:</b> AZ-900 pide que el peering une VNets de forma privada y que los rangos no se solapan. AZ-104 suma que no es transitivo (Red 1 ↔ Red 2 y Red 2 ↔ Red 3 no unen la 1 con la 3), el tránsito de gateway, el estado Iniciado/Conectado y las rutas efectivas. Costo: el peering cobra la entrada <b>y</b> la salida, al revés que Internet, donde la entrada es gratis. Tránsito, estado, rutas y costo no están en el PDF.</p>
+    ${avance(6)}
+    <p><a href="az104/redes.html#s2">Practicar peering con varios espacios de direcciones (AZ-104) →</a> · <a href="az900/cap06-lab-conectividad.html">Laboratorio de conectividad →</a> · <button type="button" class="btn" data-volver>${flujo?"Volver al recorrido":"Volver al capítulo"}</button></p>`;
 }
 function deseleccionar(){
   sel=null;aplicar();
