@@ -12,13 +12,18 @@ function portadaCert(certId){
     c.temas.forEach(t=>{
       const pct=Progreso.porcentaje(t.id,c.id),p=Progreso.leer(t.id,c.id);
       // Sin enlaces internos, la tarjeta completa es el enlace; con "Repaso", solo el título
-      const entera=t.listo&&!t.base;
+      const entera=t.listo&&!t.base&&!t.extras;
       const el=document.createElement(entera?"a":"div");
       el.className="cap"+(t.listo?"":" pendiente");
       if(entera)el.href=t.archivo;
       const det=!t.listo?"Pendiente":pct===null?"Sin empezar":`${p.mejor||0} de ${p.total} correctas · ${pct}%`;
       const repaso=t.base?`<div class="det">Repaso AZ-900: ${t.base.map(n=>`<a href="../az900/${capAz900(n).archivo}" title="${capAz900(n).titulo}">cap. ${n}</a>`).join(" · ")}</div>`:"";
-      el.innerHTML=`<div class="n">${etiqueta} ${t.num}${t.pdf?` · PDF págs. ${t.pdf}`:""}</div><h2></h2><div class="bar${pct===100?" full":""}"><span style="width:${pct||0}%"></span></div><div class="det">${det}</div>${repaso}`;
+      // Prácticas del capítulo (laboratorios, guías): enlace propio y, si tienen quiz, su avance aparte
+      const extras=(t.extras||[]).map(x=>{
+        const q=x.quiz&&Progreso.leer(x.quiz,c.id);
+        return `<div class="det extra">${x.tipo}: <a href="${x.archivo}">${x.titulo} →</a>${q?` · ${q.mejor||0} de ${q.total}`:""}</div>`;
+      }).join("");
+      el.innerHTML=`<div class="n">${etiqueta} ${t.num}${t.pdf?` · PDF págs. ${t.pdf}`:""}</div><h2></h2><div class="bar${pct===100?" full":""}"><span style="width:${pct||0}%"></span></div><div class="det">${det}</div>${repaso}${extras}`;
       const h=el.querySelector("h2");
       if(t.listo&&!entera){const a=document.createElement("a");a.href=t.archivo;a.textContent=t.titulo+" →";h.appendChild(a)}
       else h.textContent=t.titulo;

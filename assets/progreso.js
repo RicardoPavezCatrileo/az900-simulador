@@ -3,17 +3,22 @@
 //   mejor = mayor cantidad de respuestas correctas lograda en un intento.
 // Clave: "<cert>:progreso:<id>" (ej. az900:progreso:cap07, az104:progreso:identidad).
 // archivo es relativo a la carpeta de la certificación.
+// extras = prácticas de ese capítulo (laboratorios, guías) que se muestran dentro de su tarjeta;
+//   quiz = id de su quiz, que no cuenta en el avance del capítulo.
 
 const CAPITULOS=[
  {id:"cap02",num:2, titulo:"Cloud computing",              archivo:"cap02-cloud.html",            listo:true},
  {id:"cap03",num:3, titulo:"Arquitectura y servicios",     archivo:"cap03-arquitectura.html",     listo:true},
  {id:"cap04",num:4, titulo:"Fundamentos de herramientas",  archivo:"cap04-fundamentos-herramientas.html",     listo:true},
  {id:"cap05",num:5, titulo:"Computación",                  archivo:"cap05-computacion.html",      listo:true},
- {id:"cap06",num:6, titulo:"Redes",                        archivo:"cap06-redes.html",            listo:true},
- {id:"cap07",num:7, titulo:"Almacenamiento",               archivo:"cap07-almacenamiento.html",   listo:true},
+ {id:"cap06",num:6, titulo:"Redes",                        archivo:"cap06-redes.html",            listo:true,
+   extras:[{tipo:"Laboratorio",titulo:"Conectividad en 3 tramos: VPN, peering y endpoints",archivo:"cap06-lab-conectividad.html",quiz:"peering"}]},
+ {id:"cap07",num:7, titulo:"Almacenamiento",               archivo:"cap07-almacenamiento.html",   listo:true,
+   extras:[{tipo:"Guía visual",titulo:"Tipos de cuenta de Storage",archivo:"cap07-guia-cuentas-storage.html"}]},
  {id:"cap08",num:8, titulo:"Autenticación y autorización", archivo:"cap08-autenticacion-autorizacion.html",        listo:true},
  {id:"cap09",num:9, titulo:"Seguridad",                    archivo:"cap09-seguridad.html",        listo:true},
- {id:"cap10",num:10,titulo:"Monitorización y gestión",     archivo:"cap10-monitorizacion-gestion.html",   listo:true},
+ {id:"cap10",num:10,titulo:"Monitorización y gestión",     archivo:"cap10-monitorizacion-gestion.html",   listo:true,
+   extras:[{tipo:"Laboratorio",titulo:"Gobierno y seguridad sobre la red (usa también caps. 6 y 8)",archivo:"cap10-lab-gobierno.html",quiz:"gobierno"}]},
  {id:"cap11",num:11,titulo:"Precios",                      archivo:"cap11-precios.html",          listo:true}
 ];
 
