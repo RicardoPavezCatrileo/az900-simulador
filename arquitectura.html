@@ -40,6 +40,7 @@
 .nodo text.t{font-family:var(--f-body);font-weight:600;font-size:12.5px;fill:var(--ink)}
 .nodo text.s{font-family:var(--f-mono);font-size:10px;fill:var(--muted)}
 .nodo text.f{font-family:var(--f-mono);font-size:10px;fill:var(--ink)}
+.nodo text.f.n{font-weight:700}
 .pill rect{stroke:none}
 .pill text{font-family:var(--f-mono);font-size:9.5px;font-weight:500;fill:#fff}
 .modelo rect{fill:var(--ink)}
@@ -253,7 +254,7 @@ const EL=[
   q:"VNet peering: une dos redes virtuales de Azure para que se vean con IP privadas, por la red de Microsoft (sin Internet y sin VPN). Puede ser en la misma región o entre regiones (peering global). No es transitivo, y las dos redes no pueden repetir direcciones IP.",
   p:"Une la Red 1 (con la puerta de la VPN) con la Red 2 (la app). Así la oficina llega a la app pasando por la Red 1, y la Red 2 no necesita una VPN propia."},
  {id:"rutas",k:"tabla",cls:"nodo",a:1,cap:6,x:24,y:640,w:198,h:114,t:"Rutas de la Red 2",s:"rutas efectivas de sus VMs",pg:"— (no está en el PDF)",
-  filas:[["10.1.0.0/16","Red virtual"],["10.0.0.0/16","Peering"],["192.168.0.0/16","Gateway · Red 1"],["0.0.0.0/0","Internet"]],
+  filas:[["10.1.0.0/16","Red virtual"],["10.0.0.0/16","Peering",1],["192.168.0.0/16","Gateway · Red 1"],["0.0.0.0/0","Internet"]],
   q:"Las rutas efectivas de una VM dicen, para cada destino (prefijo), por dónde sale el paquete: el siguiente salto. Azure las crea solo: la propia red, las redes con peering, los rangos que aprende el gateway y la ruta por defecto a Internet.",
   p:"Explica cómo la Red 2 llega a todos lados sin que el peering tenga IP: 10.0.0.0/16 sale por el peering, y la oficina (192.168.0.0/16) sale por el gateway de la Red 1 gracias al tránsito de gateway."},
 
@@ -580,7 +581,7 @@ function dibujar(){
       ajustar(texto(g,"t",e.x+13,e.y+19,e.t),e.w-20);
       ajustar(texto(g,"s",e.x+13,e.y+33,e.s),e.w-20);
       texto(g,"s",e.x+13,e.y+52,"Destino");texto(g,"s",e.x+111,e.y+52,"Siguiente salto");
-      e.filas.forEach(([a,b],i)=>{texto(g,"f",e.x+13,e.y+67+i*14,a);ajustar(texto(g,"f",e.x+111,e.y+67+i*14,b),e.w-118)});
+      e.filas.forEach(([a,b,n],i)=>{const c=n?"f n":"f";texto(g,c,e.x+13,e.y+67+i*14,a);ajustar(texto(g,c,e.x+111,e.y+67+i*14,b),e.w-118)});
     }else if(e.k==="pill"){
       mk("rect",{x:e.x,y:e.y,width:e.w,height:e.h,rx:e.h/2,fill:AREAS[e.a].c},g);
       ajustar(texto(g,"",e.x+e.w/2,e.y+e.h/2+3.5,e.t,"middle"),e.w-10);
