@@ -91,6 +91,7 @@
     <div class="ctl"><label>&nbsp;</label><label class="chk"><input type="checkbox" id="resaltar" checked> Resaltar lo que agrega el capítulo</label></div>
   </div>
   <div class="ctl" id="ctlEntrada"><label>Entrada global (desde el cap. 6)</label><div class="seg" id="entrada"></div></div>
+  <div class="ctl" id="ctlTopo"><label>Redes de Azure (desde el cap. 6)</label><div class="seg" id="topo"></div></div>
   <div class="ctl" id="ctlIdent"><label>Identidad para apps con Kerberos/NTLM (desde el cap. 8)</label><div class="seg" id="ident"></div></div>
   <div class="ctl" id="ctlRed"><label>Redundancia de la Storage Account (desde el cap. 7)</label><div class="seg" id="red"></div></div>
   <div class="ctl"><label>Recorrido</label><div class="seg" id="flujos"></div></div>
@@ -243,6 +244,14 @@ const EL=[
   q:"Conexión privada y dedicada a Azure a través de un proveedor: NO pasa por Internet. Más ancho de banda, menor latencia y más confiable.",
   p:"Alternativa a la VPN si la oficina necesita mucho ancho de banda o no puede usar Internet. Por eso la flecha es punteada.",pg:"120"},
 
+ // Solo con "Dos redes unidas" (SOLO_HUB): la puerta de la VPN pasa a la Red 1 y la app queda en la Red 2
+ {id:"hub",k:"marco",cls:"solido",cap:6,x:302,y:332,w:114,h:356,t:"Red 1 · hub",pg:"— (no está en el PDF)",
+  q:"Red virtual central (hub): guarda lo que comparten las demás redes, como la puerta de la VPN o de ExpressRoute. Las otras redes (spokes) se unen a ella con peering. El diseño hub-spoke no está en el PDF.",
+  p:"Tiene la puerta hacia la oficina. Si mañana aparece otra app en una Red 3, se une con peering a esta red y usa la misma VPN, sin pagar otra."},
+ {id:"peer",k:"pill",a:1,cap:6,x:316,y:437,w:88,h:16,t:"⇄ Peering",pg:"104",
+  q:"VNet peering: une dos redes virtuales de Azure para que se vean con IP privadas, por la red de Microsoft (sin Internet y sin VPN). Puede ser en la misma región o entre regiones (peering global). No es transitivo, y las dos redes no pueden repetir direcciones IP.",
+  p:"Une la Red 1 (con la puerta de la VPN) con la Red 2 (la app). Así la oficina llega a la app pasando por la Red 1, y la Red 2 no necesita una VPN propia."},
+
  // Capítulo 7: datos
  {id:"paas",k:"nota",cap:7,x:310,y:722,w:104,h:30,t:"Servicios PaaS|(fuera de la VNet)",q:"",p:""},
  {id:"sql",k:"nodo",a:3,m:"PaaS",cap:7,x:422,y:700,w:130,h:54,t:"Azure SQL Database",s:"base de datos",
@@ -356,6 +365,7 @@ const AR=[
  {id:"e_vpn",f:1,cap:6,d:[[222,523],[330,523]],lab:["VPN S2S · cifrada",228,516,"start"]},
  {id:"e_er",f:1,cap:6,cls:"rayas",d:[[222,603],[330,603]],lab:["privada, sin Internet",228,596,"start"]},
  {id:"e_gw_lb",f:1,cap:6,d:[[412,523],[436,523]]},
+ {id:"e_peer",f:1,cap:6,dos:true,d:[[404,445],[426,445]]},
  {id:"e_files_st",f:3,cap:7,d:[[222,455],[246,455],[246,810],[776,810],[776,778]],lab:["File Sync",640,805,"start"]},
  {id:"e_st_st2",f:3,cap:7,d:[[856,737],[892,737],[892,325],[924,325]],lab:["← réplica asíncrona",924,376,"start"],l11:["transferencia entre regiones: se cobra",924,394,"start"]},
  {id:"e_al_logic",f:4,cap:10,d:[[1117,546],[1117,554]]},
@@ -470,8 +480,26 @@ const ID_FLUJO={
 const SOLO_FD=new Set(["edge","fd","e_inet_fd","e_fd_ag"]),SOLO_TM=new Set(["tm","e_inet_tm","e_inet_ag2"]);
 // Repositorio y pipeline: solo se dibujan durante el recorrido "Despliegue con IaC"
 const SOLO_IAC=new Set(["devops","repo","pipe","e_repo_pipe","e_pipe_arm"]);
+// Redes de Azure: una sola VNet, o dos unidas con peering (Red 1 = hub con la puerta de la VPN, Red 2 = la app)
+const TOPO={una:"Una red",hub:"Dos redes unidas (peering)"};
+const SOLO_HUB=new Set(["hub","peer","e_peer"]);
+// Con "hub" la columna de la puerta se corre 10 px a la izquierda para dejar espacio entre las dos redes
+const HUB_GEO={
+ vnet:{x:426,w:430,t:"Red 2 · la app · 10.1.0.0/16",p:"Aquí vive la app (web, aplicación y datos). No tiene VPN propia: llega a la oficina por el peering con la Red 1."},
+ gwsub:{x:312},vpngw:{x:320},ergw:{x:320},dcvm:{x:318},eds:{x:318}
+};
+const HUB_AR={
+ e_vpn:{d:[[222,523],[320,523]]},e_er:{d:[[222,603],[320,603]]},e_gw_lb:{d:[[402,523],[436,523]]},
+ e_ad_dc:{d:[[222,319],[290,319],[290,391],[318,391]]},
+ e_entra_eds:{d:[[332,92],[332,364]],lab:["sincroniza 1 vía",337,324,"start"]}
+};
+const ORIG_GEO={};
+[HUB_GEO,HUB_AR].forEach(t=>{for(const id in t){const e=[...EL,...AR].find(x=>x.id===id);ORIG_GEO[id]={};for(const k in t[id])ORIG_GEO[id][k]=e[k]}});
+function geoTopo(){
+  [HUB_GEO,HUB_AR].forEach(t=>{for(const id in t)Object.assign(POR_ID[id],topo==="hub"?t[id]:ORIG_GEO[id])});
+}
 function excluido(id){
-  return (SOLO_IAC.has(id)&&flujo!=="iac")||(SOLO_GEO.has(id)&&!RED[red].geo)||(SOLO_FD.has(id)&&entrada!=="fd")||(SOLO_TM.has(id)&&entrada!=="tm")||(SOLO_DC.has(id)&&ident!=="dc")||(SOLO_EDS.has(id)&&ident!=="eds");
+  return (SOLO_HUB.has(id)&&topo!=="hub")||(SOLO_IAC.has(id)&&flujo!=="iac")||(SOLO_GEO.has(id)&&!RED[red].geo)||(SOLO_FD.has(id)&&entrada!=="fd")||(SOLO_TM.has(id)&&entrada!=="tm")||(SOLO_DC.has(id)&&ident!=="dc")||(SOLO_EDS.has(id)&&ident!=="eds");
 }
 
 const NS="http://www.w3.org/2000/svg";
@@ -483,7 +511,8 @@ const capId=n=>"cap"+String(n).padStart(2,"0");
 const archivo=n=>"az900/"+CAPITULOS.find(c=>c.num===n).archivo;
 const tituloCap=n=>CAPITULOS.find(c=>c.num===n).titulo;
 
-let hasta=11,resaltar=true,flujo=null,sel=null,red="GRS",entrada="fd",ident="hib";
+let hasta=11,resaltar=true,flujo=null,sel=null,red="GRS",entrada="fd",ident="hib",topo="una";
+try{const v=localStorage.getItem("az900:arquitectura:topo");if(TOPO[v])topo=v}catch(e){}
 try{const v=localStorage.getItem("az900:arquitectura:ident");if(IDENT[v])ident=v}catch(e){}
 try{const v=localStorage.getItem("az900:arquitectura:entrada");if(v==="fd"||v==="tm")entrada=v}catch(e){}
 try{const v=localStorage.getItem("az900:arquitectura:red");if(RED[v])red=v}catch(e){}
@@ -545,7 +574,8 @@ function dibujar(){
   });
   AR.forEach(a=>{
     const g=mk("g",{class:`el arista f${a.f} ${a.cls||""}`,"data-id":a.id},capaAristas);
-    mk("path",{d:"M"+a.d.map(p=>p.join(",")).join("L"),"marker-end":"url(#punta)"},g);
+    const ln=mk("path",{d:"M"+a.d.map(p=>p.join(",")).join("L"),"marker-end":"url(#punta)"},g);
+    if(a.dos)ln.setAttribute("marker-start","url(#punta)");
     if(a.lab)texto(g,"et",a.lab[1],a.lab[2],a.lab[0],a.lab[3]||"middle");
     if(a.l11){const t=texto(g,"et precio",a.l11[1],a.l11[2],a.l11[0],a.l11[3]||"start");t.dataset.c11="1"}
   });
@@ -610,6 +640,9 @@ function aplicar(){
   document.getElementById("ctlRed").hidden=cap<7;
   document.querySelectorAll("#entrada button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.k===entrada)));
   document.getElementById("ctlEntrada").hidden=cap<6;
+  document.querySelectorAll("#topo button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.k===topo)));
+  document.getElementById("ctlTopo").hidden=cap<6;
+  try{localStorage.setItem("az900:arquitectura:topo",topo)}catch(e){}
   document.querySelectorAll("#ident button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.k===ident)));
   document.getElementById("ctlIdent").hidden=cap<8;
   try{localStorage.setItem("az900:arquitectura:ident",ident)}catch(e){}
@@ -679,11 +712,21 @@ const TM_WEB={ids:["tm","e_inet_tm","e_inet_ag2"],pasos:[
  "Con esa IP, el navegador se conecta DIRECTO al Application Gateway: el tráfico no pasa por Traffic Manager, que no ve ni filtra las peticiones. La entrada de datos es gratis; la salida se cobra.",
  "El Application Gateway (regional, capa 7) aplica su WAF y reparte las peticiones entre las VMs web del Scale Set."]};
 function idsFlujo(f){
+  const ids=idsFlujoBase(f);
+  if(topo!=="hub")return ids;
+  const s=new Set(ids),extra=[];
+  if(s.has("vnet")||s.has("gwsub"))extra.push("hub");
+  if((s.has("vpngw")||s.has("dcvm")||s.has("eds"))&&(s.has("lb")||s.has("be")))extra.push("peer","e_peer");
+  return ids.concat(extra);
+}
+function idsFlujoBase(f){
   if(f.id==="identidad")return ident==="hib"?f.ids:ID_FLUJO[ident].ids;
   if(f.id!=="web"&&f.id!=="black"||entrada!=="tm")return f.ids;
   return f.ids.filter(i=>!SOLO_FD.has(i)).concat(TM_WEB.ids);
 }
+const PASO_HUB="La puerta de la VPN está en la Red 1 y la app en la Red 2: el tráfico cruza por el peering y llega al Load Balancer interno por IP privada. Para que la Red 2 use la VPN de la Red 1 se activa el \"tránsito de puerta de enlace\" en el peering (no está en el PDF).";
 function pasosFlujo(f){
+  if(f.id==="oficina"&&topo==="hub")return [f.pasos[0],f.pasos[1],PASO_HUB,f.pasos[3]];
   if(f.id==="identidad")return ident==="hib"?f.pasos:ID_FLUJO[ident].pasos;
   if(f.id==="black")return entrada==="tm"?[f.pasos[0],f.pasoTM,...f.pasos.slice(2)]:f.pasos;
   if(f.id!=="web"||entrada!=="tm")return f.pasos;
@@ -712,6 +755,29 @@ function panelEntrada(){
     <p>Pista de examen: "DNS" o "tráfico que no es HTTP" → Traffic Manager. "WAF global", "aceleración" o "caché" → Front Door.</p>
     ${avance(6)}
     <p><a href="az900/cap06-redes.html">Comparar los balanceadores en el capítulo 6 →</a></p>`;
+}
+const tb=document.getElementById("topo");
+Object.keys(TOPO).forEach(k=>{
+  const b=document.createElement("button");
+  b.type="button";b.dataset.k=k;b.textContent=TOPO[k];
+  b.onclick=()=>{topo=k;sel=null;geoTopo();dibujar();aplicar();flujo?panelFlujo():panelTopo()};
+  tb.appendChild(b);
+});
+function panelTopo(){
+  const hub=topo==="hub";
+  document.getElementById("panel").innerHTML=`
+    <div class="area">Red · Capítulo 6 · PDF pág. 104</div>
+    <h2>${hub?"Dos redes unidas con peering":"Una sola red"}</h2>
+    <p>${hub?"La <b>Red 1</b> tiene la puerta de la VPN hacia la oficina. La <b>Red 2</b> tiene la app. El <b>peering</b> las une: se ven con IP privadas, por la red de Microsoft, sin pasar por Internet.":"Todo vive en una sola red de Azure (VNet): la puerta de la VPN y la app. Con una sola red no hay nada que unir, así que no hay peering. Prueba <b>Dos redes unidas</b>."}</p>
+    <p><b>Las 3 reglas del examen:</b></p>
+    <ol class="pasos">
+      <li>El peering une <b>redes de Azure entre sí</b>. La oficina con Azure se une con VPN o ExpressRoute.</li>
+      <li><b>No se pasa de largo</b> (no es transitivo): si A está unida con B y B con C, A no llega a C. Hay que unir A con C.</li>
+      <li>Las dos redes <b>no pueden repetir direcciones IP</b>: 10.0.0.0/16 y 10.1.0.0/16 sí; dos 10.0.0.0/16, no.</li>
+    </ol>
+    <p>También funciona entre regiones (peering global). No confundir: el peering une <b>redes</b>; el endpoint privado mete un <b>servicio</b> (SQL, Storage) dentro de tu red.</p>
+    ${avance(6)}
+    <p><a href="az900/cap06-lab-conectividad.html">Practicar en el laboratorio de conectividad →</a></p>`;
 }
 const ib=document.getElementById("ident");
 Object.keys(IDENT).forEach(k=>{
@@ -777,7 +843,7 @@ document.getElementById("leyenda").innerHTML=AREAS.map(a=>`<span><i style="backg
   '<span><i class="l n"></i>Nuevo en el capítulo</span><span><i class="l g"></i>Flecha nueva o del recorrido (más gruesa)</span><span><i class="l r"></i>Alternativa</span><span><i style="background:var(--rbr)"></i>Región Brazil South</span><span><i style="background:var(--rus)"></i>Región South Central US</span>'+
   '<p class="fl">Flechas por flujo: <b style="color:var(--a1)">naranja</b> tráfico web y oficina · <b style="color:var(--a3)">amarillo</b> datos · <b style="color:var(--a0)">azul</b> identidad · <b style="color:var(--a4)">rosa</b> gestión · <b style="color:var(--a5)">violeta</b> costos.</p>';
 
-dibujar();aplicar();panelCapitulo();
+geoTopo();dibujar();aplicar();panelCapitulo();
 </script>
 </body>
 </html>
