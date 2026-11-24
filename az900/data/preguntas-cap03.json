@@ -148,5 +148,11 @@
     "opciones": ["Azure Policy", "Control de acceso basado en roles (RBAC)", "Azure Resource Manager (ARM)", "Bloqueos de recursos"],
     "correcta": 0,
     "explicacion": "\"Políticas\" e \"iniciativas\" son de Azure Policy: una iniciativa es un conjunto de políticas (p. ej., ubicaciones permitidas + etiquetas obligatorias). Asignadas a un grupo de administración, se heredan a todas sus suscripciones, grupos de recursos y recursos. Policy controla CÓMO deben ser los recursos, sin importar quién los cree. Trampas: RBAC también se asigna en el grupo de administración y se hereda, pero trabaja con ROLES (quién puede hacer qué), no con políticas ni iniciativas; ARM es la capa por la que pasa toda solicitud y donde se evalúan Policy y RBAC, pero no es lo que aplica las políticas; los bloqueos solo impiden borrar o modificar."
+  },
+  {
+    "pregunta": "¿Cuál de las siguientes opciones NO forma parte de la infraestructura global de Azure?",
+    "opciones": ["Regiones", "Zonas de disponibilidad", "Pares de regiones", "Grupos de recursos"],
+    "correcta": 3,
+    "explicacion": "Regiones, zonas de disponibilidad y pares de regiones son infraestructura FÍSICA: lugares reales donde están los centros de datos (región = área con uno o más centros de datos; zona = centros de datos separados dentro de la región, con energía, refrigeración y red propias; par de regiones = dos regiones emparejadas para recuperación ante desastres, como Brazil South → South Central US). El grupo de recursos es organización LÓGICA: una carpeta para ordenar recursos dentro de la jerarquía de administración (grupo de administración → suscripción → grupo de recursos → recurso). Regla: si es un LUGAR, es infraestructura global; si es una forma de ORDENAR o administrar, no. Trampa: el grupo de recursos tiene una región (donde guarda sus metadatos), pero eso no lo vuelve infraestructura, y puede contener recursos de otras regiones (PDF págs. 33–44)."
   }
 ]
