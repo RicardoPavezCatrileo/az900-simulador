@@ -46,7 +46,7 @@ td.si{color:var(--ok);font-weight:600} td.no{color:var(--bad);font-weight:600} t
   </div>
 
   <!-- 1 · Regla de alerta -->
-  <section class="bloque">
+  <section id="s1" class="bloque">
     <h2 class="h">1 · Arma una regla de alerta</h2>
     <p class="intro">Una regla de alerta tiene <b>recurso</b> + <b>señal</b> (la telemetría) + <b>condición</b> (umbral durante una ventana de tiempo) + <b>gravedad</b> + <b>grupo de acción</b> (qué hacer). Ejemplo del curso: VM, uso de disco &gt; 80% durante 10 minutos, gravedad crítica (pág. 200). La línea muestra 30 minutos de la señal, minuto a minuto.</p>
     <div class="controls">
@@ -65,7 +65,7 @@ td.si{color:var(--ok);font-weight:600} td.no{color:var(--bad);font-weight:600} t
   </section>
 
   <!-- 2 · KQL -->
-  <section class="bloque">
+  <section id="s2" class="bloque">
     <h2 class="h">2 · Consultas KQL en Log Analytics</h2>
     <p class="intro">Log Analytics guarda los registros de Azure Monitor en un <b>área de trabajo</b> y se consultan con <b>KQL</b> (Kusto Query Language): una tabla y luego operadores encadenados con <code>|</code> (págs. 196–197). Los datos son de ejemplo: 3 VMs en la última hora.</p>
     <div class="ctl"><label>¿Qué quieres saber?</label><div class="seg" id="consulta"></div></div>
@@ -75,7 +75,7 @@ td.si{color:var(--ok);font-weight:600} td.no{color:var(--bad);font-weight:600} t
   </section>
 
   <!-- 3 · Backup -->
-  <section class="bloque">
+  <section id="s3" class="bloque">
     <h2 class="h">3 · Azure Backup y Site Recovery: ¿puedo recuperarme?</h2>
     <p class="intro">El PDF solo da la idea general: backup protege los datos y recovery restaura para la continuidad del negocio (pág. 202). El detalle de abajo <b>no está en el PDF</b>, pero AZ-104 lo pregunta: un <b>almacén de Recovery Services</b> guarda los puntos de restauración según una <b>política</b>. Ahora son las 15:00 del miércoles.</p>
     <div class="controls">
@@ -97,7 +97,7 @@ td.si{color:var(--ok);font-weight:600} td.no{color:var(--bad);font-weight:600} t
   </section>
 
   <!-- 4 · Tarjetas -->
-  <section>
+  <section id="s4">
     <h2 class="h">4 · Lo que más pregunta AZ-104 de este dominio</h2>
     <div class="cards">
       <div class="card"><h3>Qué envía una VM a Monitor (pág. 192)</h3><ul>

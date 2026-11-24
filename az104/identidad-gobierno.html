@@ -42,7 +42,7 @@ td.si{color:var(--ok);font-weight:600} td.no{color:var(--bad);font-weight:600} t
   </div>
 
   <!-- 1 · Licencias -->
-  <section class="bloque">
+  <section id="s1" class="bloque">
     <h2 class="h">1 · ¿Qué licencia de Entra ID necesito?</h2>
     <p class="intro">Marca las funciones que pide el escenario. La respuesta es la licencia <b>mínima</b> que las cubre todas: cada nivel incluye todo lo del anterior (págs. 48–53).</p>
     <div class="chks" id="funcs"></div>
@@ -54,7 +54,7 @@ td.si{color:var(--ok);font-weight:600} td.no{color:var(--bad);font-weight:600} t
   </section>
 
   <!-- 2 · Grupos -->
-  <section class="bloque">
+  <section id="s2" class="bloque">
     <h2 class="h">2 · Grupos: asignados o dinámicos</h2>
     <p class="intro">Un grupo <b>dinámico</b> calcula sus miembros con una regla sobre los atributos del usuario y se actualiza solo cuando cambian; uno <b>asignado</b> se llena a mano (págs. 57–60).</p>
     <div class="controls">
@@ -72,7 +72,7 @@ td.si{color:var(--ok);font-weight:600} td.no{color:var(--bad);font-weight:600} t
   </section>
 
   <!-- 3 · RBAC por dentro -->
-  <section class="bloque">
+  <section id="s3" class="bloque">
     <h2 class="h">3 · RBAC por dentro: Actions − NotActions</h2>
     <p class="intro">Una asignación de rol junta <b>quién</b> (entidad de seguridad), <b>qué</b> (definición de rol) y <b>dónde</b> (ámbito). La definición trae <code>Actions</code> y <code>NotActions</code>: permisos efectivos = Actions − NotActions. Si tienes varios roles, <b>se suman</b> (págs. 77–81). Marca los roles que tiene el usuario en el mismo ámbito.</p>
     <div class="chks fila" id="roles"></div>
@@ -86,7 +86,7 @@ td.si{color:var(--ok);font-weight:600} td.no{color:var(--bad);font-weight:600} t
   </section>
 
   <!-- 4 · Tarjetas -->
-  <section>
+  <section id="s4">
     <h2 class="h">4 · Lo que más pregunta AZ-104 de este dominio</h2>
     <div class="cards">
       <div class="card"><h3>Tipos de usuario (pág. 56)</h3><ul>
@@ -140,7 +140,7 @@ td.si{color:var(--ok);font-weight:600} td.no{color:var(--bad);font-weight:600} t
   </section>
 
   <!-- 5 · AD DS vs Entra ID vs Entra Domain Services -->
-  <section class="bloque">
+  <section id="s5" class="bloque">
     <h2 class="h">5 · AD DS vs Entra ID vs Entra Domain Services</h2>
     <div class="tbl"><table>
       <thead><tr><th></th><th>AD DS (local)</th><th>Microsoft Entra ID</th><th>Entra Domain Services (antes Azure AD DS)</th></tr></thead>

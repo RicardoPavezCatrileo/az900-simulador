@@ -45,7 +45,7 @@ tr.dec td{background:var(--accent-soft)} tr.skip td{opacity:.45}
   </div>
 
   <!-- 1 · NSG + ASG -->
-  <section class="bloque">
+  <section id="s1" class="bloque">
     <h2 class="h">1 · NSG en subred y NIC, con ASG</h2>
     <p class="intro">El tráfico <b>entrante</b> pasa primero por el NSG de la <b>subred</b> y después por el de la <b>NIC</b>: tiene que permitirlo <b>los dos</b>. Las reglas pueden apuntar a un <b>ASG</b> (etiqueta lógica de VMs) en vez de IPs: una VM nueva en el ASG hereda las reglas (págs. 165–168).</p>
     <div class="controls">
@@ -67,7 +67,7 @@ tr.dec td{background:var(--accent-soft)} tr.skip td{opacity:.45}
   </section>
 
   <!-- 2 · Peering multi-CIDR -->
-  <section class="bloque">
+  <section id="s2" class="bloque">
     <h2 class="h">2 · Peering con varios espacios de direcciones</h2>
     <p class="intro">Una VNet puede tener <b>más de un espacio de direcciones</b>. Para emparejar dos VNets, <b>ninguno</b> de sus espacios puede superponerse; y el peering <b>no es transitivo</b> (págs. 161–163). Activa o quita espacios y peerings.</p>
     <div class="vnets" id="vnets"></div>
@@ -80,7 +80,7 @@ tr.dec td{background:var(--accent-soft)} tr.skip td{opacity:.45}
   </section>
 
   <!-- 3 · Application Gateway -->
-  <section class="bloque">
+  <section id="s3" class="bloque">
     <h2 class="h">3 · Application Gateway: rutas por URL y sondeos de estado</h2>
     <p class="intro">Balanceador web de <b>capa 7</b>: elige el grupo de back-end según la <b>ruta de la URL</b>, puede <b>redirigir HTTP a HTTPS</b> y solo envía tráfico a los servidores que responden bien al <b>sondeo de estado</b> (págs. 179–182).</p>
     <div class="controls">
@@ -96,7 +96,7 @@ tr.dec td{background:var(--accent-soft)} tr.skip td{opacity:.45}
   </section>
 
   <!-- 4 · Azure DNS -->
-  <section class="bloque">
+  <section id="s4" class="bloque">
     <h2 class="h">4 · Azure DNS: zona pública vs zona privada</h2>
     <p class="intro">Una <b>zona pública</b> hospeda los registros de tu dominio en Internet (hay que delegar el dominio desde el registrador). Una <b>zona privada</b> no es visible en Internet, no necesita registrador y da nombres a las VMs dentro de las VNets <b>vinculadas</b> (págs. 183–189).</p>
     <div class="controls">
@@ -116,7 +116,7 @@ tr.dec td{background:var(--accent-soft)} tr.skip td{opacity:.45}
   </section>
 
   <!-- 5 · Tarjetas -->
-  <section>
+  <section id="s5">
     <h2 class="h">5 · Lo que más pregunta AZ-104 de este dominio</h2>
     <div class="cards">
       <div class="card"><h3>VNet y subredes (págs. 157–160)</h3><ul>

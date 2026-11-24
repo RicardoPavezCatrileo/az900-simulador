@@ -51,7 +51,7 @@ td.si{color:var(--ok);font-weight:600} td.no{color:var(--bad);font-weight:600} t
   </div>
 
   <!-- 1 · Bastion -->
-  <section class="bloque">
+  <section id="s1" class="bloque">
     <h2 class="h">1 · ¿Cómo me conecto a la VM?</h2>
     <p class="intro">Abrir RDP (3389) o SSH (22) a Internet es el error clásico. <b>Azure Bastion</b> es un PaaS que te da RDP y SSH desde el portal, por una conexión cifrada, <b>sin IP pública en la VM</b> (págs. 128–130).</p>
     <div class="ctl"><label>Método de conexión</label><div class="seg" id="metodo"></div></div>
@@ -61,7 +61,7 @@ td.si{color:var(--ok);font-weight:600} td.no{color:var(--bad);font-weight:600} t
   </section>
 
   <!-- 2 · Autoescalado -->
-  <section class="bloque">
+  <section id="s2" class="bloque">
     <h2 class="h">2 · Scale Set: reglas de autoescalado</h2>
     <p class="intro">Un Scale Set crea y quita VMs idénticas según reglas sobre una métrica (CPU, memoria, tráfico), en modo <b>automático</b>, <b>manual</b> o combinado (pág. 125). Supuesto: cada VM atiende 100 unidades de carga al 100% de CPU; la regla mira la CPU media de cada intervalo y actúa en el siguiente.</p>
     <div class="ctl"><label>Modo de escalado</label><div class="seg" id="modoE"></div></div>
@@ -75,7 +75,7 @@ td.si{color:var(--ok);font-weight:600} td.no{color:var(--bad);font-weight:600} t
   </section>
 
   <!-- 3 · ARM vs Bicep -->
-  <section class="bloque">
+  <section id="s3" class="bloque">
     <h2 class="h">3 · Infraestructura como código: ARM vs Bicep</h2>
     <p class="intro">Una <b>plantilla ARM</b> describe los recursos en JSON declarativo; <b>Bicep</b> describe lo mismo con una sintaxis más corta y se <b>transpila</b> a JSON ARM con <code>bicep build</code>. Las dos se despliegan con Azure Resource Manager (págs. 131–135). Cambia los parámetros y mira las dos versiones.</p>
     <div class="ctl"><label>Recurso</label><div class="seg" id="recurso"></div></div>
@@ -90,7 +90,7 @@ td.si{color:var(--ok);font-weight:600} td.no{color:var(--bad);font-weight:600} t
   </section>
 
   <!-- 4 · Contenedores -->
-  <section class="bloque">
+  <section id="s4" class="bloque">
     <h2 class="h">4 · Contenedores: de Dockerfile a ACI, Container Apps o AKS</h2>
     <p class="intro"><b>Dockerfile</b> (receta) → <code>build</code> → <b>imagen</b> → <code>push</code> → <b>ACR</b> (registro privado) → <code>pull</code> → <b>contenedor</b> en el servicio que elijas (págs. 143–155).</p>
     <div class="flujo" id="flujoC"></div>
@@ -107,7 +107,7 @@ td.si{color:var(--ok);font-weight:600} td.no{color:var(--bad);font-weight:600} t
   </section>
 
   <!-- 5 · Tarjetas -->
-  <section>
+  <section id="s5">
     <h2 class="h">5 · Lo que más pregunta AZ-104 de este dominio</h2>
     <div class="cards">
       <div class="card"><h3>Escalar (págs. 118–123)</h3><ul>

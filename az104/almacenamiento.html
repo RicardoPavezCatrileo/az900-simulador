@@ -43,7 +43,7 @@ td.si{color:var(--ok);font-weight:600} td.no{color:var(--bad);font-weight:600} t
   </div>
 
   <!-- 1 · Tipo de cuenta -->
-  <section class="bloque">
+  <section id="s1" class="bloque">
     <h2 class="h">1 · ¿Qué tipo de cuenta creo?</h2>
     <p class="intro">Al crear la cuenta eliges <b>rendimiento</b> (Standard o Premium) y <b>redundancia</b>. Standard GPv2 admite todo; cada Premium admite <b>un solo servicio</b> y solo <b>LRS o ZRS</b> (págs. 100–105). Marca lo que necesitas y mira si la cuenta lo soporta.</p>
     <div class="controls">
@@ -57,7 +57,7 @@ td.si{color:var(--ok);font-weight:600} td.no{color:var(--bad);font-weight:600} t
   </section>
 
   <!-- 2 · Acceso -->
-  <section class="bloque">
+  <section id="s2" class="bloque">
     <h2 class="h">2 · Dar acceso a los datos: clave, SAS o Entra ID</h2>
     <p class="intro">Una app necesita leer las imágenes del contenedor <code>images</code> de la cuenta <b>stprod</b>. La <b>clave de acceso</b> da control total; una <b>SAS</b> (firma de acceso compartido) da permisos limitados, con vencimiento e IP; <b>Entra ID + RBAC</b> no usa secretos. El PDF solo muestra una SAS en el comando de AzCopy (pág. 107). Prueba 6 solicitudes contra la configuración.</p>
     <div class="ctl"><label>Método de la app</label><div class="seg" id="met"></div></div>
@@ -78,7 +78,7 @@ td.si{color:var(--ok);font-weight:600} td.no{color:var(--bad);font-weight:600} t
   </section>
 
   <!-- 3 · Ciclo de vida -->
-  <section class="bloque">
+  <section id="s3" class="bloque">
     <h2 class="h">3 · Reglas de ciclo de vida: el blob baja de nivel solo</h2>
     <p class="intro">Una regla de <b>administración del ciclo de vida</b> mueve block blobs a un nivel más barato o los borra según los días desde la última modificación (pág. 89 la nombra; Archive en págs. 91–92). Ejemplo: un log de 1 GB escrito el día 0. La barra muestra 2 años, de 10 en 10 días.</p>
     <div class="controls">
@@ -102,7 +102,7 @@ td.si{color:var(--ok);font-weight:600} td.no{color:var(--bad);font-weight:600} t
   </section>
 
   <!-- 4 · Protección -->
-  <section class="bloque">
+  <section id="s4" class="bloque">
     <h2 class="h">4 · Proteger los datos: ¿se puede recuperar?</h2>
     <p class="intro">La redundancia (LRS, GRS…) protege contra fallas de hardware o de región, <b>no contra un borrado</b>: el borrado se replica. Contra errores humanos se usan la <b>eliminación temporal</b>, el <b>control de versiones</b>, el <b>almacenamiento inmutable</b> (WORM, pág. 85) y los <b>bloqueos</b>. Activa protecciones y prueba incidentes.</p>
     <div class="chks">
@@ -118,7 +118,7 @@ td.si{color:var(--ok);font-weight:600} td.no{color:var(--bad);font-weight:600} t
   </section>
 
   <!-- 5 · Tarjetas -->
-  <section>
+  <section id="s5">
     <h2 class="h">5 · Lo que más pregunta AZ-104 de este dominio</h2>
     <div class="cards">
       <div class="card"><h3>Nombre y endpoints</h3><ul>
