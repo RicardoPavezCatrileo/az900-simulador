@@ -1,0 +1,79 @@
+[
+  {
+    "pregunta": "Vas a implementar Azure Bastion en una red virtual. ¿Cómo debe llamarse la subred donde se despliega?",
+    "opciones": [
+      "BastionSubnet",
+      "AzureBastionSubnet",
+      "GatewaySubnet",
+      "Cualquier nombre, si tiene al menos un /26"
+    ],
+    "correcta": 1,
+    "explicacion": "Bastion se implementa en su propia subred, que debe llamarse exactamente AzureBastionSubnet (PDF pág. 130). GatewaySubnet es la de los VPN y ExpressRoute Gateway."
+  },
+  {
+    "pregunta": "Los administradores deben conectarse por RDP y SSH a VMs que NO tienen IP pública, desde el portal de Azure y sin abrir puertos a Internet. ¿Qué usas?",
+    "opciones": [
+      "Un Load Balancer público",
+      "Azure Bastion",
+      "Una IP pública con el puerto 3389 abierto en el NSG",
+      "Azure Front Door"
+    ],
+    "correcta": 1,
+    "explicacion": "Azure Bastion es un PaaS que da RDP y SSH desde el portal por una conexión privada y cifrada, sin IP pública en la VM (pág. 128)."
+  },
+  {
+    "pregunta": "¿Qué permisos mínimos necesita un usuario para conectarse a una VM mediante Azure Bastion?",
+    "opciones": [
+      "Propietario de la suscripción",
+      "Colaborador de la VM",
+      "Lector en la VM, en su interfaz de red y en el recurso Bastion",
+      "Administrador de acceso de usuario"
+    ],
+    "correcta": 2,
+    "explicacion": "Bastion requiere roles de lectura sobre la VM de destino, su NIC (con IP privada) y el recurso de Azure Bastion (pág. 130)."
+  },
+  {
+    "pregunta": "Necesitas un Scale Set que pueda mezclar VMs de distintos tamaños y configuraciones. ¿Qué modo de orquestación eliges?",
+    "opciones": [
+      "Uniform",
+      "Flexible",
+      "Manual",
+      "Spot"
+    ],
+    "correcta": 1,
+    "explicacion": "Flexible permite mezclar tamaños y configuraciones; Uniform crea VMs idénticas desde una imagen base o plantilla (pág. 127)."
+  },
+  {
+    "pregunta": "¿Cuánto cuesta usar un conjunto de escalado de máquinas virtuales (VMSS)?",
+    "opciones": [
+      "Un cargo fijo mensual por conjunto",
+      "Un 10% sobre el costo de las VMs",
+      "Nada adicional: pagas las VMs, el almacenamiento y la red que usas",
+      "Depende de la cantidad de reglas de autoescalado"
+    ],
+    "correcta": 2,
+    "explicacion": "No hay costo adicional por usar Scale Sets: solo pagas los recursos subyacentes (pág. 127)."
+  },
+  {
+    "pregunta": "Un Scale Set agrega instancias cuando la CPU media supera el 70% y las quita cuando baja del 30%. ¿Qué concepto describe esto?",
+    "opciones": [
+      "Escalado vertical",
+      "Elasticidad (autoescalado)",
+      "Agilidad",
+      "Alta disponibilidad"
+    ],
+    "correcta": 1,
+    "explicacion": "La elasticidad es el autoescalado según la carga en un sistema escalable. La agilidad es tener recursos en minutos; la alta disponibilidad es correr en al menos 2 zonas (págs. 121–123)."
+  },
+  {
+    "pregunta": "Según el curso, ¿qué significa alta disponibilidad para una aplicación en Azure?",
+    "opciones": [
+      "Usar una VM con más vCPU",
+      "Ejecutarla en al menos 2 zonas de disponibilidad",
+      "Tener un plan de ahorro de 3 años",
+      "Usar discos SSD premium"
+    ],
+    "correcta": 1,
+    "explicacion": "Alta disponibilidad es ejecutar la aplicación en al menos 2 zonas de disponibilidad para sobrevivir a la pérdida de un centro de datos (pág. 121)."
+  }
+]

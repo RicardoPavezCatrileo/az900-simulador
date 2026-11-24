@@ -1,0 +1,68 @@
+[
+  {
+    "pregunta": "Quieres respaldar una VM de Azure con Azure Backup. ¿Dónde se guardan los puntos de restauración?",
+    "opciones": [
+      "En un almacén de Recovery Services",
+      "En un área de trabajo de Log Analytics",
+      "En Azure Container Registry",
+      "En el disco temporal de la VM"
+    ],
+    "correcta": 0,
+    "explicacion": "Azure Backup guarda los puntos de restauración en un almacén de Recovery Services, que debe estar en la misma región que la VM. No está en el PDF."
+  },
+  {
+    "pregunta": "Alguien eliminó los datos de backup de una VM hace 5 días. Con la configuración por defecto, ¿se pueden recuperar?",
+    "opciones": [
+      "No, se borran al instante",
+      "Sí, la eliminación temporal los conserva 14 días",
+      "Sí, pero solo si el almacén es GRS",
+      "Solo abriendo un caso de soporte"
+    ],
+    "correcta": 1,
+    "explicacion": "La eliminación temporal (soft delete) conserva los datos de backup borrados 14 días adicionales. No está en el PDF."
+  },
+  {
+    "pregunta": "Un usuario borró por error un archivo de una VM respaldada. ¿Qué opción de restauración es la más rápida y no afecta al resto de la VM?",
+    "opciones": [
+      "Crear una VM nueva",
+      "Reemplazar los discos",
+      "Recuperar archivos (file recovery)",
+      "Failover con Site Recovery"
+    ],
+    "correcta": 2,
+    "explicacion": "La recuperación de archivos monta el punto de restauración y copias solo lo necesario. Restaurar discos o crear una VM sirve cuando se dañó la VM entera. No está en el PDF."
+  },
+  {
+    "pregunta": "Debes poder recuperar una VM en otra región en pocos minutos si cae toda la región primaria. ¿Qué usas?",
+    "opciones": [
+      "Azure Backup con almacén LRS",
+      "Azure Site Recovery",
+      "Un lock Delete",
+      "Una alerta de Service Health"
+    ],
+    "correcta": 1,
+    "explicacion": "Site Recovery replica la VM a otra región y hace failover: es recuperación ante desastres con RPO y RTO de minutos. Backup sirve para volver atrás en el tiempo. No está en el PDF."
+  },
+  {
+    "pregunta": "¿Qué mide el RPO (objetivo de punto de recuperación)?",
+    "opciones": [
+      "Cuánto tarda el servicio en volver a funcionar",
+      "Cuántos datos (medidos en tiempo) puedes perder",
+      "Cuántas copias del backup existen",
+      "Cuánto cuesta el almacén"
+    ],
+    "correcta": 1,
+    "explicacion": "RPO = datos que puedes perder, el tiempo desde el último punto de restauración. RTO = cuánto tardas en volver a funcionar. Backups más frecuentes bajan el RPO."
+  },
+  {
+    "pregunta": "Por auditoría debes conservar un backup de cada mes durante un año, sin pagar 365 puntos diarios. ¿Qué configuras en la política?",
+    "opciones": [
+      "Retención diaria de 365 días",
+      "Retención mensual de 12 meses",
+      "Un almacén GRS",
+      "La eliminación temporal"
+    ],
+    "correcta": 1,
+    "explicacion": "La política de backup tiene retención diaria, semanal, mensual y anual: la mensual guarda un punto por mes durante el tiempo que elijas. No está en el PDF."
+  }
+]

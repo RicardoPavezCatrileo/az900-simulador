@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Almacenamiento AZ-104</title>
+<title>Sección 8 · Almacenamiento (nivel 2)</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <link rel="stylesheet" href="../assets/estilos.css">
@@ -30,35 +30,21 @@ td.si{color:var(--ok);font-weight:600} td.no{color:var(--bad);font-weight:600} t
 </head>
 <body>
 <div class="wrap">
-  <div class="nav"><a class="volver" href="index.html">← Dominios AZ-104</a><a class="volver" href="../mapa.html">Mapa conceptual →</a><a class="volver" href="../arquitectura.html">Arquitectura →</a></div>
+  <div class="nav"><a class="volver" href="index.html">← Secciones AZ-104</a><a class="volver" href="s07-almacenamiento-1.html">◀ Sección 7</a><a class="volver" href="s09-maquinas-virtuales.html">Sección 9 ▶</a><a class="volver" href="../arquitectura.html">Arquitectura →</a></div>
   <header>
-    <div class="eyebrow">AZ-104 · Dominio 2 · Almacenamiento</div>
-    <h1>Almacenamiento: crear, dar acceso, automatizar, proteger</h1>
-    <p>En AZ-900 viste <b>qué es</b> cada servicio de Storage. AZ-104 pregunta <b>cómo se administra</b>: qué <b>tipo de cuenta</b> admite qué, cómo dar <b>acceso</b> con claves, SAS o Entra ID, cómo mover blobs entre niveles con <b>reglas de ciclo de vida</b> y cómo <b>proteger</b> los datos de un borrado (PDF AZ-104, págs. 82–112).</p>
+    <div class="eyebrow">AZ-104 · Sección 8 · PDF págs. 82–112</div>
+    <h1>Almacenamiento (nivel 2)</h1>
+    <p>Dar acceso a los datos (clave, SAS o Entra ID), las reglas de ciclo de vida y cómo proteger y recuperar los datos.</p>
   </header>
 
   <div class="note">
     <h3>Repaso de la base AZ-900</h3>
-    <p>Los 5 servicios, tipos de blob, niveles Hot/Cool/Cold/Archive, LRS/ZRS/GRS/GZRS, Premium solo LRS/ZRS y herramientas para mover datos: <a href="../az900/cap07-almacenamiento.html">cap. 7</a> · Endpoints de servicio y privados: <a href="../az900/cap06-lab-conectividad.html">laboratorio de conectividad</a>. En el PDF de AZ-104 lo único nuevo es el nivel <b>Archive</b> (págs. 91–92); lo demás de esta página <b>no está en el PDF, pero sí en Microsoft Learn</b> y en el temario oficial de AZ-104.</p>
+    <p><a href="../az900/cap07-almacenamiento.html">cap. 7 · Almacenamiento</a></p>
   </div>
 
-  <!-- 1 · Tipo de cuenta -->
+  <!-- 1 · Acceso -->
   <section id="s1" class="bloque">
-    <h2 class="h">1 · ¿Qué tipo de cuenta creo?</h2>
-    <p class="intro">Al crear la cuenta eliges <b>rendimiento</b> (Standard o Premium) y <b>redundancia</b>. Standard GPv2 admite todo; cada Premium admite <b>un solo servicio</b> y solo <b>LRS o ZRS</b> (págs. 100–105). Marca lo que necesitas y mira si la cuenta lo soporta.</p>
-    <div class="controls">
-      <div class="ctl"><label>Tipo de cuenta</label><div class="seg" id="tipo"></div></div>
-      <div class="ctl"><label>Redundancia</label><div class="seg" id="red"></div></div>
-    </div>
-    <div class="ctl"><label>Necesito</label><div class="chks" id="necs"></div></div>
-    <div class="tbl"><table><thead><tr><th>Necesidad</th><th>¿Lo soporta esta cuenta?</th><th>Por qué</th></tr></thead><tbody id="tbodyT"></tbody></table></div>
-    <div class="status" id="statusT"></div>
-    <div class="facts" id="factsT"></div>
-  </section>
-
-  <!-- 2 · Acceso -->
-  <section id="s2" class="bloque">
-    <h2 class="h">2 · Dar acceso a los datos: clave, SAS o Entra ID</h2>
+    <h2 class="h">1 · Dar acceso a los datos: clave, SAS o Entra ID</h2>
     <p class="intro">Una app necesita leer las imágenes del contenedor <code>images</code> de la cuenta <b>stprod</b>. La <b>clave de acceso</b> da control total; una <b>SAS</b> (firma de acceso compartido) da permisos limitados, con vencimiento e IP; <b>Entra ID + RBAC</b> no usa secretos. El PDF solo muestra una SAS en el comando de AzCopy (pág. 107). Prueba 6 solicitudes contra la configuración.</p>
     <div class="ctl"><label>Método de la app</label><div class="seg" id="met"></div></div>
     <div class="controls" id="sasOpc">
@@ -77,9 +63,9 @@ td.si{color:var(--ok);font-weight:600} td.no{color:var(--bad);font-weight:600} t
     <div class="status" id="statusS"></div>
   </section>
 
-  <!-- 3 · Ciclo de vida -->
-  <section id="s3" class="bloque">
-    <h2 class="h">3 · Reglas de ciclo de vida: el blob baja de nivel solo</h2>
+  <!-- 2 · Ciclo de vida -->
+  <section id="s2" class="bloque">
+    <h2 class="h">2 · Reglas de ciclo de vida: el blob baja de nivel solo</h2>
     <p class="intro">Una regla de <b>administración del ciclo de vida</b> mueve block blobs a un nivel más barato o los borra según los días desde la última modificación (pág. 89 la nombra; Archive en págs. 91–92). Ejemplo: un log de 1 GB escrito el día 0. La barra muestra 2 años, de 10 en 10 días.</p>
     <div class="controls">
       <div class="ctl"><label>Mover a Cool a los</label><div class="seg" id="dCool"></div></div>
@@ -101,9 +87,9 @@ td.si{color:var(--ok);font-weight:600} td.no{color:var(--bad);font-weight:600} t
     <div class="facts" id="factsL"></div>
   </section>
 
-  <!-- 4 · Protección -->
-  <section id="s4" class="bloque">
-    <h2 class="h">4 · Proteger los datos: ¿se puede recuperar?</h2>
+  <!-- 3 · Protección -->
+  <section id="s3" class="bloque">
+    <h2 class="h">3 · Proteger los datos: ¿se puede recuperar?</h2>
     <p class="intro">La redundancia (LRS, GRS…) protege contra fallas de hardware o de región, <b>no contra un borrado</b>: el borrado se replica. Contra errores humanos se usan la <b>eliminación temporal</b>, el <b>control de versiones</b>, el <b>almacenamiento inmutable</b> (WORM, pág. 85) y los <b>bloqueos</b>. Activa protecciones y prueba incidentes.</p>
     <div class="chks">
       <label class="chk"><input type="checkbox" id="pSoft" checked><span>Eliminación temporal de blobs: 7 días</span></label>
@@ -117,15 +103,9 @@ td.si{color:var(--ok);font-weight:600} td.no{color:var(--bad);font-weight:600} t
     <div class="facts" id="factsP"></div>
   </section>
 
-  <!-- 5 · Tarjetas -->
-  <section id="s5">
-    <h2 class="h">5 · Lo que más pregunta AZ-104 de este dominio</h2>
+  <section id="resumen">
+    <h2 class="h">4 · Lo que más pregunta AZ-104 de esta sección</h2>
     <div class="cards">
-      <div class="card"><h3>Nombre y endpoints</h3><ul>
-        <li>Nombre: 3–24 caracteres, <b>solo minúsculas y números</b>, único en todo Azure.</li>
-        <li><code>https://stprod.blob.core.windows.net</code>, y también <code>.file</code>, <code>.queue</code>, <code>.table</code> y <code>.dfs</code> (Data Lake).</li>
-        <li>Con RA-GRS se lee en <code>stprod-secondary.blob…</code>.</li>
-      </ul></div>
       <div class="card"><h3>Claves y SAS</h3><ul>
         <li><b>2 claves</b> para rotar sin cortar: la app pasa a key2, regeneras key1.</li>
         <li>Al regenerar una clave, <b>todas las SAS firmadas con ella dejan de valer</b>.</li>
@@ -141,20 +121,6 @@ td.si{color:var(--ok);font-weight:600} td.no{color:var(--bad);font-weight:600} t
         <li><b>Redes seleccionadas:</b> reglas de IP pública y de VNet (con endpoint de servicio). Excepción para servicios de confianza de Azure.</li>
         <li>Endpoint privado: IP privada en la VNet y puedes <b>deshabilitar el acceso público</b>.</li>
         <li><b>Transferencia segura obligatoria</b> (activada por defecto): rechaza HTTP.</li>
-      </ul></div>
-      <div class="card"><h3>Azure Files (págs. 109–112)</h3><ul>
-        <li><b>SMB</b> (puerto <b>445</b>, a veces bloqueado por el proveedor de Internet) y <b>NFS</b> (solo Premium).</li>
-        <li>Identidad para SMB: AD DS local, Entra Domain Services o Entra Kerberos. Permisos de recurso compartido (RBAC) + ACL de NTFS.</li>
-        <li><b>Instantáneas de recurso compartido</b> para volver atrás.</li>
-      </ul></div>
-      <div class="card"><h3>Azure File Sync</h3><ul>
-        <li>Servicio de sincronización → <b>grupo de sincronización</b> → 1 <b>punto de conexión en la nube</b> (el recurso compartido) + <b>puntos de conexión de servidor</b> (carpetas en Windows Server con el agente).</li>
-        <li><b>Nube por niveles (cloud tiering):</b> el servidor guarda solo los archivos usados y el resto queda en Azure (pág. 109: el servidor como caché).</li>
-      </ul></div>
-      <div class="card"><h3>Mover y replicar</h3><ul>
-        <li><b>AzCopy:</b> línea de comandos, blobs y Files, programable; se autentica con SAS o Entra ID (pág. 107).</li>
-        <li><b>Storage Explorer:</b> interfaz gráfica en Windows, macOS y Linux (pág. 108).</li>
-        <li><b>Replicación de objetos:</b> copia asíncrona de block blobs a otra cuenta; requiere <b>versiones</b> en ambas y <b>fuente de cambios</b> en el origen.</li>
       </ul></div>
       <div class="card"><h3>Cifrado</h3><ul>
         <li>Siempre activo (AES-256), no se puede desactivar.</li>
@@ -173,6 +139,7 @@ td.si{color:var(--ok);font-weight:600} td.no{color:var(--bad);font-weight:600} t
 <script src="../assets/progreso.js"></script>
 <script src="../assets/quiz.js"></script>
 <script>
+
 function seg(id,obj,get,set,fn){
   const el=document.getElementById(id);el.innerHTML="";
   Object.keys(obj).forEach(k=>{const b=document.createElement("button");b.type="button";b.textContent=typeof obj[k]==="string"?obj[k]:obj[k].name;b.dataset.k=k;
@@ -189,56 +156,6 @@ function checks(id,lista,set,fn){
   el.querySelectorAll("input").forEach(i=>i.onchange=()=>{i.checked?set.add(i.dataset.k):set.delete(i.dataset.k);fn()});
 }
 
-/* ---------- 1 · Tipo de cuenta ---------- */
-const REDS=["LRS","ZRS","GRS","RA-GRS","GZRS","RA-GZRS"];
-const TIPOS={
- gpv2:{name:"Standard GPv2",red:REDS,serv:["block","append","page","smb","queue","table","dl","arch","ra"],ep:"blob, file, queue, table, dfs"},
- pbb:{name:"Premium Block Blobs",red:["LRS","ZRS"],serv:["block","append","dl","lat"],ep:"blob, dfs"},
- pfs:{name:"Premium File Shares",red:["LRS","ZRS"],serv:["smb","nfs","lat"],ep:"file"},
- ppb:{name:"Premium Page Blobs",red:["LRS","ZRS"],serv:["page","lat"],ep:"blob (solo page blobs)"}
-};
-const NEC=[["block","Fotos y videos (block blobs)"],["append","Logs que se van agregando (append blobs)"],["page","Discos de VM no administrados (page blobs)"],["smb","Carpeta compartida SMB"],["nfs","Carpeta compartida NFS"],["queue","Colas (Queue)"],["table","Tablas NoSQL (Table)"],["dl","Data Lake (espacio de nombres jerárquico)"],["arch","Nivel Archive"],["ra","Leer en la región secundaria"],["lat","Latencia muy baja"]];
-const PORQUE={
- page:t=>t==="pbb"?"Premium Block Blobs no admite page blobs: usa Premium Page Blobs.":"",
- nfs:t=>t==="gpv2"?"NFS en Azure Files requiere Premium File Shares.":"",
- queue:t=>t!=="gpv2"?"Queue y Table no tienen Premium: solo Standard GPv2.":"",
- table:t=>t!=="gpv2"?"Queue y Table no tienen Premium: solo Standard GPv2.":"",
- arch:t=>t!=="gpv2"?"Los niveles de acceso solo existen en Standard.":"",
- ra:t=>t!=="gpv2"?"Premium solo admite LRS o ZRS: no hay región secundaria.":"",
- lat:t=>t==="gpv2"?"Standard usa HDD: para latencia de milisegundos de un dígito, Premium (SSD).":""
-};
-let tipo="gpv2",red="LRS";
-const necs=new Set(["block","arch"]);
-function soporta(t,n,r){
-  if(n==="arch")return TIPOS[t].serv.includes("arch")&&["LRS","GRS","RA-GRS"].includes(r);
-  if(n==="ra")return r.startsWith("RA-");
-  return TIPOS[t].serv.includes(n);
-}
-function renderT(){
-  seg("tipo",TIPOS,()=>tipo,v=>{tipo=v;if(!TIPOS[v].red.includes(red))red="LRS"},renderT);
-  const R={};REDS.forEach(r=>R[r]=r);
-  seg("red",R,()=>red,v=>red=v,renderT);
-  const T=TIPOS[tipo],redOk=T.red.includes(red);
-  const filas=NEC.filter(([k])=>necs.has(k)).map(([k,t])=>{
-    const ok=redOk&&soporta(tipo,k,red);
-    let p=ok?"Sí":(PORQUE[k]&&PORQUE[k](tipo))||"";
-    if(!ok&&!p){
-      if(k==="arch")p=`Archive no está disponible con ${red}: solo con LRS, GRS o RA-GRS.`;
-      else if(k==="ra")p=`${red} no permite leer la secundaria: elige RA-GRS o RA-GZRS.`;
-      else p=`${T.name} no admite este servicio.`;
-    }
-    return {t,ok,p};
-  });
-  document.getElementById("tbodyT").innerHTML=filas.length?filas.map(f=>`<tr><td>${f.t}</td><td class="${f.ok?"si":"no"}">${f.ok?"✓ Sí":"✕ No"}</td><td>${f.ok?"":f.p}</td></tr>`).join(""):`<tr><td class="na" colspan="3">Marca al menos una necesidad.</td></tr>`;
-  const mal=filas.filter(f=>!f.ok);
-  // Qué combinaciones de tipo + redundancia cubren todo
-  const sirven=[];Object.keys(TIPOS).forEach(t=>TIPOS[t].red.forEach(r=>{if([...necs].every(n=>soporta(t,n,r)))sirven.push(TIPOS[t].name+" + "+r)}));
-  if(!redOk)status("statusT","bad",`${T.name} no se puede crear con ${red}`,"Premium solo admite LRS o ZRS (pág. 105): sacrificas redundancia a cambio de rendimiento.");
-  else if(!mal.length)status("statusT","ok",`${T.name} con ${red} cubre todo`,necs.has("lat")?"Premium usa SSD: menor latencia, pero se paga por capacidad aprovisionada.":"Standard GPv2 es la opción por defecto y admite todos los servicios y redundancias (pág. 101).");
-  else status("statusT","warn",`Esta cuenta no cubre ${mal.length} necesidad${mal.length>1?"es":""}`,sirven.length?`Te sirve: ${sirven.slice(0,4).join(" · ")}${sirven.length>4?" …":""}.`:"Ninguna cuenta sola cubre todo: usa dos cuentas (por ejemplo, una Premium para el rendimiento y una Standard GPv2 para el resto).");
-  facts("factsT",[["Endpoints",T.ep],["Redundancias",T.red.join(" · ")],["Disco","Standard: HDD · Premium: SSD"],["Se cobra",tipo==="gpv2"?"Por GB usado + operaciones":"Por capacidad aprovisionada o por GB, más caro"]]);
-}
-checks("necs",NEC,necs,renderT);
 
 /* ---------- 2 · Acceso ---------- */
 const MET={clave:"Clave de acceso key1",sas:"SAS de cuenta",pol:"SAS + directiva almacenada",ud:"SAS de delegación de usuario",rbac:"Entra ID · Storage Blob Data Reader"};
@@ -408,7 +325,7 @@ function renderP(){
   status("statusP",lvl,t,d);facts("factsP",f);
 }
 
-renderT();renderS();renderL();renderP();iniciarQuiz("almacenamiento","az104");
+renderS();renderL();renderP();iniciarQuiz("s08","az104");
 </script>
 </body>
 </html>

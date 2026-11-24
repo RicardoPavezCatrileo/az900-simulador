@@ -1,0 +1,13 @@
+[
+  {
+    "pregunta": "En Bash, ¿qué comando agrega la lista de archivos al final de listing.txt sin borrar lo que ya tenía?",
+    "opciones": [
+      "ls > listing.txt",
+      "ls >> listing.txt",
+      "ls < listing.txt",
+      "ls | listing.txt"
+    ],
+    "correcta": 1,
+    "explicacion": "> redirige la salida sobrescribiendo el archivo; >> agrega al final; < toma la entrada desde un archivo; | pasa la salida a otro comando (pág. 22)."
+  }
+]

@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sección 6 · Control de acceso basado en roles (RBAC)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="../assets/estilos.css">
+<style>
+.bloque{display:grid;gap:14px}
+.bloque>h2.h{margin:0}
+.bloque>p.intro{margin:0;color:var(--muted);max-width:75ch}
+.chk{display:flex;gap:8px;align-items:flex-start;font-size:.9rem;cursor:pointer}
+.chk input{accent-color:var(--accent);margin-top:4px}
+.chks{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:8px 18px}
+.chks.fila{display:flex;flex-wrap:wrap}
+.nivel{font-family:var(--f-mono);font-size:.72rem;padding:1px 6px;border-radius:4px;border:1px solid var(--line);color:var(--muted);white-space:nowrap}
+.nivel.free{border-color:var(--ok);color:var(--ok)} .nivel.p1{border-color:var(--accent);color:var(--accent)}
+.nivel.p2{border-color:var(--geo);color:var(--geo)} .nivel.gov{border-color:var(--warn);color:var(--warn)}
+td.si{color:var(--ok);font-weight:600} td.no{color:var(--bad);font-weight:600} td.na{color:var(--muted)}
+.regla{font-family:var(--f-mono);font-size:.85rem;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:10px 12px;overflow-x:auto;white-space:nowrap}
+.cond{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.cond select{font:inherit;font-family:var(--f-mono);font-size:.85rem;padding:6px 8px;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--ink)}
+.json{font-family:var(--f-mono);font-size:.8rem;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin:0;overflow-x:auto;white-space:pre}
+.jsons{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px}
+.mini{font-size:.82rem;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="nav"><a class="volver" href="index.html">← Secciones AZ-104</a><a class="volver" href="s05-entra-id.html">◀ Sección 5</a><a class="volver" href="s07-almacenamiento-1.html">Sección 7 ▶</a><a class="volver" href="../arquitectura.html">Arquitectura →</a><a class="volver" href="administracion.html">Quién administra qué →</a></div>
+  <header>
+    <div class="eyebrow">AZ-104 · Sección 6 · PDF págs. 71–81</div>
+    <h1>Control de acceso basado en roles (RBAC)</h1>
+    <p>Cómo calcula Azure los permisos efectivos de un rol: Actions − NotActions, y qué pasa cuando alguien tiene varios roles.</p>
+  </header>
+
+  <div class="note">
+    <h3>Repaso de la base AZ-900</h3>
+    <p><a href="../az900/cap10-monitorizacion-gestion.html">cap. 10 · Monitorización y gestión</a></p>
+  </div>
+
+  <!-- 1 · RBAC por dentro -->
+  <section id="s1" class="bloque">
+    <h2 class="h">1 · RBAC por dentro: Actions − NotActions</h2>
+    <p class="intro">Una asignación de rol junta <b>quién</b> (entidad de seguridad), <b>qué</b> (definición de rol) y <b>dónde</b> (ámbito). La definición trae <code>Actions</code> y <code>NotActions</code>: permisos efectivos = Actions − NotActions. Si tienes varios roles, <b>se suman</b> (págs. 77–81). Marca los roles que tiene el usuario en el mismo ámbito.</p>
+    <div class="chks fila" id="roles"></div>
+    <div class="jsons" id="jsons"></div>
+    <div class="status" id="statusR"></div>
+    <div class="tbl"><table>
+      <thead id="theadR"></thead>
+      <tbody id="tbodyR"></tbody>
+    </table></div>
+    <p class="mini">Definiciones simplificadas: las reales tienen más entradas (por ejemplo, el Colaborador también niega algunas acciones de Blueprints y Purview). El mecanismo es el mismo.</p>
+  </section>
+
+  <section>
+    <h2 class="h">Preguntas tipo examen</h2>
+    <div class="score" id="score"></div>
+    <div class="quiz" id="quiz"></div>
+  </section>
+</div>
+
+<script src="../assets/progreso.js"></script>
+<script src="../assets/quiz.js"></script>
+<script>
+
+function seg(id,obj,get,set,fn){
+  const el=document.getElementById(id);el.innerHTML="";
+  Object.keys(obj).forEach(k=>{const b=document.createElement("button");b.type="button";b.textContent=typeof obj[k]==="string"?obj[k]:obj[k].name;b.dataset.k=k;
+    b.setAttribute("aria-pressed",String(get()===k));b.onclick=()=>{set(k);fn()};el.appendChild(b)});
+}
+function status(id,lvl,t,d){
+  const col={ok:"var(--ok)",warn:"var(--warn)",bad:"var(--bad)",info:"var(--accent)"}[lvl],ico={ok:"✓",warn:"!",bad:"✕",info:"i"}[lvl];
+  document.getElementById(id).innerHTML=`<span class="dot" style="background:${col}" aria-hidden="true"></span><div><b>${ico} ${t}</b><p>${d}</p></div>`;
+}
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"})[c]);
+
+
+/* ---------- 3 · RBAC por dentro ---------- */
+const ROLES={
+ owner:{name:"Propietario",a:["*"],n:[]},
+ contrib:{name:"Colaborador",a:["*"],n:["Microsoft.Authorization/*/Delete","Microsoft.Authorization/*/Write","Microsoft.Authorization/elevateAccess/Action"]},
+ reader:{name:"Lector",a:["*/read"],n:[]},
+ uaa:{name:"Administrador de acceso de usuario",a:["*/read","Microsoft.Authorization/*","Microsoft.Support/*"],n:[]},
+ vmc:{name:"Colaborador de máquinas virtuales",a:["Microsoft.Compute/virtualMachines/*","Microsoft.Network/networkInterfaces/*","Microsoft.Network/virtualNetworks/read","Microsoft.Network/virtualNetworks/subnets/join/action","Microsoft.Resources/subscriptions/resourceGroups/read"],n:[]}
+};
+const OPER=[
+ {t:"Ver una VM",op:"Microsoft.Compute/virtualMachines/read"},
+ {t:"Reiniciar una VM",op:"Microsoft.Compute/virtualMachines/restart/action"},
+ {t:"Eliminar una VM",op:"Microsoft.Compute/virtualMachines/delete"},
+ {t:"Crear una red virtual",op:"Microsoft.Network/virtualNetworks/write"},
+ {t:"Eliminar una cuenta de almacenamiento",op:"Microsoft.Storage/storageAccounts/delete"},
+ {t:"Dar un rol a otro usuario",op:"Microsoft.Authorization/roleAssignments/write"},
+ {t:"Quitar una asignación de rol",op:"Microsoft.Authorization/roleAssignments/delete"}
+];
+const asignados=new Set(["contrib"]);
+const coincide=(pat,op)=>new RegExp("^"+pat.split("*").map(s=>s.replace(/[.+?^${}()|[\]\\]/g,"\\$&")).join(".*")+"$","i").test(op);
+function evalua(r,op){
+  const R=ROLES[r],a=R.a.find(p=>coincide(p,op));
+  if(!a)return{ok:false,por:"no está en Actions"};
+  const n=R.n.find(p=>coincide(p,op));
+  if(n)return{ok:false,por:"NotActions: "+n};
+  return{ok:true,por:"Actions: "+a};
+}
+document.getElementById("roles").innerHTML=Object.keys(ROLES).map(k=>`<label class="chk"><input type="checkbox" data-r="${k}"${asignados.has(k)?" checked":""}><span>${ROLES[k].name}</span></label>`).join("");
+document.querySelectorAll("#roles input").forEach(i=>i.onchange=()=>{i.checked?asignados.add(i.dataset.r):asignados.delete(i.dataset.r);renderR()});
+function renderR(){
+  const rs=Object.keys(ROLES).filter(k=>asignados.has(k));
+  document.getElementById("jsons").innerHTML=rs.map(k=>`<pre class="json">${esc(JSON.stringify({roleName:ROLES[k].name,Actions:ROLES[k].a,NotActions:ROLES[k].n},null,2))}</pre>`).join("");
+  document.getElementById("theadR").innerHTML=`<tr><th>Operación</th>${rs.map(k=>`<th>${ROLES[k].name}</th>`).join("")}<th>Efectivo (suma de roles)</th></tr>`;
+  document.getElementById("tbodyR").innerHTML=OPER.map(o=>{
+    const ev=rs.map(k=>evalua(k,o.op)),fin=ev.some(e=>e.ok);
+    return`<tr><td>${o.t}<div class="mini"><code>${o.op}</code></div></td>${ev.map(e=>`<td class="${e.ok?"si":"no"}" title="${esc(e.por)}">${e.ok?"✓":"✕"}<div class="mini">${esc(e.por)}</div></td>`).join("")}<td class="${fin?"si":"no"}">${fin?"✓ Permitido":"✕ Denegado"}</td></tr>`;
+  }).join("");
+  if(!rs.length){status("statusR","bad","Sin roles: no puede hacer nada","Sin una asignación de rol, Azure deniega todo por defecto.");return}
+  const todo=OPER.every(o=>rs.some(k=>evalua(k,o.op).ok));
+  if(rs.includes("contrib")&&rs.includes("uaa")&&!rs.includes("owner"))status("statusR","warn","Colaborador + Administrador de acceso de usuario ≈ Propietario","Los permisos se suman: lo que el NotActions del Colaborador quita (gestionar roles), el otro rol lo concede. NotActions no es una denegación: solo resta dentro de ESE rol.");
+  else if(rs.length===1&&rs[0]==="contrib")status("statusR","info","Colaborador: todo menos gestionar el acceso","Actions = * (todo) y NotActions quita Microsoft.Authorization/*/Write y /Delete: puede crear y borrar recursos, pero no dar ni quitar roles. Agrega un segundo rol y mira cómo se suman.");
+  else status("statusR",todo?"ok":"info",todo?"Puede hacer todas las operaciones de la tabla":"Permisos efectivos combinados",`Cada columna aplica Actions − NotActions de un rol; la última junta todos los roles (unión). Pasa el mouse por cada ✓ o ✕ para ver qué entrada decidió.`);
+}
+
+renderR();iniciarQuiz("s06","az104");
+</script>
+</body>
+</html>

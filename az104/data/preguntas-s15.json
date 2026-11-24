@@ -1,0 +1,101 @@
+[
+  {
+    "pregunta": "Quieres que te avisen cuando el disco de una VM supere el 80% de uso durante 10 minutos. ¿Qué configuras?",
+    "opciones": [
+      "Un presupuesto de Cost Management",
+      "Una regla de alerta de Azure Monitor con un grupo de acción",
+      "Una política de Azure Policy",
+      "Un lock ReadOnly"
+    ],
+    "correcta": 1,
+    "explicacion": "Una regla de alerta define recurso (VM), señal (uso de disco), condición (> 80% durante 10 min) y gravedad; el grupo de acción decide qué hacer (PDF pág. 200)."
+  },
+  {
+    "pregunta": "En Azure Monitor, ¿qué define un grupo de acción?",
+    "opciones": [
+      "Qué recursos se monitorean",
+      "Las acciones que se ejecutan cuando se activa una regla de alerta, como email, SMS, Logic Apps o Functions",
+      "El umbral de la alerta",
+      "Quién puede ver las métricas"
+    ],
+    "correcta": 1,
+    "explicacion": "El grupo de acción define las acciones tomadas al activarse una regla: notificar por email o SMS, o flujos automatizados con Logic Apps, Azure Functions, etc. (pág. 200)."
+  },
+  {
+    "pregunta": "Quieres que, al dispararse una alerta, se ejecute código automáticamente para liberar espacio en el disco. ¿Qué agregas al grupo de acción?",
+    "opciones": [
+      "Un SMS",
+      "Una Azure Function",
+      "Un panel de Azure Monitor",
+      "Un área de trabajo de Log Analytics"
+    ],
+    "correcta": 1,
+    "explicacion": "Los grupos de acción integran flujos automatizados con Logic Apps y Azure Functions (pág. 200). Un SMS solo avisa."
+  },
+  {
+    "pregunta": "¿Qué lenguaje se usa para consultar los datos de Log Analytics?",
+    "opciones": [
+      "SQL",
+      "Kusto Query Language (KQL)",
+      "PowerShell",
+      "GraphQL"
+    ],
+    "correcta": 1,
+    "explicacion": "Las consultas en Log Analytics se hacen con KQL (pág. 197)."
+  },
+  {
+    "pregunta": "En KQL, ¿qué operador agrupa filas y calcula un valor por grupo, como el promedio de CPU por equipo?",
+    "opciones": [
+      "where",
+      "project",
+      "summarize ... by",
+      "top"
+    ],
+    "correcta": 2,
+    "explicacion": "summarize avg(CounterValue) by Computer agrupa y agrega. where filtra filas, project elige columnas y top devuelve las N mayores."
+  },
+  {
+    "pregunta": "¿Qué tabla de Log Analytics usarías para detectar VMs que dejaron de reportar (VM que no responde)?",
+    "opciones": [
+      "Perf",
+      "Heartbeat",
+      "AzureActivity",
+      "Usage"
+    ],
+    "correcta": 1,
+    "explicacion": "El agente envía un latido periódico a la tabla Heartbeat; si deja de llegar, la VM o el agente no responden. Perf guarda contadores de rendimiento y AzureActivity las operaciones del plano de control."
+  },
+  {
+    "pregunta": "Necesitas saber quién desasignó una VM ayer. ¿Dónde lo buscas?",
+    "opciones": [
+      "En las métricas de CPU de la VM",
+      "En el registro de actividad (AzureActivity)",
+      "En Application Insights",
+      "En Azure Advisor"
+    ],
+    "correcta": 1,
+    "explicacion": "El registro de actividad guarda las operaciones sobre los recursos: quién, qué y cuándo (pág. 192 lo menciona entre lo que envía una VM)."
+  },
+  {
+    "pregunta": "Necesitas diagnosticar cuellos de botella de rendimiento y analizar cómo interactúan los usuarios con tu aplicación web. ¿Qué usas?",
+    "opciones": [
+      "Log Analytics",
+      "Application Insights",
+      "Azure Service Health",
+      "Network Watcher"
+    ],
+    "correcta": 1,
+    "explicacion": "Application Insights está enfocado en aplicaciones web: cuellos de botella y uso de los usuarios. Funciona con App Service, VMs (con agente) y recursos externos (pág. 198)."
+  },
+  {
+    "pregunta": "Para usar Application Insights en una aplicación que corre en una VM de Azure, ¿qué se necesita?",
+    "opciones": [
+      "Nada, se activa solo",
+      "Instalar un agente en la VM",
+      "Moverla a App Service",
+      "Un endpoint privado"
+    ],
+    "correcta": 1,
+    "explicacion": "El curso indica que Application Insights necesita un agente para las VMs (pág. 198)."
+  }
+]

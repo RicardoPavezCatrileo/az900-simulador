@@ -1,0 +1,46 @@
+[
+  {
+    "pregunta": "¿En qué formato están escritas las plantillas de Azure Resource Manager (ARM)?",
+    "opciones": [
+      "YAML imperativo",
+      "JSON declarativo",
+      "PowerShell",
+      "XML"
+    ],
+    "correcta": 1,
+    "explicacion": "Las plantillas ARM usan JSON declarativo para describir los recursos y su configuración (pág. 134)."
+  },
+  {
+    "pregunta": "¿Cuál es la relación entre Bicep y las plantillas ARM?",
+    "opciones": [
+      "Bicep reemplaza a Resource Manager",
+      "Bicep se transpila a JSON ARM y se despliega con Resource Manager",
+      "Bicep solo funciona con Terraform",
+      "Bicep es imperativo y ARM declarativo"
+    ],
+    "correcta": 1,
+    "explicacion": "Bicep es un lenguaje declarativo más legible que se compila (bicep build) a una plantilla ARM en JSON, sin perder compatibilidad (pág. 135)."
+  },
+  {
+    "pregunta": "¿Qué comando de Azure CLI despliega una plantilla ARM o un archivo Bicep en un grupo de recursos?",
+    "opciones": [
+      "az group create",
+      "az deployment group create",
+      "az vm create",
+      "bicep deploy"
+    ],
+    "correcta": 1,
+    "explicacion": "az deployment group create --resource-group <rg> --template-file main.bicep (o .json) (pág. 135). az group create solo crea el grupo de recursos."
+  },
+  {
+    "pregunta": "Despliegas una plantilla en modo Completo en un grupo de recursos que tiene recursos que la plantilla no declara. ¿Qué pasa con ellos?",
+    "opciones": [
+      "Se mantienen intactos",
+      "Se eliminan",
+      "Se mueven a otro grupo de recursos",
+      "El despliegue falla"
+    ],
+    "correcta": 1,
+    "explicacion": "En modo Completo, Resource Manager elimina los recursos del grupo que no estén en la plantilla. En modo Incremental (por defecto) los deja intactos. No está en el PDF."
+  }
+]

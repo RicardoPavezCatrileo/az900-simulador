@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sección 10 · Infraestructura como código: ARM y Bicep</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="../assets/estilos.css">
+<style>
+.bloque{display:grid;gap:14px}
+.bloque>h2.h{margin:0}
+.bloque>p.intro{margin:0;color:var(--muted);max-width:75ch}
+.chk{display:flex;gap:8px;align-items:flex-start;font-size:.9rem;cursor:pointer}
+.chk input{accent-color:var(--accent);margin-top:4px}
+.chks{display:flex;flex-wrap:wrap;gap:8px 18px}
+td.si{color:var(--ok);font-weight:600} td.no{color:var(--bad);font-weight:600} td.na{color:var(--muted)}
+.mini{font-size:.82rem;color:var(--muted)}
+.code{font-family:var(--f-mono);font-size:.8rem;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin:0;overflow-x:auto;white-space:pre;line-height:1.45}
+.codes{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}
+.bloque>*{min-width:0}
+@media (max-width:760px){.codes{grid-template-columns:1fr}}
+.codes h3{margin:0 0 6px;font-family:var(--f-mono);font-size:.75rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:500}
+.campo{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center}
+.campo label{font-family:var(--f-mono);font-size:.75rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.campo input,.campo select{font:inherit;font-family:var(--f-mono);font-size:.85rem;padding:6px 8px;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--ink)}
+.campo input[type=range]{padding:0;accent-color:var(--accent)}
+.vms{display:flex;gap:3px;flex-wrap:wrap}
+.vms i{display:block;width:12px;height:12px;border-radius:3px;background:var(--accent)}
+.cpu{display:flex;align-items:center;gap:8px;min-width:130px}
+.cpu .bar{flex:1;min-width:60px}
+.cpu .bar.alta span{background:var(--bad)} .cpu .bar.baja span{background:var(--muted)}
+.flujo{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-family:var(--f-mono);font-size:.8rem}
+.flujo span.p{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:6px 10px}
+.flujo span.p.on{border-color:var(--accent);background:var(--accent-soft)}
+.flujo b{color:var(--muted);font-weight:500}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="nav"><a class="volver" href="index.html">← Secciones AZ-104</a><a class="volver" href="s09-maquinas-virtuales.html">◀ Sección 9</a><a class="volver" href="s11-app-service.html">Sección 11 ▶</a><a class="volver" href="../arquitectura.html">Arquitectura →</a></div>
+  <header>
+    <div class="eyebrow">AZ-104 · Sección 10 · PDF págs. 131–135</div>
+    <h1>Infraestructura como código: ARM y Bicep</h1>
+    <p>El mismo despliegue escrito como plantilla ARM y como Bicep, y la diferencia entre los modos incremental y completo.</p>
+  </header>
+
+  <div class="note">
+    <h3>Repaso de la base AZ-900</h3>
+    <p><a href="../az900/cap04-fundamentos-herramientas.html">cap. 4 · Fundamentos de herramientas</a></p>
+  </div>
+
+  <!-- 1 · ARM vs Bicep -->
+  <section id="s1" class="bloque">
+    <h2 class="h">1 · Infraestructura como código: ARM vs Bicep</h2>
+    <p class="intro">Una <b>plantilla ARM</b> describe los recursos en JSON declarativo; <b>Bicep</b> describe lo mismo con una sintaxis más corta y se <b>transpila</b> a JSON ARM con <code>bicep build</code>. Las dos se despliegan con Azure Resource Manager (págs. 131–135). Cambia los parámetros y mira las dos versiones.</p>
+    <div class="ctl"><label>Recurso</label><div class="seg" id="recurso"></div></div>
+    <div class="campo" id="camposT"></div>
+    <div class="codes">
+      <div><h3 id="tBicep">main.bicep</h3><pre class="code" id="codeBicep"></pre></div>
+      <div><h3 id="tArm">main.json (plantilla ARM)</h3><pre class="code" id="codeArm"></pre></div>
+    </div>
+    <div class="ctl"><label>Modo de despliegue (no está en el PDF, pero lo pregunta AZ-104)</label><div class="seg" id="modoD"></div></div>
+    <pre class="code" id="codeCmd"></pre>
+    <div class="status" id="statusT"></div>
+  </section>
+
+  <section>
+    <h2 class="h">Preguntas tipo examen</h2>
+    <div class="score" id="score"></div>
+    <div class="quiz" id="quiz"></div>
+  </section>
+</div>
+
+<script src="../assets/progreso.js"></script>
+<script src="../assets/quiz.js"></script>
+<script>
+
+function seg(id,obj,get,set,fn){
+  const el=document.getElementById(id);el.innerHTML="";
+  Object.keys(obj).forEach(k=>{const b=document.createElement("button");b.type="button";b.textContent=typeof obj[k]==="string"?obj[k]:obj[k].name;b.dataset.k=k;
+    b.setAttribute("aria-pressed",String(get()===k));b.onclick=()=>{set(k);fn()};el.appendChild(b)});
+}
+function facts(id,rows){document.getElementById(id).innerHTML=rows.map(([k,v])=>`<div class="fact"><div class="k">${k}</div><div class="v">${v}</div></div>`).join("")}
+function status(id,lvl,t,d){
+  const col={ok:"var(--ok)",warn:"var(--warn)",bad:"var(--bad)",info:"var(--accent)"}[lvl],ico={ok:"✓",warn:"!",bad:"✕",info:"i"}[lvl];
+  document.getElementById(id).innerHTML=`<span class="dot" style="background:${col}" aria-hidden="true"></span><div><b>${ico} ${t}</b><p>${d}</p></div>`;
+}
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"})[c]);
+
+
+/* ---------- 3 · ARM vs Bicep ---------- */
+const RECURSO={st:"Cuenta de almacenamiento",vnet:"Red virtual con subred"};
+const MODOD={inc:"Incremental (por defecto)",comp:"Completo"};
+let recurso="st",modoD="inc",nombre="stazdemo001",ubicT="brazilsouth",sku="Standard_LRS",prefijo="10.1.0.0/16";
+const UBICS=["brazilsouth","eastus","westeurope"],SKUS=["Standard_LRS","Standard_ZRS","Standard_GRS","Standard_RAGRS"],PREF=["10.1.0.0/16","10.2.0.0/16","172.16.0.0/16"];
+function selT(id,opts,val){return`<select id="${id}">${opts.map(o=>`<option${o===val?" selected":""}>${o}</option>`).join("")}</select>`}
+function renderT(){
+  seg("recurso",RECURSO,()=>recurso,v=>{recurso=v;nombre=v==="st"?"stazdemo001":"vnet-app"},renderT);
+  seg("modoD",MODOD,()=>modoD,v=>modoD=v,renderT);
+  const c=document.getElementById("camposT");
+  c.innerHTML=`<label for="nom">Nombre</label><input id="nom" value="${esc(nombre)}" size="16"><label for="ubi">Ubicación</label>${selT("ubi",UBICS,ubicT)}`+
+    (recurso==="st"?`<label for="sku">SKU</label>${selT("sku",SKUS,sku)}`:`<label for="pre">Espacio de direcciones</label>${selT("pre",PREF,prefijo)}`);
+  document.getElementById("nom").oninput=e=>{nombre=e.target.value.replace(/[^A-Za-z0-9-]/g,"");pinta()};
+  document.getElementById("ubi").onchange=e=>{ubicT=e.target.value;pinta()};
+  const s=document.getElementById("sku");if(s)s.onchange=e=>{sku=e.target.value;pinta()};
+  const p=document.getElementById("pre");if(p)p.onchange=e=>{prefijo=e.target.value;pinta()};
+  pinta();
+}
+function pinta(){
+  const sub=prefijo.replace(/\.0\.0\/16$/,".1.0/24");
+  let bicep,arm;
+  if(recurso==="st"){
+    bicep=`param nombre string = '${nombre}'
+param ubicacion string = '${ubicT}'
+param sku string = '${sku}'
+
+resource st 'Microsoft.Storage/storageAccounts@2023-05-01' = {
+  name: nombre
+  location: ubicacion
+  sku: {
+    name: sku
+  }
+  kind: 'StorageV2'
+}`;
+    arm={"$schema":"https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#","contentVersion":"1.0.0.0",
+      parameters:{nombre:{type:"string",defaultValue:nombre},ubicacion:{type:"string",defaultValue:ubicT},sku:{type:"string",defaultValue:sku}},
+      resources:[{type:"Microsoft.Storage/storageAccounts",apiVersion:"2023-05-01",name:"[parameters('nombre')]",location:"[parameters('ubicacion')]",sku:{name:"[parameters('sku')]"},kind:"StorageV2"}]};
+  }else{
+    bicep=`param nombre string = '${nombre}'
+param ubicacion string = '${ubicT}'
+
+resource vnet 'Microsoft.Network/virtualNetworks@2023-09-01' = {
+  name: nombre
+  location: ubicacion
+  properties: {
+    addressSpace: {
+      addressPrefixes: [ '${prefijo}' ]
+    }
+    subnets: [
+      {
+        name: 'snet-web'
+        properties: { addressPrefix: '${sub}' }
+      }
+    ]
+  }
+}`;
+    arm={"$schema":"https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#","contentVersion":"1.0.0.0",
+      parameters:{nombre:{type:"string",defaultValue:nombre},ubicacion:{type:"string",defaultValue:ubicT}},
+      resources:[{type:"Microsoft.Network/virtualNetworks",apiVersion:"2023-09-01",name:"[parameters('nombre')]",location:"[parameters('ubicacion')]",
+        properties:{addressSpace:{addressPrefixes:[prefijo]},subnets:[{name:"snet-web",properties:{addressPrefix:sub}}]}}]};
+  }
+  const armTxt=JSON.stringify(arm,null,2);
+  document.getElementById("codeBicep").textContent=bicep;
+  document.getElementById("codeArm").textContent=armTxt;
+  const lb=bicep.split("\n").length,la=armTxt.split("\n").length;
+  document.getElementById("tBicep").textContent=`main.bicep · ${lb} líneas`;
+  document.getElementById("tArm").textContent=`main.json (plantilla ARM) · ${la} líneas`;
+  document.getElementById("codeCmd").textContent=`# Opcional: ver el JSON que genera Bicep
+bicep build main.bicep          # crea main.json
+
+# Desplegar en un grupo de recursos (sirve con .bicep o .json)
+az deployment group create \\
+  --resource-group rg-demo \\
+  --template-file main.bicep \\
+  --mode ${modoD==="inc"?"Incremental":"Complete"}`;
+  if(!nombre){status("statusT","bad","Falta el nombre","Todo recurso necesita un nombre; en una cuenta de almacenamiento, de 3 a 24 letras minúsculas y números, único en todo Azure.");return}
+  const nota=recurso==="st"&&!/^[a-z0-9]{3,24}$/.test(nombre)?` Ojo: "${nombre}" no es un nombre válido de cuenta de almacenamiento (3–24 minúsculas y números, sin guiones); el despliegue fallaría.`:"";
+  if(modoD==="inc")status("statusT",nota?"warn":"ok",`Mismo recurso: ${lb} líneas en Bicep, ${la} en JSON`,"Las dos son declarativas: dices QUÉ quieres, no los pasos. Modo incremental: crea o actualiza lo que está en la plantilla y deja intactos los demás recursos del grupo."+nota);
+  else status("statusT","warn","Modo completo: borra lo que no esté en la plantilla","Además de crear o actualizar, Resource Manager ELIMINA del grupo de recursos todo lo que la plantilla no declare. Útil para que el grupo quede idéntico a la plantilla; peligroso si hay otros recursos."+nota);
+}
+
+renderT();iniciarQuiz("s10","az104");
+</script>
+</body>
+</html>

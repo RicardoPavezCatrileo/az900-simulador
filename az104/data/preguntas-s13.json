@@ -1,0 +1,79 @@
+[
+  {
+    "pregunta": "Una VM tiene un NSG en su subred que permite el puerto 3389 y otro NSG en su NIC que lo deniega. ¿Qué ocurre con una conexión RDP entrante?",
+    "opciones": [
+      "Se permite: gana el NSG de la subred",
+      "Se deniega: el tráfico entrante debe ser permitido por los dos NSG",
+      "Se permite: gana la regla con la prioridad más baja de los dos",
+      "Depende de cuál NSG se creó primero"
+    ],
+    "correcta": 1,
+    "explicacion": "El tráfico entrante se evalúa primero en el NSG de la subred y luego en el de la NIC; basta con que uno lo deniegue. Los NSG se aplican a subredes y a instancias individuales (PDF pág. 165)."
+  },
+  {
+    "pregunta": "En un NSG tienes una regla 200 que permite TCP 80 y una regla 300 que deniega todo el tráfico entrante. ¿Qué pasa con el tráfico al puerto 80?",
+    "opciones": [
+      "Se deniega porque la regla de denegación es más general",
+      "Se permite porque la regla 200 se evalúa primero",
+      "Se deniega porque las reglas de denegación siempre ganan",
+      "Se permite solo si viene de la misma VNet"
+    ],
+    "correcta": 1,
+    "explicacion": "Los números más bajos tienen prioridad más alta; la primera regla que coincide decide y las demás no se evalúan (pág. 167)."
+  },
+  {
+    "pregunta": "Quieres crear reglas de NSG para \"los servidores web\" sin escribir sus IPs, de modo que una VM web nueva reciba las reglas automáticamente. ¿Qué usas?",
+    "opciones": [
+      "Un grupo de recursos",
+      "Un grupo de seguridad de aplicaciones (ASG)",
+      "Un endpoint de servicio",
+      "Una etiqueta (tag) de Azure"
+    ],
+    "correcta": 1,
+    "explicacion": "Un ASG agrupa VMs con una etiqueta lógica; el NSG la usa como origen o destino. Al agregar una VM al ASG hereda las reglas (pág. 168). Las tags de Azure sirven para organizar y facturar, no para reglas de NSG."
+  },
+  {
+    "pregunta": "¿Cuál afirmación sobre los grupos de seguridad de aplicaciones (ASG) es correcta?",
+    "opciones": [
+      "Reemplazan a los NSG",
+      "Se usan junto con los NSG: las reglas del NSG hacen referencia al ASG",
+      "Solo funcionan con Load Balancer",
+      "Filtran tráfico por URL"
+    ],
+    "correcta": 1,
+    "explicacion": "Los ASG no reemplazan a los NSG: un NSG hace referencia a un ASG en sus reglas (pág. 168)."
+  },
+  {
+    "pregunta": "La VNet A tiene los espacios 10.1.0.0/16 y 10.0.0.0/16. La VNet C tiene 10.1.0.0/16 y 10.6.0.0/16. ¿Se pueden emparejar?",
+    "opciones": [
+      "Sí, porque 10.0.0.0/16 y 10.6.0.0/16 no se superponen",
+      "No, mientras compartan el espacio 10.1.0.0/16",
+      "Sí, si se usa un VPN Gateway",
+      "Sí, pero solo en una dirección"
+    ],
+    "correcta": 1,
+    "explicacion": "Para emparejar dos VNets ninguno de sus espacios de direcciones puede superponerse. Hay que quitar el bloque repetido de una de ellas (pág. 163)."
+  },
+  {
+    "pregunta": "La VNet A está emparejada con B, y B con C. ¿Pueden comunicarse A y C a través de B sin más configuración?",
+    "opciones": [
+      "Sí, el peering es transitivo",
+      "No, el peering no es transitivo: hace falta un peering A–C",
+      "Sí, si están en la misma región",
+      "Solo si las tres están en la misma suscripción"
+    ],
+    "correcta": 1,
+    "explicacion": "El peering no es transitivo: debe establecerse para cada par de VNets que necesiten comunicarse (pág. 161)."
+  },
+  {
+    "pregunta": "¿Cuántas direcciones IP puedes asignar a tus recursos en una subred /24 de Azure?",
+    "opciones": [
+      "256",
+      "254",
+      "251",
+      "250"
+    ],
+    "correcta": 2,
+    "explicacion": "Una /24 tiene 256 direcciones, pero Azure reserva 5 en cada subred (la de red, .1, .2, .3 y la de broadcast): quedan 251. El PDF dice 256 disponibles (pág. 160), lo que no es correcto en Azure."
+  }
+]

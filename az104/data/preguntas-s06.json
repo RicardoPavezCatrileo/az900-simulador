@@ -1,0 +1,35 @@
+[
+  {
+    "pregunta": "Una asignación de rol en Azure RBAC se compone de:",
+    "opciones": [
+      "Usuario, contraseña y suscripción",
+      "Entidad de seguridad, definición de rol y ámbito",
+      "Grupo de recursos, política y lock",
+      "Tenant, licencia y grupo"
+    ],
+    "correcta": 1,
+    "explicacion": "Quién (entidad de seguridad: usuario, grupo o entidad de servicio), qué (definición de rol) y dónde (ámbito) (págs. 77–80)."
+  },
+  {
+    "pregunta": "El rol Colaborador tiene Actions = \"*\" y NotActions = \"Microsoft.Authorization/*/Write\" y \"Microsoft.Authorization/*/Delete\". ¿Qué NO puede hacer?",
+    "opciones": [
+      "Eliminar una máquina virtual",
+      "Crear una red virtual",
+      "Asignar roles a otros usuarios",
+      "Leer la configuración de los recursos"
+    ],
+    "correcta": 2,
+    "explicacion": "Permisos efectivos = Actions − NotActions (pág. 81). Asignar un rol es Microsoft.Authorization/roleAssignments/write, que queda restado. Todo lo demás está permitido."
+  },
+  {
+    "pregunta": "Un usuario tiene en el mismo grupo de recursos los roles Colaborador y Administrador de acceso de usuario. ¿Puede asignar roles a otros?",
+    "opciones": [
+      "No: el NotActions del Colaborador lo impide",
+      "Sí: los permisos de varios roles se combinan",
+      "Solo si también es Propietario de la suscripción",
+      "No: un usuario solo puede tener un rol por ámbito"
+    ],
+    "correcta": 1,
+    "explicacion": "Si se asignan varios roles, los permisos se combinan (pág. 81). NotActions solo resta dentro de su propio rol, no es una denegación: el Administrador de acceso de usuario concede Microsoft.Authorization/*."
+  }
+]

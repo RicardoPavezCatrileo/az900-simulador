@@ -1,0 +1,72 @@
+[
+  {
+    "pregunta": "Necesitas una cuenta de almacenamiento para blobs, colas y tablas, con redundancia geográfica. ¿Qué tipo de cuenta creas?",
+    "opciones": [
+      "Premium Block Blobs",
+      "Standard General-Purpose v2",
+      "Premium File Shares",
+      "Premium Page Blobs"
+    ],
+    "correcta": 1,
+    "explicacion": "Standard GPv2 es la opción por defecto: admite todos los servicios y todas las redundancias (PDF AZ-104, pág. 101). Cada Premium admite un solo servicio y solo LRS o ZRS; Queue y Table no tienen Premium."
+  },
+  {
+    "pregunta": "Creaste una cuenta Premium File Shares. ¿Qué opciones de redundancia puedes elegir?",
+    "opciones": [
+      "LRS y ZRS",
+      "LRS, ZRS, GRS y GZRS",
+      "Solo GRS",
+      "Todas, incluidas RA-GRS y RA-GZRS"
+    ],
+    "correcta": 0,
+    "explicacion": "Todas las cuentas Premium (Block Blobs, File Shares y Page Blobs) solo admiten LRS o ZRS: se sacrifica redundancia a cambio de rendimiento (págs. 100–105)."
+  },
+  {
+    "pregunta": "Necesitas un recurso compartido de archivos por NFS para servidores Linux. ¿Qué tipo de cuenta necesitas?",
+    "opciones": [
+      "Standard GPv2",
+      "Premium Block Blobs",
+      "Premium File Shares",
+      "Premium Page Blobs"
+    ],
+    "correcta": 2,
+    "explicacion": "NFS en Azure Files solo está disponible en Premium File Shares (pág. 103: SMB y NFS). Standard GPv2 ofrece Azure Files solo por SMB. La parte de que NFS requiere Premium no está en el PDF."
+  },
+  {
+    "pregunta": "Selecciona TODAS las afirmaciones correctas sobre Azure File Sync.",
+    "opciones": [
+      "Un grupo de sincronización tiene un punto de conexión en la nube (el recurso compartido de Azure Files)",
+      "Los servidores locales se agregan como puntos de conexión de servidor y necesitan el agente de File Sync",
+      "La nube por niveles deja en el servidor solo los archivos más usados",
+      "Requiere ExpressRoute para sincronizar"
+    ],
+    "correcta": [
+      0,
+      1,
+      2
+    ],
+    "explicacion": "File Sync convierte Windows Server en una caché del recurso compartido en la nube (pág. 109). Servicio de sincronización → grupo de sincronización → 1 punto en la nube + puntos de servidor. Sincroniza por Internet (HTTPS), no requiere ExpressRoute. El detalle no está en el PDF."
+  },
+  {
+    "pregunta": "Desde la oficina no puedes montar un recurso compartido de Azure Files por SMB, pero desde una VM de Azure sí. ¿Cuál es la causa más probable?",
+    "opciones": [
+      "El proveedor de Internet bloquea el puerto 445",
+      "La cuenta usa LRS",
+      "Falta un bloqueo CanNotDelete",
+      "Azure Files solo funciona dentro de Azure"
+    ],
+    "correcta": 0,
+    "explicacion": "SMB usa el puerto TCP 445, que muchos proveedores bloquean. Alternativas: VPN o ExpressRoute hacia Azure, o Azure File Sync con un servidor local. No está en el PDF."
+  },
+  {
+    "pregunta": "¿Cuál es un nombre válido para una cuenta de almacenamiento?",
+    "opciones": [
+      "St-Prod-01",
+      "stprod01",
+      "st_prod_01",
+      "sp"
+    ],
+    "correcta": 1,
+    "explicacion": "El nombre debe tener entre 3 y 24 caracteres, solo letras minúsculas y números, y ser único en todo Azure, porque forma parte del endpoint (stprod01.blob.core.windows.net). No está en el PDF."
+  }
+]

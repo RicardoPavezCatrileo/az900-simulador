@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sección 7 · Almacenamiento (nivel 1)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="../assets/estilos.css">
+<style>
+.bloque{display:grid;gap:14px}
+.bloque>*{min-width:0}
+.bloque>h2.h{margin:0}
+.bloque>p.intro{margin:0;color:var(--muted);max-width:75ch}
+.chk{display:flex;gap:8px;align-items:flex-start;font-size:.9rem;cursor:pointer}
+.chk input{accent-color:var(--accent);margin-top:4px}
+.chks{display:flex;flex-wrap:wrap;gap:8px 18px}
+td.si{color:var(--ok);font-weight:600} td.no{color:var(--bad);font-weight:600} td.na{color:var(--muted)}
+.mini{font-size:.82rem;color:var(--muted)}
+.code{font-family:var(--f-mono);font-size:.82rem;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin:0;overflow-x:auto;white-space:pre;line-height:1.5}
+.linea{display:grid;grid-template-columns:repeat(73,minmax(0,1fr));gap:1px}
+.linea div{height:30px;border-radius:2px}
+.linea div.hoy{outline:2px solid var(--ink);outline-offset:-2px}
+.eje{display:flex;justify-content:space-between;font-family:var(--f-mono);font-size:.7rem;color:var(--muted)}
+.ley{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:.8rem;color:var(--muted)}
+.ley i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+.t-hot{background:var(--warn)} .t-cool{background:var(--accent)} .t-cold{background:var(--geo)} .t-arch{background:var(--muted)}
+.t-del{background:repeating-linear-gradient(45deg,var(--line) 0 3px,transparent 3px 6px);border:1px solid var(--line)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="nav"><a class="volver" href="index.html">← Secciones AZ-104</a><a class="volver" href="s06-rbac.html">◀ Sección 6</a><a class="volver" href="s08-almacenamiento-2.html">Sección 8 ▶</a><a class="volver" href="../arquitectura.html">Arquitectura →</a></div>
+  <header>
+    <div class="eyebrow">AZ-104 · Sección 7 · PDF págs. 82–112</div>
+    <h1>Almacenamiento (nivel 1)</h1>
+    <p>Qué tipo de cuenta crear según lo que guardas y la redundancia que necesitas, Azure Files y Azure File Sync.</p>
+  </header>
+
+  <div class="note">
+    <h3>Repaso de la base AZ-900</h3>
+    <p><a href="../az900/cap07-almacenamiento.html">cap. 7 · Almacenamiento</a></p>
+  </div>
+
+  <!-- 1 · Tipo de cuenta -->
+  <section id="s1" class="bloque">
+    <h2 class="h">1 · ¿Qué tipo de cuenta creo?</h2>
+    <p class="intro">Al crear la cuenta eliges <b>rendimiento</b> (Standard o Premium) y <b>redundancia</b>. Standard GPv2 admite todo; cada Premium admite <b>un solo servicio</b> y solo <b>LRS o ZRS</b> (págs. 100–105). Marca lo que necesitas y mira si la cuenta lo soporta.</p>
+    <div class="controls">
+      <div class="ctl"><label>Tipo de cuenta</label><div class="seg" id="tipo"></div></div>
+      <div class="ctl"><label>Redundancia</label><div class="seg" id="red"></div></div>
+    </div>
+    <div class="ctl"><label>Necesito</label><div class="chks" id="necs"></div></div>
+    <div class="tbl"><table><thead><tr><th>Necesidad</th><th>¿Lo soporta esta cuenta?</th><th>Por qué</th></tr></thead><tbody id="tbodyT"></tbody></table></div>
+    <div class="status" id="statusT"></div>
+    <div class="facts" id="factsT"></div>
+  </section>
+
+  <section id="resumen">
+    <h2 class="h">2 · Lo que más pregunta AZ-104 de esta sección</h2>
+    <div class="cards">
+      <div class="card"><h3>Nombre y endpoints</h3><ul>
+        <li>Nombre: 3–24 caracteres, <b>solo minúsculas y números</b>, único en todo Azure.</li>
+        <li><code>https://stprod.blob.core.windows.net</code>, y también <code>.file</code>, <code>.queue</code>, <code>.table</code> y <code>.dfs</code> (Data Lake).</li>
+        <li>Con RA-GRS se lee en <code>stprod-secondary.blob…</code>.</li>
+      </ul></div>
+      <div class="card"><h3>Azure Files (págs. 109–112)</h3><ul>
+        <li><b>SMB</b> (puerto <b>445</b>, a veces bloqueado por el proveedor de Internet) y <b>NFS</b> (solo Premium).</li>
+        <li>Identidad para SMB: AD DS local, Entra Domain Services o Entra Kerberos. Permisos de recurso compartido (RBAC) + ACL de NTFS.</li>
+        <li><b>Instantáneas de recurso compartido</b> para volver atrás.</li>
+      </ul></div>
+      <div class="card"><h3>Azure File Sync</h3><ul>
+        <li>Servicio de sincronización → <b>grupo de sincronización</b> → 1 <b>punto de conexión en la nube</b> (el recurso compartido) + <b>puntos de conexión de servidor</b> (carpetas en Windows Server con el agente).</li>
+        <li><b>Nube por niveles (cloud tiering):</b> el servidor guarda solo los archivos usados y el resto queda en Azure (pág. 109: el servidor como caché).</li>
+      </ul></div>
+      <div class="card"><h3>Mover y replicar</h3><ul>
+        <li><b>AzCopy:</b> línea de comandos, blobs y Files, programable; se autentica con SAS o Entra ID (pág. 107).</li>
+        <li><b>Storage Explorer:</b> interfaz gráfica en Windows, macOS y Linux (pág. 108).</li>
+        <li><b>Replicación de objetos:</b> copia asíncrona de block blobs a otra cuenta; requiere <b>versiones</b> en ambas y <b>fuente de cambios</b> en el origen.</li>
+      </ul></div>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="h">Preguntas tipo examen</h2>
+    <div class="score" id="score"></div>
+    <div class="quiz" id="quiz"></div>
+  </section>
+</div>
+
+<script src="../assets/progreso.js"></script>
+<script src="../assets/quiz.js"></script>
+<script>
+
+function seg(id,obj,get,set,fn){
+  const el=document.getElementById(id);el.innerHTML="";
+  Object.keys(obj).forEach(k=>{const b=document.createElement("button");b.type="button";b.textContent=typeof obj[k]==="string"?obj[k]:obj[k].name;b.dataset.k=k;
+    b.setAttribute("aria-pressed",String(get()===k));b.onclick=()=>{set(k);fn()};el.appendChild(b)});
+}
+function facts(id,rows){document.getElementById(id).innerHTML=rows.map(([k,v])=>`<div class="fact"><div class="k">${k}</div><div class="v">${v}</div></div>`).join("")}
+function status(id,lvl,t,d){
+  const col={ok:"var(--ok)",warn:"var(--warn)",bad:"var(--bad)",info:"var(--accent)"}[lvl],ico={ok:"✓",warn:"!",bad:"✕",info:"i"}[lvl];
+  document.getElementById(id).innerHTML=`<span class="dot" style="background:${col}" aria-hidden="true"></span><div><b>${ico} ${t}</b><p>${d}</p></div>`;
+}
+function checks(id,lista,set,fn){
+  const el=document.getElementById(id);
+  el.innerHTML=lista.map(([k,t])=>`<label class="chk"><input type="checkbox" data-k="${k}"${set.has(k)?" checked":""}><span>${t}</span></label>`).join("");
+  el.querySelectorAll("input").forEach(i=>i.onchange=()=>{i.checked?set.add(i.dataset.k):set.delete(i.dataset.k);fn()});
+}
+
+
+/* ---------- 1 · Tipo de cuenta ---------- */
+const REDS=["LRS","ZRS","GRS","RA-GRS","GZRS","RA-GZRS"];
+const TIPOS={
+ gpv2:{name:"Standard GPv2",red:REDS,serv:["block","append","page","smb","queue","table","dl","arch","ra"],ep:"blob, file, queue, table, dfs"},
+ pbb:{name:"Premium Block Blobs",red:["LRS","ZRS"],serv:["block","append","dl","lat"],ep:"blob, dfs"},
+ pfs:{name:"Premium File Shares",red:["LRS","ZRS"],serv:["smb","nfs","lat"],ep:"file"},
+ ppb:{name:"Premium Page Blobs",red:["LRS","ZRS"],serv:["page","lat"],ep:"blob (solo page blobs)"}
+};
+const NEC=[["block","Fotos y videos (block blobs)"],["append","Logs que se van agregando (append blobs)"],["page","Discos de VM no administrados (page blobs)"],["smb","Carpeta compartida SMB"],["nfs","Carpeta compartida NFS"],["queue","Colas (Queue)"],["table","Tablas NoSQL (Table)"],["dl","Data Lake (espacio de nombres jerárquico)"],["arch","Nivel Archive"],["ra","Leer en la región secundaria"],["lat","Latencia muy baja"]];
+const PORQUE={
+ page:t=>t==="pbb"?"Premium Block Blobs no admite page blobs: usa Premium Page Blobs.":"",
+ nfs:t=>t==="gpv2"?"NFS en Azure Files requiere Premium File Shares.":"",
+ queue:t=>t!=="gpv2"?"Queue y Table no tienen Premium: solo Standard GPv2.":"",
+ table:t=>t!=="gpv2"?"Queue y Table no tienen Premium: solo Standard GPv2.":"",
+ arch:t=>t!=="gpv2"?"Los niveles de acceso solo existen en Standard.":"",
+ ra:t=>t!=="gpv2"?"Premium solo admite LRS o ZRS: no hay región secundaria.":"",
+ lat:t=>t==="gpv2"?"Standard usa HDD: para latencia de milisegundos de un dígito, Premium (SSD).":""
+};
+let tipo="gpv2",red="LRS";
+const necs=new Set(["block","arch"]);
+function soporta(t,n,r){
+  if(n==="arch")return TIPOS[t].serv.includes("arch")&&["LRS","GRS","RA-GRS"].includes(r);
+  if(n==="ra")return r.startsWith("RA-");
+  return TIPOS[t].serv.includes(n);
+}
+function renderT(){
+  seg("tipo",TIPOS,()=>tipo,v=>{tipo=v;if(!TIPOS[v].red.includes(red))red="LRS"},renderT);
+  const R={};REDS.forEach(r=>R[r]=r);
+  seg("red",R,()=>red,v=>red=v,renderT);
+  const T=TIPOS[tipo],redOk=T.red.includes(red);
+  const filas=NEC.filter(([k])=>necs.has(k)).map(([k,t])=>{
+    const ok=redOk&&soporta(tipo,k,red);
+    let p=ok?"Sí":(PORQUE[k]&&PORQUE[k](tipo))||"";
+    if(!ok&&!p){
+      if(k==="arch")p=`Archive no está disponible con ${red}: solo con LRS, GRS o RA-GRS.`;
+      else if(k==="ra")p=`${red} no permite leer la secundaria: elige RA-GRS o RA-GZRS.`;
+      else p=`${T.name} no admite este servicio.`;
+    }
+    return {t,ok,p};
+  });
+  document.getElementById("tbodyT").innerHTML=filas.length?filas.map(f=>`<tr><td>${f.t}</td><td class="${f.ok?"si":"no"}">${f.ok?"✓ Sí":"✕ No"}</td><td>${f.ok?"":f.p}</td></tr>`).join(""):`<tr><td class="na" colspan="3">Marca al menos una necesidad.</td></tr>`;
+  const mal=filas.filter(f=>!f.ok);
+  // Qué combinaciones de tipo + redundancia cubren todo
+  const sirven=[];Object.keys(TIPOS).forEach(t=>TIPOS[t].red.forEach(r=>{if([...necs].every(n=>soporta(t,n,r)))sirven.push(TIPOS[t].name+" + "+r)}));
+  if(!redOk)status("statusT","bad",`${T.name} no se puede crear con ${red}`,"Premium solo admite LRS o ZRS (pág. 105): sacrificas redundancia a cambio de rendimiento.");
+  else if(!mal.length)status("statusT","ok",`${T.name} con ${red} cubre todo`,necs.has("lat")?"Premium usa SSD: menor latencia, pero se paga por capacidad aprovisionada.":"Standard GPv2 es la opción por defecto y admite todos los servicios y redundancias (pág. 101).");
+  else status("statusT","warn",`Esta cuenta no cubre ${mal.length} necesidad${mal.length>1?"es":""}`,sirven.length?`Te sirve: ${sirven.slice(0,4).join(" · ")}${sirven.length>4?" …":""}.`:"Ninguna cuenta sola cubre todo: usa dos cuentas (por ejemplo, una Premium para el rendimiento y una Standard GPv2 para el resto).");
+  facts("factsT",[["Endpoints",T.ep],["Redundancias",T.red.join(" · ")],["Disco","Standard: HDD · Premium: SSD"],["Se cobra",tipo==="gpv2"?"Por GB usado + operaciones":"Por capacidad aprovisionada o por GB, más caro"]]);
+}
+checks("necs",NEC,necs,renderT);
+
+renderT();iniciarQuiz("s07","az104");
+</script>
+</body>
+</html>

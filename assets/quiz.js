@@ -1,7 +1,7 @@
 // Quiz compartido: carga las preguntas de data/preguntas-capXX.json, las muestra y guarda el avance con progreso.js.
 // Formato de cada pregunta: {"pregunta":"...","opciones":["..."],"correcta":<índice>,"explicacion":"..."}
 // Selección múltiple: "correcta":[<índice>,...]; se marcan varias opciones y se responde con "Comprobar".
-// Uso: iniciarQuiz("cap07") o iniciarQuiz("identidad","az104")  (requiere <div id="score"> y <div id="quiz"> en la página)
+// Uso: iniciarQuiz("cap07") o iniciarQuiz("s05","az104")  (requiere <div id="score"> y <div id="quiz"> en la página)
 
 async function iniciarQuiz(cap,cert="az900"){
   const el=document.getElementById("quiz"),sc=document.getElementById("score");

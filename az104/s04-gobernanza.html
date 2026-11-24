@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sección 4 · Gobernanza en Microsoft Azure</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="../assets/estilos.css">
+<style>
+.bloque{display:grid;gap:14px}
+.bloque>h2.h{margin:0}
+.bloque>p.intro{margin:0;color:var(--muted);max-width:75ch}
+.chk{display:flex;gap:8px;align-items:flex-start;font-size:.9rem;cursor:pointer}
+.chk input{accent-color:var(--accent);margin-top:4px}
+.chks{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:8px 18px}
+.chks.fila{display:flex;flex-wrap:wrap}
+.nivel{font-family:var(--f-mono);font-size:.72rem;padding:1px 6px;border-radius:4px;border:1px solid var(--line);color:var(--muted);white-space:nowrap}
+.nivel.free{border-color:var(--ok);color:var(--ok)} .nivel.p1{border-color:var(--accent);color:var(--accent)}
+.nivel.p2{border-color:var(--geo);color:var(--geo)} .nivel.gov{border-color:var(--warn);color:var(--warn)}
+td.si{color:var(--ok);font-weight:600} td.no{color:var(--bad);font-weight:600} td.na{color:var(--muted)}
+.regla{font-family:var(--f-mono);font-size:.85rem;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:10px 12px;overflow-x:auto;white-space:nowrap}
+.cond{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.cond select{font:inherit;font-family:var(--f-mono);font-size:.85rem;padding:6px 8px;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--ink)}
+.json{font-family:var(--f-mono);font-size:.8rem;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin:0;overflow-x:auto;white-space:pre}
+.jsons{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px}
+.mini{font-size:.82rem;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="nav"><a class="volver" href="index.html">← Secciones AZ-104</a><a class="volver" href="s03-requisitos-previos.html">◀ Sección 3</a><a class="volver" href="s05-entra-id.html">Sección 5 ▶</a><a class="volver" href="../arquitectura.html">Arquitectura →</a><a class="volver" href="administracion.html">Quién administra qué →</a></div>
+  <header>
+    <div class="eyebrow">AZ-104 · Sección 4 · PDF págs. 25–40</div>
+    <h1>Gobernanza en Microsoft Azure</h1>
+    <p>Cómo se organiza y controla Azure: la jerarquía de grupos de administración, los costos y los bloqueos. Para ver quién configura cada pieza, usa el diagrama de administración.</p>
+  </header>
+
+  <div class="note">
+    <h3>Repaso de la base AZ-900</h3>
+    <p><a href="../az900/cap03-arquitectura.html">cap. 3 · Arquitectura y servicios</a> · <a href="../az900/cap10-monitorizacion-gestion.html">cap. 10 · Monitorización y gestión</a> · <a href="../az900/cap11-precios.html">cap. 11 · Precios</a> · Práctica: <a href="administracion.html#pieza=mg">diagrama de administración</a> y <a href="../az900/cap10-lab-gobierno.html">laboratorio de gobierno</a></p>
+  </div>
+
+  <section id="resumen">
+    <h2 class="h">1 · Lo que más pregunta AZ-104 de esta sección</h2>
+    <div class="cards">
+      <div class="card"><h3>Niveles de gobernanza (pág. 34)</h3><ul>
+        <li><b>Grupo raíz del inquilino</b> → grupos de administración (<b>hasta 6 niveles</b> bajo la raíz) → suscripciones → grupos de recursos → recursos.</li>
+        <li>Políticas y roles se <b>heredan hacia abajo</b>.</li>
+        <li>La suscripción es el límite de <b>facturación</b> y de <b>cuotas</b> de recursos (pág. 30).</li>
+      </ul></div>
+      <div class="card"><h3>Gobernanza en la nube (pág. 27)</h3><ul>
+        <li>Política corporativa: riesgo empresarial → política y cumplimiento → proceso de monitoreo.</li>
+        <li>5 disciplinas: <b>gestión de costos</b>, <b>línea base de seguridad</b>, <b>consistencia de recursos</b>, <b>línea base de identidad</b>, <b>aceleración de despliegue</b>.</li>
+      </ul></div>
+      <div class="card"><h3>Cost Management (págs. 35–39)</h3><ul>
+        <li>Análisis de costos acumulados, <b>asignación</b> por departamento, <b>exportación</b> de datos, recursos infrautilizados.</li>
+        <li><b>Presupuestos:</b> alertan al acercarse o pasar el límite; no detienen recursos.</li>
+        <li>Facturas con el desglose del período.</li>
+      </ul></div>
+      <div class="card"><h3>Locks (pág. 40)</h3><ul>
+        <li><b>ReadOnly</b> bloquea cambios; <b>Delete</b> bloquea eliminar.</li>
+        <li>Se ponen en recurso, grupo de recursos o suscripción y se heredan.</li>
+        <li>Se aplican incluso al <b>Propietario</b>: primero hay que quitar el lock.</li>
+      </ul></div>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="h">Preguntas tipo examen</h2>
+    <div class="score" id="score"></div>
+    <div class="quiz" id="quiz"></div>
+  </section>
+</div>
+
+<script src="../assets/progreso.js"></script>
+<script src="../assets/quiz.js"></script>
+<script>
+iniciarQuiz("s04","az104");
+</script>
+</body>
+</html>

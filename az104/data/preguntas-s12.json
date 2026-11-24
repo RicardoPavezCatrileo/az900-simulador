@@ -1,0 +1,35 @@
+[
+  {
+    "pregunta": "En Docker, ¿qué es un contenedor?",
+    "opciones": [
+      "El archivo de texto con las instrucciones de construcción",
+      "Una instancia en ejecución de una imagen, en un ambiente aislado",
+      "El registro donde se guardan las imágenes",
+      "Una máquina virtual ligera con su propio sistema operativo"
+    ],
+    "correcta": 1,
+    "explicacion": "Dockerfile = instrucciones; imagen = archivo por capas con las dependencias; contenedor = instancia de la imagen, aislada y que comparte el SO del servidor (pág. 145)."
+  },
+  {
+    "pregunta": "Necesitas un registro privado de imágenes de contenedor con acceso por Entra ID y RBAC, escaneo de vulnerabilidades e integración con AKS. ¿Qué usas?",
+    "opciones": [
+      "Docker Hub público",
+      "Azure Container Registry (ACR)",
+      "Azure Blob Storage",
+      "Azure Container Instances"
+    ],
+    "correcta": 1,
+    "explicacion": "ACR es el registro privado de Azure: RBAC, escaneo de vulnerabilidades, etiquetas, limpieza automática y CI/CD; se integra con AKS, ACI y Container Apps (pág. 149)."
+  },
+  {
+    "pregunta": "Una API en contenedores va a producción. Debe escalar automáticamente por peticiones HTTP, incluso hasta cero, sin que administres un clúster. ¿Qué servicio usas?",
+    "opciones": [
+      "Azure Container Instances",
+      "Azure Container Apps",
+      "Azure Kubernetes Service",
+      "Máquinas virtuales con Docker"
+    ],
+    "correcta": 1,
+    "explicacion": "Container Apps es serverless sobre Kubernetes y KEDA, con autoescalado por HTTP, CPU o eventos hasta cero. ACI es para tareas puntuales y efímeras; AKS te hace gestionar el clúster (pág. 152)."
+  }
+]

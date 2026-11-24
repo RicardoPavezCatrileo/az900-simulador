@@ -1,0 +1,13 @@
+[
+  {
+    "pregunta": "¿Qué opción de App Service permite ejecutar una aplicación empaquetada en un contenedor Docker?",
+    "opciones": [
+      "API Apps",
+      "Web App para contenedores",
+      "Azure Functions",
+      "Logic Apps"
+    ],
+    "correcta": 1,
+    "explicacion": "App Service ofrece Web Apps, Web App para contenedores (Docker) y API Apps (pág. 141)."
+  }
+]

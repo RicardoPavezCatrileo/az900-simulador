@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Cómputo AZ-104</title>
+<title>Sección 9 · Azure Virtual Machines (VM)</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <link rel="stylesheet" href="../assets/estilos.css">
@@ -38,16 +38,16 @@ td.si{color:var(--ok);font-weight:600} td.no{color:var(--bad);font-weight:600} t
 </head>
 <body>
 <div class="wrap">
-  <div class="nav"><a class="volver" href="index.html">← Dominios AZ-104</a><a class="volver" href="../mapa.html">Mapa conceptual →</a><a class="volver" href="../arquitectura.html">Arquitectura →</a></div>
+  <div class="nav"><a class="volver" href="index.html">← Secciones AZ-104</a><a class="volver" href="s08-almacenamiento-2.html">◀ Sección 8</a><a class="volver" href="s10-arm-bicep.html">Sección 10 ▶</a><a class="volver" href="../arquitectura.html">Arquitectura →</a></div>
   <header>
-    <div class="eyebrow">AZ-104 · Dominio 3 · Cómputo</div>
-    <h1>Cómputo: conectar, escalar, desplegar con código y contenedores</h1>
-    <p>En AZ-900 viste <b>qué son</b> las VMs, los Scale Sets, App Service y los contenedores. AZ-104 pregunta <b>cómo se administran</b>: entrar a una VM sin exponerla con <b>Bastion</b>, las <b>reglas de autoescalado</b>, desplegar con <b>ARM y Bicep</b> y elegir entre <b>ACI, Container Apps y AKS</b> (PDF AZ-104, págs. 113–155).</p>
+    <div class="eyebrow">AZ-104 · Sección 9 · PDF págs. 113–130</div>
+    <h1>Azure Virtual Machines (VM)</h1>
+    <p>Conectarse a una VM sin exponerla a Internet (Bastion) y escalar con Scale Sets.</p>
   </header>
 
   <div class="note">
     <h3>Repaso de la base AZ-900</h3>
-    <p>Portal, CLI, PowerShell, Cloud Shell y plantillas ARM: <a href="../az900/cap04-fundamentos-herramientas.html">cap. 4</a> · VMs, opciones de compra, escalado vertical y horizontal con zonas, App Service, ACI y AKS: <a href="../az900/cap05-computacion.html">cap. 5</a>.</p>
+    <p><a href="../az900/cap05-computacion.html">cap. 5 · Computación</a></p>
   </div>
 
   <!-- 1 · Bastion -->
@@ -74,41 +74,8 @@ td.si{color:var(--ok);font-weight:600} td.no{color:var(--bad);font-weight:600} t
     <div class="facts" id="factsE"></div>
   </section>
 
-  <!-- 3 · ARM vs Bicep -->
-  <section id="s3" class="bloque">
-    <h2 class="h">3 · Infraestructura como código: ARM vs Bicep</h2>
-    <p class="intro">Una <b>plantilla ARM</b> describe los recursos en JSON declarativo; <b>Bicep</b> describe lo mismo con una sintaxis más corta y se <b>transpila</b> a JSON ARM con <code>bicep build</code>. Las dos se despliegan con Azure Resource Manager (págs. 131–135). Cambia los parámetros y mira las dos versiones.</p>
-    <div class="ctl"><label>Recurso</label><div class="seg" id="recurso"></div></div>
-    <div class="campo" id="camposT"></div>
-    <div class="codes">
-      <div><h3 id="tBicep">main.bicep</h3><pre class="code" id="codeBicep"></pre></div>
-      <div><h3 id="tArm">main.json (plantilla ARM)</h3><pre class="code" id="codeArm"></pre></div>
-    </div>
-    <div class="ctl"><label>Modo de despliegue (no está en el PDF, pero lo pregunta AZ-104)</label><div class="seg" id="modoD"></div></div>
-    <pre class="code" id="codeCmd"></pre>
-    <div class="status" id="statusT"></div>
-  </section>
-
-  <!-- 4 · Contenedores -->
-  <section id="s4" class="bloque">
-    <h2 class="h">4 · Contenedores: de Dockerfile a ACI, Container Apps o AKS</h2>
-    <p class="intro"><b>Dockerfile</b> (receta) → <code>build</code> → <b>imagen</b> → <code>push</code> → <b>ACR</b> (registro privado) → <code>pull</code> → <b>contenedor</b> en el servicio que elijas (págs. 143–155).</p>
-    <div class="flujo" id="flujoC"></div>
-    <div class="controls">
-      <div class="ctl"><label>¿Qué vas a ejecutar?</label><div class="seg" id="durC"></div></div>
-      <div class="ctl"><label>Escalado</label><div class="seg" id="escC"></div></div>
-    </div>
-    <div class="ctl"><label>¿Necesitas controlar Kubernetes (API, pods, nodos)?</label><div class="seg" id="k8sC"></div></div>
-    <div class="status" id="statusC"></div>
-    <div class="tbl"><table>
-      <thead><tr><th></th><th>ACI</th><th>Container Apps (ACA)</th><th>AKS</th><th>App Service (Web App para contenedores)</th></tr></thead>
-      <tbody id="tbodyC"></tbody>
-    </table></div>
-  </section>
-
-  <!-- 5 · Tarjetas -->
-  <section id="s5">
-    <h2 class="h">5 · Lo que más pregunta AZ-104 de este dominio</h2>
+  <section id="resumen">
+    <h2 class="h">3 · Lo que más pregunta AZ-104 de esta sección</h2>
     <div class="cards">
       <div class="card"><h3>Escalar (págs. 118–123)</h3><ul>
         <li><b>Vertical</b> (scale up/down): VM más grande, desde 0,5 GB y 1 vCPU hasta 11,4 TB y 416 vCPU. Tiene límites y puede ser caro.</li>
@@ -132,26 +99,6 @@ td.si{color:var(--ok);font-weight:600} td.no{color:var(--bad);font-weight:600} t
         <li>Script que corre al crear la VM, ej.: <code>apt-get -y install nginx</code> para que arranque como servidor web.</li>
         <li>Así la VM queda configurada sin entrar a mano.</li>
       </ul></div>
-      <div class="card"><h3>App Service (págs. 136–141)</h3><ul>
-        <li>PaaS: Microsoft gestiona el SO, la capacidad, el balanceo y el autoescalado.</li>
-        <li><b>Web Apps</b> (sitios), <b>Web App para contenedores</b> (Docker), <b>API Apps</b> (servicios web).</li>
-        <li>El servicio es gratis; pagas los recursos que consume (el plan).</li>
-      </ul></div>
-      <div class="card"><h3>Docker (págs. 143–147)</h3><ul>
-        <li><b>Dockerfile:</b> instrucciones para crear la imagen.</li>
-        <li><b>Imagen:</b> archivo por capas con todas las dependencias.</li>
-        <li><b>Contenedor:</b> una instancia de la imagen, aislada.</li>
-        <li>Más ligero que una VM: comparte el SO del servidor.</li>
-      </ul></div>
-      <div class="card"><h3>Azure Container Registry (pág. 149)</h3><ul>
-        <li>Registro <b>privado</b> de imágenes, integrado con ACI, AKS y Container Apps.</li>
-        <li>Acceso con Entra ID y RBAC, <b>escaneo de vulnerabilidades</b>, etiquetas, limpieza automática y CI/CD (GitHub Actions, Azure DevOps).</li>
-      </ul></div>
-      <div class="card"><h3>Bash para administradores (págs. 20–22)</h3><ul>
-        <li><code>ls -la</code> listar · <code>cd</code> cambiar carpeta · <code>mkdir</code> / <code>rmdir</code> · <code>rm -r</code> · <code>cp -i</code> · <code>touch</code> · <code>cat</code> · <code>sudo</code>.</li>
-        <li><code>ps -ef</code> procesos · <code>w</code> usuarios conectados.</li>
-        <li><code>&gt;</code> sobrescribe · <code>&gt;&gt;</code> agrega · <code>&lt;</code> lee de un archivo · <code>|</code> pasa la salida a otro comando.</li>
-      </ul></div>
     </div>
   </section>
 
@@ -165,6 +112,7 @@ td.si{color:var(--ok);font-weight:600} td.no{color:var(--bad);font-weight:600} t
 <script src="../assets/progreso.js"></script>
 <script src="../assets/quiz.js"></script>
 <script>
+
 function seg(id,obj,get,set,fn){
   const el=document.getElementById(id);el.innerHTML="";
   Object.keys(obj).forEach(k=>{const b=document.createElement("button");b.type="button";b.textContent=typeof obj[k]==="string"?obj[k]:obj[k].name;b.dataset.k=k;
@@ -176,6 +124,7 @@ function status(id,lvl,t,d){
   document.getElementById(id).innerHTML=`<span class="dot" style="background:${col}" aria-hidden="true"></span><div><b>${ico} ${t}</b><p>${d}</p></div>`;
 }
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"})[c]);
+
 
 /* ---------- 1 · Bastion ---------- */
 const METODO={ip:"IP pública + RDP/SSH abierto",bastion:"Azure Bastion",p2s:"VPN punto a sitio"};
@@ -253,117 +202,7 @@ function calcE(){
   else status("statusE",sat?"warn":"ok",sat?`Autoescala, pero hubo ${sat} hora${sat===1?"":"s"} saturada${sat===1?"":"s"}`:"El Scale Set siguió la carga",sat?`La regla reacciona un intervalo tarde y suma de a 1 instancia. Prueba bajar el umbral de salida o subir el máximo (${maxI}).`:"Agrega instancias cuando la CPU pasa el umbral y las quita cuando baja: eso es elasticidad. Pagas solo las VMs que corren; el Scale Set no tiene costo adicional (pág. 127).");
 }
 
-/* ---------- 3 · ARM vs Bicep ---------- */
-const RECURSO={st:"Cuenta de almacenamiento",vnet:"Red virtual con subred"};
-const MODOD={inc:"Incremental (por defecto)",comp:"Completo"};
-let recurso="st",modoD="inc",nombre="stazdemo001",ubicT="brazilsouth",sku="Standard_LRS",prefijo="10.1.0.0/16";
-const UBICS=["brazilsouth","eastus","westeurope"],SKUS=["Standard_LRS","Standard_ZRS","Standard_GRS","Standard_RAGRS"],PREF=["10.1.0.0/16","10.2.0.0/16","172.16.0.0/16"];
-function selT(id,opts,val){return`<select id="${id}">${opts.map(o=>`<option${o===val?" selected":""}>${o}</option>`).join("")}</select>`}
-function renderT(){
-  seg("recurso",RECURSO,()=>recurso,v=>{recurso=v;nombre=v==="st"?"stazdemo001":"vnet-app"},renderT);
-  seg("modoD",MODOD,()=>modoD,v=>modoD=v,renderT);
-  const c=document.getElementById("camposT");
-  c.innerHTML=`<label for="nom">Nombre</label><input id="nom" value="${esc(nombre)}" size="16"><label for="ubi">Ubicación</label>${selT("ubi",UBICS,ubicT)}`+
-    (recurso==="st"?`<label for="sku">SKU</label>${selT("sku",SKUS,sku)}`:`<label for="pre">Espacio de direcciones</label>${selT("pre",PREF,prefijo)}`);
-  document.getElementById("nom").oninput=e=>{nombre=e.target.value.replace(/[^A-Za-z0-9-]/g,"");pinta()};
-  document.getElementById("ubi").onchange=e=>{ubicT=e.target.value;pinta()};
-  const s=document.getElementById("sku");if(s)s.onchange=e=>{sku=e.target.value;pinta()};
-  const p=document.getElementById("pre");if(p)p.onchange=e=>{prefijo=e.target.value;pinta()};
-  pinta();
-}
-function pinta(){
-  const sub=prefijo.replace(/\.0\.0\/16$/,".1.0/24");
-  let bicep,arm;
-  if(recurso==="st"){
-    bicep=`param nombre string = '${nombre}'
-param ubicacion string = '${ubicT}'
-param sku string = '${sku}'
-
-resource st 'Microsoft.Storage/storageAccounts@2023-05-01' = {
-  name: nombre
-  location: ubicacion
-  sku: {
-    name: sku
-  }
-  kind: 'StorageV2'
-}`;
-    arm={"$schema":"https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#","contentVersion":"1.0.0.0",
-      parameters:{nombre:{type:"string",defaultValue:nombre},ubicacion:{type:"string",defaultValue:ubicT},sku:{type:"string",defaultValue:sku}},
-      resources:[{type:"Microsoft.Storage/storageAccounts",apiVersion:"2023-05-01",name:"[parameters('nombre')]",location:"[parameters('ubicacion')]",sku:{name:"[parameters('sku')]"},kind:"StorageV2"}]};
-  }else{
-    bicep=`param nombre string = '${nombre}'
-param ubicacion string = '${ubicT}'
-
-resource vnet 'Microsoft.Network/virtualNetworks@2023-09-01' = {
-  name: nombre
-  location: ubicacion
-  properties: {
-    addressSpace: {
-      addressPrefixes: [ '${prefijo}' ]
-    }
-    subnets: [
-      {
-        name: 'snet-web'
-        properties: { addressPrefix: '${sub}' }
-      }
-    ]
-  }
-}`;
-    arm={"$schema":"https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#","contentVersion":"1.0.0.0",
-      parameters:{nombre:{type:"string",defaultValue:nombre},ubicacion:{type:"string",defaultValue:ubicT}},
-      resources:[{type:"Microsoft.Network/virtualNetworks",apiVersion:"2023-09-01",name:"[parameters('nombre')]",location:"[parameters('ubicacion')]",
-        properties:{addressSpace:{addressPrefixes:[prefijo]},subnets:[{name:"snet-web",properties:{addressPrefix:sub}}]}}]};
-  }
-  const armTxt=JSON.stringify(arm,null,2);
-  document.getElementById("codeBicep").textContent=bicep;
-  document.getElementById("codeArm").textContent=armTxt;
-  const lb=bicep.split("\n").length,la=armTxt.split("\n").length;
-  document.getElementById("tBicep").textContent=`main.bicep · ${lb} líneas`;
-  document.getElementById("tArm").textContent=`main.json (plantilla ARM) · ${la} líneas`;
-  document.getElementById("codeCmd").textContent=`# Opcional: ver el JSON que genera Bicep
-bicep build main.bicep          # crea main.json
-
-# Desplegar en un grupo de recursos (sirve con .bicep o .json)
-az deployment group create \\
-  --resource-group rg-demo \\
-  --template-file main.bicep \\
-  --mode ${modoD==="inc"?"Incremental":"Complete"}`;
-  if(!nombre){status("statusT","bad","Falta el nombre","Todo recurso necesita un nombre; en una cuenta de almacenamiento, de 3 a 24 letras minúsculas y números, único en todo Azure.");return}
-  const nota=recurso==="st"&&!/^[a-z0-9]{3,24}$/.test(nombre)?` Ojo: "${nombre}" no es un nombre válido de cuenta de almacenamiento (3–24 minúsculas y números, sin guiones); el despliegue fallaría.`:"";
-  if(modoD==="inc")status("statusT",nota?"warn":"ok",`Mismo recurso: ${lb} líneas en Bicep, ${la} en JSON`,"Las dos son declarativas: dices QUÉ quieres, no los pasos. Modo incremental: crea o actualiza lo que está en la plantilla y deja intactos los demás recursos del grupo."+nota);
-  else status("statusT","warn","Modo completo: borra lo que no esté en la plantilla","Además de crear o actualizar, Resource Manager ELIMINA del grupo de recursos todo lo que la plantilla no declare. Útil para que el grupo quede idéntico a la plantilla; peligroso si hay otros recursos."+nota);
-}
-
-/* ---------- 4 · Contenedores ---------- */
-const DURC={puntual:"Una tarea puntual (batch) que termina",web:"Una app o API en producción"};
-const ESCC={fijo:"Fijo",auto:"Automático, incluso a cero"};
-const K8SC={no:"No",si:"Sí"};
-let durC="puntual",escC="fijo",k8sC="no";
-const FILAS=[
- ["Modelo","Serverless: un contenedor o grupo, sin orquestador","Serverless sobre Kubernetes + KEDA, sin gestionar el clúster","Kubernetes administrado: tú gestionas nodos, pods y despliegues","PaaS web: el plan de App Service ejecuta tu imagen"],
- ["Ideal para","Tareas simples, puntuales y efímeras; jobs batch, APIs ligeras","Apps en producción con autoescalado y despliegues gestionados","Muchos microservicios con control total de la orquestación","Una web o API en contenedor con lo de App Service (dominios, TLS, slots)"],
- ["Escalado","Manual (sin orquestador)","Automático por HTTP, CPU o eventos, hasta cero","Automático de pods y nodos","Autoescalado del plan"],
- ["Pagas","Por segundo de ejecución","Por uso (nada si escala a cero)","Las VMs de los nodos","El plan de App Service"],
- ["PDF","150–151","152","153–155","141"]
-];
-const RCOL={aci:1,aca:2,aks:3,app:4};
-function renderC(){
-  seg("durC",DURC,()=>durC,v=>durC=v,renderC);
-  seg("escC",ESCC,()=>escC,v=>escC=v,renderC);
-  seg("k8sC",K8SC,()=>k8sC,v=>k8sC=v,renderC);
-  let r,t,d;
-  if(k8sC==="si"){r="aks";t="Azure Kubernetes Service (AKS)";d="Si necesitas la API de Kubernetes (pods, nodos, despliegues propios), la respuesta es AKS. ACA usa Kubernetes por dentro, pero no te deja tocarlo.";}
-  else if(durC==="puntual"&&escC==="fijo"){r="aci";t="Azure Container Instances (ACI)";d="Lo más simple: ejecuta el contenedor directo desde la imagen, sin orquestador, y pagas por segundo. Ideal para tareas puntuales y efímeras (pág. 152).";}
-  else if(durC==="puntual"){r="aca";t="Azure Container Apps (ACA)";d="Un job que debe escalar según eventos o colas es un caso de Container Apps (jobs con KEDA). ACI no autoescala.";}
-  else if(escC==="auto"){r="aca";t="Azure Container Apps (ACA)";d="App en producción con autoescalado por peticiones HTTP, CPU o eventos, incluso hasta cero, sin gestionar el clúster (pág. 152).";}
-  else{r="app";t="App Service (Web App para contenedores) o ACI";d="Una web o API con capacidad fija: App Service ejecuta tu imagen con dominios, TLS y slots. Si es algo muy simple y sin web, ACI también sirve.";}
-  status("statusC","ok",t,d);
-  document.getElementById("tbodyC").innerHTML=FILAS.map(f=>`<tr><td><b>${f[0]}</b></td>${f.slice(1).map((v,i)=>`<td${i+1===RCOL[r]?' class="si"':""}>${v}</td>`).join("")}</tr>`).join("");
-  const pasos=["Dockerfile","build","Imagen","push","ACR","pull",{aci:"ACI",aca:"Container Apps",aks:"AKS",app:"App Service"}[r]];
-  document.getElementById("flujoC").innerHTML=pasos.map((p,i)=>i%2?`<b>— ${p} →</b>`:`<span class="p${i===pasos.length-1?" on":""}">${p}</span>`).join("");
-}
-
-renderB();renderE();renderT();renderC();iniciarQuiz("computo","az104");
+renderB();renderE();iniciarQuiz("s09","az104");
 </script>
 </body>
 </html>

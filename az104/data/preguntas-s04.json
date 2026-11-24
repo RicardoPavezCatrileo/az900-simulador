@@ -1,0 +1,24 @@
+[
+  {
+    "pregunta": "¿Cuántos niveles de grupos de administración se pueden crear debajo del grupo raíz del inquilino?",
+    "opciones": [
+      "2",
+      "4",
+      "6",
+      "Ilimitados"
+    ],
+    "correcta": 2,
+    "explicacion": "Hasta 6 niveles de profundidad bajo el grupo raíz, sin contar la raíz ni las suscripciones (pág. 34)."
+  },
+  {
+    "pregunta": "Necesitas evitar que alguien, incluido el Propietario, elimine por accidente un grupo de recursos de producción, pero que sí se puedan modificar sus recursos. ¿Qué aplicas?",
+    "opciones": [
+      "Un lock ReadOnly",
+      "Un lock Delete (CanNotDelete)",
+      "El rol Lector",
+      "Una política de Azure Policy con Audit"
+    ],
+    "correcta": 1,
+    "explicacion": "El lock Delete bloquea eliminar pero permite modificar; ReadOnly bloquearía también los cambios (pág. 40). Los locks aplican a todos, incluido el Propietario."
+  }
+]

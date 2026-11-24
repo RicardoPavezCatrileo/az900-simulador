@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Identidades y gobierno</title>
+<title>Sección 5 · Microsoft Entra ID</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <link rel="stylesheet" href="../assets/estilos.css">
@@ -29,16 +29,16 @@ td.si{color:var(--ok);font-weight:600} td.no{color:var(--bad);font-weight:600} t
 </head>
 <body>
 <div class="wrap">
-  <div class="nav"><a class="volver" href="index.html">← Dominios AZ-104</a><a class="volver" href="../mapa.html">Mapa conceptual →</a><a class="volver" href="../arquitectura.html">Arquitectura →</a><a class="volver" href="administracion.html">Quién administra qué →</a><a class="volver" href="../az900/cap10-lab-gobierno.html">Laboratorio de gobierno →</a></div>
+  <div class="nav"><a class="volver" href="index.html">← Secciones AZ-104</a><a class="volver" href="s04-gobernanza.html">◀ Sección 4</a><a class="volver" href="s06-rbac.html">Sección 6 ▶</a><a class="volver" href="../arquitectura.html">Arquitectura →</a><a class="volver" href="administracion.html">Quién administra qué →</a></div>
   <header>
-    <div class="eyebrow">AZ-104 · Dominio 1 · Identidades y gobierno</div>
-    <h1>Identidades y gobierno: cómo se configura</h1>
-    <p>En AZ-900 viste <b>qué es</b> Entra ID, RBAC y la jerarquía de gobierno. Aquí va lo que pregunta AZ-104: <b>qué licencia</b> necesita cada función, cómo se arman los <b>grupos dinámicos</b> y cómo calcula Azure los <b>permisos efectivos</b> de un rol (PDF AZ-104, págs. 25–81).</p>
+    <div class="eyebrow">AZ-104 · Sección 5 · PDF págs. 41–70</div>
+    <h1>Microsoft Entra ID</h1>
+    <p>Qué licencia pide cada función, cómo se arman los grupos dinámicos y cuándo usar AD DS, Entra ID o Entra Domain Services.</p>
   </header>
 
   <div class="note">
     <h3>Repaso de la base AZ-900</h3>
-    <p>Jerarquía y herencia: <a href="../az900/cap03-arquitectura.html">cap. 3</a> · Entra ID, MFA, acceso condicional, Entra Connect: <a href="../az900/cap08-autenticacion-autorizacion.html">cap. 8</a> · RBAC + locks + Azure Policy (simulador): <a href="../az900/cap10-monitorizacion-gestion.html">cap. 10</a> · Presupuestos y Cost Management: <a href="../az900/cap11-precios.html">cap. 11</a>.</p>
+    <p><a href="../az900/cap08-autenticacion-autorizacion.html">cap. 8 · Autenticación y autorización</a></p>
   </div>
 
   <!-- 1 · Licencias -->
@@ -71,23 +71,24 @@ td.si{color:var(--ok);font-weight:600} td.no{color:var(--bad);font-weight:600} t
     <div><button type="button" class="btn" id="mover"></button></div>
   </section>
 
-  <!-- 3 · RBAC por dentro -->
+  <!-- 3 · AD DS vs Entra ID vs Entra Domain Services -->
   <section id="s3" class="bloque">
-    <h2 class="h">3 · RBAC por dentro: Actions − NotActions</h2>
-    <p class="intro">Una asignación de rol junta <b>quién</b> (entidad de seguridad), <b>qué</b> (definición de rol) y <b>dónde</b> (ámbito). La definición trae <code>Actions</code> y <code>NotActions</code>: permisos efectivos = Actions − NotActions. Si tienes varios roles, <b>se suman</b> (págs. 77–81). Marca los roles que tiene el usuario en el mismo ámbito.</p>
-    <div class="chks fila" id="roles"></div>
-    <div class="jsons" id="jsons"></div>
-    <div class="status" id="statusR"></div>
+    <h2 class="h">3 · AD DS vs Entra ID vs Entra Domain Services</h2>
     <div class="tbl"><table>
-      <thead id="theadR"></thead>
-      <tbody id="tbodyR"></tbody>
+      <thead><tr><th></th><th>AD DS (local)</th><th>Microsoft Entra ID</th><th>Entra Domain Services (antes Azure AD DS)</th></tr></thead>
+      <tbody>
+        <tr><td><b>Qué es</b></td><td>Directorio tradicional en servidores Windows</td><td>Identidad en la nube, multiinquilino</td><td>Dominio <b>administrado</b> en Azure: Microsoft gestiona 2 controladores de dominio</td></tr>
+        <tr><td><b>Protocolos</b></td><td>Kerberos, NTLM, LDAP</td><td>HTTP/HTTPS, API REST (OAuth, SAML, OpenID)</td><td>Kerberos, NTLM, LDAP</td></tr>
+        <tr><td><b>Estructura</b></td><td>Jerárquica: OU y GPO</td><td>Plana: sin OU ni GPO</td><td>OU y GPO básicas</td></tr>
+        <tr><td><b>Sincronización</b></td><td>Hacia Entra ID con Entra Connect</td><td>Bidireccional con el AD local (vía Connect)</td><td><b>Unidireccional</b> desde Entra ID</td></tr>
+        <tr><td><b>Úsalo cuando</b></td><td>Tienes servidores locales</td><td>Apps web, móviles, M365, Azure</td><td>Migras apps <b>legacy</b> que necesitan Kerberos/LDAP sin montar controladores de dominio</td></tr>
+      </tbody>
     </table></div>
-    <p class="mini">Definiciones simplificadas: las reales tienen más entradas (por ejemplo, el Colaborador también niega algunas acciones de Blueprints y Purview). El mecanismo es el mismo.</p>
+    <p class="mini">PDF AZ-104 págs. 66–70. El dominio de Entra Domain Services es independiente: no es una extensión del dominio del AD local.</p>
   </section>
 
-  <!-- 4 · Tarjetas -->
-  <section id="s4">
-    <h2 class="h">4 · Lo que más pregunta AZ-104 de este dominio</h2>
+  <section id="resumen">
+    <h2 class="h">4 · Lo que más pregunta AZ-104 de esta sección</h2>
     <div class="cards">
       <div class="card"><h3>Tipos de usuario (pág. 56)</h3><ul>
         <li><b>Nube:</b> existen solo en Entra ID (creados a mano, administradores).</li>
@@ -118,42 +119,7 @@ td.si{color:var(--ok);font-weight:600} td.no{color:var(--bad);font-weight:600} t
         <li><b>entra.microsoft.com:</b> solo identidad (usuarios, grupos, roles, acceso condicional). Algunas funciones nuevas están solo aquí.</li>
         <li>Qué rol y qué nivel de soporte usa cada uno: <a href="administracion.html">Quién administra qué →</a></li>
       </ul></div>
-      <div class="card"><h3>Niveles de gobernanza (pág. 34)</h3><ul>
-        <li><b>Grupo raíz del inquilino</b> → grupos de administración (<b>hasta 6 niveles</b> bajo la raíz) → suscripciones → grupos de recursos → recursos.</li>
-        <li>Políticas y roles se <b>heredan hacia abajo</b>.</li>
-        <li>La suscripción es el límite de <b>facturación</b> y de <b>cuotas</b> de recursos (pág. 30).</li>
-      </ul></div>
-      <div class="card"><h3>Gobernanza en la nube (pág. 27)</h3><ul>
-        <li>Política corporativa: riesgo empresarial → política y cumplimiento → proceso de monitoreo.</li>
-        <li>5 disciplinas: <b>gestión de costos</b>, <b>línea base de seguridad</b>, <b>consistencia de recursos</b>, <b>línea base de identidad</b>, <b>aceleración de despliegue</b>.</li>
-      </ul></div>
-      <div class="card"><h3>Cost Management (págs. 35–39)</h3><ul>
-        <li>Análisis de costos acumulados, <b>asignación</b> por departamento, <b>exportación</b> de datos, recursos infrautilizados.</li>
-        <li><b>Presupuestos:</b> alertan al acercarse o pasar el límite; no detienen recursos.</li>
-        <li>Facturas con el desglose del período.</li>
-      </ul></div>
-      <div class="card"><h3>Locks (pág. 40)</h3><ul>
-        <li><b>ReadOnly</b> bloquea cambios; <b>Delete</b> bloquea eliminar.</li>
-        <li>Se ponen en recurso, grupo de recursos o suscripción y se heredan.</li>
-        <li>Se aplican incluso al <b>Propietario</b>: primero hay que quitar el lock.</li>
-      </ul></div>
     </div>
-  </section>
-
-  <!-- 5 · AD DS vs Entra ID vs Entra Domain Services -->
-  <section id="s5" class="bloque">
-    <h2 class="h">5 · AD DS vs Entra ID vs Entra Domain Services</h2>
-    <div class="tbl"><table>
-      <thead><tr><th></th><th>AD DS (local)</th><th>Microsoft Entra ID</th><th>Entra Domain Services (antes Azure AD DS)</th></tr></thead>
-      <tbody>
-        <tr><td><b>Qué es</b></td><td>Directorio tradicional en servidores Windows</td><td>Identidad en la nube, multiinquilino</td><td>Dominio <b>administrado</b> en Azure: Microsoft gestiona 2 controladores de dominio</td></tr>
-        <tr><td><b>Protocolos</b></td><td>Kerberos, NTLM, LDAP</td><td>HTTP/HTTPS, API REST (OAuth, SAML, OpenID)</td><td>Kerberos, NTLM, LDAP</td></tr>
-        <tr><td><b>Estructura</b></td><td>Jerárquica: OU y GPO</td><td>Plana: sin OU ni GPO</td><td>OU y GPO básicas</td></tr>
-        <tr><td><b>Sincronización</b></td><td>Hacia Entra ID con Entra Connect</td><td>Bidireccional con el AD local (vía Connect)</td><td><b>Unidireccional</b> desde Entra ID</td></tr>
-        <tr><td><b>Úsalo cuando</b></td><td>Tienes servidores locales</td><td>Apps web, móviles, M365, Azure</td><td>Migras apps <b>legacy</b> que necesitan Kerberos/LDAP sin montar controladores de dominio</td></tr>
-      </tbody>
-    </table></div>
-    <p class="mini">PDF AZ-104 págs. 66–70. El dominio de Entra Domain Services es independiente: no es una extensión del dominio del AD local.</p>
   </section>
 
   <section>
@@ -166,6 +132,7 @@ td.si{color:var(--ok);font-weight:600} td.no{color:var(--bad);font-weight:600} t
 <script src="../assets/progreso.js"></script>
 <script src="../assets/quiz.js"></script>
 <script>
+
 function seg(id,obj,get,set,fn){
   const el=document.getElementById(id);el.innerHTML="";
   Object.keys(obj).forEach(k=>{const b=document.createElement("button");b.type="button";b.textContent=typeof obj[k]==="string"?obj[k]:obj[k].name;b.dataset.k=k;
@@ -176,6 +143,7 @@ function status(id,lvl,t,d){
   document.getElementById(id).innerHTML=`<span class="dot" style="background:${col}" aria-hidden="true"></span><div><b>${ico} ${t}</b><p>${d}</p></div>`;
 }
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"})[c]);
+
 
 /* ---------- 1 · Licencias ---------- */
 const NIV={free:{n:"Free",o:0},p1:{n:"P1",o:1},p2:{n:"P2",o:2},gov:{n:"ID Governance",o:3}};
@@ -279,50 +247,7 @@ function renderG(){
   else status("statusG","info",`Grupo asignado de ${TIPOG[tipoG].toLowerCase()} · ${n} miembro${n===1?"":"s"}`,`Funciona en cualquier edición, Free incluida. Si alguien cambia de departamento, nadie lo saca ni lo agrega: hay que hacerlo a mano.${notaInv}`);
 }
 
-/* ---------- 3 · RBAC por dentro ---------- */
-const ROLES={
- owner:{name:"Propietario",a:["*"],n:[]},
- contrib:{name:"Colaborador",a:["*"],n:["Microsoft.Authorization/*/Delete","Microsoft.Authorization/*/Write","Microsoft.Authorization/elevateAccess/Action"]},
- reader:{name:"Lector",a:["*/read"],n:[]},
- uaa:{name:"Administrador de acceso de usuario",a:["*/read","Microsoft.Authorization/*","Microsoft.Support/*"],n:[]},
- vmc:{name:"Colaborador de máquinas virtuales",a:["Microsoft.Compute/virtualMachines/*","Microsoft.Network/networkInterfaces/*","Microsoft.Network/virtualNetworks/read","Microsoft.Network/virtualNetworks/subnets/join/action","Microsoft.Resources/subscriptions/resourceGroups/read"],n:[]}
-};
-const OPER=[
- {t:"Ver una VM",op:"Microsoft.Compute/virtualMachines/read"},
- {t:"Reiniciar una VM",op:"Microsoft.Compute/virtualMachines/restart/action"},
- {t:"Eliminar una VM",op:"Microsoft.Compute/virtualMachines/delete"},
- {t:"Crear una red virtual",op:"Microsoft.Network/virtualNetworks/write"},
- {t:"Eliminar una cuenta de almacenamiento",op:"Microsoft.Storage/storageAccounts/delete"},
- {t:"Dar un rol a otro usuario",op:"Microsoft.Authorization/roleAssignments/write"},
- {t:"Quitar una asignación de rol",op:"Microsoft.Authorization/roleAssignments/delete"}
-];
-const asignados=new Set(["contrib"]);
-const coincide=(pat,op)=>new RegExp("^"+pat.split("*").map(s=>s.replace(/[.+?^${}()|[\]\\]/g,"\\$&")).join(".*")+"$","i").test(op);
-function evalua(r,op){
-  const R=ROLES[r],a=R.a.find(p=>coincide(p,op));
-  if(!a)return{ok:false,por:"no está en Actions"};
-  const n=R.n.find(p=>coincide(p,op));
-  if(n)return{ok:false,por:"NotActions: "+n};
-  return{ok:true,por:"Actions: "+a};
-}
-document.getElementById("roles").innerHTML=Object.keys(ROLES).map(k=>`<label class="chk"><input type="checkbox" data-r="${k}"${asignados.has(k)?" checked":""}><span>${ROLES[k].name}</span></label>`).join("");
-document.querySelectorAll("#roles input").forEach(i=>i.onchange=()=>{i.checked?asignados.add(i.dataset.r):asignados.delete(i.dataset.r);renderR()});
-function renderR(){
-  const rs=Object.keys(ROLES).filter(k=>asignados.has(k));
-  document.getElementById("jsons").innerHTML=rs.map(k=>`<pre class="json">${esc(JSON.stringify({roleName:ROLES[k].name,Actions:ROLES[k].a,NotActions:ROLES[k].n},null,2))}</pre>`).join("");
-  document.getElementById("theadR").innerHTML=`<tr><th>Operación</th>${rs.map(k=>`<th>${ROLES[k].name}</th>`).join("")}<th>Efectivo (suma de roles)</th></tr>`;
-  document.getElementById("tbodyR").innerHTML=OPER.map(o=>{
-    const ev=rs.map(k=>evalua(k,o.op)),fin=ev.some(e=>e.ok);
-    return`<tr><td>${o.t}<div class="mini"><code>${o.op}</code></div></td>${ev.map(e=>`<td class="${e.ok?"si":"no"}" title="${esc(e.por)}">${e.ok?"✓":"✕"}<div class="mini">${esc(e.por)}</div></td>`).join("")}<td class="${fin?"si":"no"}">${fin?"✓ Permitido":"✕ Denegado"}</td></tr>`;
-  }).join("");
-  if(!rs.length){status("statusR","bad","Sin roles: no puede hacer nada","Sin una asignación de rol, Azure deniega todo por defecto.");return}
-  const todo=OPER.every(o=>rs.some(k=>evalua(k,o.op).ok));
-  if(rs.includes("contrib")&&rs.includes("uaa")&&!rs.includes("owner"))status("statusR","warn","Colaborador + Administrador de acceso de usuario ≈ Propietario","Los permisos se suman: lo que el NotActions del Colaborador quita (gestionar roles), el otro rol lo concede. NotActions no es una denegación: solo resta dentro de ESE rol.");
-  else if(rs.length===1&&rs[0]==="contrib")status("statusR","info","Colaborador: todo menos gestionar el acceso","Actions = * (todo) y NotActions quita Microsoft.Authorization/*/Write y /Delete: puede crear y borrar recursos, pero no dar ni quitar roles. Agrega un segundo rol y mira cómo se suman.");
-  else status("statusR",todo?"ok":"info",todo?"Puede hacer todas las operaciones de la tabla":"Permisos efectivos combinados",`Cada columna aplica Actions − NotActions de un rol; la última junta todos los roles (unión). Pasa el mouse por cada ✓ o ✕ para ver qué entrada decidió.`);
-}
-
-renderL();renderG();renderR();iniciarQuiz("identidad","az104");
+renderL();renderG();iniciarQuiz("s05","az104");
 </script>
 </body>
 </html>
