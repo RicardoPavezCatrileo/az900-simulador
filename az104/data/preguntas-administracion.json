@@ -1,0 +1,62 @@
+[
+  {
+    "pregunta": "Un técnico de la mesa de ayuda debe restablecer contraseñas de empleados (no administradores), con el mínimo privilegio. ¿Qué rol le asignas?",
+    "opciones": ["Administrador global", "Administrador del departamento de soporte técnico (Entra)", "Colaborador en la suscripción (Azure RBAC)", "Propietario del grupo de recursos (Azure RBAC)"],
+    "correcta": 1,
+    "explicacion": "Restablecer contraseñas es una tarea del directorio: rol de Entra. El de soporte técnico basta para usuarios que no son administradores. Trampa: Administrador global también puede, pero no es el mínimo privilegio; y ningún rol de RBAC toca contraseñas. No está en el PDF; sí en Microsoft Learn."
+  },
+  {
+    "pregunta": "Eres Propietario de la suscripción Producción. ¿Puedes crear usuarios nuevos en Microsoft Entra ID con ese rol?",
+    "opciones": ["Sí, Propietario es el rol más alto de Azure", "Sí, pero solo usuarios invitados", "No: Propietario es un rol de Azure RBAC sobre recursos; crear usuarios requiere un rol de Entra como Administrador de usuarios", "No, solo el Administrador global puede crear usuarios"],
+    "correcta": 2,
+    "explicacion": "Roles de Azure RBAC (Propietario, Colaborador, Lector) = recursos. Roles de Entra (Administrador de usuarios, global…) = directorio. Son sistemas separados. Trampa: Administrador global no es el único; Administrador de usuarios también crea usuarios."
+  },
+  {
+    "pregunta": "¿En qué portal asignas el rol \"Colaborador de máquina virtual\" a un desarrollador sobre el grupo de recursos rg-web?",
+    "opciones": ["entra.microsoft.com → Roles y administradores", "portal.azure.com → rg-web → Control de acceso (IAM)", "admin.microsoft.com → Roles", "En Azure Policy"],
+    "correcta": 1,
+    "explicacion": "Los roles de Azure RBAC se asignan en el ámbito (suscripción, grupo de recursos o recurso) → Control de acceso (IAM) del portal de Azure. Trampa: en Entra → Roles y administradores están los roles de Entra, no los de recursos."
+  },
+  {
+    "pregunta": "Asignas Lector a un usuario en la suscripción Producción. ¿Qué puede ver?",
+    "opciones": ["Solo la suscripción, sin sus grupos de recursos", "Todos los grupos de recursos y recursos de Producción, y nada de la suscripción Test", "Todas las suscripciones del grupo de administración", "Producción y los usuarios de Entra ID"],
+    "correcta": 1,
+    "explicacion": "RBAC se hereda hacia abajo (suscripción → grupos de recursos → recursos) y nunca sube ni pasa a suscripciones hermanas (PDF AZ-104, págs. 71–81). Trampa: RBAC tampoco da acceso al directorio de Entra ID."
+  },
+  {
+    "pregunta": "Un usuario con rol Colaborador en rg-web intenta poner un bloqueo de no eliminación (CanNotDelete) y no puede. ¿Por qué?",
+    "opciones": ["Porque los bloqueos solo se ponen en la suscripción", "Porque crear o quitar bloqueos requiere Propietario o Administrador de acceso de usuario", "Porque necesita licencia Entra ID P2", "Porque los bloqueos se configuran en entra.microsoft.com"],
+    "correcta": 1,
+    "explicacion": "Los bloqueos usan permisos Microsoft.Authorization/locks, que Colaborador no tiene (Colaborador = todo menos permisos y asignación de roles). Los dan Propietario y Administrador de acceso de usuario. Trampa: los bloqueos se ponen en suscripción, grupo de recursos o recurso, en el portal de Azure."
+  },
+  {
+    "pregunta": "Un empleado no puede iniciar sesión y quieres ver qué directiva de acceso condicional lo bloqueó. ¿Dónde lo revisas?",
+    "opciones": ["Azure Monitor → Métricas de la VM", "Microsoft Entra → Registros de inicio de sesión", "Azure Policy → Cumplimiento", "Cost Management"],
+    "correcta": 1,
+    "explicacion": "Los registros de inicio de sesión de Entra muestran el error y la pestaña de acceso condicional con la directiva aplicada. Trampa: Azure Policy evalúa recursos, no inicios de sesión."
+  },
+  {
+    "pregunta": "Un empleado cambió de celular y ya no recibe el aviso de MFA. ¿Qué hace el soporte nivel 1, con el mínimo privilegio?",
+    "opciones": ["Desactiva el MFA para toda la empresa", "Con Administrador de autenticación, marca \"Requerir volver a registrar MFA\" en los métodos de autenticación del usuario", "Lo agrega como Propietario de la suscripción", "Crea una directiva de Azure Policy"],
+    "correcta": 1,
+    "explicacion": "Los métodos de autenticación son de la cuenta en Entra ID. Volver a registrarlos obliga al usuario a configurar el MFA de nuevo en el próximo inicio de sesión. No está en el PDF; sí en Microsoft Learn."
+  },
+  {
+    "pregunta": "Eres Administrador global y necesitas ver todas las suscripciones del tenant, pero el portal de Azure no te muestra ninguna. ¿Qué haces?",
+    "opciones": ["Nada: el Administrador global ya es Propietario de todo", "Activar \"Administración de acceso para recursos de Azure\" en las propiedades de Entra ID, que te da Administrador de acceso de usuario en la raíz", "Pedir una licencia Entra ID P2", "Crear un grupo dinámico"],
+    "correcta": 1,
+    "explicacion": "El Administrador global no tiene permisos sobre recursos por defecto, pero puede elevarse: queda como Administrador de acceso de usuario en el ámbito raíz (/) y desde ahí asignarse roles. Conviene quitarlo después. No está en el PDF; sí en Microsoft Learn."
+  },
+  {
+    "pregunta": "¿Cuál es la diferencia entre entra.microsoft.com y portal.azure.com para administrar Entra ID?",
+    "opciones": ["Administran tenants distintos", "Administran el mismo directorio; entra.microsoft.com está dedicado a identidad y algunas funciones nuevas están solo ahí", "entra.microsoft.com es solo de lectura", "portal.azure.com no permite crear usuarios"],
+    "correcta": 1,
+    "explicacion": "Un usuario creado en uno aparece en el otro: es el mismo tenant (PDF AZ-104, pág. 47). portal.azure.com además tiene todos los recursos de Azure."
+  },
+  {
+    "pregunta": "Selecciona TODAS las tareas que requieren un rol de Microsoft Entra (no de Azure RBAC).",
+    "opciones": ["Asignar una licencia de Microsoft 365", "Reiniciar una VM", "Crear una directiva de acceso condicional", "Ver los costos de la suscripción", "Invitar a un usuario externo (B2B)"],
+    "correcta": [0, 2, 4],
+    "explicacion": "Licencias, acceso condicional e invitados son del directorio (Entra). Reiniciar una VM (Colaborador de máquina virtual) y ver costos (Lector de Cost Management) son de recursos (RBAC)."
+  }
+]

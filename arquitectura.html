@@ -694,6 +694,9 @@ function panelFlujo(){
     <h2>${esc(f.id==="identidad"?"Identidad · "+IDENT[ident].n:f.n)}</h2>
     <ol class="pasos">${pasosFlujo(f).map(p=>`<li>${esc(p)}</li>`).join("")}</ol>`;
 }
+// Quién administra cada pieza: ancla de az104/administracion.html (complemento de esta página)
+const ADM={entra:"portales",entraT:"portales",portal:"portales",emp:"soporte",mfa:"soporte",ca:"soporte",connect:"soporte",adds:"soporte",
+ mg:"ambitos",sub:"ambitos",subTest:"ambitos",subDev:"ambitos",rg:"ambitos",rbac:"roles",lock:"tareas",policy:"tareas",cost:"tareas",budget:"tareas"};
 function panelElemento(id){
   const e=POR_ID[id];
   const area=e.a!=null?AREAS[e.a].n+" · ":"";
@@ -702,6 +705,7 @@ function panelElemento(id){
     <h2>${esc(nombre(e).split("|").join(" "))}</h2>
     <p><b>Qué es:</b> ${esc(e.q)}</p>
     <p><b>Por qué está aquí:</b> ${esc(e.p)}</p>
+    ${ADM[id]?`<p><b>¿Quién la administra?</b> <a href="az104/administracion.html#${ADM[id]}">Portal, rol y nivel de soporte en Administración →</a></p>`:""}
     ${avance(e.cap)}
     <p><a href="${archivo(e.cap)}">Repasar el capítulo ${e.cap}: ${esc(tituloCap(e.cap))} →</a> · <button type="button" class="btn" data-volver>${flujo?"Volver al recorrido":"Volver al capítulo"}</button></p>`;
 }
@@ -883,6 +887,10 @@ document.getElementById("leyenda").innerHTML=AREAS.map(a=>`<span><i style="backg
   '<p class="fl">Flechas por flujo: <b style="color:var(--a1)">naranja</b> tráfico web y oficina · <b style="color:var(--a3)">amarillo</b> datos · <b style="color:var(--a0)">azul</b> identidad · <b style="color:var(--a4)">rosa</b> gestión · <b style="color:var(--a5)">violeta</b> costos.</p>';
 
 geoTopo();dibujar();aplicar();panelCapitulo();
+// Enlaces desde administracion.html: #pieza=<id> abre el panel de esa pieza; #recorrido=<id>, ese recorrido
+{const m=/^#(pieza|recorrido)=(\w+)$/.exec(location.hash);
+ if(m&&m[1]==="pieza"&&POR_ID[m[2]]){hasta=11;elegir(m[2])}
+ else if(m&&FLUJOS.some(f=>f.id===m[2])){hasta=11;flujo=m[2];aplicar();panelFlujo()}}
 </script>
 </body>
 </html>

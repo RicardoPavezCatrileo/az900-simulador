@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Quién administra qué</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="../assets/estilos.css">
+<style>
+/* Colores de área: los mismos de arquitectura.html */
+:root{--a0:#2a78d6;--a1:#eb6834;--a2:#1baf7a;--a3:#eda100;--a4:#e87ba4;--a5:#6250d6}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--a0:#3987e5;--a1:#d95926;--a2:#199e70;--a3:#c98500;--a4:#d55181;--a5:#9085e9}}
+:root[data-theme="dark"]{--a0:#3987e5;--a1:#d95926;--a2:#199e70;--a3:#c98500;--a4:#d55181;--a5:#9085e9}
+.bloque{display:grid;gap:14px}
+.bloque>h2.h{margin:0}
+.bloque>p.intro{margin:0;color:var(--muted);max-width:75ch}
+.mini{font-size:.82rem;color:var(--muted)}
+.card.a0{border-left:5px solid var(--a0)} .card.a5{border-left:5px solid var(--a5)} .card.m365{border-left:5px solid var(--muted)}
+.card .url{font-family:var(--f-mono);font-size:.85rem;color:var(--muted);margin:-2px 0 8px}
+.tag{font-family:var(--f-mono);font-size:.72rem;padding:1px 6px;border-radius:4px;border:1px solid currentColor;white-space:nowrap}
+.tag.e{color:var(--a0)} .tag.r{color:var(--a5)} .tag.n1{color:var(--ok)} .tag.n2{color:var(--warn)}
+/* Tareas */
+.tareas{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:8px}
+.tareas button{font:inherit;font-size:.88rem;text-align:left;padding:9px 12px;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:8px;cursor:pointer;display:flex;gap:8px;align-items:flex-start}
+.tareas button:hover{border-color:var(--accent)}
+.tareas button[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.tareas button .m{font-family:var(--f-mono);font-size:.8rem;min-width:1.2em}
+.tareas button .m.ok{color:var(--ok)} .tareas button .m.mal{color:var(--bad)}
+.preg{display:grid;gap:10px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+.preg h3{margin:0;font-family:var(--f-display);font-size:1.05rem}
+.facts.tres{grid-template-columns:repeat(3,1fr)}
+@media (max-width:700px){.facts.tres{grid-template-columns:1fr}}
+.fact .v.t{font-family:var(--f-body);font-weight:600;font-size:.95rem}
+/* Ámbitos */
+.amb{display:grid;gap:6px;font-size:.92rem}
+.amb .niv{display:flex;gap:10px;align-items:center;padding:8px 12px;border:1px solid var(--line);border-radius:8px;background:var(--surface);cursor:pointer;text-align:left;font:inherit;color:var(--ink);width:100%}
+.amb .niv:hover{border-color:var(--accent)}
+.amb .niv .q{font-family:var(--f-mono);font-size:.75rem;color:var(--muted);margin-left:auto;text-align:right}
+.amb .niv.asig{border-color:var(--a5);box-shadow:inset 0 0 0 2px var(--a5)}
+.amb .niv.hereda{background:color-mix(in srgb,var(--a5) 12%,var(--surface))}
+.amb .niv.no{opacity:.55}
+.amb .niv.tenant{border-style:dashed;cursor:default}
+.amb .niv.tenant:hover{border-color:var(--line)}
+.amb .niv .q b{color:var(--a5)}
+/* Soporte */
+.esc{counter-reset:p;display:grid;gap:8px;margin:0;padding:0;list-style:none}
+.esc li{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:10px 12px;font-size:.9rem}
+.esc li::before{counter-increment:p;content:counter(p);grid-row:span 2;font-family:var(--f-display);font-weight:800;font-size:1.2rem;color:var(--muted)}
+.esc li .p{color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="nav"><a class="volver" href="index.html">← Secciones AZ-104</a><a class="volver" href="../arquitectura.html">Arquitectura →</a><a class="volver" href="identidad-gobierno.html">Identidades y gobierno →</a><a class="volver" href="../az900/cap10-lab-gobierno.html">Laboratorio de gobierno →</a></div>
+  <header>
+    <div class="eyebrow">AZ-104 · Complemento de la arquitectura</div>
+    <h1>Quién administra qué y desde dónde</h1>
+    <p>La <a href="../arquitectura.html">arquitectura</a> muestra <b>por dónde pasa el tráfico</b>. Esta página muestra <b>quién configura cada pieza</b>: en qué portal, con qué rol y si es tarea de soporte nivel 1 o nivel 2. Las piezas llevan el mismo nombre y color que en el diagrama.</p>
+  </header>
+
+  <div class="note">
+    <h3>Qué viene del PDF y qué no</h3>
+    <p>Los dos portales (portal.azure.com y entra.microsoft.com) están en el PDF AZ-104, pág. 47, y RBAC en las págs. 71–81. <b>No están en el PDF</b> (sí en Microsoft Learn): admin.microsoft.com, los nombres de los roles de Entra, el rol mínimo de cada tarea y la división en niveles de soporte, que es la práctica habitual de las mesas de ayuda.</p>
+  </div>
+
+  <!-- 1 · Portales -->
+  <section id="portales" class="bloque">
+    <h2 class="h">1 · Tres portales, un mismo directorio</h2>
+    <p class="intro">Los tres cambian <b>el mismo</b> tenant de Entra ID: un usuario creado en uno aparece en los otros. La diferencia es qué más hay alrededor.</p>
+    <div class="cards">
+      <div class="card a0"><h3>Centro de administración de Microsoft Entra</h3><div class="url">entra.microsoft.com</div><ul>
+        <li>Solo identidad: usuarios, grupos, roles de Entra, MFA, <b>acceso condicional</b>, registros de inicio de sesión, aplicaciones empresariales, invitados B2B, Entra Connect.</li>
+        <li>Microsoft lo recomienda hoy; algunas funciones nuevas están solo aquí (pág. 47).</li>
+        <li>Lo usa sobre todo el <b>nivel 2</b> y los administradores de identidad.</li></ul></div>
+      <div class="card a5"><h3>Portal de Azure</h3><div class="url">portal.azure.com</div><ul>
+        <li>Todos los <b>recursos</b>: VMs, redes, Storage, SQL… y su <b>Control de acceso (IAM)</b>, donde se asignan los roles de <b>Azure RBAC</b>.</li>
+        <li>Policy, bloqueos, etiquetas, Cost Management, Monitor.</li>
+        <li>Buscando "Microsoft Entra ID" se abre lo mismo que en entra.microsoft.com.</li></ul></div>
+      <div class="card m365"><h3>Centro de administración de Microsoft 365</h3><div class="url">admin.microsoft.com · no está en el PDF</div><ul>
+        <li>El día a día: crear usuarios, <b>restablecer contraseñas</b>, <b>asignar licencias</b>, buzones de correo.</li>
+        <li>No toca recursos de Azure ni acceso condicional.</li>
+        <li>Lo usa sobre todo el <b>nivel 1</b>.</li></ul></div>
+    </div>
+  </section>
+
+  <!-- 2 · Tareas -->
+  <section id="tareas" class="bloque">
+    <h2 class="h">2 · ¿Rol de Entra o rol de Azure RBAC?</h2>
+    <p class="intro">Elige una tarea y responde qué tipo de rol la permite. Después ves el portal, el rol mínimo y el nivel de soporte. La regla: si toca <b>usuarios, grupos o el inicio de sesión</b> → Entra; si toca <b>suscripciones o recursos</b> → RBAC.</p>
+    <div class="tareas" id="tareasL"></div>
+    <div class="preg" id="preg"></div>
+    <p class="mini" id="cuenta"></p>
+  </section>
+
+  <!-- 3 · Roles -->
+  <section id="roles" class="bloque">
+    <h2 class="h">3 · Roles de Entra vs roles de Azure RBAC</h2>
+    <div class="tbl"><table>
+      <thead><tr><th></th><th><span class="tag e">Entra</span> Roles de Microsoft Entra</th><th><span class="tag r">RBAC</span> Roles de Azure (RBAC)</th></tr></thead>
+      <tbody>
+        <tr><td><b>Sobre qué</b></td><td>El directorio: usuarios, grupos, contraseñas, licencias, apps, acceso condicional</td><td>Los recursos: grupos de administración, suscripciones, grupos de recursos, VMs, redes, Storage…</td></tr>
+        <tr><td><b>Dónde se asigna</b></td><td>entra.microsoft.com → Roles y administradores</td><td>portal.azure.com → el ámbito (suscripción, grupo de recursos o recurso) → Control de acceso (IAM)</td></tr>
+        <tr><td><b>Ámbito</b></td><td>El tenant entero (o una unidad administrativa)</td><td>Grupo de administración → suscripción → grupo de recursos → recurso, con <b>herencia hacia abajo</b></td></tr>
+        <tr><td><b>Los más preguntados</b></td><td>Administrador global · Administrador de usuarios · Administrador del departamento de soporte técnico · Administrador de autenticación · Administrador de licencias · Lector global</td><td>Propietario · Colaborador · Lector · Administrador de acceso de usuario · Colaborador de máquina virtual · Colaborador de red</td></tr>
+        <tr><td><b>Trampa</b></td><td><b>Administrador global</b> no ve las VMs por tener ese rol (puede <i>elevarse</i> a Administrador de acceso de usuario en la raíz, pero es un paso aparte)</td><td><b>Propietario</b> de la suscripción no puede restablecer contraseñas ni crear usuarios</td></tr>
+      </tbody>
+    </table></div>
+    <p class="mini">Propietario = todo + asignar roles · Colaborador = todo menos asignar roles · Lector = solo ver · Administrador de acceso de usuario = solo asignar roles (PDF AZ-104, págs. 71–81). Los nombres de los roles de Entra no están en el PDF.</p>
+  </section>
+
+  <!-- 4 · Ámbitos -->
+  <section id="ambitos" class="bloque">
+    <h2 class="h">4 · ¿Hasta dónde llega un rol de RBAC?</h2>
+    <p class="intro">Toca el nivel donde asignas <b>Colaborador</b> a un usuario. El permiso se hereda hacia abajo y nunca sube. Los niveles son los mismos marcos de la arquitectura.</p>
+    <div class="amb" id="amb"></div>
+    <div class="status" id="statusA"></div>
+  </section>
+
+  <!-- 5 · Soporte -->
+  <section id="soporte" class="bloque">
+    <h2 class="h">5 · Nivel 1 y nivel 2: "un empleado no puede entrar a la app"</h2>
+    <p class="intro">El caso del recorrido <a href="../arquitectura.html#recorrido=oficina">"Empleado desde la oficina"</a> de la arquitectura. Se revisa de lo más simple a lo más profundo; cada paso dice quién lo hace y dónde.</p>
+    <ol class="esc">
+      <li><b>¿Cuenta bloqueada o contraseña vencida?</b> <span class="p"><span class="tag n1">Nivel 1</span> Restablecer la contraseña o desbloquear: admin.microsoft.com o entra.microsoft.com, con Administrador del departamento de soporte técnico.</span></li>
+      <li><b>¿Cambió de celular y no le llega el MFA?</b> <span class="p"><span class="tag n1">Nivel 1</span> Entra → el usuario → Métodos de autenticación → "Requerir volver a registrar MFA", con Administrador de autenticación.</span></li>
+      <li><b>¿Tiene la licencia?</b> <span class="p"><span class="tag n1">Nivel 1</span> Sin licencia de Microsoft 365 o Entra ID P1, no tiene la app o no le aplica la directiva. Administrador de licencias.</span></li>
+      <li><b>¿Qué dice el registro de inicio de sesión?</b> <span class="p"><span class="tag n2">Nivel 2</span> Entra → Supervisión → Registros de inicio de sesión: muestra el código de error y qué directiva de <b>acceso condicional</b> lo bloqueó (por ejemplo, "fuera de la oficina sin MFA").</span></li>
+      <li><b>¿La cuenta o la contraseña nueva no llegó a la nube?</b> <span class="p"><span class="tag n2">Nivel 2</span> Revisar <b>Entra Connect</b> (sincroniza cada 30 minutos) y Connect Health: el problema está entre el AD DS local y Entra ID.</span></li>
+      <li><b>¿Entra, pero no ve la VM o el grupo de recursos?</b> <span class="p"><span class="tag n2">Nivel 2</span> Ya no es identidad: es <b>RBAC</b>. portal.azure.com → el recurso → Control de acceso (IAM) → "Comprobar acceso".</span></li>
+    </ol>
+    <p class="mini">Pasos 1–4 sobre las piezas <a href="../arquitectura.html#pieza=entra">Entra ID</a>, <a href="../arquitectura.html#pieza=mfa">MFA</a> y <a href="../arquitectura.html#pieza=ca">acceso condicional</a>; paso 5 sobre <a href="../arquitectura.html#pieza=connect">Entra Connect</a>; paso 6 sobre <a href="../arquitectura.html#pieza=rbac">RBAC</a>.</p>
+  </section>
+
+  <section>
+    <h2 class="h">Preguntas tipo examen</h2>
+    <div class="score" id="score"></div>
+    <div class="quiz" id="quiz"></div>
+  </section>
+</div>
+
+<script src="../assets/progreso.js"></script>
+<script src="../assets/quiz.js"></script>
+<script>
+// t = tarea · tipo e (Entra) | r (RBAC) · portal · rol mínimo · n = nivel de soporte · por = explicación · ver = pieza de la arquitectura
+const TAREAS=[
+ {t:"Restablecer la contraseña de un empleado",tipo:"e",portal:"admin.microsoft.com o entra.microsoft.com",rol:"Administrador del departamento de soporte técnico",n:1,ver:"entra",
+  por:"Es una cuenta del directorio. Este rol restablece contraseñas de usuarios que no son administradores; no hace falta ser Administrador global."},
+ {t:"Asignar una licencia de Microsoft 365 o Entra ID P1",tipo:"e",portal:"admin.microsoft.com o entra.microsoft.com",rol:"Administrador de licencias",n:1,ver:"entra",
+  por:"Las licencias son del tenant. Para asignarla, el usuario debe tener definida su ubicación de uso (país)."},
+ {t:"Crear un usuario y sumarlo a un grupo",tipo:"e",portal:"entra.microsoft.com (o admin.microsoft.com)",rol:"Administrador de usuarios",n:1,ver:"entra",
+  por:"Usuarios y grupos viven en Entra ID. Un grupo dinámico, en cambio, se llena solo según una regla (requiere P1)."},
+ {t:"Volver a registrar el MFA de quien cambió de celular",tipo:"e",portal:"entra.microsoft.com → usuario → Métodos de autenticación",rol:"Administrador de autenticación",n:1,ver:"mfa",
+  por:"Los métodos de autenticación son parte de la cuenta. \"Requerir volver a registrar MFA\" obliga a configurarlo de nuevo en el próximo inicio de sesión."},
+ {t:"Ver por qué alguien no puede iniciar sesión",tipo:"e",portal:"entra.microsoft.com → Registros de inicio de sesión",rol:"Lector de informes (o Lector global)",n:2,ver:"ca",
+  por:"El registro de inicio de sesión muestra el error y qué directiva de acceso condicional se aplicó. Es solo lectura."},
+ {t:"Exigir MFA fuera de la oficina",tipo:"e",portal:"entra.microsoft.com → Acceso condicional",rol:"Administrador de acceso condicional",n:2,ver:"ca",
+  por:"El acceso condicional es una función de Entra ID P1 que decide en el inicio de sesión. Trampa: no es Azure Policy, que gobierna recursos."},
+ {t:"Revisar si Entra Connect está sincronizando",tipo:"e",portal:"entra.microsoft.com → Identidad híbrida (y el servidor local)",rol:"Administrador de identidad híbrida",n:2,ver:"connect",
+  por:"Entra Connect corre en un servidor de la oficina y sincroniza cada 30 minutos; Connect Health avisa si falla."},
+ {t:"Permitir que un desarrollador reinicie las VMs de rg-web",tipo:"r",portal:"portal.azure.com → rg-web → Control de acceso (IAM)",rol:"Colaborador de máquina virtual, en el ámbito rg-web",n:2,ver:"rbac",
+  por:"Las VMs son recursos: se usa RBAC con el mínimo privilegio y el ámbito más chico que sirva. Lo asigna un Propietario o un Administrador de acceso de usuario."},
+ {t:"Poner un bloqueo de no eliminación en rg-web",tipo:"r",portal:"portal.azure.com → rg-web → Bloqueos",rol:"Propietario o Administrador de acceso de usuario",n:2,ver:"lock",
+  por:"Trampa: Colaborador NO puede crear ni quitar bloqueos. Un bloqueo frena incluso al Propietario hasta que lo quita."},
+ {t:"Ver cuánto gasta la suscripción",tipo:"r",portal:"portal.azure.com → Cost Management",rol:"Lector de Cost Management (en la suscripción)",n:2,ver:"cost",
+  por:"Los costos son de la suscripción, no del directorio. Este rol ve costos sin poder tocar los recursos."},
+ {t:"Asignar una directiva \"solo Brazil South\"",tipo:"r",portal:"portal.azure.com → Policy → Asignaciones",rol:"Colaborador de directivas de recursos (o Propietario)",n:2,ver:"policy",
+  por:"Azure Policy se asigna en un ámbito de recursos (aquí, el grupo de administración) y se hereda hacia abajo."}
+];
+let act=0;const resp={};
+function tareas(){
+  document.getElementById("tareasL").innerHTML=TAREAS.map((x,i)=>{
+    const r=resp[i],m=r==null?"·":(r===x.tipo?"✓":"✕"),c=r==null?"":(r===x.tipo?" ok":" mal");
+    return `<button type="button" data-i="${i}" aria-pressed="${i===act}"><span class="m${c}">${m}</span><span>${x.t}</span></button>`}).join("");
+  const x=TAREAS[act],r=resp[act],P=document.getElementById("preg");
+  if(r==null){
+    P.innerHTML=`<h3>${x.t}</h3><p style="margin:0">¿Qué tipo de rol lo permite?</p><div class="seg"><button type="button" data-r="e">Rol de Entra</button><button type="button" data-r="r">Rol de Azure RBAC</button></div>`;
+  }else{
+    const ok=r===x.tipo,tipo=x.tipo==="e"?'<span class="tag e">Entra</span> Rol de Entra':'<span class="tag r">RBAC</span> Rol de Azure RBAC';
+    P.innerHTML=`<h3>${x.t}</h3>
+      <div class="status"><span class="dot" style="background:var(${ok?"--ok":"--bad"})" aria-hidden="true"></span><div><b>${ok?"✓ Correcto":"✕ No, era"}: ${tipo}</b><p>${x.por}</p></div></div>
+      <div class="facts tres"><div class="fact"><div class="k">Dónde</div><div class="v t">${x.portal}</div></div><div class="fact"><div class="k">Rol mínimo</div><div class="v t">${x.rol}</div></div><div class="fact"><div class="k">Quién</div><div class="v t"><span class="tag n${x.n}">Nivel ${x.n}</span></div></div></div>
+      <p style="margin:0"><a href="../arquitectura.html#pieza=${x.ver}">Ver la pieza en la arquitectura →</a> · <button type="button" class="btn" data-sig>Siguiente tarea</button></p>`;
+  }
+  const hechas=Object.keys(resp).length,bien=Object.keys(resp).filter(i=>resp[i]===TAREAS[i].tipo).length;
+  document.getElementById("cuenta").textContent=hechas?`${bien} de ${hechas} bien · ${TAREAS.length-hechas} por responder`:`${TAREAS.length} tareas`;
+}
+document.getElementById("tareasL").onclick=ev=>{const b=ev.target.closest("[data-i]");if(b){act=+b.dataset.i;tareas()}};
+document.getElementById("preg").onclick=ev=>{
+  const b=ev.target.closest("[data-r]");
+  if(b){resp[act]=b.dataset.r;tareas();return}
+  if(ev.target.closest("[data-sig]")){const n=TAREAS.findIndex((x,i)=>resp[i]==null);act=n<0?(act+1)%TAREAS.length:n;tareas()}
+};
+
+// Ámbitos: del más alto al más bajo; el tenant va aparte porque RBAC no llega a Entra ID
+const NIV=[
+ {n:"Grupo raíz del tenant",d:"arriba de todo"},
+ {n:"Grupo de administración",d:"agrupa suscripciones"},
+ {n:"Suscripción · Producción",d:"facturación y límites"},
+ {n:"Grupo de recursos · rg-web",d:"la app"},
+ {n:"Recurso · una VM web",d:"una sola pieza"}
+];
+let amb=3;
+function ambitos(){
+  document.getElementById("amb").innerHTML=NIV.map((x,i)=>{
+    const c=i===amb?"asig":i>amb?"hereda":"no",q=i===amb?"<b>asignado aquí</b>":i>amb?"hereda":"no llega";
+    return `<button type="button" class="niv ${c}" data-a="${i}" style="margin-left:${i*18}px;width:calc(100% - ${i*18}px)"><span><b>${x.n}</b> · <span class="mini">${x.d}</span></span><span class="q">${q}</span></button>`}).join("")+
+    `<div class="niv tenant"><span><b>Tenant de Entra ID</b> · <span class="mini">usuarios, grupos, contraseñas</span></span><span class="q">RBAC no llega: se usan roles de Entra</span></div>`;
+  const abajo=NIV.length-1-amb;
+  const txt=["Colaborador en todas las suscripciones y recursos del tenant. Demasiado amplio; para asignar en la raíz, el Administrador global primero debe elevarse.",
+    "Colaborador en todas las suscripciones de ese grupo de administración, presentes y futuras.",
+    "Colaborador en toda la suscripción Producción, pero no en Test ni Desarrollo (son suscripciones hermanas).",
+    "Colaborador en todo rg-web (VMs, red, SQL, Storage de la app), pero no en otros grupos de recursos. Suele ser el ámbito justo.",
+    "Colaborador solo en esa VM: no ve ni toca las otras VMs del Scale Set."][amb];
+  document.getElementById("statusA").innerHTML=`<span class="dot" style="background:var(--a5)" aria-hidden="true"></span><div><b>${NIV[amb].n}: ${abajo?`llega a este nivel y a ${abajo} más abajo`:"solo este nivel"}</b><p>${txt} En ningún caso sirve para restablecer contraseñas: eso es de Entra.</p></div>`;
+}
+document.getElementById("amb").onclick=ev=>{const b=ev.target.closest("[data-a]");if(b){amb=+b.dataset.a;ambitos()}};
+
+tareas();ambitos();
+iniciarQuiz("administracion","az104");
+</script>
+</body>
+</html>
