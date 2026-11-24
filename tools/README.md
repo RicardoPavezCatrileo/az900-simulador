@@ -2,7 +2,7 @@
 
 PNG de 7025×4966 (≈ 300 dpi) y SVG autónomo de `arquitectura.html`, guardados en `docs/` (no se suben).
 
-1. Generar la página del póster (cap. 11, modo claro, título y leyenda; fija identidad híbrida y GRS, muestra Front Door y Traffic Manager, y pone las regiones con su color arriba a la derecha porque la fila de la leyenda de abajo no tiene espacio):
+1. Generar la página del póster (cap. 11, modo claro, título y leyenda; fija identidad híbrida, GRS y las dos redes unidas por peering (`topo="hub"`; la flecha del peering lleva punta en los dos extremos), muestra Front Door y Traffic Manager, y pone las regiones con su color arriba a la derecha porque la fila de la leyenda de abajo no tiene espacio):
    `python tools/poster-pagina.py arquitectura.html tools/poster-arquitectura.js _poster.html`
 2. PNG con Chrome headless (sin `--hide-scrollbars` salen barras de desplazamiento):
    `chrome --headless --hide-scrollbars --window-size=1372,970 --force-device-scale-factor=5.12 --screenshot=… http://localhost:8000/_poster.html`
@@ -10,5 +10,5 @@ PNG de 7025×4966 (≈ 300 dpi) y SVG autónomo de `arquitectura.html`, guardado
 4. Borrar `_poster.html`.
 
 - Si el PNG está abierto en un visor, `cp` falla con "Permission denied"; `Copy-Item -Force` de PowerShell sí lo reemplaza.
-- Último póster: 23 nov 2026 (con Azure Arc y Front Door + Traffic Manager juntos: en la página son excluyentes, pero `poster-arquitectura.js` angosta Front Door y su PoP y pone Traffic Manager a la derecha como alternativa, con "1 · consulta DNS" y "2 · HTTPS directo").
+- Último póster: 24 nov 2026 (con las dos redes unidas por VNet peering, Azure Arc y Front Door + Traffic Manager juntos: en la página son excluyentes, pero `poster-arquitectura.js` angosta Front Door y su PoP y pone Traffic Manager a la derecha como alternativa, con "1 · consulta DNS" y "2 · HTTPS directo").
 - Alternativa descartada por ahora, pero que gustó: archivos `.drawio` con íconos de Azure editados en VS Code (extensión Draw.io Integration).

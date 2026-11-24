@@ -1,5 +1,5 @@
 document.documentElement.setAttribute("data-theme","light");
-hasta=11;resaltar=false;flujo=null;sel=null;ident="hib";red="GRS";entrada="fd";
+hasta=11;resaltar=false;flujo=null;sel=null;ident="hib";red="GRS";entrada="fd";topo="hub";geoTopo();
 // Front Door y Traffic Manager juntos (en la página son excluyentes): Front Door se angosta con su borde
 // y Traffic Manager va a la derecha como alternativa, con "1 · consulta DNS" y "2 · HTTPS directo" por fuera del PoP.
 SOLO_TM.clear();
@@ -23,10 +23,10 @@ function poster(){
     if(cs.display==="none"){quitar.push(c);return}
     c.removeAttribute("class");c.removeAttribute("tabindex");c.removeAttribute("role");c.removeAttribute("data-id");
     c.setAttribute("style",P.map(p=>p+":"+cs.getPropertyValue(p)).join(";"));
-    if(c.getAttribute("marker-end")){const k=cs.getPropertyValue("stroke");colores.add(k);c.setAttribute("marker-end","url(#p"+[...colores].indexOf(k)+")")}
+    ["marker-end","marker-start"].forEach(m=>{if(c.getAttribute(m)){const k=cs.getPropertyValue("stroke");colores.add(k);c.setAttribute(m,"url(#p"+[...colores].indexOf(k)+")")}});
   });
   quitar.forEach(c=>c.remove());
-  copia.querySelector("defs").innerHTML=[...colores].map((k,i)=>`<marker id="p${i}" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" fill="${k}"/></marker>`).join("");
+  copia.querySelector("defs").innerHTML=[...colores].map((k,i)=>`<marker id="p${i}" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" fill="${k}"/></marker>`).join("");
   const s=document.createElementNS(NS,"svg");
   s.setAttribute("xmlns",NS);s.setAttribute("viewBox",`0 0 ${W} ${H}`);s.setAttribute("width",W);s.setAttribute("height",H);
   document.body.innerHTML="";document.body.style.cssText="margin:0;background:#fff";document.body.appendChild(s);
