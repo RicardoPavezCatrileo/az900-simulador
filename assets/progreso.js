@@ -34,12 +34,13 @@ const AZ104=[
 // Secciones del curso AZ-104 (2 a 16; la 1 es la introducción y la 17–18 el examen), en el orden del curso.
 // La portada de AZ-104 muestra estas tarjetas; el avance sigue siendo el quiz de cada dominio (AZ104).
 // tema = id del dominio en AZ104 · partes = [n.º de sección de la página (ancla #sN), nombre corto] · sin tema = pendiente.
+// extras = prácticas que sirven a esa sección (como en CAPITULOS); el diagrama de administración cubre las secciones 4, 5 y 6.
 const SECCIONES_AZ104=[
  {num:2, titulo:"Fundamentos y arquitectura de Microsoft Azure", base:[2,3]},
  {num:3, titulo:"Requisitos previos para administradores de Azure", pdf:"14–24", base:[4]},
- {num:4, titulo:"Gobernanza en Microsoft Azure", pdf:"25–40", base:[3,10,11]},
- {num:5, titulo:"Microsoft Entra ID", pdf:"41–70", tema:"identidad", partes:[[1,"Licencias"],[2,"Grupos dinámicos"],[5,"AD DS vs Entra ID vs Entra DS"]]},
- {num:6, titulo:"Control de acceso basado en roles (RBAC)", pdf:"71–81", tema:"identidad", partes:[[3,"RBAC por dentro: Actions − NotActions"]]},
+ {num:4, titulo:"Gobernanza en Microsoft Azure", pdf:"25–40", base:[3,10,11], extras:[{tipo:"Diagrama",titulo:"Quién administra qué y desde dónde",archivo:"administracion.html#pieza=mg",quiz:"administracion"}]},
+ {num:5, titulo:"Microsoft Entra ID", pdf:"41–70", tema:"identidad", partes:[[1,"Licencias"],[2,"Grupos dinámicos"],[5,"AD DS vs Entra ID vs Entra DS"]], extras:[{tipo:"Diagrama",titulo:"Quién administra qué y desde dónde",archivo:"administracion.html#caso=noentra",quiz:"administracion"}]},
+ {num:6, titulo:"Control de acceso basado en roles (RBAC)", pdf:"71–81", tema:"identidad", partes:[[3,"RBAC por dentro: Actions − NotActions"]], extras:[{tipo:"Diagrama",titulo:"Quién administra qué y desde dónde",archivo:"administracion.html#caso=vms",quiz:"administracion"}]},
  {num:7, titulo:"Almacenamiento (nivel 1)", pdf:"82–112", tema:"almacenamiento", partes:[[1,"¿Qué tipo de cuenta creo?"]]},
  {num:8, titulo:"Almacenamiento (nivel 2)", pdf:"82–112", tema:"almacenamiento", partes:[[2,"Clave, SAS o Entra ID"],[3,"Ciclo de vida"],[4,"Proteger los datos"]]},
  {num:9, titulo:"Azure Virtual Machines (VM)", pdf:"113–130", tema:"computo", partes:[[1,"¿Cómo me conecto a la VM?"],[2,"Scale Set: autoescalado"]]},

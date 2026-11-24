@@ -18,7 +18,12 @@ function portadaCert(certId){
       const repaso=s.base?`<div class="det">Repaso AZ-900: ${s.base.map(n=>`<a href="../az900/${capAz900(n).archivo}" title="${capAz900(n).titulo}">cap. ${n}</a>`).join(" · ")}</div>`:"";
       const partes=t?`<div class="det">${s.partes.map(([n,nom])=>`<a href="${t.archivo}#s${n}">§${n} ${nom}</a>`).join(" · ")}</div>`:"";
       const quiz=t?`<div class="det extra">Resumen y quiz de <a href="${t.archivo}#${t.resumen}">${t.titulo}</a> · <a href="${t.archivo}#quiz">${pct===null?"sin empezar":`${p.mejor||0} de ${p.total} · ${pct}%`}</a></div>`:"";
-      el.innerHTML=`<div class="n">Sección ${s.num}${s.pdf?` · PDF págs. ${s.pdf}`:""}</div><h2></h2>${t?"":'<div class="det">Pendiente: todavía sin simulador</div>'}${partes}${repaso}${quiz}`;
+      const extras=(s.extras||[]).map(x=>{
+        const q=x.quiz&&Progreso.leer(x.quiz,c.id);
+        return `<div class="det extra">${x.tipo}: <a href="${x.archivo}">${x.titulo} →</a>${q?` · ${q.mejor||0} de ${q.total}`:""}</div>`;
+      }).join("");
+      const pend=t?"":`<div class="det">${s.extras?"Sin simulador propio todavía":"Pendiente: todavía sin simulador"}</div>`;
+      el.innerHTML=`<div class="n">Sección ${s.num}${s.pdf?` · PDF págs. ${s.pdf}`:""}</div><h2></h2>${pend}${partes}${repaso}${quiz}${extras}`;
       const h=el.querySelector("h2");
       if(t){const a=document.createElement("a");a.href=`${t.archivo}#s${s.partes[0][0]}`;a.textContent=s.titulo+" →";h.appendChild(a)}
       else h.textContent=s.titulo;
