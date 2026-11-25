@@ -13,7 +13,7 @@ No hay build, lint ni tests: son páginas estáticas.
 - Validar todos los JSON (Git Bash): `for f in az900/data/*.json az104/data/*.json; do node -e "const q=require('./$f');let m=q.filter(p=>{const c=[].concat(p.correcta);return !p.pregunta||!p.explicacion||c.some(x=>x<0||x>=p.opciones.length)}).length;console.log('$f',q.length,m?'MAL '+m:'')"; done`
 - Captura para revisar una página: `chrome --headless --user-data-dir=<carpeta-limpia> --window-size=1280,2000 --screenshot=out.png http://localhost:8000/<ruta>`. Usar un `--user-data-dir` distinto por prueba (si se reutiliza, Chrome sirve CSS o copias anteriores desde la caché). Chrome headless no baja de ~500 px de ancho.
 - Probar un estado distinto al inicial: copiar la página a `_prueba.html` cambiando las variables `let …` iniciales, capturar y borrar la copia.
-- Pósters A2 de la arquitectura y de la administración: ver `tools/README.md`.
+- Pósters A2 de la arquitectura y de la administración, y su versión editable `.drawio` con íconos de Azure (`tools/drawio-svg.js` + draw.io Desktop): ver `tools/README.md`.
 - Ayuda memoria imprimible (Word, carta, una página por capítulo, letra 9): el texto está en `az900/ayuda-memoria.md` (`#` capítulo = página nueva, `##`, `-`, tablas `|`, `**negrita**`); `node tools/ayuda-memoria.js` genera `docs/ayuda-memoria-az900.docx` (la primera vez: `npm install --prefix tools docx`). Revisar que cada capítulo siga en una página (si se pasa, recortar texto, no achicar la letra) y subir la versión nueva a la carpeta AZ900 del Drive del usuario.
 
 ## Decisiones tomadas

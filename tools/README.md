@@ -11,7 +11,6 @@ PNG de 7025×4966 (≈ 300 dpi) y SVG autónomo de `arquitectura.html`, guardado
 
 - Si el PNG está abierto en un visor, `cp` falla con "Permission denied"; `Copy-Item -Force` de PowerShell sí lo reemplaza.
 - Último póster: 24 nov 2026 (con las dos redes unidas por VNet peering, rangos de red (Red 1 10.0.0.0/16, GatewaySubnet 10.0.255.0/27, oficina 192.168.0.0/16) y el recuadro "Rutas de la Red 2", Azure Arc y Front Door + Traffic Manager juntos: en la página son excluyentes, pero `poster-arquitectura.js` angosta Front Door y su PoP y pone Traffic Manager a la derecha como alternativa, con "1 · consulta DNS" y "2 · HTTPS directo").
-- Alternativa descartada por ahora, pero que gustó: archivos `.drawio` con íconos de Azure editados en VS Code (extensión Draw.io Integration).
 
 # Póster A2 de la administración
 
@@ -22,3 +21,17 @@ PNG de 7025×4966 (≈ 300 dpi) y SVG autónomo de `arquitectura.html`, guardado
 3. Borrar `az104/_poster.html`.
 
 - Último póster: 24 nov 2026 (portales, tenant de Entra ID, jerarquía de recursos con IAM, bloqueo y Policy, la oficina con Entra Connect, la línea roja Entra │ RBAC y las 5 personas con su rol mínimo).
+
+# Versión editable en draw.io (`.drawio`)
+
+`tools/drawio-svg.js` se inyecta después del script del póster: envuelve `poster()` y convierte el póster ya dibujado en celdas de draw.io (cada pieza es un grupo con su caja, franja de color, textos y su ícono oficial de Azure de `img/lib/azure2/…`; las flechas quedan como conectores libres). Fuentes: Segoe UI y Consolas (draw.io Desktop no carga las de Google al exportar); si un texto queda más ancho que en el póster, se le achica la letra. Requiere draw.io Desktop (`winget install JGraph.Draw`).
+
+1. `python tools/poster-pagina.py arquitectura.html tools/poster-arquitectura.js,tools/drawio-svg.js _poster.html`
+2. `chrome --headless --virtual-time-budget=8000 --window-size=1372,970 --dump-dom http://localhost:8000/_poster.html > dom.html`
+3. `python tools/poster-svg.py dom.html docs/arquitectura.drawio dioout`
+4. Exportar con draw.io Desktop (`%LOCALAPPDATA%\Programs\draw.io\draw.io.exe`): `-x -f png -s 5 -o docs/arquitectura-drawio-A2.png docs/arquitectura.drawio` y `-x -f pdf -o docs/arquitectura-drawio.pdf docs/arquitectura.drawio`.
+5. Borrar `_poster.html`.
+
+- Para la administración, lo mismo con `az104/administracion.html`, `tools/poster-administracion.js,tools/drawio-svg.js`, `az104/_poster.html` y su línea de arranque.
+- Los íconos se eligen en `ICONOS` (id de la pieza → archivo); se ponen grandes a la derecha si caben los textos, si no chicos abajo a la derecha, y si tampoco caben no se ponen (por eso las VMs no llevan).
+- Último `.drawio`: 25 nov 2026 (arquitectura).
