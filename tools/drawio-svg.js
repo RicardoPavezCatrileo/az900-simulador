@@ -99,15 +99,23 @@ const fuente=f=>/Mono|Consolas/.test(f)?"Consolas":"Segoe UI";
         dest.push(c);
       }else if(tag==="text")dest.push(texto(e,ox,oy,cs));
       else if(tag==="path")dest.push(linea(e,ox,oy,cs));
+      else if(tag==="circle"){   // círculos (los números de las secciones)
+        const r=+e.getAttribute("r"),f=color(cs.fill);
+        dest.push({x:+e.getAttribute("cx")+ox-r,y:+e.getAttribute("cy")+oy-r,w:2*r,h:2*r,v:"",
+          st:"ellipse;whiteSpace=wrap;html=1;"+(f?`fillColor=${f[0]};`:"fillColor=none;")+trazo(cs)});
+      }
     }
   }
   // Ícono de Azure: grande y centrado a la derecha si caben los textos; si no, chico abajo a la derecha (junto al subtítulo)
   function icono(id,hijos,ox,oy){
-    const e=POR_ID[id];if(!e||!ICONOS[id]||!(e.k==="nodo"||e.k==="persona"))return;
+    // ICONOS_PAGINA (opcional, lo define el script del póster): íconos de esa página para sus cajas; si no, ICONOS para nodos y personas
+    const e=POR_ID[id],pag=window.ICONOS_PAGINA;
+    const ic=e&&(pag?(e.k!=="marco"&&pag[id]):((e.k==="nodo"||e.k==="persona")&&ICONOS[id]));
+    if(!ic)return;
     const textos=[...document.querySelectorAll(`[data-dio="${id}"] text`)].filter(t=>!t.closest(".modelo"));
     const largo=t=>t?(t.getAttribute("textLength")?1e4:t.getComputedTextLength()):0;
     const ancho=Math.max(0,...textos.map(largo)),sub=largo(textos.find(t=>t.classList.contains("s"))||textos[1]);
-    const img=`image;aspect=fixed;html=1;points=[];image=img/lib/azure2/${ICONOS[id]}.svg;`;
+    const img=`image;aspect=fixed;html=1;points=[];image=img/lib/azure2/${ic}.svg;`;
     let tam=Math.min(22,e.h-16);
     if(tam>=16&&13+ancho+8+tam+6<=e.w){hijos.push({x:e.x+ox+e.w-tam-6,y:e.y+oy+(e.h-tam)/2,w:tam,h:tam,st:img,v:""});return}
     tam=16;

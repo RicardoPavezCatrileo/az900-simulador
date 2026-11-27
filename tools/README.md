@@ -45,3 +45,15 @@ PNG de 7025×4966 (≈ 300 dpi) y SVG autónomo de `arquitectura.html`, guardado
 
 - Si se retoca a mano en draw.io, volver a correr el script lo sobrescribe: pasar los cambios al script.
 - Versión 1.0: 27 nov 2026.
+
+# Póster de la arquitectura de almacenamiento (`.drawio`)
+
+`az900/cap07-arquitectura-storage.html` usa el mismo proceso que la administración, con `tools/poster-storage.js` (modo claro, redundancia RA-GZRS con todas las copias, y la "Regla del examen" en lugar de la instrucción "toca LRS…"). Sus íconos van en `window.ICONOS_PAGINA` del script del póster (solo cajas, no marcos); `drawio-svg.js` los usa en vez de `ICONOS` cuando existen, y convierte también los `<circle>` (los números de las secciones).
+
+1. `python tools/poster-pagina.py az900/cap07-arquitectura-storage.html tools/poster-storage.js,tools/drawio-svg.js az900/_poster.html 'ponerModo("estudiar");'`
+2. `chrome --headless --virtual-time-budget=8000 --window-size=1372,970 --dump-dom http://localhost:8000/az900/_poster.html > dom.html`
+3. `python tools/poster-svg.py dom.html docs/arquitectura-storage.drawio dioout`
+4. `draw.io.exe -x -f png -b 30 -s 5 -o docs/arquitectura-storage-A2.png docs/arquitectura-storage.drawio` y `-x -f pdf -b 30 -o docs/arquitectura-storage.pdf …` (`-b 30` = margen blanco; sin él, draw.io recorta al contenido).
+5. Borrar `az900/_poster.html`.
+
+- Primera versión: 27 nov 2026.
