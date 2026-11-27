@@ -186,7 +186,7 @@ const EL=[
   p:"No están dentro del grupo de recursos de la app: miran todo desde arriba."},
  {id:"advisor",k:"nodo",a:4,cap:4,x:916,y:450,w:266,h:44,t:"Azure Advisor",s:"costo · seguridad · confiabilidad…",
   q:"Recomendaciones personalizadas en 5 categorías: Costo, Seguridad, Confiabilidad, Excelencia operativa y Rendimiento.",
-  p:"Avisa, por ejemplo, si una VM está infrautilizada (bajar de tamaño) o si falta redundancia.",pg:"56–58"},
+  p:"Avisa, por ejemplo, si una VM está infrautilizada (bajar de tamaño) o si falta redundancia. Sus recomendaciones de costo también aparecen dentro de Cost Management (flecha punteada): Advisor dice QUÉ cambiar para gastar menos.",pg:"56–58"},
 
  // Capítulo 5: cómputo
  {id:"ss",k:"marco",cls:"solido",cap:5,x:560,y:376,w:280,h:66,t:"",
@@ -352,7 +352,7 @@ const EL=[
   p:"El equipo recibe un correo antes de pasarse del gasto mensual previsto.",pg:"263–265"},
  {id:"cost",k:"nodo",a:5,cap:11,x:916,y:762,w:266,h:44,t:"Cost Management",s:"gasto real · presupuestos",
   q:"Muestra el gasto real y su previsión, por servicio, grupo de recursos o etiqueta. No confundir con la calculadora de precios (estimar) ni con la TCO (local vs Azure).",
-  p:"Para ver cuánto cuesta realmente esta app cada mes.",pg:"263–265"}
+  p:"Para ver cuánto cuesta realmente esta app cada mes. Además muestra las recomendaciones de costo de Azure Advisor (flecha punteada): Cost Management dice CUÁNTO gastas; Advisor, QUÉ cambiar para gastar menos.",pg:"263–265"}
 ];
 
 // f: área del flujo (color de la flecha) · d: puntos de la línea · lab: [texto, x, y, anchor?] · l11: etiqueta de precio (capítulo 11)
@@ -384,6 +384,7 @@ const AR=[
  {id:"e_emp_ca",f:0,cap:8,d:[[222,387],[242,387],[242,100],[317,100],[317,82]],lab:["inicia sesión",250,104,"start"]},
  {id:"e_inet_ca",f:0,cap:8,d:[[470,60],[392,60]],lab:["inicia sesión",431,54]},
  {id:"e_tags_cost",f:5,cap:11,d:[[553,263],[553,250],[892,250],[892,784],[916,784]]},
+ {id:"e_adv_cost",f:5,cap:11,cls:"rayas",d:[[1182,472],[1210,472],[1210,784],[1182,784]]},
  {id:"e_arm_rg",f:4,cap:4,d:[[1162,82],[1162,100],[864,100],[864,258]],lab:["despliega el grupo de recursos",870,126,"start"]},
  {id:"e_repo_pipe",f:4,cap:4,d:[[1034,178],[1064,178]]},
  {id:"e_pipe_arm",f:4,cap:4,d:[[1192,158],[1192,82]],lab:["envía a Resource Manager",1186,122,"end"]}
@@ -420,7 +421,7 @@ const FLUJOS=[
    "Si cae toda la región, los datos siguen existiendo en la secundaria tras el failover. Con RA-GRS se podrían leer sin esperar al failover.",
    "SQL Database y Storage son PaaS: Microsoft administra la plataforma; tú, los datos y el acceso."]},
  {id:"gobierno",n:"Gobierno y costos",
-  ids:["arm","e_arm_rg","tools","rg","mg","sub","policy","rbac","lock","tags","e_tags_cost","budget","cost","appi","advisor","gov","monitor","logs","e_be_mon","alertas","e_al_logic","logic","sh","defender","be","vma1","vma2","vma3","arc","e_arc_gov","files","adds","onprem"],
+  ids:["arm","e_arm_rg","tools","rg","mg","sub","policy","rbac","lock","tags","e_tags_cost","budget","cost","appi","advisor","e_adv_cost","gov","monitor","logs","e_be_mon","alertas","e_al_logic","logic","sh","defender","be","vma1","vma2","vma3","arc","e_arc_gov","files","adds","onprem"],
   pasos:["Una plantilla ARM/Bicep despliega todo el grupo de recursos de forma repetible.",
    "Azure Policy asignada en el grupo de administración se hereda: nadie crea recursos fuera de las regiones permitidas (efecto Deny).",
    "RBAC da al equipo el rol Colaborador solo en rg-web, y un bloqueo CanNotDelete impide borrarlo, incluso al Propietario.",
@@ -439,7 +440,7 @@ const FLUJOS=[
    "Resource Manager crea o actualiza los recursos del grupo de recursos; en modo Incremental (el predeterminado) deja intacto lo que la plantilla no menciona. Desplegar dos veces la misma plantilla da el mismo resultado: es idempotente. Si alguien cambia a mano algo que la plantilla define, el próximo despliegue lo vuelve a dejar como dice el código.",
    "Pista de examen AZ-900: \"plantillas ARM\" = infraestructura como código, y Resource Manager = la capa de despliegue y administración de Azure. El repositorio, el pipeline y Terraform no están en el PDF: son de DevOps (y en AZ-104 aparecen ARM y Bicep)."]},
  {id:"black",n:"Black Friday: escalar",
-  ids:["inet","e_inet_fd","edge","fd","e_fd_ag","appgw","e_ag_ss","ss","vmw1","vmw2","vmw3","z1","z2","z3","e_ss_lb","lb","e_lb_be","be","vma1","vma2","vma3","e_be_pe","pe","e_pe_sql","sql","gov","monitor","advisor","cost","budget"],
+  ids:["inet","e_inet_fd","edge","fd","e_fd_ag","appgw","e_ag_ss","ss","vmw1","vmw2","vmw3","z1","z2","z3","e_ss_lb","lb","e_lb_be","be","vma1","vma2","vma3","e_be_pe","pe","e_pe_sql","sql","gov","monitor","advisor","e_adv_cost","cost","budget"],
   pasos:["08:00 · Tráfico normal: el Scale Set web tiene 3 VMs, una por zona, al 30% de CPU. Su regla de autoescalado: si la CPU media pasa del 70% durante 10 minutos, agrega VMs (mínimo 3, máximo 12).",
    "10:00 · Empieza la oferta y el tráfico se triplica. Primera defensa: Front Door entrega imágenes, CSS y JavaScript desde la caché de los PoP y su WAF frena bots. Mucha carga ni siquiera llega a Brazil South.",
    "Nivel web · ESCALADO HORIZONTAL: Azure Monitor ve la CPU al 85% y el Scale Set agrega VMs: de 3 a 9 (3 por zona). No se reinicia nada: las VMs nuevas pasan el sondeo de estado y el Application Gateway empieza a enviarles tráfico. Más instancias = más capacidad y más disponibilidad.",

@@ -10,7 +10,7 @@ PNG de 7025×4966 (≈ 300 dpi) y SVG autónomo de `arquitectura.html`, guardado
 4. Borrar `_poster.html`.
 
 - Si el PNG está abierto en un visor, `cp` falla con "Permission denied"; `Copy-Item -Force` de PowerShell sí lo reemplaza.
-- Último póster: 24 nov 2026 (con las dos redes unidas por VNet peering, rangos de red (Red 1 10.0.0.0/16, GatewaySubnet 10.0.255.0/27, oficina 192.168.0.0/16) y el recuadro "Rutas de la Red 2", Azure Arc y Front Door + Traffic Manager juntos: en la página son excluyentes, pero `poster-arquitectura.js` angosta Front Door y su PoP y pone Traffic Manager a la derecha como alternativa, con "1 · consulta DNS" y "2 · HTTPS directo").
+- Último póster: 27 nov 2026 (se sumó la flecha punteada Azure Advisor → Cost Management: las recomendaciones de costo de Advisor aparecen dentro de Cost Management). Antes, 24 nov 2026 (con las dos redes unidas por VNet peering, rangos de red (Red 1 10.0.0.0/16, GatewaySubnet 10.0.255.0/27, oficina 192.168.0.0/16) y el recuadro "Rutas de la Red 2", Azure Arc y Front Door + Traffic Manager juntos: en la página son excluyentes, pero `poster-arquitectura.js` angosta Front Door y su PoP y pone Traffic Manager a la derecha como alternativa, con "1 · consulta DNS" y "2 · HTTPS directo").
 
 # Póster A2 de la administración
 
@@ -34,7 +34,7 @@ PNG de 7025×4966 (≈ 300 dpi) y SVG autónomo de `arquitectura.html`, guardado
 
 - Para la administración, lo mismo con `az104/administracion.html`, `tools/poster-administracion.js,tools/drawio-svg.js`, `az104/_poster.html` y su línea de arranque.
 - Los íconos se eligen en `ICONOS` (id de la pieza → archivo); se ponen grandes a la derecha si caben los textos, si no chicos abajo a la derecha, y si tampoco caben no se ponen (por eso las VMs no llevan).
-- Último `.drawio`: 25 nov 2026 (arquitectura).
+- Último `.drawio`: 27 nov 2026 (arquitectura, con la flecha Advisor → Cost Management).
 
 # Guía Visual Azure Storage Account (`.drawio`)
 
