@@ -38,10 +38,10 @@ PNG de 7025×4966 (≈ 300 dpi) y SVG autónomo de `arquitectura.html`, guardado
 
 # Guía Visual Azure Storage Account (`.drawio`)
 
-`tools/guia-storage-drawio.py` escribe el `.drawio` directamente (no sale de una página): 5 columnas por servicio (Blob, Files, Queue, Table dentro de la cuenta; Disk afuera, como disco administrado) y 5 filas que se leen hacia abajo (① servicio, ② Standard o Premium, ③ qué más se elige, ④ redundancia, ⚠ confusiones). A2 horizontal (1684×1190), íconos de `img/lib/azure2/…`, Segoe UI y Consolas.
+`tools/guia-storage-drawio.py` escribe el `.drawio` directamente (no sale de una página), con el diseño que el usuario dibujó (`docs/Guía visual de Azure Storage Account.png`): 1 servicios (Table, Queue, Blob con tipos y niveles, Files dentro de la cuenta; Disk afuera, como disco administrado), 2 tipos de cuenta, 3 tipos de datos y acceso, 4 tipos de disco, 5 redundancia (LRS a RA-GZRS con cilindros), niveles de acceso y errores comunes. Se corrigieron 4 errores de ese dibujo: niveles solo en Block blobs, secundaria de GZRS = LRS, NFS solo en Premium y Disk fuera de la cuenta. A2 horizontal (1684×1190), íconos de `img/lib/azure2/…`, Segoe UI y Consolas.
 
 1. `python tools/guia-storage-drawio.py docs/guia-visual-azure-storage.drawio`
 2. `draw.io.exe -x -f png -s 4 -o docs/guia-visual-azure-storage-A2.png docs/guia-visual-azure-storage.drawio` y `-x -f pdf -o docs/guia-visual-azure-storage.pdf …`
 
 - Si se retoca a mano en draw.io, volver a correr el script lo sobrescribe: pasar los cambios al script.
-- Primera versión (MVP): 27 nov 2026.
+- Versión 1.0: 27 nov 2026.
