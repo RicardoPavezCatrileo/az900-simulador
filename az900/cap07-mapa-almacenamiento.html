@@ -1,0 +1,387 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mapa de almacenamiento</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="../assets/estilos.css">
+<style>
+/* Mismos colores por servicio que la guía de cuentas (cap07-guia-cuentas-storage.html) */
+:root{--c-blob:#1f8a4c;--c-files:#d9730d;--c-queue:#c2357a;--c-table:#0a6fc2;--c-disk:#7a4fc4;--c-std:#0a6fc2;--c-pre:#7a4fc4;
+ --t-hot:#d6452b;--t-cool:#2a8fd6;--t-cold:#3a5fc4;--t-arch:#5a6b7c;--rbr:#0d9488;--rus:#4f6fae}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--c-blob:#4cc583;--c-files:#f0a050;--c-queue:#ef7ab0;--c-table:#4ea8f0;--c-disk:#a58cf5;--c-std:#4ea8f0;--c-pre:#a58cf5;
+ --t-hot:#f07a5e;--t-cool:#5fb0f0;--t-cold:#8098f0;--t-arch:#93a4b5;--rbr:#2dbfae;--rus:#7f9be0}}
+:root[data-theme="dark"]{--c-blob:#4cc583;--c-files:#f0a050;--c-queue:#ef7ab0;--c-table:#4ea8f0;--c-disk:#a58cf5;--c-std:#4ea8f0;--c-pre:#a58cf5;
+ --t-hot:#f07a5e;--t-cool:#5fb0f0;--t-cold:#8098f0;--t-arch:#93a4b5;--rbr:#2dbfae;--rus:#7f9be0}
+.wrap{max-width:1280px}
+[hidden]{display:none!important}
+.barra{display:flex;flex-wrap:wrap;gap:14px 24px;align-items:end}
+.lienzo{background:var(--surface);border:1px solid var(--line);border-radius:10px;overflow-x:auto}
+.lienzo svg{display:block;min-width:1080px;width:100%;height:auto}
+/* Piezas */
+.el{cursor:pointer}
+.el:focus{outline:none}
+.el rect.caja{fill:color-mix(in srgb,var(--c) 9%,var(--surface));stroke:var(--c);stroke-width:1.4}
+.el.marco>rect.caja{fill:color-mix(in srgb,var(--c) 4%,transparent);stroke-width:2}
+.el.marco.rayas>rect.caja{stroke-dasharray:7 5}
+.el.punteado>rect.caja{stroke-dasharray:2 4}
+.el text.t{font-family:var(--f-body);font-weight:600;font-size:13px;fill:var(--c)}
+.el.marco text.t{font-family:var(--f-display);font-weight:700;font-size:15px}
+.el text.s{font-family:var(--f-mono);font-size:10px;fill:var(--muted)}
+.el:hover rect.caja,.el:focus-visible rect.caja{stroke-width:2.6}
+.el.sel rect.caja{stroke:var(--ink);stroke-width:3;stroke-dasharray:none}
+.el.bien rect.caja{stroke:var(--ok);stroke-width:3.4;stroke-dasharray:none}
+.el.mal rect.caja{stroke:var(--bad);stroke-width:3.4;stroke-dasharray:none}
+.el .q{font-family:var(--f-display);font-weight:800;font-size:18px;fill:var(--c);opacity:.55}
+.num circle{fill:var(--accent)}
+.num text{font-family:var(--f-display);font-weight:800;font-size:13px;fill:#fff}
+.nota{font-family:var(--f-mono);font-size:10.5px;fill:var(--muted)}
+.nota.fuerte{fill:var(--ink);font-weight:500}
+.flecha{fill:none;stroke:var(--muted);stroke-width:1.6}
+.flecha.rayas{stroke-dasharray:6 4}
+.region>rect{stroke-width:1.6}
+.region.br>rect{fill:color-mix(in srgb,var(--rbr) 6%,transparent);stroke:var(--rbr)}
+.region.us>rect{fill:color-mix(in srgb,var(--rus) 8%,transparent);stroke:var(--rus)}
+.region>text{font-family:var(--f-mono);font-size:11px;font-weight:600}
+.region.br>text{fill:var(--rbr)} .region.us>text{fill:var(--rus)}
+.zona>rect{fill:color-mix(in srgb,var(--rbr) 11%,transparent);stroke:var(--rbr);stroke-dasharray:6 4}
+.zona>text{font-family:var(--f-mono);font-size:10.5px;font-weight:700;fill:var(--rbr)}
+.copia rect{fill:var(--c-blob);stroke:none}
+.copia text{font-family:var(--f-mono);font-size:9px;fill:#fff;font-weight:600}
+.copia.sec rect{fill:var(--rus)}
+.ocultar .el text.t,.ocultar .el text.s{visibility:hidden}
+.ocultar .el.ok text.t,.ocultar .el.ok text.s{visibility:visible}
+.ocultar .nota{visibility:hidden}
+.el .q{display:none}
+.ocultar .el:not(.ok) .q{display:inline}
+/* Panel y práctica */
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;display:grid;gap:8px}
+.panel h2{margin:0;font-family:var(--f-display);font-size:1.25rem}
+.panel p{margin:0}
+.panel .area{font-family:var(--f-mono);font-size:.75rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.panel .tr{border-left:4px solid var(--bad);background:color-mix(in srgb,var(--bad) 7%,var(--surface));border-radius:8px;padding:6px 12px}
+.panel .clave{font-family:var(--f-mono);font-size:.82rem;background:var(--accent-soft);border-radius:6px;padding:6px 10px}
+.reto{background:var(--surface);border:2px solid var(--accent);border-radius:10px;padding:14px 16px;display:grid;gap:8px}
+.reto .k{font-family:var(--f-mono);font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.reto .p{font-family:var(--f-display);font-weight:700;font-size:1.15rem}
+.fila-btn{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.marcador{font-family:var(--f-mono);font-size:.85rem;color:var(--muted)}
+.pisos{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+@media (max-width:900px){.pisos{grid-template-columns:1fr 1fr}}
+@media (max-width:520px){.pisos{grid-template-columns:1fr}}
+.piso{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 12px;display:grid;gap:3px;align-content:start;font-size:.88rem}
+.piso b{font-family:var(--f-display);font-size:1rem}
+.piso .n{width:24px;height:24px;border-radius:50%;background:var(--accent);color:#fff;display:inline-grid;place-items:center;font-family:var(--f-display);font-weight:800;font-size:.85rem;margin-right:6px}
+.piso span{color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="nav"><a class="volver" href="index.html">← Capítulos AZ-900</a><a class="volver" href="cap07-almacenamiento.html">Capítulo 7 · Almacenamiento</a><a class="volver" href="cap07-guia-cuentas-storage.html">Guía de cuentas →</a><a class="volver" href="../arquitectura.html#pieza=st">Arquitectura →</a></div>
+  <header>
+    <div class="eyebrow">AZ-900 · Capítulo 7 · Mapa</div>
+    <h1>Mapa de almacenamiento</h1>
+    <p>Cinco decisiones que el examen mezcla en las mismas opciones. Imagínalo como un edificio: la <b>cuenta</b> es el edificio, los <b>servicios</b> son sus salas, dentro de Blob están los <b>tipos de blob</b> y dentro de Block la escalera de <b>niveles</b>. Los <b>discos de la VM</b> viven fuera, y abajo, dónde quedan las <b>copias</b>.</p>
+  </header>
+
+  <div class="pisos">
+    <div class="piso"><div><span class="n">1</span><b>Cuenta</b></div>¿Qué tan rápido? <span>Standard GPv2 o una de las 3 Premium</span></div>
+    <div class="piso"><div><span class="n">2</span><b>Servicio</b></div>¿Qué guardo? <span>Blob · Files · Queue · Table</span></div>
+    <div class="piso"><div><span class="n">3</span><b>Tipo de blob</b></div>¿Cómo se escribe? <span>Block · Append · Page</span></div>
+    <div class="piso"><div><span class="n">4</span><b>Nivel de acceso</b></div>¿Cada cuánto lo leo? <span>Hot · Cool · Cold · Archive (solo block)</span></div>
+    <div class="piso"><div><span class="n">5</span><b>Redundancia</b></div>¿Cuántas copias y dónde? <span>LRS · ZRS · GRS · GZRS</span></div>
+  </div>
+
+  <div class="barra">
+    <div class="ctl"><label>Modo</label><div class="seg" id="modos"></div></div>
+    <div class="ctl" id="ctlOcultar" hidden><label>&nbsp;</label><label class="chk"><input type="checkbox" id="ocultar"> Ocultar los nombres del mapa</label></div>
+  </div>
+  <div class="reto" id="reto" hidden></div>
+  <div class="lienzo"><svg id="svg" viewBox="0 0 1240 860" role="img" aria-label="Mapa de almacenamiento de Azure: cuentas, servicios, tipos de blob, niveles de acceso, discos de VM y redundancia"></svg></div>
+  <div class="panel" id="panel" aria-live="polite"></div>
+  <p class="fb" style="margin:0;color:var(--muted);font-size:.85rem">No están en el PDF (sí en Microsoft Learn): el nivel Cold, NFS solo en Premium File Shares, que Premium solo admite LRS/ZRS, el SLA de VM según el tipo de disco y que Ultra no sirve como disco del SO.</p>
+</div>
+
+<script>
+/* k: marco | caja.  c = color (variable CSS).  n = número de decisión (1–5) junto al título.
+   q = qué es · cu = cuándo elegirlo · tr = trampa · cl = palabras clave */
+const EL=[
+ // ① Cuenta Standard: el edificio con las 4 salas
+ {id:"gpv2",k:"marco",c:"--c-std",n:1,x:30,y:40,w:780,h:385,t:"Cuenta Standard · Uso general v2 (GPv2)",s:"HDD · 1 cuenta → 4 servicios · la más barata · todas las redundancias",
+  q:"La cuenta de almacenamiento por defecto. En una sola cuenta guardas los 4 servicios: Blob, Files, Queue y Table.",
+  cu:"Varios servicios en la misma cuenta, el menor costo, copia en otra región (GRS/GZRS) o niveles Hot/Cool/Cold/Archive.",
+  tr:"No es la más rápida (eso es Premium). Pero Queue, Table, los niveles de acceso y GRS/GZRS solo existen aquí.",cl:"\"menor costo\", \"blobs, colas y tablas\", \"Archive\", \"otra región\" → Standard GPv2"},
+ // ② Servicios
+ {id:"blob",k:"marco",c:"--c-blob",n:2,x:50,y:100,w:480,h:310,t:"Blob",s:"objetos por URL, dentro de contenedores",
+  q:"Objetos no estructurados (fotos, videos, documentos, backups) que se leen por URL: https://<cuenta>.blob.core.windows.net/<contenedor>/<archivo>.",
+  cu:"Guardar archivos sueltos para una aplicación o una web, backups, videos, un data lake.",
+  tr:"Blob no se \"monta\" como unidad de red compartida: eso es Files.",cl:"\"no estructurado\", \"objetos\", \"URL\", \"servir en la web\" → Blob"},
+ {id:"files",k:"caja",c:"--c-files",x:550,y:100,w:240,h:94,t:"Files",s:"carpeta compartida · SMB",
+  q:"Recursos compartidos de archivos que se montan como unidad de red (Z:) por SMB. Varias VMs u oficinas usan la misma carpeta. Con Azure File Sync se sincroniza un servidor de archivos local.",
+  cu:"Reemplazar o extender un servidor de archivos (lift & shift), compartir configuración entre varias VMs.",
+  tr:"Un disco es de UNA VM; si varias deben compartir la carpeta → Files. NFS solo en Premium File Shares.",cl:"\"compartido\", \"unidad de red\", \"SMB\", \"montar\" → Files"},
+ {id:"queue",k:"caja",c:"--c-queue",x:550,y:208,w:240,h:94,t:"Queue",s:"mensajes · sin Premium",
+  q:"Colas de mensajes entre partes de una aplicación: una deja el mensaje y otra lo procesa después.",
+  cu:"Desacoplar la web del proceso pesado (procesar pedidos o imágenes en segundo plano).",
+  tr:"No tiene versión Premium: aunque pidan \"el mejor rendimiento\", va en Standard GPv2.",cl:"\"cola\", \"desacoplar\", \"segundo plano\" → Queue"},
+ {id:"table",k:"caja",c:"--c-table",x:550,y:316,w:240,h:94,t:"Table",s:"NoSQL clave-valor · sin Premium",
+  q:"Datos NoSQL clave-valor, sin esquema, simples y baratos.",
+  cu:"Telemetría, listas o configuraciones simples al menor costo.",
+  tr:"Cosmos DB también es NoSQL, pero global y multirregión. Table es simple, barato y de una región.",cl:"\"NoSQL clave-valor\", \"barato\" → Table · \"global\" → Cosmos DB"},
+ // ③ Tipos de blob
+ {id:"block",k:"marco",c:"--c-blob",n:3,x:66,y:150,w:448,h:160,t:"Block blob",s:"el archivo se sube en bloques y se lee entero",
+  q:"El tipo de blob normal: fotos, videos, documentos, backups. El archivo se sube en bloques y se lee completo.",
+  cu:"Casi todo lo que guardas en Blob. Es el único que tiene niveles de acceso (Hot, Cool, Cold, Archive).",
+  tr:"Si la pregunta habla de discos o VHD, no es block: es page.",cl:"\"archivos\", \"fotos\", \"backups\", \"niveles de acceso\" → Block blob"},
+ {id:"append",k:"caja",c:"--c-blob",x:66,y:324,w:216,h:72,t:"Append blob",s:"solo se agrega al final",
+  q:"Blob al que solo se le agregan datos al final; lo anterior no se modifica.",
+  cu:"Logs y registros de auditoría que solo crecen.",
+  tr:"No sirve para discos ni para archivos que se editan.",cl:"\"logs\", \"registros\", \"solo agregar\" → Append blob"},
+ {id:"page",k:"caja",c:"--c-disk",x:298,y:324,w:216,h:72,t:"Page blob",s:"páginas de 512 bytes · discos VHD",
+  q:"Blob hecho de páginas de 512 bytes que se leen y escriben en cualquier parte, como un disco duro. Así se guardan los discos VHD de las VMs.",
+  cu:"Discos de máquinas virtuales.",
+  tr:"No tiene niveles de acceso: a un disco nunca le pones Archive.",cl:"\"VHD\", \"disco de VM\", \"lectura/escritura aleatoria\" → Page blob"},
+ // ④ Niveles de acceso (solo block blobs)
+ {id:"hot",k:"caja",c:"--t-hot",n:4,x:80,y:206,w:100,h:92,t:"Hot",s:"siempre|sin mínimo",
+  q:"Nivel para datos que se leen seguido. Guardar es lo más caro de los 4; leer, lo más barato.",
+  cu:"Fotos de una web, archivos en uso todos los días.",
+  tr:"No es \"el más rápido\" frente a Cool o Cold: los tres están en línea. La diferencia es el precio.",cl:"\"acceso frecuente\", \"todos los días\" → Hot"},
+ {id:"cool",k:"caja",c:"--t-cool",x:188,y:206,w:100,h:92,t:"Cool",s:"≥ 30 días|en línea",
+  q:"Datos que se leen poco. Guardar es más barato que Hot y leer más caro. Retención mínima de 30 días (si lo borras antes, pagas los días que faltan).",
+  cu:"Informes o backups recientes que se leen de vez en cuando y deben estar disponibles al instante.",
+  tr:"\"30 días\" → Cool (Cold 90, Archive 180).",cl:"\"poco frecuente\", \"30 días\", \"acceso inmediato\" → Cool"},
+ {id:"cold",k:"caja",c:"--t-cold",x:296,y:206,w:100,h:92,t:"Cold",s:"≥ 90 días|en línea",
+  q:"Datos que casi no se leen pero deben poder leerse al instante. Más barato que Cool para guardar. Retención mínima de 90 días.",
+  cu:"Datos que se consultan una o dos veces al año sin esperar horas.",
+  tr:"\"Inmediato, sin rehidratar\" descarta Archive: entonces el más barato es Cold.",cl:"\"90 días\", \"rara vez pero inmediato\" → Cold"},
+ {id:"archive",k:"caja",c:"--t-arch",punteado:true,x:404,y:206,w:100,h:92,t:"Archive",s:"≥ 180 días|fuera de línea",
+  q:"El más barato para guardar y el más caro para leer. Está fuera de línea: para leerlo hay que rehidratarlo a Hot, Cool o Cold, y eso puede tardar horas (hasta 15). Retención mínima de 180 días. Se asigna por blob, no a la cuenta entera.",
+  cu:"Backups o datos legales que se guardan años y casi nunca se leen.",
+  tr:"No sirve si piden acceso inmediato. Solo existe en Standard GPv2.",cl:"\"años\", \"casi nunca\", \"menor costo\", \"puede esperar horas\" → Archive"},
+ // ① Cuentas Premium: 1 cuenta → 1 servicio
+ {id:"premium",k:"marco",c:"--c-pre",rayas:true,n:1,x:30,y:445,w:780,h:170,t:"Cuentas Premium · SSD, baja latencia",s:"1 cuenta → 1 servicio (se llama como él) · solo LRS o ZRS · sin niveles de acceso · ✕ Queue ✕ Table",
+  q:"Cuentas con discos SSD para el mayor rendimiento. Cada una guarda un solo servicio, y por eso lleva su nombre.",
+  cu:"Cuando piden el rendimiento más alto o la latencia más baja para UN servicio.",
+  tr:"No tienen GRS/GZRS ni Hot/Cool/Cold/Archive. Queue y Table no tienen Premium.",cl:"\"más rápido\", \"latencia baja\" + el servicio → la Premium con su nombre"},
+ {id:"pblock",k:"caja",c:"--c-blob",x:50,y:505,w:240,h:92,t:"Premium Block Blobs",s:"Blobs en bloques Premium",
+  q:"Cuenta Premium solo para block blobs: muchos objetos pequeños con latencia muy baja y muchas transacciones.",
+  cu:"IoT, analítica, IA: millones de objetos pequeños.",
+  tr:"No sirve para discos de VM (eso es Page Blobs).",cl:"\"objetos\" + \"latencia baja\" / \"IoT\" → Premium Block Blobs"},
+ {id:"pfiles",k:"caja",c:"--c-files",x:300,y:505,w:240,h:92,t:"Premium File Shares",s:"Archivos compartidos Premium · NFS",
+  q:"Cuenta Premium solo para Azure Files. Es la única que ofrece recursos compartidos NFS (además de SMB).",
+  cu:"Servidor de archivos de alto rendimiento, aplicaciones Linux con NFS.",
+  tr:"\"Alto rendimiento\" no lleva a Page Blobs si lo que piden es una carpeta compartida.",cl:"\"NFS\", \"servidor de archivos de alto rendimiento\" → Premium File Shares"},
+ {id:"ppage",k:"caja",c:"--c-disk",x:550,y:505,w:240,h:92,t:"Premium Page Blobs",s:"Blobs en páginas Premium · discos",
+  q:"Cuenta Premium solo para page blobs, es decir, discos VHD de VM. Es la forma antigua (discos NO administrados): tú manejas la cuenta.",
+  cu:"Cuando la pregunta pide elegir el rendimiento de una CUENTA DE ALMACENAMIENTO que alojará discos de VM.",
+  tr:"Si piden el TIPO DE DISCO más rápido, la respuesta es Ultra (disco administrado), no esta cuenta.",cl:"\"cuenta de almacenamiento\" + \"discos de VM\" + \"más rápido\" → Premium Page Blobs"},
+ // Fuera de la cuenta: discos administrados
+ {id:"mdisk",k:"marco",c:"--c-disk",rayas:true,x:840,y:40,w:370,h:575,t:"Fuera de la cuenta: discos administrados",s:"un recurso aparte · Azure maneja el almacenamiento",
+  q:"Los discos administrados son un recurso propio de Azure: no viven en tu cuenta de almacenamiento. Tú solo eliges el tipo y el tamaño. Es lo habitual hoy.",
+  cu:"Siempre que crees una VM. Se elige el tipo según rendimiento y precio.",
+  tr:"Por dentro también son page blobs, pero la cuenta la maneja Azure. Si la pregunta dice \"tipo de disco\", elige entre HDD, SSD y Ultra; si dice \"cuenta\", Premium Page Blobs.",cl:"\"tipo de disco\", \"sin gestionar cuentas de almacenamiento\" → disco administrado"},
+ {id:"vm",k:"caja",c:"--c-disk",x:860,y:100,w:330,h:70,t:"Máquina virtual",s:"disco del SO + discos de datos (+ disco temporal)",
+  q:"Cada VM tiene un disco del sistema operativo y puede tener discos de datos. Algunas traen además un disco temporal que se borra al reiniciar o mover la VM.",
+  cu:"Un disco es de UNA VM. Para compartir archivos entre varias, Azure Files.",
+  tr:"No guardes datos importantes en el disco temporal.",cl:"\"disco del SO\", \"disco de datos\" → disco administrado de la VM"},
+ {id:"hdd",k:"caja",c:"--c-disk",x:860,y:200,w:330,h:76,t:"HDD estándar",s:"el más barato · pruebas, backups · SLA VM 95 %",
+  q:"Disco magnético, el más barato y el más lento.",
+  cu:"VMs de pruebas, backups, cargas que casi no usan el disco.",
+  tr:"No para producción: con una sola VM su SLA es el más bajo.",cl:"\"lo más barato\", \"pruebas\", \"poco uso\" → HDD estándar"},
+ {id:"ssds",k:"caja",c:"--c-disk",x:860,y:290,w:330,h:76,t:"SSD estándar",s:"web y servidores con poco uso · SLA VM 99,5 %",
+  q:"SSD económico: más consistente que el HDD, sin el precio de Premium.",
+  cu:"Servidores web y aplicaciones con poco uso, desarrollo y pruebas.",
+  tr:"No da el SLA de 99,9 % de una VM sola (eso exige SSD Premium o Ultra).",cl:"\"mejor que HDD sin pagar Premium\" → SSD estándar"},
+ {id:"ssdp",k:"caja",c:"--c-disk",x:860,y:380,w:330,h:76,t:"SSD Premium",s:"producción, bases de datos · SLA VM 99,9 %",
+  q:"SSD de alto rendimiento para producción.",
+  cu:"Bases de datos y aplicaciones de producción. Una VM sola tiene SLA de 99,9 % si todos sus discos son SSD Premium (o Ultra).",
+  tr:"Es alto rendimiento, pero no el máximo: el más rápido es Ultra.",cl:"\"producción\", \"SLA 99,9 % con una VM\" → SSD Premium"},
+ {id:"ultra",k:"caja",c:"--c-disk",x:860,y:470,w:330,h:76,t:"Ultra Disk",s:"lo más rápido · < 1 ms · solo datos",
+  q:"El disco más rápido: latencia menor a 1 ms y rendimiento (IOPS) ajustable sin detener la VM. Solo sirve como disco de datos, no del SO.",
+  cu:"SAP HANA, bases de datos con muchísimas transacciones.",
+  tr:"Es un TIPO DE DISCO, no un tipo de cuenta.",cl:"\"el disco más rápido\", \"menos de 1 ms\" → Ultra Disk"},
+ // ⑤ Redundancia
+ {id:"lrs",k:"caja",c:"--c-blob",n:5,x:30,y:672,w:170,h:38,t:"LRS",s:"1 centro de datos",
+  q:"Locally Redundant Storage: 3 copias en un mismo centro de datos. 11 nueves de durabilidad.",
+  cu:"El menor costo, cuando basta con protegerse de fallas de discos o servidores.",
+  tr:"Si cae el centro de datos completo, se pierde el acceso.",cl:"\"menor costo\", \"un centro de datos\" → LRS"},
+ {id:"zrs",k:"caja",c:"--c-blob",x:30,y:718,w:170,h:38,t:"ZRS",s:"3 zonas",
+  q:"Zone-Redundant Storage: 1 copia en cada una de las 3 zonas de disponibilidad de la región. 12 nueves.",
+  cu:"Sobrevivir a la caída de un centro de datos (una zona) sin salir de la región.",
+  tr:"No protege si cae la región entera.",cl:"\"falla de una zona\", \"misma región\", \"alta disponibilidad\" → ZRS"},
+ {id:"grs",k:"caja",c:"--c-blob",x:30,y:764,w:170,h:38,t:"GRS",s:"+ región emparejada",
+  q:"Geo-Redundant Storage: LRS en la primaria + LRS en la región emparejada (6 copias). Copia a la otra región asíncrona. 16 nueves. Con RA-GRS puedes leer la secundaria (endpoint -secondary).",
+  cu:"Sobrevivir a un desastre regional.",
+  tr:"La primaria es LRS (no ZRS): no protege de una falla de zona como GZRS. Premium no lo admite.",cl:"\"desastre regional\", \"otra región\" → GRS · \"leer la secundaria\" → RA-GRS"},
+ {id:"gzrs",k:"caja",c:"--c-blob",x:30,y:810,w:170,h:38,t:"GZRS",s:"zonas + emparejada",
+  q:"Geo-Zone-Redundant Storage: ZRS en la primaria + LRS en la emparejada (6 copias). 16 nueves. RA-GZRS permite leer la secundaria.",
+  cu:"Máxima protección: falla de zona Y desastre regional.",
+  tr:"La secundaria es LRS (no ZRS).",cl:"\"zona y región\", \"máxima disponibilidad y durabilidad\" → GZRS"}
+];
+const POR_ID=Object.fromEntries(EL.map(e=>[e.id,e]));
+
+// Escenarios tipo examen: ok = id de la pieza que hay que tocar
+const ESC=[
+ {t:"Elegir el rendimiento de una cuenta de almacenamiento que alojará discos de VM, lo más rápido posible.",ok:"ppage"},
+ {t:"Servidor de archivos para aplicaciones Linux de alto rendimiento que necesitan recursos compartidos NFS.",ok:"pfiles"},
+ {t:"Millones de objetos pequeños de sensores IoT, con latencia muy baja.",ok:"pblock"},
+ {t:"Una sola cuenta para blobs, colas y tablas de la misma aplicación, al menor costo.",ok:"gpv2"},
+ {t:"Backups que hay que guardar 7 años y casi nunca se leen; pueden esperar horas para recuperarse.",ok:"archive"},
+ {t:"Fotos de un sitio web que se consultan todo el día.",ok:"hot"},
+ {t:"Informes que se leen una vez al mes y deben estar disponibles al instante, pagando menos que Hot.",ok:"cool"},
+ {t:"Videos que se revisan una o dos veces al año, sin esperar a rehidratar; se guardan al menos 90 días.",ok:"cold"},
+ {t:"Registros de auditoría a los que solo se les agregan líneas al final.",ok:"append"},
+ {t:"El tipo de blob en que se guarda el archivo VHD de un disco de VM.",ok:"page"},
+ {t:"El tipo de blob que admite los niveles Hot, Cool, Cold y Archive.",ok:"block"},
+ {t:"Unidad de red Z: compartida por los PC de la oficina por SMB.",ok:"files"},
+ {t:"La web deja pedidos para que otro proceso los atienda en segundo plano.",ok:"queue"},
+ {t:"Guardar telemetría NoSQL clave-valor, simple y barata.",ok:"table"},
+ {t:"Guardar imágenes y documentos no estructurados que una aplicación lee por URL.",ok:"blob"},
+ {t:"El tipo de disco más rápido para una base de datos en una VM, con latencia menor a 1 ms.",ok:"ultra"},
+ {t:"Disco para una VM de pruebas que casi no se usa; lo importante es el precio.",ok:"hdd"},
+ {t:"VM de producción sola que debe tener SLA de 99,9 % con el disco que corresponde, sin llegar al más caro.",ok:"ssdp"},
+ {t:"Servidor web pequeño: algo mejor que un disco magnético, sin pagar Premium.",ok:"ssds"},
+ {t:"Discos de VM sin tener que crear ni gestionar cuentas de almacenamiento.",ok:"mdisk"},
+ {t:"Copias en las 3 zonas de la región para sobrevivir a la caída de un centro de datos, sin salir de la región.",ok:"zrs"},
+ {t:"Lo más barato: 3 copias en un solo centro de datos.",ok:"lrs"},
+ {t:"Copia en la región emparejada para sobrevivir a un desastre regional (la primaria puede estar en un solo centro de datos).",ok:"grs"},
+ {t:"Proteger contra la falla de una zona Y contra un desastre regional.",ok:"gzrs"},
+ {t:"El mejor rendimiento posible para UN servicio, con discos SSD; solo admite LRS o ZRS.",ok:"premium"}
+];
+
+const NS="http://www.w3.org/2000/svg";
+const svg=document.getElementById("svg");
+let modo="estudiar",sel=null,red="lrs";
+let cola=[],pos=0,aciertos=0,intentos=0,fallo=false,ubicadas=new Set();
+
+function nodo(tag,at,padre){const n=document.createElementNS(NS,tag);for(const k in at)n.setAttribute(k,at[k]);(padre||svg).appendChild(n);return n}
+function texto(x,y,t,cls,padre,anchor){const n=nodo("text",{x,y,class:cls,"text-anchor":anchor||"start"},padre);n.textContent=t;return n}
+function numero(x,y,n){const g=nodo("g",{class:"num"});nodo("circle",{cx:x,cy:y,r:11},g);texto(x,y+4.5,n,"",g,"middle")}
+function flecha(d,cls){nodo("path",{d,class:"flecha "+(cls||""),"marker-end":"url(#punta)"})}
+
+function dibujar(){
+  svg.innerHTML=`<defs><marker id="punta" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--muted)"/></marker></defs>`;
+  // Redundancia: región primaria con 3 zonas y la emparejada
+  const br=nodo("g",{class:"region br"});nodo("rect",{x:225,y:650,width:600,height:200,rx:10},br);texto(237,668,"Brazil South · región primaria","",br);
+  for(let i=0;i<3;i++){const z=nodo("g",{class:"zona"});nodo("rect",{x:240+i*193,y:678,width:180,height:160,rx:8},z);texto(250+i*193,696,"Zona "+(i+1)+" · centro de datos","",z)}
+  const us=nodo("g",{class:"region us"});nodo("rect",{x:850,y:650,width:360,height:200,rx:10},us);texto(862,668,"South Central US · región emparejada","",us);
+  const z4=nodo("g",{class:"zona"});nodo("rect",{x:865,y:678,width:330,height:160,rx:8,style:"stroke:var(--rus);fill:color-mix(in srgb,var(--rus) 10%,transparent)"},z4);
+  texto(875,696,"centro de datos","",z4).setAttribute("style","fill:var(--rus)");
+  copias();
+  // Piezas (marcos primero, así las cajas quedan encima)
+  EL.forEach(e=>{
+    const g=nodo("g",{class:"el "+(e.k==="marco"?"marco":"caja")+(e.rayas?" rayas":"")+(e.punteado?" punteado":""),"data-id":e.id,tabindex:0,role:"button",style:"--c:var("+e.c+")"});
+    g.setAttribute("aria-label",e.t);
+    nodo("rect",{class:"caja",x:e.x,y:e.y,width:e.w,height:e.h,rx:e.k==="marco"?12:8},g);
+    const sub=e.s.split("|");
+    if(e.k==="marco"){texto(e.x+(e.n?40:16),e.y+24,e.t,"t",g);texto(e.x+(e.n?40:16),e.y+40,sub[0],"s",g)}
+    else if(e.h<60){texto(e.x+(e.n?36:12),e.y+24,e.t,"t",g);texto(e.x+e.w-10,e.y+24,sub[0],"s",g,"end")}
+    else if(e.w<=110){texto(e.x+e.w/2,e.y+(e.n?44:36),e.t,"t",g,"middle");sub.forEach((s,i)=>texto(e.x+e.w/2,e.y+(e.n?62:56)+i*14,s,"s",g,"middle"))}
+    else{texto(e.x+14,e.y+30,e.t,"t",g);sub.forEach((s,i)=>texto(e.x+14,e.y+50+i*14,s,"s",g))}
+    texto(e.x+e.w-(e.k==="marco"?22:16),e.y+(e.k==="marco"?28:Math.min(e.h/2+6,30)),"?","q",g,"middle");
+    g.onclick=()=>tocar(e.id);
+    g.onkeydown=ev=>{if(ev.key==="Enter"||ev.key===" "){ev.preventDefault();tocar(e.id)}};
+    if(ubicadas.has(e.id))g.classList.add("ok");
+    if(e.n){const nx=e.x+(e.k==="marco"?20:e.h<60?18:e.w<=110?e.w/2:e.w-18),ny=e.y+(e.k==="marco"?20:e.h<60?19:e.w<=110?20:20);numero(nx,ny,e.n)}
+  });
+  // Notas y flechas que unen el edificio con los discos
+  texto(860,642,"disco NO administrado = en tu cuenta Premium Page Blobs (forma antigua)","nota",null,"middle");
+  flecha("M1025 600 L1025 625 L700 625 L700 600","rayas");
+  texto(1025,590,"por dentro, todo disco es un page blob (VHD)","nota fuerte",null,"middle");
+  texto(1025,190,"más rápido y más caro ↓","nota",null,"middle");
+  marcarSel();
+}
+// Copias según la redundancia elegida
+function copias(){
+  const pos3=(x,y,n,cls)=>{for(let i=0;i<n;i++){const g=nodo("g",{class:"copia "+(cls||"")});nodo("rect",{x:x+i*46,y,width:38,height:30,rx:5},g);texto(x+i*46+19,y+19,"copia","",g,"middle")}};
+  const zonas=red==="zrs"||red==="gzrs";
+  if(zonas){for(let i=0;i<3;i++)pos3(310+i*193,740,1)}else pos3(260,740,3);
+  if(red==="grs"||red==="gzrs"){pos3(960,740,3,"sec");flecha("M"+(zonas?750:400)+" 800 L955 800","rayas");texto(910,792,"asíncrona","nota",null,"middle")}
+  const info={lrs:"3 copias · 11 nueves",zrs:"3 copias · 12 nueves",grs:"6 copias · 16 nueves",gzrs:"6 copias · 16 nueves"}[red];
+  texto(812,668,red.toUpperCase()+": "+info,"nota fuerte",null,"end");
+}
+function marcarSel(){svg.querySelectorAll(".el").forEach(g=>g.classList.toggle("sel",g.dataset.id===sel))}
+
+function panelPieza(id,cab){
+  const e=POR_ID[id];
+  document.getElementById("panel").innerHTML=`${cab||""}
+    <div class="area">${e.n?"Decisión "+e.n+" · ":""}Capítulo 7 · Almacenamiento</div>
+    <h2>${e.t}</h2>
+    <p><b>Qué es:</b> ${e.q}</p>
+    <p><b>Cuándo elegirlo:</b> ${e.cu}</p>
+    <p class="tr"><b>Trampa:</b> ${e.tr}</p>
+    <p class="clave">${e.cl}</p>`;
+}
+function tocar(id){
+  if(["lrs","zrs","grs","gzrs"].includes(id))red=id;
+  if(modo==="estudiar"){sel=id;dibujar();panelPieza(id);return}
+  const meta=cola[pos];if(meta==null||ubicadas.has("__fin"))return;
+  const okId=modo==="memorizar"?meta:ESC[meta].ok;
+  intentos++;
+  if(id===okId){
+    if(!fallo)aciertos++;
+    ubicadas.add(id);sel=id;dibujar();flash(id,"bien");
+    panelPieza(id,`<p><b style="color:var(--ok)">✓ ${fallo?"Ahora sí":"Correcto"}.</b></p>`);
+    pos++;fallo=false;setTimeout(reto,350);
+  }else{
+    fallo=true;sel=null;dibujar();flash(id,"mal");
+    const e=POR_ID[id];
+    document.getElementById("panel").innerHTML=`<p><b style="color:var(--bad)">✕ Eso es ${e.t}.</b> ${e.q}</p><p class="fb">Busca otra pieza. Pista: ${pista(okId)}</p>`;
+  }
+}
+// Pista: el marco más chico que contiene la pieza (o su número de decisión)
+function pista(id){const e=POR_ID[id];
+  const p=EL.filter(m=>m.k==="marco"&&m.id!==id&&e.x>=m.x&&e.y>=m.y&&e.x+e.w<=m.x+m.w&&e.y+e.h<=m.y+m.h).sort((a,b)=>a.w*a.h-b.w*b.h)[0];
+  if(p)return "está dentro de \""+p.t+"\""+(e.n?" (decisión "+e.n+")":"")+".";
+  if(e.n)return "es una pieza de la decisión "+e.n+".";
+  return "está en la columna de la derecha o abajo.";}
+function flash(id,cls){const g=svg.querySelector(`.el[data-id="${id}"]`);if(g){g.classList.add(cls);setTimeout(()=>g.classList.remove(cls),900)}}
+
+function barajar(a){return a.map(v=>[Math.random(),v]).sort((x,y)=>x[0]-y[0]).map(v=>v[1])}
+function empezar(){
+  ubicadas=new Set();pos=0;aciertos=0;intentos=0;fallo=false;sel=null;
+  cola=modo==="memorizar"?barajar(EL.map(e=>e.id)):barajar(ESC.map((_,i)=>i));
+  svg.classList.toggle("ocultar",modo==="memorizar"||(modo==="escenarios"&&document.getElementById("ocultar").checked));
+  dibujar();reto();
+}
+function reto(){
+  const r=document.getElementById("reto");
+  if(modo==="estudiar"){r.hidden=true;return}
+  r.hidden=false;
+  const total=cola.length;
+  if(pos>=total){
+    ubicadas.add("__fin");guardarMejor();
+    r.innerHTML=`<div class="k">Terminado</div><div class="p">${aciertos} de ${total} al primer intento</div><div class="fila-btn"><button class="btn" type="button" id="otra">Volver a empezar ↺</button><span class="marcador">${mejorTxt()}</span></div>`;
+    document.getElementById("otra").onclick=empezar;return;
+  }
+  const meta=cola[pos];
+  const pregunta=modo==="memorizar"?`¿Dónde está <u>${POR_ID[meta].t}</u>?`:ESC[meta].t;
+  r.innerHTML=`<div class="k">${modo==="memorizar"?"Memorizar el mapa · toca la pieza":"Escenario de examen · toca la pieza que lo resuelve"} · ${pos+1} de ${total}</div>
+    <div class="p">${pregunta}</div>
+    <div class="fila-btn"><span class="marcador">${aciertos} al primer intento</span><button class="btn" type="button" id="ver">Mostrar la respuesta</button></div>`;
+  document.getElementById("ver").onclick=()=>{fallo=true;const okId=modo==="memorizar"?meta:ESC[meta].ok;intentos--;tocar(okId)};
+}
+// Mejor resultado por modo (solo en este navegador)
+const CLAVE="az900:mapa-almacenamiento:mejor";
+function leerMejor(){try{return JSON.parse(localStorage.getItem(CLAVE))||{}}catch(e){return {}}}
+function guardarMejor(){const m=leerMejor();if(!(m[modo]>=aciertos)){m[modo]=aciertos;try{localStorage.setItem(CLAVE,JSON.stringify(m))}catch(e){}}}
+function mejorTxt(){const m=leerMejor()[modo];return m!=null?"Tu mejor: "+m+" de "+cola.length:""}
+
+// Selector de modo
+const MODOS=[["estudiar","Estudiar"],["memorizar","Memorizar el mapa"],["escenarios","Escenarios de examen"]];
+const segM=document.getElementById("modos");
+MODOS.forEach(([k,n])=>{const b=document.createElement("button");b.type="button";b.dataset.k=k;b.textContent=n;b.onclick=()=>ponerModo(k);segM.appendChild(b)});
+function ponerModo(k){
+  modo=k;segM.querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.k===k));
+  document.getElementById("ctlOcultar").hidden=k!=="escenarios";
+  if(k==="estudiar"){svg.classList.remove("ocultar");ubicadas=new Set();sel=null;dibujar();reto();
+    document.getElementById("panel").innerHTML=`<h2>Toca cualquier pieza</h2><p>Verás qué es, cuándo elegirla, la trampa del examen y las palabras clave. Las piezas de redundancia (abajo a la izquierda) dibujan dónde quedan las copias.</p><p class="fb">Para memorizar: <b>Memorizar el mapa</b> oculta los nombres y te pide encontrar cada pieza; <b>Escenarios de examen</b> te da el caso y tocas la pieza que lo resuelve.</p>`;}
+  else{document.getElementById("panel").innerHTML=`<p class="fb">${k==="memorizar"?"Los nombres están ocultos: guíate por el lugar, el color y los números de cada decisión. Al acertar, la pieza muestra su nombre.":"Lee el caso y toca la pieza del mapa que lo resuelve."}</p>`;empezar()}
+}
+document.getElementById("ocultar").onchange=()=>{if(modo==="escenarios")empezar()};
+ponerModo("estudiar");
+</script>
+</body>
+</html>

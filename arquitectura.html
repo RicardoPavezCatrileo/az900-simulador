@@ -707,6 +707,7 @@ function panelElemento(id){
     <p><b>Qué es:</b> ${esc(e.q)}</p>
     <p><b>Por qué está aquí:</b> ${esc(e.p)}</p>
     ${ADM[id]?`<p><b>¿Quién la administra?</b> <a href="az104/administracion.html#${ADM[id]}">Verlo en el diagrama de administración →</a></p>`:""}
+    ${id==="st"?`<p><b>¿Qué hay dentro?</b> <a href="az900/cap07-mapa-almacenamiento.html">Mapa de almacenamiento: cuentas, servicios, tipos de blob, niveles y discos →</a></p>`:""}
     ${avance(e.cap)}
     <p><a href="${archivo(e.cap)}">Repasar el capítulo ${e.cap}: ${esc(tituloCap(e.cap))} →</a> · <button type="button" class="btn" data-volver>${flujo?"Volver al recorrido":"Volver al capítulo"}</button></p>`;
 }
@@ -865,7 +866,7 @@ function panelRed(){
     <p><b>Protege ante:</b> ${r.protege}. <b>No protege ante:</b> ${r.no}.</p>
     <p><b>Durabilidad:</b> ${r.d} · <b>Leer la secundaria sin failover:</b> ${r.geo?(r.ra?"sí (endpoint -secondary)":"no"):"no hay secundaria"}.</p>
     ${avance(7)}
-    <p><a href="az900/cap07-almacenamiento.html">Simular fallas con cada opción en el capítulo 7 →</a></p>`;
+    <p><a href="az900/cap07-almacenamiento.html">Simular fallas con cada opción en el capítulo 7 →</a> · <a href="az900/cap07-mapa-almacenamiento.html">Mapa de almacenamiento →</a></p>`;
 }
 const fl=document.getElementById("flujos");
 [{id:"none",n:"Ninguno"},...FLUJOS].forEach(f=>{
