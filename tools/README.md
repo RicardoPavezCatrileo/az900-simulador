@@ -35,3 +35,13 @@ PNG de 7025×4966 (≈ 300 dpi) y SVG autónomo de `arquitectura.html`, guardado
 - Para la administración, lo mismo con `az104/administracion.html`, `tools/poster-administracion.js,tools/drawio-svg.js`, `az104/_poster.html` y su línea de arranque.
 - Los íconos se eligen en `ICONOS` (id de la pieza → archivo); se ponen grandes a la derecha si caben los textos, si no chicos abajo a la derecha, y si tampoco caben no se ponen (por eso las VMs no llevan).
 - Último `.drawio`: 25 nov 2026 (arquitectura).
+
+# Guía Visual Azure Storage Account (`.drawio`)
+
+`tools/guia-storage-drawio.py` escribe el `.drawio` directamente (no sale de una página): 5 columnas por servicio (Blob, Files, Queue, Table dentro de la cuenta; Disk afuera, como disco administrado) y 5 filas que se leen hacia abajo (① servicio, ② Standard o Premium, ③ qué más se elige, ④ redundancia, ⚠ confusiones). A2 horizontal (1684×1190), íconos de `img/lib/azure2/…`, Segoe UI y Consolas.
+
+1. `python tools/guia-storage-drawio.py docs/guia-visual-azure-storage.drawio`
+2. `draw.io.exe -x -f png -s 4 -o docs/guia-visual-azure-storage-A2.png docs/guia-visual-azure-storage.drawio` y `-x -f pdf -o docs/guia-visual-azure-storage.pdf …`
+
+- Si se retoca a mano en draw.io, volver a correr el script lo sobrescribe: pasar los cambios al script.
+- Primera versión (MVP): 27 nov 2026.
