@@ -26,6 +26,10 @@
 .nd text.s{font-family:var(--f-mono);font-size:10px;fill:var(--muted)}
 .nd.off{opacity:.25}
 .vn.on>rect,.nd.on rect{stroke:var(--accent);stroke-width:2.6}
+.sn rect{fill:none;stroke:var(--line);stroke-dasharray:4 3}
+.sn text{font-family:var(--f-mono);font-size:10px;fill:var(--muted)}
+.pill rect{fill:var(--accent)}
+.pill text{font-family:var(--f-mono);font-size:9px;font-weight:600;fill:var(--surface)}
 .ln{fill:none;stroke-width:2.4}
 .ln.ok{stroke:var(--ok)}
 .ln.tun{stroke:var(--ok);stroke-dasharray:3 3}
@@ -77,7 +81,7 @@
   <header>
     <div class="eyebrow">AZ-900 · Capítulo 6 · Laboratorio de redes → AZ-104</div>
     <h1>Conectividad en 3 tramos: VPN, peering y endpoints</h1>
-    <p>Toda pregunta de conectividad cae en uno de tres tramos: <b>1</b> desde fuera de Azure hasta tu VNet, <b>2</b> de una VNet a otra y <b>3</b> de tu VNet a un servicio como Storage. El diagrama es una red hub y radios: una VNet central (<b>hub</b>) con lo compartido y tres VNets de aplicaciones (<b>radios</b>), una de ellas en la región emparejada para recuperación ante desastres (DR). Cambia la configuración y mira quién llega a quién y por qué.</p>
+    <p>Toda pregunta de conectividad cae en uno de tres tramos: <b>1</b> desde fuera de Azure hasta tu VNet, <b>2</b> de una VNet a otra y <b>3</b> de tu VNet a un servicio como Storage. El diagrama es <b>la misma arquitectura de Contoso</b> (<a href="../arquitectura.html">arquitectura.html</a>, modo "Dos redes unidas"): la <b>Red 1 (hub)</b> con la puerta hacia la oficina y lo compartido, y la <b>Red 2</b> con la app en sus subredes web, app y datos. Para practicar el peering se suman dos redes extra (<b>radios</b>): la <b>Red 3</b> de desarrollo y la <b>Red DR</b> en la región emparejada, para recuperación ante desastres. Cambia la configuración y mira quién llega a quién y por qué.</p>
   </header>
 
   <!-- 0 · Resumen de los tramos -->
@@ -113,22 +117,22 @@
       </div>
       <div class="tramo"><h3><span>TRAMO 2</span>De una VNet a otra</h3>
         <div class="chkP">
-          <label class="chk"><input type="checkbox" data-c="hA"><span>Peering hub ↔ vnet-web <small>(local)</small></span></label>
-          <label class="chk"><input type="checkbox" data-c="hB"><span>Peering hub ↔ vnet-dr <small>(global: región emparejada)</small></span></label>
+          <label class="chk"><input type="checkbox" data-c="hA"><span>Peering hub ↔ Red 2 (la app) <small>(local)</small></span></label>
+          <label class="chk"><input type="checkbox" data-c="hB"><span>Peering hub ↔ Red DR <small>(global: región emparejada)</small></span></label>
           <label class="chk"><input type="checkbox" data-c="bIni"><span>…pero creado solo desde el hub <small>(estado Iniciado)</small></span></label>
-          <label class="chk"><input type="checkbox" data-c="hC"><span>Peering hub ↔ vnet-dev <small>(local)</small></span></label>
-          <label class="chk"><input type="checkbox" data-c="AB"><span>Conexión directa vnet-web ↔ vnet-dr <small>(para la réplica, sin pasar por el hub)</small></span></label>
+          <label class="chk"><input type="checkbox" data-c="hC"><span>Peering hub ↔ Red 3 (desarrollo) <small>(local)</small></span></label>
+          <label class="chk"><input type="checkbox" data-c="AB"><span>Conexión directa Red 2 ↔ Red DR <small>(para la réplica, sin pasar por el hub)</small></span></label>
         </div>
         <div class="ctl"><label>Tipo de la conexión directa</label><div class="seg" id="segV2v"></div></div>
         <div class="chkP"><label class="chk"><input type="checkbox" data-c="fw"><span>Azure Firewall en el hub + rutas (UDR) <small>(el hub reenvía el tráfico entre radios)</small></span></label></div>
-        <div class="ctl"><label>Espacio de vnet-dev</label><div class="seg" id="segDev"></div></div>
+        <div class="ctl"><label>Espacio de la Red 3</label><div class="seg" id="segDev"></div></div>
       </div>
-      <div class="tramo"><h3><span>TRAMO 3</span>De la VNet a un servicio (stprod)</h3>
-        <div class="ctl"><label>Acceso a la cuenta de Storage</label><div class="seg" id="segSt"></div></div>
+      <div class="tramo"><h3><span>TRAMO 3</span>De la VNet a un servicio (SQL y Storage)</h3>
+        <div class="ctl"><label>Acceso a SQL y Storage</label><div class="seg" id="segSt"></div></div>
         <p class="fb" id="stTxt" style="margin:0"></p>
       </div>
     </div>
-    <div class="lienzo"><svg id="svg" viewBox="0 0 1210 680" role="img" aria-label="Diagrama de conectividad: oficina, laptop, Internet, hub, radios y Storage"></svg></div>
+    <div class="lienzo"><svg id="svg" viewBox="0 0 1210 680" role="img" aria-label="Diagrama de conectividad: oficina, laptop, Internet, Red 1 (hub), Red 2 con sus subredes, SQL y Storage, y las redes extra"></svg></div>
     <div class="controls">
       <div class="ctl"><label>Origen</label><div class="seg" id="segO"></div></div>
       <div class="ctl"><label>Destino</label><div class="seg" id="segD"></div></div>
@@ -229,8 +233,8 @@ function status(id,lvl,t,d){
 }
 
 /* ---------- Modelo ---------- */
-// La clave interna de vnet-dr es "datos"
-const NOM={of:"Oficina",lap:"Laptop (P2S)",inet:"Internet",hub:"vnet-hub",web:"vnet-web",datos:"vnet-dr",dev:"vnet-dev",st:"stprod"};
+// La clave interna de Red DR es "datos"
+const NOM={of:"Oficina",lap:"Laptop (P2S)",inet:"Internet",hub:"Red 1 (hub)",web:"Red 2 (la app)",datos:"Red DR",dev:"Red 3 (desarrollo)",st:"SQL y Storage"};
 const REG={hub:"Brazil South",web:"Brazil South",dev:"Brazil South",datos:"South Central US"};
 const ORIG=["of","lap","inet","hub","web","datos","dev"],DEST=["of","lap","hub","web","datos","dev","st"];
 const INI={ofi:"s2s",p2s:false,gt:false,hA:true,hB:true,bIni:false,hC:false,AB:false,v2v:false,fw:false,dev:"10.3",st:"publico"};
@@ -247,8 +251,8 @@ const par=(x,y)=>Object.keys(PE).find(k=>PE[k].includes(x)&&PE[k].includes(y));
 const unidas=(x,y)=>{const k=par(x,y);return k&&estado(k)==="ok"?k:null};
 function porQueNo(x,y){
   const e=par(x,y)?estado(par(x,y)):"no";
-  if(e==="choca")return"el peering no se puede crear: vnet-dev usa 10.0.0.0/16, el mismo espacio que vnet-hub (no pueden superponerse).";
-  if(e==="ini")return"el peering está en estado Iniciado: se creó desde vnet-hub, pero falta crearlo desde vnet-dr.";
+  if(e==="choca")return"el peering no se puede crear: Red 3 (desarrollo) usa 10.0.0.0/16, el mismo espacio que la Red 1 (hub): no pueden superponerse.";
+  if(e==="ini")return"el peering está en estado Iniciado: se creó desde la Red 1 (hub), pero falta crearlo desde la Red DR.";
   return`no hay peering entre ${NOM[x]} y ${NOM[y]}.`;
 }
 const may=t=>t[0].toUpperCase()+t.slice(1);
@@ -274,15 +278,15 @@ function ruta(x,y){
     const lk=x==="of"?"vpn":"p2s",nom=x==="of"?(cfg.ofi==="er"?"ExpressRoute":"VPN S2S"):"VPN P2S";
     if(x==="of"&&cfg.ofi==="no")return{ok:false,ln:[],nd:["of"],por:"La oficina no tiene conexión con Azure: elige VPN Site-to-Site o ExpressRoute en el tramo 1."};
     if(x==="lap"&&!cfg.p2s)return{ok:false,ln:[],nd:["lap"],por:"El laptop no tiene VPN: activa Point-to-Site en el tramo 1 (cliente VPN en el equipo + el VPN Gateway del hub)."};
-    if(y==="hub")return{ok:true,ln:[lk],nd:[x,"vgw","hub"],txt:`${NOM[x]} → ${nom} → vnet-hub`,por:`${nom} termina en el gateway del hub.`};
+    if(y==="hub")return{ok:true,ln:[lk],nd:[x,"vgw","hub"],txt:`${NOM[x]} → ${nom} → Red 1 (hub)`,por:`${nom} termina en el gateway del hub.`};
     const k=unidas("hub",y);
     if(!k)return{ok:false,ln:[lk],nd:[x,"hub"],por:`${NOM[x]} llega al hub, pero ${porQueNo("hub",y)}`};
     if(!cfg.gt)return{ok:false,ln:[lk,k],nd:[x,"hub",y],por:`El peering no es transitivo: ${NOM[y]} no puede usar el gateway del hub. Activa el tránsito de gateway (o habría que poner otro gateway en ${NOM[y]}).`};
-    return{ok:true,ln:[lk,k],nd:[x,"vgw","hub",y],txt:`${NOM[x]} → ${nom} → vnet-hub → peering → ${NOM[y]}`,por:`Tránsito de gateway: ${NOM[y]} usa el gateway del hub, sin gateway propio.`};
+    return{ok:true,ln:[lk,k],nd:[x,"vgw","hub",y],txt:`${NOM[x]} → ${nom} → Red 1 (hub) → peering → ${NOM[y]}`,por:`Tránsito de gateway: ${NOM[y]} usa el gateway del hub, sin gateway propio.`};
   }
   if(x==="hub"||y==="hub"){
     const r=x==="hub"?y:x,k=unidas("hub",r);
-    return k?{ok:true,ln:[k],nd:["hub",r],txt:`vnet-hub → peering ${tipo("hub",r)} → ${NOM[r]}`,por:`Peering ${tipo("hub",r)} en estado Conectado.`}
+    return k?{ok:true,ln:[k],nd:["hub",r],txt:`Red 1 (hub) → peering ${tipo("hub",r)} → ${NOM[r]}`,por:`Peering ${tipo("hub",r)} en estado Conectado.`}
             :{ok:false,ln:cfg[par("hub",r)]?[par("hub",r)]:[],nd:["hub",r],por:may(porQueNo("hub",r))};
   }
   // radio ↔ radio
@@ -291,41 +295,43 @@ function ruta(x,y){
     ?{ok:true,ln:[k],nd:[x,"gww","gwd",y],txt:`${NOM[x]} → VPN Gateway → túnel IPsec → VPN Gateway → ${NOM[y]}`,por:"VNet-to-VNet: llega, pero por dos gateways. Más latencia y menos ancho de banda que un peering, y pagas dos gateways."}
     :{ok:true,ln:[k],nd:[x,y],txt:`${NOM[x]} → peering ${tipo(x,y)} directo → ${NOM[y]}`,por:"Peering directo: el camino más corto, sin gateways ni inspección intermedia."};
   const kx=unidas("hub",x),ky=unidas("hub",y);
-  if(kx&&ky&&cfg.fw)return{ok:true,ln:[kx,ky],nd:[x,"hub","fw",y],txt:`${NOM[x]} → vnet-hub (Azure Firewall) → ${NOM[y]}`,por:"El firewall del hub reenvía el tráfico y las rutas (UDR) de los radios lo mandan hacia él. Además, inspecciona todo en un solo punto."};
+  if(kx&&ky&&cfg.fw)return{ok:true,ln:[kx,ky],nd:[x,"hub","fw",y],txt:`${NOM[x]} → Red 1 (hub, Azure Firewall) → ${NOM[y]}`,por:"El firewall del hub reenvía el tráfico y las rutas (UDR) de los radios lo mandan hacia él. Además, inspecciona todo en un solo punto."};
   if(kx&&ky)return{ok:false,ln:[kx,ky],nd:[x,"hub",y],por:"Las dos están emparejadas con el hub, pero el peering no es transitivo. Crea una conexión directa o pon un firewall en el hub con rutas (UDR)."};
   return{ok:false,ln:[],nd:[x,y],por:`${may(!kx?porQueNo("hub",x):porQueNo("hub",y))} Y no hay conexión directa entre ${NOM[x]} y ${NOM[y]}.`};
 }
 // Tramo 3: llegar a la cuenta de Storage según su tipo de acceso
 function alStorage(x){
   if(cfg.st==="publico"){
-    if(x==="inet")return{ok:true,ln:["inet"],nd:["inet","st"],txt:"Internet → endpoint público → stprod",por:"Acceso público abierto: cualquiera en Internet llega a la cuenta (con credenciales). No hay red privada de por medio."};
-    if(x==="of"||x==="lap")return{ok:true,ln:["inet"],nd:[x,"inet","st"],txt:`${NOM[x]} → su salida a Internet → endpoint público → stprod`,por:"Llega, pero por Internet y a la IP pública de la cuenta, no por la VPN."};
-    return{ok:true,ln:[],nd:[x,"st"],txt:`${NOM[x]} → IP pública de stprod`,por:"Llega a la IP pública de la cuenta. El tráfico va por la red de Microsoft, pero la cuenta está expuesta a Internet."};
+    if(x==="inet")return{ok:true,ln:["inet"],nd:["inet","st"],txt:"Internet → endpoint público → SQL y Storage",por:"Acceso público abierto: cualquiera en Internet llega a la cuenta (con credenciales). No hay red privada de por medio."};
+    if(x==="of"||x==="lap")return{ok:true,ln:["inet"],nd:[x,"inet","st"],txt:`${NOM[x]} → su salida a Internet → endpoint público → SQL y Storage`,por:"Llega, pero por Internet y a la IP pública de la cuenta, no por la VPN."};
+    return{ok:true,ln:[],nd:[x,"st"],txt:`${NOM[x]} → IP pública de SQL y Storage`,por:"Llega a la IP pública de la cuenta. El tráfico va por la red de Microsoft, pero la cuenta está expuesta a Internet."};
   }
   if(cfg.st==="se"){
-    if(x==="web")return{ok:true,ln:["svc"],nd:["web","st"],txt:"vnet-web (su subred) → service endpoint → stprod",por:"La subred de vnet-web tiene el service endpoint y el firewall de la cuenta solo la deja entrar a ella. La cuenta sigue con IP pública."};
-    if(x==="inet")return{ok:false,ln:["inet"],nd:["inet","st"],por:"El firewall de la cuenta solo permite la subred de vnet-web: Internet queda fuera."};
-    if(x==="of"||x==="lap")return{ok:false,ln:[],nd:[x,"st"],por:`Los service endpoints solo funcionan desde la subred de Azure configurada. ${NOM[x]} no llega por ahí, aunque entre a vnet-web por VPN. Para eso: private endpoint.`};
-    return{ok:false,ln:[],nd:[x,"st"],por:`El service endpoint está solo en la subred de vnet-web; ${NOM[x]} no está permitida en el firewall de la cuenta.`};
+    if(x==="web")return{ok:true,ln:["svc"],nd:["web","vma","st"],txt:"Red 2 (snet-app) → service endpoint → SQL y Storage",por:"snet-app tiene el service endpoint y el firewall de SQL y Storage solo la deja entrar a ella. Los servicios siguen con IP pública."};
+    if(x==="inet")return{ok:false,ln:["inet"],nd:["inet","st"],por:"El firewall de SQL y Storage solo permite snet-app: Internet queda fuera."};
+    if(x==="of"||x==="lap")return{ok:false,ln:[],nd:[x,"st"],por:`Los service endpoints solo funcionan desde la subred de Azure configurada. ${NOM[x]} no llega por ahí, aunque entre a la Red 2 por VPN. Para eso: private endpoint.`};
+    return{ok:false,ln:[],nd:[x,"st"],por:`El service endpoint está solo en snet-app (Red 2); ${NOM[x]} no está permitida en el firewall de SQL y Storage.`};
   }
-  // private endpoint en vnet-web
+  // private endpoint en snet-datos (Red 2)
   if(x==="inet")return{ok:false,ln:["inet"],nd:["inet","st"],por:"Con el private endpoint se deshabilitó el acceso público: desde Internet no se llega."};
-  if(x==="web")return{ok:true,ln:["svc"],nd:["web","pe","st"],txt:"vnet-web → private endpoint (10.1.3.5) → stprod",por:"La cuenta tiene una IP privada dentro de vnet-web, como si fuera una VM más."};
+  if(x==="web")return{ok:true,ln:["svc"],nd:["web","pe","st"],txt:"Red 2 → private endpoint (10.1.3.4, snet-datos) → SQL y Storage",por:"SQL y Storage tienen una IP privada dentro de la Red 2, como si fueran una VM más."};
   const r=ruta(x,"web");
-  if(!r.ok)return{ok:false,ln:r.ln,nd:[...r.nd,"pe","st"],por:`El private endpoint vive en vnet-web y ${NOM[x]} no llega a vnet-web: ${r.por}`};
-  return{ok:true,ln:[...r.ln,"svc"],nd:[...r.nd,"pe","st"],txt:`${r.txt} → private endpoint (10.1.3.5) → stprod`,por:`Todo lo que llega a vnet-web llega al private endpoint. ${r.por}`};
+  if(!r.ok)return{ok:false,ln:r.ln,nd:[...r.nd,"pe","st"],por:`El private endpoint vive en la Red 2 y ${NOM[x]} no llega a la Red 2: ${r.por}`};
+  return{ok:true,ln:[...r.ln,"svc"],nd:[...r.nd,"pe","st"],txt:`${r.txt} → private endpoint (10.1.3.4) → SQL y Storage`,por:`Todo lo que llega a la Red 2 llega al private endpoint. ${r.por}`};
 }
 
 /* ---------- Diagrama ---------- */
+// Misma arquitectura que arquitectura.html en modo "Dos redes unidas": Red 1 (hub) y Red 2 (la app, con snet-web/app/datos).
+// La Red 3 (desarrollo) y la Red DR (región emparejada) son extras del laboratorio para practicar el peering.
 const LN={
-  vpn:{d:"M190,212 L285,232",x:238,y:206},
-  p2s:{d:"M190,360 C245,360 240,252 285,248",x:240,y:318},
-  inet:{d:"M190,595 L285,595",x:238,y:588},
-  svc:{d:"M600,250 C555,250 560,585 515,585",x:548,y:532},
-  hA:{d:"M520,215 C565,215 555,125 600,125",x:515,y:150},
-  hB:{d:"M520,300 L930,300",x:725,y:293},
-  hC:{d:"M520,350 C565,350 555,455 600,455",x:515,y:418},
-  AB:{d:"M820,125 C885,125 880,235 930,235",x:885,y:160}
+  vpn:{d:"M190,212 L265,212",x:228,y:205},
+  p2s:{d:"M190,360 C232,360 222,232 265,230",x:232,y:318},
+  inet:{d:"M190,598 L250,598",x:220,y:590},
+  svc:{d:"",x:512,y:528},
+  hA:{d:"M465,175 C505,175 505,131 545,131",x:505,y:145},
+  hB:{d:"M465,360 C500,360 500,414 540,414 L930,414",x:735,y:408},
+  hC:{d:"M465,345 C505,345 505,487 545,487",x:475,y:472},
+  AB:{d:"M855,140 C905,140 890,365 930,365",x:1045,y:320}
 };
 function aspecto(k){  // [clase de la línea, etiqueta, clase de la etiqueta]
   if(k==="vpn")return cfg.ofi==="no"?["off","sin conexión","m"]:cfg.ofi==="er"?["ok","ExpressRoute",""]:["vpn","VPN S2S","m"];
@@ -343,11 +349,13 @@ function dibujar(){
   const r=ruta(o,d),on=new Set(r.ln),nd=new Set(r.nd);
   const vn=(id,x,y,w,h,tit,err)=>`<g class="vn${nd.has(id)?" on":""}${err?" err":""}" data-v="${id}"><rect x="${x}" y="${y}" width="${w}" height="${h}" rx="8"/><text x="${x+12}" y="${y+20}">${tit}</text></g>`;
   const no=(id,x,y,w,t,s,off)=>`<g class="nd${nd.has(id)?" on":""}${off?" off":""}" data-n="${id}"><rect x="${x}" y="${y}" width="${w}" height="44" rx="6"/><text class="t" x="${x+12}" y="${y+19}">${t}</text><text class="s" x="${x+12}" y="${y+35}">${s}</text></g>`;
-  const tx=(x,y,t)=>`<text class="et m" x="${x}" y="${y}">${t}</text>`;
+  const tx=(x,y,t,a)=>`<text class="et m" x="${x}" y="${y}"${a?` text-anchor="${a}"`:""}>${t}</text>`;
+  // Subred dentro de la Red 2: banda con su nombre y rango a la derecha
+  const sn=(y,nom,rango)=>`<g class="sn"><rect x="557" y="${y}" width="286" height="66" rx="6"/><text x="833" y="${y+20}" text-anchor="end">${nom}</text><text x="833" y="${y+34}" text-anchor="end">${rango}</text></g>`;
   const v2v=cfg.AB&&cfg.v2v,gwV=cfg.ofi==="s2s"||cfg.p2s,gwE=cfg.ofi==="er";
-  let s=`<g class="reg"><rect x="240" y="20" width="620" height="645" rx="12"/><text x="256" y="40">Región · Brazil South</text></g>`;
+  let s=`<g class="reg"><rect x="230" y="20" width="645" height="645" rx="12"/><text x="246" y="40">Región · Brazil South</text></g>`;
   s+=`<g class="reg"><rect x="900" y="20" width="290" height="645" rx="12"/><text x="916" y="40">Región · South Central US</text><text x="916" y="56">(emparejada con Brazil South)</text></g>`;
-  LN.svc.d=cfg.st==="pe"?"M615,182 C555,182 560,585 515,585":"M600,250 C555,250 560,585 515,585";
+  LN.svc.d=cfg.st==="pe"?"M545,275 C510,275 515,520 470,560":"M545,203 C510,203 515,520 470,560";
   Object.keys(LN).forEach(k=>{const [c]=aspecto(k);s+=`<path class="ln ${c}${on.has(k)?" on":""}" d="${LN[k].d}"/>`});
   // Fuera de Azure
   s+=vn("of",20,150,170,125,"Oficina (on-premises)");
@@ -357,31 +365,37 @@ function dibujar(){
   s+=tx(32,362,cfg.p2s?"Cliente VPN (P2S)":"Sin VPN");s+=tx(32,380,"pool 172.16.201.0/24");
   s+=vn("inet",20,560,170,75,"Internet");
   s+=tx(32,600,"Cualquier IP pública");
-  // Hub
-  s+=vn("hub",270,170,250,220,"vnet-hub · 10.0.0.0/16");
-  s+=no("vgw",285,215,220,gwV&&gwE?"VPN + ExpressRoute Gateway":gwE?"ExpressRoute Gateway":gwV?"VPN Gateway":"Gateway (sin uso)","GatewaySubnet",!gwV&&!gwE);
-  s+=no("fw",285,275,220,"Azure Firewall","AzureFirewallSubnet",!cfg.fw);
-  s+=tx(285,350,"Lo compartido vive en el hub")+tx(285,366,cfg.gt?"Permite tránsito de gateway ✓":"Tránsito de gateway: no");
-  // Storage (PaaS, fuera de las VNets)
-  s+=vn("st",285,560,230,85,"stprod · Storage (PaaS)");
-  s+=tx(297,602,{publico:"IP pública abierta a Internet",se:"IP pública, firewall: solo subred web",pe:"Acceso público deshabilitado"}[cfg.st]);
-  s+=tx(297,620,"Vive fuera de las VNets");
-  // Radios
-  s+=vn("web",600,70,220,215,"vnet-web · 10.1.0.0/16");
-  s+=no("vmw",615,105,190,"vm-web + sql-prod","10.1.1.4 · 10.1.2.4");
-  s+=no("pe",615,160,190,"Private endpoint","10.1.3.5 → stprod",cfg.st!=="pe");
-  s+=no("gww",615,215,190,"VPN Gateway","GatewaySubnet",!v2v);
-  s+=vn("dev",600,400,220,110,`vnet-dev · ${cfg.dev}.0.0/16`,cfg.dev==="10.0");
-  s+=no("vmd",615,440,190,"vm-dev",`${cfg.dev}.1.4`);
-  s+=vn("datos",930,215,230,170,"vnet-dr · 10.2.0.0/16");
-  s+=no("vmb",945,250,200,"sql-dr (réplica)","10.2.1.4");
-  s+=no("gwd",945,310,200,"VPN Gateway","GatewaySubnet",!v2v);
+  // Red 1 · hub
+  s+=vn("hub",250,150,215,230,"Red 1 · hub · 10.0.0.0/16");
+  s+=no("vgw",265,190,185,gwV&&gwE?"VPN + ER Gateway":gwE?"ExpressRoute Gateway":gwV?"VPN Gateway":"Gateway (sin uso)","GatewaySubnet",!gwV&&!gwE);
+  s+=no("fw",265,248,185,"Azure Firewall","AzureFirewallSubnet",!cfg.fw);
+  s+=tx(265,318,"Lo compartido vive en el hub")+tx(265,334,cfg.gt?"Permite tránsito de gateway ✓":"Tránsito de gateway: no");
+  // Red 2 · la app, con las subredes de la arquitectura
+  s+=vn("web",545,70,310,322,"Red 2 · la app · 10.1.0.0/16");
+  s+=sn(98,"snet-web","10.1.1.0/24")+sn(170,"snet-app","10.1.2.0/24")+sn(242,"snet-datos","10.1.3.0/24")+sn(314,"GatewaySubnet","10.1.255.0/27");
+  s+=no("vmw",567,109,160,"VM web","10.1.1.4");
+  s+=no("vma",567,181,160,"VM app","10.1.2.4");
+  if(cfg.st==="se")s+=`<g class="pill"><rect x="735" y="211" width="100" height="16" rx="8"/><text x="785" y="222" text-anchor="middle">service endpoint</text></g>`;
+  s+=no("pe",567,253,160,"Endpoint privado","10.1.3.4 → SQL, Storage",cfg.st!=="pe");
+  s+=no("gww",567,325,160,"VPN Gateway","solo VNet-to-VNet",!v2v);
+  // Servicios PaaS (fuera de las VNets)
+  s+=vn("st",250,560,250,85,"Servicios PaaS · SQL + Storage");
+  s+=tx(262,602,{publico:"IP pública abierta a Internet",se:"IP pública; firewall: solo snet-app",pe:"Acceso público deshabilitado"}[cfg.st]);
+  s+=tx(262,620,"Viven fuera de las VNets");
+  // Extras del laboratorio
+  s+=vn("dev",545,440,310,95,`Red 3 · desarrollo · ${cfg.dev}.0.0/16`,cfg.dev==="10.0");
+  s+=no("vmd",560,475,160,"VM dev",`${cfg.dev}.1.4`);
+  s+=tx(843,525,"extra del laboratorio","end");
+  s+=vn("datos",930,330,230,170,"Red DR · 10.2.0.0/16");
+  s+=no("vmb",945,365,200,"VM de DR (réplica)","10.2.1.4");
+  s+=no("gwd",945,425,200,"VPN Gateway","solo VNet-to-VNet",!v2v);
+  s+=tx(1148,490,"extra del laboratorio","end");
   Object.keys(LN).forEach(k=>{const [,t,c]=aspecto(k);if(t)s+=`<text class="et ${c}" x="${LN[k].x}" y="${LN[k].y}" text-anchor="middle">${t}</text>`});
   // Marcas de tramo
   const tb=(x,y,n,a,b)=>`<g class="tb"><circle cx="${x+11}" cy="${y}" r="11"/><text class="n" x="${x+11}" y="${y+4}" text-anchor="middle">${n}</text><text class="a" x="${x+28}" y="${y-2}">${a}</text><text class="b" x="${x+28}" y="${y+12}">${b}</text></g>`;
   s+=tb(20,95,1,"Red local → VNet","VPN Gateway o ExpressRoute");
-  s+=tb(270,95,2,"VNet ↔ VNet","VNet peering");
-  s+=tb(285,535,3,"VNet → Storage o SQL","endpoint de servicio o privado");
+  s+=tb(250,95,2,"VNet ↔ VNet","VNet peering");
+  s+=tb(250,538,3,"VNet → SQL o Storage","endpoint de servicio o privado");
   document.getElementById("svg").innerHTML=s;
 }
 
@@ -395,7 +409,7 @@ function render(){
   seg("segV2v",{peer:"VNet peering",v2v:"VNet-to-VNet (VPN)"},()=>cfg.v2v?"v2v":"peer",v=>cfg.v2v=v==="v2v",render);
   seg("segDev",{"10.3":"10.3.0.0/16","10.0":"10.0.0.0/16 (igual que el hub)"},()=>cfg.dev,v=>cfg.dev=v,render);
   seg("segSt",{publico:"Endpoint público",se:"Service endpoint",pe:"Private endpoint"},()=>cfg.st,v=>cfg.st=v,render);
-  document.getElementById("stTxt").innerHTML={publico:"Por defecto: la cuenta tiene IP pública y acepta conexiones desde cualquier lugar.",se:"La subred de vnet-web habilita el service endpoint y el firewall de la cuenta solo acepta esa subred. Gratis.",pe:"La cuenta recibe la IP 10.1.3.5 dentro de vnet-web y se deshabilita el acceso público. Tiene costo."}[cfg.st];
+  document.getElementById("stTxt").innerHTML={publico:"Por defecto: SQL y Storage tienen IP pública y aceptan conexiones desde cualquier lugar.",se:"snet-app (Red 2) habilita el service endpoint y el firewall de SQL y Storage solo acepta esa subred. Gratis; siguen con IP pública.",pe:"SQL y Storage reciben la IP 10.1.3.4 en snet-datos (Red 2) y se deshabilita su acceso público. Tiene costo."}[cfg.st];
   if(!DEST.includes(d)||d===o)d=o==="of"||o==="lap"||o==="inet"?"st":"of";
   seg("segO",Object.fromEntries(ORIG.map(k=>[k,NOM[k]])),()=>o,v=>o=v,render);
   seg("segD",Object.fromEntries(DEST.filter(k=>k!==o).map(k=>[k,NOM[k]])),()=>d,v=>d=v,render);
@@ -425,24 +439,24 @@ function matriz(){
 /* ---------- Desafíos ---------- */
 const BASE=["of","hub","web","datos","dev"];
 const RETOS=[
-  {tr:1,t:"Un desarrollador trabaja desde su casa y necesita llegar a vm-dev.",ini:{hC:true,gt:true},o:"lap",d:"dev",
+  {tr:1,t:"Un desarrollador trabaja desde su casa y necesita llegar a la VM dev.",ini:{hC:true,gt:true},o:"lap",d:"dev",
    ok:()=>ruta("lap","dev").ok,sol:"VPN Point-to-Site: un cliente VPN en el laptop que se conecta al VPN Gateway del hub. Site-to-Site es para una red completa, no para un equipo."},
   {tr:1,t:"Por regulación, el tráfico entre la oficina y Azure no puede pasar por Internet.",ini:{},o:"of",d:"hub",
    ok:()=>cfg.ofi==="er"&&ruta("of","hub").ok,sol:"ExpressRoute: un circuito privado con un proveedor. La VPN Site-to-Site va cifrada, pero sí pasa por Internet."},
-  {tr:"1+2",t:"La oficina debe llegar a vnet-web usando el único gateway, el del hub.",ini:{hB:false},o:"of",d:"web",
-   ok:()=>ruta("of","web").ok,sol:"Activa el tránsito de gateway: el hub permite usar su gateway y vnet-web usa el gateway remoto. Así no hace falta un gateway por radio."},
-  {tr:2,t:"vnet-dr no responde desde vnet-hub, aunque el peering \"está creado\".",ini:{bIni:true},o:"hub",d:"datos",
-   ok:()=>ruta("hub","datos").ok,sol:"El peering se creó solo desde el hub y quedó Iniciado. Hay que crearlo también desde vnet-dr (desmarca \"creado solo desde el hub\")."},
-  {tr:2,t:"Hay que emparejar vnet-dev con el hub, pero Azure no deja crear el peering.",ini:{hC:true,dev:"10.0"},o:"hub",d:"dev",
-   ok:()=>ruta("hub","dev").ok,sol:"vnet-dev usa 10.0.0.0/16, el mismo espacio que el hub. Cámbialo a 10.3.0.0/16 y el peering se puede crear."},
-  {tr:2,t:"La réplica de sql-prod a sql-dr debe ir directa y con la menor latencia posible.",ini:{fw:true,AB:true,v2v:true},o:"web",d:"datos",
+  {tr:"1+2",t:"La oficina debe llegar a la Red 2 (la app) usando el único gateway, el del hub.",ini:{hB:false},o:"of",d:"web",
+   ok:()=>ruta("of","web").ok,sol:"Activa el tránsito de gateway: el hub permite usar su gateway y la Red 2 (la app) usa el gateway remoto. Así no hace falta un gateway por radio."},
+  {tr:2,t:"La Red DR no responde desde la Red 1 (hub), aunque el peering \"está creado\".",ini:{bIni:true},o:"hub",d:"datos",
+   ok:()=>ruta("hub","datos").ok,sol:"El peering se creó solo desde el hub y quedó Iniciado. Hay que crearlo también desde la Red DR (desmarca \"creado solo desde el hub\")."},
+  {tr:2,t:"Hay que emparejar la Red 3 (desarrollo) con el hub, pero Azure no deja crear el peering.",ini:{hC:true,dev:"10.0"},o:"hub",d:"dev",
+   ok:()=>ruta("hub","dev").ok,sol:"La Red 3 usa 10.0.0.0/16, el mismo espacio que el hub. Cámbialo a 10.3.0.0/16 y el peering se puede crear."},
+  {tr:2,t:"La copia de datos de la VM app a la VM de DR debe ir directa y con la menor latencia posible.",ini:{fw:true,AB:true,v2v:true},o:"web",d:"datos",
    ok:()=>!!unidas("web","datos")&&!cfg.v2v,sol:"VNet peering global directo. VNet-to-VNet también conecta, pero pasa por dos VPN Gateways: más latencia, menos ancho de banda y más costo. Por el firewall del hub hay un salto más."},
   {tr:2,t:"Los tres radios deben comunicarse entre sí inspeccionando el tráfico en un solo punto, sin conexiones entre radios.",ini:{hC:true},o:"web",d:"dev",
    ok:()=>!cfg.AB&&cfg.fw&&["web","datos","dev"].every((x,i,a)=>a.every(y=>x===y||ruta(x,y).ok)),sol:"Azure Firewall en el hub con rutas (UDR) en los radios. Con peerings directos habría que crear una malla (3 peerings) y no habría inspección central."},
-  {tr:3,t:"vm-web debe leer stprod por la red de Microsoft, sin costo extra y sin que nadie entre desde Internet.",ini:{},o:"web",d:"st",
-   ok:()=>cfg.st==="se",sol:"Service endpoint en la subred de vnet-web: es gratis y el firewall de la cuenta solo deja entrar a esa subred. El private endpoint también cumple la seguridad, pero tiene costo."},
-  {tr:"1+3",t:"La oficina debe leer stprod por la VPN, con IP privada y el acceso público deshabilitado.",ini:{st:"se",gt:true},o:"of",d:"st",
-   ok:()=>cfg.st==="pe"&&ruta("of","st").ok,sol:"Private endpoint: la cuenta recibe una IP privada en vnet-web, y todo lo que llega a vnet-web (la oficina por VPN con tránsito de gateway) llega a la cuenta. El service endpoint no sirve desde la oficina."},
+  {tr:3,t:"La VM app debe leer SQL y Storage por la red de Microsoft, sin costo extra y sin que nadie entre desde Internet.",ini:{},o:"web",d:"st",
+   ok:()=>cfg.st==="se",sol:"Service endpoint en snet-app: es gratis y el firewall de SQL y Storage solo deja entrar a esa subred. El private endpoint también cumple la seguridad, pero tiene costo."},
+  {tr:"1+3",t:"La oficina debe leer SQL y Storage por la VPN, con IP privada y el acceso público deshabilitado.",ini:{st:"se",gt:true},o:"of",d:"st",
+   ok:()=>cfg.st==="pe"&&ruta("of","st").ok,sol:"Private endpoint: SQL y Storage reciben una IP privada en snet-datos (Red 2), y todo lo que llega a la Red 2 (la oficina por VPN con tránsito de gateway) llega a la cuenta. El service endpoint no sirve desde la oficina."},
   {tr:"1+2",t:"Todo debe llegar a todo (oficina, hub y radios) con el menor número de gateways y conexiones.",ini:{hA:false,hB:false},o:"of",d:"datos",
    ok:()=>BASE.every(x=>BASE.every(y=>ruta(x,y).ok))&&!cfg.AB,sol:"Hub y radios: tres peerings con el hub (Conectados y sin espacios superpuestos), tránsito de gateway para la oficina y firewall en el hub para el tráfico entre radios."}
 ];

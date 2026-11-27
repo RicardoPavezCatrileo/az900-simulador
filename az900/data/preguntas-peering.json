@@ -6,7 +6,7 @@
     "explicacion": "El peering conecta dos VNets de forma privada usando la red de Azure: conexión directa y rápida, como si fueran la misma red (PDF pág. 104). El túnel IPsec es VPN Gateway y el enlace por proveedor es ExpressRoute."
   },
   {
-    "pregunta": "vnet-hub está emparejada con vnet-web y con vnet-dr. No hay más configuración. ¿Puede vnet-web comunicarse con vnet-dr?",
+    "pregunta": "La Red 1 (hub) está emparejada con la Red 2 (la app) y con la Red DR. No hay más configuración. ¿Puede la Red 2 comunicarse con la Red DR?",
     "opciones": ["Sí, a través del hub", "No, el peering no es transitivo", "Sí, si están en la misma suscripción", "Solo si las dos están en la misma región"],
     "correcta": 1,
     "explicacion": "El peering no es transitivo: hay que crearlo para cada par de VNets que deba comunicarse (pág. 104), o poner un firewall/NVA en el hub con rutas definidas por el usuario (UDR)."
@@ -18,14 +18,14 @@
     "explicacion": "El peering global une VNets de regiones distintas por la red troncal de Microsoft, sin gateways. No está en el PDF."
   },
   {
-    "pregunta": "vnet-hub usa 10.0.0.0/16 y vnet-dev también usa 10.0.0.0/16. ¿Qué pasa al intentar emparejarlas?",
+    "pregunta": "La Red 1 (hub) usa 10.0.0.0/16 y la Red 3 (desarrollo) también usa 10.0.0.0/16. ¿Qué pasa al intentar emparejarlas?",
     "opciones": ["Se emparejan y Azure renombra las IPs", "No se puede: los espacios de direcciones no pueden superponerse", "Se emparejan, pero solo en una dirección", "Se emparejan si se agrega un NSG"],
     "correcta": 1,
     "explicacion": "Las VNets emparejadas no pueden tener CIDR superpuestos (pág. 104; AZ-104 págs. 162–163). Hay que cambiar el espacio de una de ellas."
   },
   {
-    "pregunta": "Creaste el peering desde vnet-hub hacia vnet-dr y su estado dice \"Iniciado\". No pasa tráfico. ¿Qué falta?",
-    "opciones": ["Esperar 24 horas", "Crear el peering también desde vnet-dr hacia vnet-hub", "Agregar un VPN Gateway", "Habilitar el tránsito de gateway"],
+    "pregunta": "Creaste el peering desde la Red 1 (hub) hacia la Red DR y su estado dice \"Iniciado\". No pasa tráfico. ¿Qué falta?",
+    "opciones": ["Esperar 24 horas", "Crear el peering también desde la Red DR hacia la Red 1 (hub)", "Agregar un VPN Gateway", "Habilitar el tránsito de gateway"],
     "correcta": 1,
     "explicacion": "El peering se crea desde los dos lados. Mientras falte uno, queda Iniciado; con los dos, pasa a Conectado. El portal suele crear ambos lados de una vez. No está en el PDF."
   },

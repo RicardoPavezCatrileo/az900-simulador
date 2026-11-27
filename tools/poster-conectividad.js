@@ -1,12 +1,12 @@
 // Póster A2 de az900/cap06-lab-conectividad.html (se inyecta tras iniciarQuiz("peering"); con tools/poster-pagina.py).
 // Configuración con todo conectado (S2S + P2S, tránsito de gateway, los 3 peerings, conexión directa web ↔ dr,
-// firewall en el hub y private endpoint), el camino Oficina → stprod resaltado y, abajo, la tabla "Los 3 tramos".
+// firewall en el hub y private endpoint), el camino Oficina → SQL y Storage resaltado y, abajo, la tabla "Los 3 tramos".
 // Para tools/drawio-svg.js: POR_ID (geometría de cada caja, sacada del SVG) e ICONOS_PAGINA.
 document.documentElement.setAttribute("data-theme","light");
 cfg={...INI,ofi:"s2s",p2s:true,gt:true,hA:true,hB:true,hC:true,AB:true,v2v:false,fw:true,st:"pe"};o="of";d="st";
 window.ICONOS_PAGINA={
  n_of:"networking/Local_Network_Gateways",n_vgw:"networking/Virtual_Network_Gateways",n_fw:"networking/Firewalls",
- n_vmw:"compute/Virtual_Machine",n_pe:"networking/Private_Endpoint",n_vmd:"compute/Virtual_Machine",n_vmb:"databases/SQL_Server",
+ n_vmw:"compute/Virtual_Machine",n_vma:"compute/Virtual_Machine",n_pe:"networking/Private_Endpoint",n_vmd:"compute/Virtual_Machine",n_vmb:"compute/Virtual_Machine",
  v_st:"storage/Storage_Accounts",v_inet:"general/Globe"
 };
 const POR_ID={};
@@ -45,12 +45,12 @@ function poster(){
   const st=document.createElementNS(NS,"style");st.textContent='@import url("https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap");';s.appendChild(st);
   r(0,0,W,H,"fill:#ffffff");
   t(DX,32,"AZ-900 · CAPÍTULO 6 · REDES (ENDPOINTS: CAP. 9)",`${fM};font-size:11px;letter-spacing:.08em;fill:${v("--accent")}`);
-  t(DX,60,"Conectividad en 3 tramos: fuera de Azure → VNet, VNet ↔ VNet, VNet → PaaS",`${fD};font-size:24px;font-weight:800;fill:${v("--ink")}`);
-  // Leyenda: en el espacio libre de la región emparejada, bajo vnet-dr
+  t(DX,60,"Conectividad en 3 tramos sobre la arquitectura de Contoso: oficina → VNet, VNet ↔ VNet, VNet → PaaS",`${fD};font-size:24px;font-weight:800;fill:${v("--ink")}`);
+  // Leyenda: en el espacio libre de la región emparejada, sobre la Red DR
   [["Cómo leer las líneas",1],["verde = conectado",0],["gris punteado = VPN por Internet",0],["gris claro = sin conexión · rojo = error",0],["",0],
-   ["azul grueso = un ejemplo de camino:",2],["Oficina → VPN → hub → peering →",2],["vnet-web → private endpoint → stprod",2],["",0],
+   ["azul grueso = un ejemplo de camino:",2],["Oficina → VPN → Red 1 (hub) →",2],["peering → Red 2 → private endpoint",2],["(snet-datos) → SQL y Storage",2],["",0],
    ["El peering no es transitivo:",1],["oficina → radios: tránsito de gateway",0],["radio → radio: peering directo o firewall",0]]
-    .forEach(([l,k],i)=>{if(l)t(DX+916,DY+418+i*16,l,`${k===1?fB+";font-weight:600;font-size:11.5px":fM+";font-size:10.5px"};fill:${k===2?v("--accent"):k===1?v("--ink"):v("--muted")}`,264)});
+    .forEach(([l,k],i)=>{if(l)t(DX+916,DY+82+i*16,l,`${k===1?fB+";font-weight:600;font-size:11.5px":fM+";font-size:10.5px"};fill:${k===2?v("--accent"):k===1?v("--ink"):v("--muted")}`,264)});
   const g=document.createElementNS(NS,"g");g.setAttribute("transform",`translate(${DX},${DY})`);
   [...copia.childNodes].forEach(n=>g.appendChild(n));s.appendChild(g);
   // Tabla "Los 3 tramos" (sección 4 de la página)
@@ -61,8 +61,8 @@ function poster(){
    ["","ExpressRoute","La oficina por un circuito privado de un proveedor","Circuito con el proveedor + ExpressRoute Gateway","\"sin pasar por Internet\", \"dedicado\""],
    ["2 · VNet → VNet","VNet peering","Directo por la red troncal de Microsoft, local o global","Nada: sin gateway (se cobra por GB)","\"dos VNets\", \"menor latencia\""],
    ["","VNet-to-VNet","Túnel IPsec entre dos VNets","VPN Gateway en cada VNet","\"cifrado IPsec entre VNets\""],
-   ["3 · VNet → servicio PaaS","Service endpoint","El servicio sigue con IP pública, pero solo deja entrar a tu subred","Gratis; no sirve desde la oficina","\"solo una subred\", \"sin costo\""],
-   ["","Private endpoint","El servicio recibe una IP privada dentro de tu VNet","Tiene costo; sí sirve desde la oficina por VPN","\"IP privada\", \"deshabilitar acceso público\""]];
+   ["3 · VNet → servicio PaaS","Service endpoint","El servicio sigue con IP pública, pero solo deja entrar a tu subred (snet-app)","Gratis; no sirve desde la oficina","\"solo una subred\", \"sin costo\""],
+   ["","Private endpoint","El servicio recibe una IP privada dentro de tu VNet (snet-datos)","Tiene costo; sí sirve desde la oficina por VPN","\"IP privada\", \"deshabilitar acceso público\""]];
   const y0=DY+680+16,hc=22,hf=22,line=v("--line"),ink=v("--ink"),mut=v("--muted");
   r(DX,y0,1210,hc,`fill:${v("--accent-soft")||"#eef2ff"};stroke:${line}`,0);
   let x=DX;cab.forEach((c,i)=>{t(x+8,y0+15,c.toUpperCase(),`${fM};font-size:9.5px;letter-spacing:.05em;fill:${mut}`,cols[i]-12);x+=cols[i]});

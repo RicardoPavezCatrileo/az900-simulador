@@ -68,4 +68,4 @@ PNG de 7025×4966 (≈ 300 dpi) y SVG autónomo de `arquitectura.html`, guardado
 4. `draw.io.exe -x -f png -b 30 -s 5 -o docs/conectividad-A2.png docs/conectividad.drawio` y `-x -f pdf -b 30 -o docs/conectividad.pdf …`
 5. Borrar `az900/_poster.html`.
 
-- Primera versión: 27 nov 2026.
+- Primera versión: 27 nov 2026; el mismo día se rehízo con la red de `arquitectura.html` (Red 1 hub, Red 2 con subredes, SQL + Storage) y la leyenda sobre la Red DR.
