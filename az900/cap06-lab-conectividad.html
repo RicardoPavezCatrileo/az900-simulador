@@ -341,8 +341,8 @@ function aspecto(k){  // [clase de la línea, etiqueta, clase de la etiqueta]
 }
 function dibujar(){
   const r=ruta(o,d),on=new Set(r.ln),nd=new Set(r.nd);
-  const vn=(id,x,y,w,h,tit,err)=>`<g class="vn${nd.has(id)?" on":""}${err?" err":""}"><rect x="${x}" y="${y}" width="${w}" height="${h}" rx="8"/><text x="${x+12}" y="${y+20}">${tit}</text></g>`;
-  const no=(id,x,y,w,t,s,off)=>`<g class="nd${nd.has(id)?" on":""}${off?" off":""}"><rect x="${x}" y="${y}" width="${w}" height="44" rx="6"/><text class="t" x="${x+12}" y="${y+19}">${t}</text><text class="s" x="${x+12}" y="${y+35}">${s}</text></g>`;
+  const vn=(id,x,y,w,h,tit,err)=>`<g class="vn${nd.has(id)?" on":""}${err?" err":""}" data-v="${id}"><rect x="${x}" y="${y}" width="${w}" height="${h}" rx="8"/><text x="${x+12}" y="${y+20}">${tit}</text></g>`;
+  const no=(id,x,y,w,t,s,off)=>`<g class="nd${nd.has(id)?" on":""}${off?" off":""}" data-n="${id}"><rect x="${x}" y="${y}" width="${w}" height="44" rx="6"/><text class="t" x="${x+12}" y="${y+19}">${t}</text><text class="s" x="${x+12}" y="${y+35}">${s}</text></g>`;
   const tx=(x,y,t)=>`<text class="et m" x="${x}" y="${y}">${t}</text>`;
   const v2v=cfg.AB&&cfg.v2v,gwV=cfg.ofi==="s2s"||cfg.p2s,gwE=cfg.ofi==="er";
   let s=`<g class="reg"><rect x="240" y="20" width="620" height="645" rx="12"/><text x="256" y="40">Región · Brazil South</text></g>`;

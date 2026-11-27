@@ -57,3 +57,15 @@ PNG de 7025×4966 (≈ 300 dpi) y SVG autónomo de `arquitectura.html`, guardado
 5. Borrar `az900/_poster.html`.
 
 - Primera versión: 27 nov 2026.
+
+# Póster del laboratorio de conectividad (`.drawio`)
+
+`az900/cap06-lab-conectividad.html` arma su SVG como texto (sin `.el`): cada caja lleva `data-n` (nodo) o `data-v` (VNet o recuadro). `tools/poster-conectividad.js` deja todo conectado (S2S + P2S, tránsito de gateway, los 3 peerings, web ↔ dr directo, firewall en el hub y private endpoint), resalta el camino Oficina → stprod, quita las cajas apagadas (los gateways del VNet-to-VNet), pone la leyenda bajo vnet-dr y abajo la tabla "Los 3 tramos". Arma `POR_ID` (geometría) e `ICONOS_PAGINA` para `drawio-svg.js`, que pasa las curvas (`C`) como conectores `curved=1`.
+
+1. `python tools/poster-pagina.py az900/cap06-lab-conectividad.html tools/poster-conectividad.js,tools/drawio-svg.js az900/_poster.html 'iniciarQuiz("peering");'`
+2. `chrome --headless --virtual-time-budget=8000 --window-size=1372,970 --dump-dom http://localhost:8000/az900/_poster.html > dom.html`
+3. `python tools/poster-svg.py dom.html docs/conectividad.drawio dioout`
+4. `draw.io.exe -x -f png -b 30 -s 5 -o docs/conectividad-A2.png docs/conectividad.drawio` y `-x -f pdf -b 30 -o docs/conectividad.pdf …`
+5. Borrar `az900/_poster.html`.
+
+- Primera versión: 27 nov 2026.

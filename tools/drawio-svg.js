@@ -76,7 +76,8 @@ const fuente=f=>/Mono|Consolas/.test(f)?"Consolas":"Segoe UI";
   function linea(e,ox,oy,cs){
     const p=(e.getAttribute("d").match(/-?[\d.]+/g)||[]).map(Number),pt=[];
     for(let i=0;i<p.length;i+=2)pt.push([p[i]+ox,p[i+1]+oy]);
-    let st="edgeStyle=none;rounded=0;html=1;"+trazo(cs)+(e.getAttribute("marker-end")?"endArrow=block;endFill=1;endSize=5;":"endArrow=none;")+
+    // Curvas (C) de la página: draw.io las suaviza pasando por los puntos de control
+    let st="edgeStyle=none;rounded=0;html=1;"+(/C/i.test(e.getAttribute("d"))?"curved=1;":"")+trazo(cs)+(e.getAttribute("marker-end")?"endArrow=block;endFill=1;endSize=5;":"endArrow=none;")+
       (e.getAttribute("marker-start")?"startArrow=block;startFill=1;startSize=5;":"startArrow=none;");
     return {edge:true,pt,st};
   }
