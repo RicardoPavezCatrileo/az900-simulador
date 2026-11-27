@@ -1,0 +1,544 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Arquitectura de almacenamiento</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="../assets/estilos.css">
+<style>
+/* Mismos colores que la guía de cuentas y el mapa de almacenamiento; --c-cmp = cómputo (VMs) */
+:root{--c-blob:#1f8a4c;--c-files:#d9730d;--c-queue:#c2357a;--c-table:#0a6fc2;--c-disk:#7a4fc4;--c-std:#0a6fc2;--c-pre:#7a4fc4;--c-cmp:#475569;
+ --t-hot:#d6452b;--t-cool:#2a8fd6;--t-cold:#3a5fc4;--t-arch:#5a6b7c;--rbr:#0d9488;--rus:#4f6fae}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--c-blob:#4cc583;--c-files:#f0a050;--c-queue:#ef7ab0;--c-table:#4ea8f0;--c-disk:#a58cf5;--c-std:#4ea8f0;--c-pre:#a58cf5;--c-cmp:#9fb0c6;
+ --t-hot:#f07a5e;--t-cool:#5fb0f0;--t-cold:#8098f0;--t-arch:#93a4b5;--rbr:#2dbfae;--rus:#7f9be0}}
+:root[data-theme="dark"]{--c-blob:#4cc583;--c-files:#f0a050;--c-queue:#ef7ab0;--c-table:#4ea8f0;--c-disk:#a58cf5;--c-std:#4ea8f0;--c-pre:#a58cf5;--c-cmp:#9fb0c6;
+ --t-hot:#f07a5e;--t-cool:#5fb0f0;--t-cold:#8098f0;--t-arch:#93a4b5;--rbr:#2dbfae;--rus:#7f9be0}
+.wrap{max-width:1280px}
+[hidden]{display:none!important}
+.barra{display:flex;flex-wrap:wrap;gap:14px 24px;align-items:end}
+.barra select{font:inherit;padding:6px 8px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink);max-width:100%}
+.lienzo{background:var(--surface);border:1px solid var(--line);border-radius:10px;overflow-x:auto}
+.lienzo svg{display:block;min-width:1080px;width:100%;height:auto}
+/* Piezas */
+.el{cursor:pointer;transition:opacity .2s}
+.el:focus{outline:none}
+.el rect.caja{fill:color-mix(in srgb,var(--c) 9%,var(--surface));stroke:var(--c);stroke-width:1.4}
+.el.marco>rect.caja{fill:color-mix(in srgb,var(--c) 4%,transparent);stroke-width:2}
+.el.rayas>rect.caja{stroke-dasharray:7 5}
+.el.punteado>rect.caja{stroke-dasharray:2 4}
+.el text.t{font-family:var(--f-body);font-weight:600;font-size:13px;fill:var(--c)}
+.el.marco text.t{font-family:var(--f-display);font-weight:700;font-size:15px}
+.el text.s{font-family:var(--f-mono);font-size:10px;fill:var(--muted)}
+.el text.tag{font-family:var(--f-mono);font-size:9px;font-weight:600;fill:var(--bad)}
+.el:hover rect.caja,.el:focus-visible rect.caja{stroke-width:2.6}
+.el.sel rect.caja{stroke:var(--ink);stroke-width:3;stroke-dasharray:none}
+.el.bien rect.caja{stroke:var(--ok);stroke-width:3.4;stroke-dasharray:none}
+.el.mal rect.caja{stroke:var(--bad);stroke-width:3.4;stroke-dasharray:none}
+.el .q{font-family:var(--f-display);font-weight:800;font-size:16px;fill:var(--c);opacity:.55;display:none}
+.apagado{opacity:.16}
+.deco rect{fill:none;stroke:var(--c-cmp);stroke-width:1.2;stroke-dasharray:4 3}
+.deco rect.d{fill:color-mix(in srgb,var(--c-disk) 6%,transparent);stroke:var(--c-disk);stroke-dasharray:none;opacity:.6}
+.deco text{font-family:var(--f-mono);font-size:10px;fill:var(--muted)}
+.num circle{fill:var(--accent)}
+.num text{font-family:var(--f-display);font-weight:800;font-size:12px;fill:#fff}
+.nota{font-family:var(--f-mono);font-size:10.5px;fill:var(--muted)}
+.nota.fuerte{fill:var(--ink);font-weight:500}
+.flecha{fill:none;stroke:var(--muted);stroke-width:1.8}
+.flecha.rayas{stroke-dasharray:6 4}
+.fl text{font-family:var(--f-mono);font-size:10.5px;font-weight:600;fill:var(--ink);paint-order:stroke;stroke:var(--surface);stroke-width:4px;stroke-linejoin:round}
+.fl.activa .flecha{stroke:var(--accent);stroke-width:2.6}
+.region>rect{stroke-width:1.6}
+.region.br>rect{fill:color-mix(in srgb,var(--rbr) 5%,transparent);stroke:var(--rbr)}
+.region.us>rect{fill:color-mix(in srgb,var(--rus) 7%,transparent);stroke:var(--rus)}
+.region>text{font-family:var(--f-mono);font-size:11px;font-weight:600}
+.region.br>text{fill:var(--rbr)} .region.us>text{fill:var(--rus)}
+.zona>rect{fill:color-mix(in srgb,var(--rbr) 10%,transparent);stroke:var(--rbr);stroke-dasharray:6 4}
+.zona>text{font-family:var(--f-mono);font-size:10.5px;font-weight:700;fill:var(--rbr)}
+.copia rect{fill:var(--c-blob);stroke:none}
+.copia text{font-family:var(--f-mono);font-size:9px;fill:#fff;font-weight:600}
+.copia.sec rect{fill:var(--rus)}
+.leyenda{cursor:pointer}
+.leyenda text.a{font-family:var(--f-body);font-weight:600;font-size:12.5px;fill:var(--ink)}
+.leyenda text.b{font-family:var(--f-mono);font-size:10px;fill:var(--muted)}
+.leyenda.on text.a{fill:var(--accent)}
+.leyenda:hover text.a{text-decoration:underline}
+.titulo-ley{font-family:var(--f-display);font-weight:700;font-size:15px;fill:var(--ink)}
+.ocultar .el text.t,.ocultar .el text.s,.ocultar .fl text,.ocultar .deco text{visibility:hidden}
+.ocultar .el.ok text.t,.ocultar .el.ok text.s{visibility:visible}
+.ocultar .el:not(.ok) .q{display:inline}
+/* Panel y práctica */
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;display:grid;gap:8px}
+.panel h2{margin:0;font-family:var(--f-display);font-size:1.25rem}
+.panel h3{margin:6px 0 0;font-family:var(--f-display);font-size:1.05rem}
+.panel p,.panel ol{margin:0}
+.panel ol{padding-left:1.3em;display:grid;gap:4px}
+.panel .area{font-family:var(--f-mono);font-size:.75rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.panel .tr{border-left:4px solid var(--bad);background:color-mix(in srgb,var(--bad) 7%,var(--surface));border-radius:8px;padding:6px 12px}
+.panel .clave{font-family:var(--f-mono);font-size:.82rem;background:var(--accent-soft);border-radius:6px;padding:6px 10px}
+.panel .chip{font:inherit;font-size:.85rem;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:999px;padding:3px 10px;cursor:pointer;margin:2px 4px 2px 0}
+.panel .chip:hover{border-color:var(--accent)}
+.badge104{font-family:var(--f-mono);font-size:.72rem;font-weight:600;color:var(--bad);border:1px solid var(--bad);border-radius:4px;padding:0 5px;margin-left:6px}
+.reto{background:var(--surface);border:2px solid var(--accent);border-radius:10px;padding:14px 16px;display:grid;gap:8px}
+.reto .k{font-family:var(--f-mono);font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.reto .p{font-family:var(--f-display);font-weight:700;font-size:1.15rem}
+.fila-btn{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.marcador{font-family:var(--f-mono);font-size:.85rem;color:var(--muted)}
+@media print{.nav,.barra,.reto,.panel,.fb{display:none!important}.lienzo{border:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="nav"><a class="volver" href="index.html">← Capítulos AZ-900</a><a class="volver" href="cap07-almacenamiento.html">Capítulo 7 · Almacenamiento</a><a class="volver" href="cap07-mapa-almacenamiento.html">Mapa de almacenamiento →</a><a class="volver" href="../arquitectura.html#pieza=st">Arquitectura →</a></div>
+  <header>
+    <div class="eyebrow">AZ-900 · Capítulo 7 · Arquitectura</div>
+    <h1>Arquitectura de almacenamiento</h1>
+    <p>La <b>Guía Visual Azure Storage Account</b> llevada a un caso real: la web de Contoso en Brazil South. Cada número es una sección de la guía: <b>1</b> servicios, <b>2</b> tipos de cuenta, <b>3</b> datos y acceso, <b>4</b> discos y <b>5</b> redundancia. Lo que va más allá del AZ-900 lleva la marca <span class="badge104">AZ-104</span>.</p>
+  </header>
+
+  <div class="barra">
+    <div class="ctl"><label>Modo</label><div class="seg" id="modos"></div></div>
+    <div class="ctl" id="ctlSec"><label>Sección de la guía</label><div class="seg" id="secciones"></div></div>
+    <div class="ctl" id="ctlRec"><label>Recorrido</label><select id="recorrido"></select></div>
+    <div class="ctl" id="ctlOcultar" hidden><label>&nbsp;</label><label class="chk"><input type="checkbox" id="ocultar"> Ocultar los nombres</label></div>
+  </div>
+  <div class="reto" id="reto" hidden></div>
+  <div class="lienzo"><svg id="svg" viewBox="0 0 1240 860" role="img" aria-label="Arquitectura de almacenamiento de Contoso: scale set web, VM de base de datos, discos administrados, cuenta Standard GPv2 con sus 4 servicios, cuentas Premium y redundancia entre Brazil South y South Central US"></svg></div>
+  <div class="panel" id="panel" aria-live="polite"></div>
+  <p class="fb" style="margin:0;color:var(--muted);font-size:.85rem">No están en el PDF (sí en Microsoft Learn): el nivel Cold, NFS solo en Premium File Shares, que Premium solo admite LRS/ZRS, el SLA de VM según el disco, el disco temporal, el retiro de los discos no administrados (sept. 2025), las reglas de ciclo de vida y el almacén de Recovery Services.</p>
+</div>
+
+<script>
+/* EL: piezas. k = marco | caja · c = color (variable CSS) · g = secciones de la guía (1–5) donde aparece
+   n = número que se dibuja junto al título · az = va más allá del AZ-900 (marca AZ-104)
+   q = qué es · cu = cuándo elegirlo · tr = trampa · cl = palabras clave */
+const EL=[
+ {id:"usr",k:"caja",c:"--c-cmp",g:[],x:330,y:12,w:200,h:36,t:"Usuarios",s:"Internet",
+  q:"Las personas que usan la web de Contoso desde Internet.",cu:"Entran por HTTPS a las VMs web del scale set.",
+  tr:"Los usuarios nunca tocan los discos: hablan con la web, y la web guarda en Storage.",cl:"\"usuarios suben fotos\" → la web las guarda en Blob"},
+ // Cómputo (fila de arriba)
+ {id:"vmss",k:"marco",c:"--c-cmp",g:[],az:true,x:40,y:92,w:480,h:208,t:"Scale set web (VMSS)",s:"VMs iguales · crecen y se achican · sin estado",
+  q:"Un conjunto de escalado de VMs: muchas VMs idénticas, creadas desde la misma imagen, que Azure agrega o quita según la carga. Aquí hay una en cada zona.",
+  cu:"Una web que debe crecer y achicarse sola. Lo que haya que guardar va fuera de las VMs: fotos a Blob, carpetas a Files, trabajos a Queue.",
+  tr:"Cuando el scale set se achica, borra la VM y su disco del SO. Nada importante puede quedar dentro de una VM del scale set.",cl:"\"VMs idénticas\", \"escalado automático\" → Virtual Machine Scale Sets"},
+ {id:"sow",k:"caja",c:"--c-disk",g:[4],x:63,y:161,w:129,h:54,t:"Disco del SO",s:"SSD estándar|administrado",
+  q:"El disco del sistema operativo (C: o /) de cada VM web. Es un disco administrado de tipo SSD estándar. Cada VM tiene el suyo.",
+  cu:"Servidores web con poco uso de disco: mejor que HDD, sin pagar Premium.",
+  tr:"Con SSD estándar, una VM sola tiene SLA de 99,5 %, no 99,9 %. Aquí da igual: hay 3 VMs en 3 zonas (SLA 99,99 %).",cl:"\"web\", \"mejor que magnético sin pagar Premium\" → SSD estándar"},
+ {id:"temp",k:"caja",c:"--c-disk",g:[4],az:true,punteado:true,x:63,y:221,w:129,h:54,t:"Temporal D:",s:"local del host|se pierde",
+  q:"El disco temporal: está en el servidor físico donde corre la VM (D: en Windows, /dev/sdb en Linux). Es rápido y gratis, pero no es un disco administrado.",
+  cu:"Archivos de paginación, caché y temporales que se pueden perder.",
+  tr:"Se borra al desasignar la VM, cambiarla de tamaño o moverla a otro servidor. Nunca guardes datos importantes ahí.",cl:"\"perdí los datos al reiniciar o mover la VM\" → estaban en el disco temporal"},
+ {id:"dbvm",k:"marco",c:"--c-cmp",g:[],x:535,y:92,w:225,h:208,t:"VM de base de datos",s:"1 VM · producción",
+  q:"Una sola VM con la base de datos de pedidos. Lee la cola de pedidos y guarda los datos en su disco de datos.",
+  cu:"Una base de datos que exige el máximo rendimiento de disco.",
+  tr:"Es UNA VM: para tener SLA de 99,9 %, todos sus discos deben ser SSD Premium o Ultra.",cl:"\"una sola VM\", \"SLA 99,9 %\" → discos SSD Premium o Ultra"},
+ {id:"sodb",k:"caja",c:"--c-disk",g:[4],x:550,y:145,w:195,h:56,t:"Disco del SO",s:"SSD Premium|SLA 99,9 % con 1 VM",
+  q:"Disco del SO de la VM de base de datos: SSD Premium, el disco de producción.",
+  cu:"Producción y bases de datos. Una VM sola tiene SLA de 99,9 % si todos sus discos son SSD Premium o Ultra.",
+  tr:"Es alto rendimiento, pero no el máximo: el más rápido es Ultra. Y el disco del SO no puede ser Ultra.",cl:"\"producción\", \"SLA 99,9 % con una VM\" → SSD Premium"},
+ {id:"ultra",k:"caja",c:"--c-disk",g:[4],x:550,y:210,w:195,h:56,t:"Disco de datos",s:"Ultra Disk · < 1 ms|solo datos, no SO",
+  q:"El disco de datos donde vive la base: Ultra Disk, el más rápido (menos de 1 ms, IOPS ajustables sin detener la VM, hasta 64 TiB).",
+  cu:"SAP HANA y bases de datos con muchísimas transacciones.",
+  tr:"Es un TIPO DE DISCO (sección 4), no un tipo de cuenta. Solo sirve como disco de datos.",cl:"\"el disco más rápido\", \"menos de 1 ms\" → Ultra Disk"},
+ {id:"hdd",k:"caja",c:"--c-disk",g:[4],x:775,y:92,w:140,h:96,t:"HDD estándar",s:"VM de pruebas|el más barato|SLA 1 VM 95 %",
+  q:"El disco de la VM de pruebas: HDD estándar, magnético, el más barato y el más lento.",
+  cu:"Desarrollo, pruebas, backups o cargas que casi no usan el disco.",
+  tr:"No para producción: con una sola VM su SLA es el más bajo (95 %).",cl:"\"lo más barato\", \"pruebas\", \"poco uso\" → HDD estándar"},
+ {id:"rsv",k:"caja",c:"--c-cmp",g:[],az:true,x:775,y:200,w:140,h:100,t:"Azure Backup",s:"almacén de Recovery|Services: no es tu|cuenta de Storage",
+  q:"Azure Backup guarda las copias de seguridad de las VMs (sus discos) en un almacén de Recovery Services, un recurso propio.",
+  cu:"Respaldar VMs, discos y bases de datos con retención y restauración a un punto en el tiempo.",
+  tr:"El backup de una VM no va a tu Storage Account ni es la redundancia (LRS/GRS): la redundancia copia el error al instante; el backup te deja volver atrás.",cl:"\"restaurar la VM de ayer\" → Azure Backup (almacén de Recovery Services)"},
+ {id:"mdisk",k:"caja",c:"--c-disk",g:[1,4],n:4,rayas:true,x:950,y:345,w:270,h:110,t:"Discos administrados",s:"morado = recurso aparte|fuera de tu cuenta de almacenamiento|por dentro: page blob que maneja Azure|tipo de disco ≠ tipo de cuenta",
+  q:"Todos los discos morados son discos administrados: un recurso propio de Azure, fuera de tu cuenta de almacenamiento. Tú eliges el tipo (HDD, SSD estándar, SSD Premium, Ultra) y el tamaño. Por dentro son page blobs, pero en cuentas que maneja Azure y que no ves.",
+  cu:"Siempre que crees una VM: hoy todos los discos son administrados.",
+  tr:"Si la pregunta dice \"tipo de disco\" → sección 4 (HDD, SSD, Ultra). Si dice \"cuenta de almacenamiento\" → sección 2. La forma antigua (disco no administrado en tu cuenta Premium Page Blobs) se retiró en septiembre de 2025.",cl:"\"tipo de disco\", \"sin gestionar cuentas de almacenamiento\" → disco administrado"},
+ // Cuenta Standard GPv2 con los 4 servicios
+ {id:"gpv2",k:"marco",c:"--c-std",g:[2],n:2,x:40,y:340,w:640,h:300,t:"Storage Account · Standard GPv2",s:"stcontoso · 1 cuenta → 4 servicios",
+  q:"La cuenta de almacenamiento de uso general v2: en una sola cuenta están los 4 servicios (Blob, Files, Queue y Table). Es la de por defecto y la más barata.",
+  cu:"Varios servicios en la misma cuenta, menor costo, copia en otra región (GRS/GZRS) o niveles Hot/Cool/Cold/Archive.",
+  tr:"No es la más rápida (eso es Premium), pero Queue, Table, los niveles de acceso y GRS/GZRS solo existen aquí.",cl:"\"menor costo\", \"blobs, colas y tablas\", \"Archive\", \"otra región\" → Standard GPv2"},
+ {id:"files",k:"caja",c:"--c-files",g:[1,3],x:480,y:392,w:187,h:54,t:"Files",s:"\\\\stcontoso\\contenido · SMB",
+  q:"Un recurso compartido de archivos que las 3 VMs web montan como unidad Z: por SMB. Todas ven la misma carpeta.",
+  cu:"Contenido o configuración que varias VMs deben compartir, o reemplazar un servidor de archivos (lift & shift).",
+  tr:"Un disco es de UNA VM; si varias comparten la carpeta → Files. ¿NFS? → solo en Premium File Shares.",cl:"\"compartido\", \"unidad de red\", \"SMB\", \"montar\" → Files"},
+ {id:"queue",k:"caja",c:"--c-queue",g:[1,3],x:265,y:392,w:195,h:54,t:"Queue",s:"pedidos · sin Premium",
+  q:"La cola de pedidos: la web deja un mensaje por cada pedido y la VM de base de datos los procesa cuando puede. Se usa por API REST.",
+  cu:"Desacoplar la web del trabajo pesado o lento.",
+  tr:"No tiene Premium: aunque pidan \"el mejor rendimiento\", va en Standard GPv2.",cl:"\"cola\", \"desacoplar\", \"segundo plano\" → Queue"},
+ {id:"table",k:"caja",c:"--c-table",g:[1,3],x:55,y:392,w:200,h:54,t:"Table",s:"NoSQL · sin Premium",
+  q:"Tabla NoSQL clave-valor para la telemetría de la web: simple, sin esquema y barata. Se usa por API REST.",
+  cu:"Telemetría, listas o configuración simples al menor costo.",
+  tr:"Cosmos DB también es NoSQL, pero global y multirregión. Table no tiene Premium.",cl:"\"NoSQL clave-valor\", \"barato\" → Table · \"global\" → Cosmos DB"},
+ {id:"blob",k:"marco",c:"--c-blob",g:[1,3],n:1,x:55,y:456,w:612,h:174,t:"Blob · contenedor fotos/",s:"objetos por URL: https://stcontoso.blob.core.windows.net/fotos/…",
+  q:"Objetos no estructurados (fotos, videos, documentos, backups, logs) dentro de contenedores, que se leen por URL o API REST.",
+  cu:"Las fotos que suben los usuarios, los backups y los logs de la web.",
+  tr:"Blob no se monta como unidad de red compartida: eso es Files.",cl:"\"no estructurado\", \"objetos\", \"URL\" → Blob"},
+ {id:"block",k:"marco",c:"--c-blob",g:[1],x:68,y:504,w:400,h:116,t:"Block blob",s:"fotos y backups · el único con niveles",
+  q:"El tipo de blob normal: el archivo se sube en bloques y se lee completo. Las fotos y los backups de Contoso son block blobs.",
+  cu:"Casi todo lo que guardas en Blob. Es el único que tiene niveles de acceso, y solo en Standard GPv2.",
+  tr:"Si la pregunta habla de discos o VHD, no es Block: es Page.",cl:"\"archivos\", \"fotos\", \"niveles de acceso\" → Block blob"},
+ {id:"hot",k:"caja",c:"--t-hot",g:[1],x:78,y:552,w:90,h:58,t:"Hot",s:"siempre|sin mínimo",
+  q:"Nivel para lo que se lee seguido: guardar es lo más caro de los 4 y leer lo más barato. Las fotos nuevas entran aquí.",
+  cu:"Fotos de la web, archivos en uso todos los días.",
+  tr:"Hot, Cool y Cold están en línea: la diferencia es el precio, no la velocidad.",cl:"\"acceso frecuente\" → Hot"},
+ {id:"cool",k:"caja",c:"--t-cool",g:[1],x:172,y:552,w:90,h:58,t:"Cool",s:"≥ 30 días|en línea",
+  q:"Para lo que se lee poco: guardar es más barato que Hot y leer más caro. Retención mínima de 30 días.",
+  cu:"Fotos de hace un mes, backups recientes que deben abrirse al instante.",
+  tr:"\"30 días\" → Cool (Cold 90, Archive 180).",cl:"\"poco frecuente\", \"30 días\", \"inmediato\" → Cool"},
+ {id:"cold",k:"caja",c:"--t-cold",g:[1],x:266,y:552,w:90,h:58,t:"Cold",s:"≥ 90 días|en línea",
+  q:"Para lo que casi no se lee pero debe poder leerse al instante. Retención mínima de 90 días.",
+  cu:"Datos que se consultan una o dos veces al año sin esperar.",
+  tr:"\"Inmediato, sin rehidratar\" descarta Archive: entonces el más barato es Cold.",cl:"\"90 días\", \"rara vez pero inmediato\" → Cold"},
+ {id:"archive",k:"caja",c:"--t-arch",g:[1],punteado:true,x:360,y:552,w:90,h:58,t:"Archive",s:"≥ 180 días|fuera de línea",
+  q:"El más barato para guardar y el más caro para leer. Está fuera de línea: hay que rehidratarlo a Hot, Cool o Cold, y puede tardar hasta 15 horas. Retención mínima de 180 días. Se asigna por blob.",
+  cu:"Backups o datos legales que se guardan años y casi nunca se leen.",
+  tr:"No sirve si piden acceso inmediato. Solo en Standard GPv2.",cl:"\"años\", \"casi nunca\", \"puede esperar horas\" → Archive"},
+ {id:"append",k:"caja",c:"--c-blob",g:[1],x:482,y:504,w:172,h:54,t:"Append blob",s:"logs: solo se agrega",
+  q:"Blob al que solo se le agregan datos al final: los logs de la web.",
+  cu:"Logs y registros de auditoría que solo crecen.",
+  tr:"No tiene niveles de acceso: es un log vivo, siempre recibiendo líneas.",cl:"\"logs\", \"solo agregar\" → Append blob"},
+ {id:"page",k:"caja",c:"--c-disk",g:[1],x:482,y:566,w:172,h:54,t:"Page blob",s:".vhd subido a mano",
+  q:"Blob hecho de páginas de 512 bytes que se leen y escriben en cualquier parte, como un disco. No está deprecado: es lo que hay dentro de todo disco de VM. Usarlo directo hoy es raro, por ejemplo, subir un .vhd para crear un disco o una imagen.",
+  cu:"Archivos VHD de discos de máquinas virtuales.",
+  tr:"No tiene niveles de acceso: un disco nunca va a Archive. Lo retirado son los discos NO administrados, no los page blobs.",cl:"\"VHD\", \"disco de VM\", \"lectura/escritura aleatoria\" → Page blob"},
+ // Cuentas Premium
+ {id:"premium",k:"marco",c:"--c-pre",g:[2],n:2,rayas:true,x:695,y:340,w:220,h:300,t:"Cuentas Premium",s:"SSD · 1 cuenta → 1 servicio",
+  q:"Cuentas con SSD para el mayor rendimiento. Cada una guarda un solo servicio y por eso lleva su nombre. Serían cuentas aparte de stcontoso.",
+  cu:"Cuando piden el rendimiento más alto o la latencia más baja para UN servicio.",
+  tr:"Solo LRS o ZRS (nada de GRS/GZRS) y sin niveles de acceso. Queue y Table no tienen Premium.",cl:"\"más rápido\", \"latencia baja\" + el servicio → la Premium con su nombre"},
+ {id:"pblock",k:"caja",c:"--c-blob",g:[2],x:708,y:392,w:194,h:70,t:"Premium Block Blobs",s:"objetos chicos, IoT|latencia muy baja",
+  q:"Cuenta Premium solo para block blobs: millones de objetos pequeños con latencia muy baja.",
+  cu:"IoT, analítica, IA.",tr:"No sirve para discos de VM (eso es Page Blobs).",cl:"\"objetos\" + \"latencia baja\" / \"IoT\" → Premium Block Blobs"},
+ {id:"pfiles",k:"caja",c:"--c-files",g:[2,3],x:708,y:470,w:194,h:70,t:"Premium File Shares",s:"Files con SSD|NFS solo aquí",
+  q:"Cuenta Premium solo para Azure Files. Es la única que ofrece recursos compartidos NFS (además de SMB).",
+  cu:"Servidor de archivos de alto rendimiento, aplicaciones Linux con NFS.",
+  tr:"\"Alto rendimiento\" + carpeta compartida → esta, no Page Blobs.",cl:"\"NFS\", \"servidor de archivos de alto rendimiento\" → Premium File Shares"},
+ {id:"ppage",k:"caja",c:"--c-disk",g:[2,4],x:708,y:548,w:194,h:80,t:"Premium Page Blobs",s:"discos VHD no administrados|retirados sept. 2025|hoy: disco administrado",
+  q:"Cuenta Premium solo para page blobs, es decir, discos VHD de VM en tu propia cuenta (discos NO administrados). Esa forma se retiró en septiembre de 2025, pero el examen todavía la pregunta.",
+  cu:"Cuando la pregunta pide el rendimiento de una CUENTA DE ALMACENAMIENTO que alojará discos de VM.",
+  tr:"Si piden el TIPO DE DISCO más rápido, es Ultra (sección 4), no esta cuenta.",cl:"\"cuenta de almacenamiento\" + \"discos de VM\" + \"más rápido\" → Premium Page Blobs"},
+ // Redundancia
+ {id:"lrs",k:"caja",c:"--c-blob",g:[5],n:5,x:35,y:668,w:172,h:28,t:"LRS",s:"1 centro",
+  q:"3 copias en un mismo centro de datos (una zona). 11 nueves.",cu:"El menor costo.",
+  tr:"Si cae ese centro de datos, se pierde el acceso.",cl:"\"menor costo\", \"un centro de datos\" → LRS"},
+ {id:"zrs",k:"caja",c:"--c-blob",g:[5],x:35,y:702,w:172,h:28,t:"ZRS",s:"3 zonas",
+  q:"1 copia en cada una de las 3 zonas de Brazil South. 12 nueves.",cu:"Sobrevivir a la caída de una zona sin salir de la región.",
+  tr:"No protege si cae la región entera.",cl:"\"falla de una zona\", \"misma región\" → ZRS"},
+ {id:"grs",k:"caja",c:"--c-blob",g:[5],x:35,y:736,w:172,h:28,t:"GRS",s:"+ otra región",
+  q:"LRS en Brazil South + LRS en South Central US (6 copias). Copia asíncrona. 16 nueves.",cu:"Sobrevivir a un desastre regional.",
+  tr:"La primaria es LRS: no protege de la falla de una zona como GZRS. Premium no lo admite.",cl:"\"desastre regional\", \"otra región\" → GRS"},
+ {id:"gzrs",k:"caja",c:"--c-blob",g:[5],x:35,y:770,w:172,h:28,t:"GZRS",s:"zonas + región",
+  q:"ZRS en Brazil South + LRS en South Central US (6 copias). 16 nueves.",cu:"Máxima protección: falla de zona Y desastre regional.",
+  tr:"La secundaria es LRS, no ZRS.",cl:"\"zona y región\", \"máxima disponibilidad\" → GZRS"},
+ {id:"ra",k:"caja",c:"--c-blob",g:[5],x:35,y:804,w:172,h:28,t:"RA-…",s:"leer secundaria",
+  q:"RA-GRS y RA-GZRS: además de la copia en South Central US, puedes LEERLA en cualquier momento por el endpoint stcontoso-secondary.",
+  cu:"Leer los datos aunque Brazil South esté caída, sin esperar el failover.",
+  tr:"Sin RA-, la secundaria solo sirve después de un failover. La secundaria es de solo lectura.",cl:"\"leer desde la región secundaria\" → RA-GRS / RA-GZRS"}
+];
+const POR_ID=Object.fromEntries(EL.map(e=>[e.id,e]));
+
+// Flechas de acceso (sección 3 = cómo se accede a los datos)
+const AR=[
+ {id:"a_https",g:[],d:"M430 48 L430 92",l:"HTTPS",lx:438,ly:76},
+ {id:"a_smb",g:[3],d:"M505 300 L505 392",l:"SMB · Z:",lx:512,ly:322},
+ {id:"a_rest",g:[3],d:"M400 300 L400 392",l:"REST",lx:394,ly:316,fin:true},
+ {id:"a_url",g:[3],d:"M470 300 L470 456",l:"URL · REST",lx:464,ly:334,fin:true},
+ {id:"a_bk",g:[],d:"M760 255 L775 255",l:"",lx:0,ly:0}
+];
+
+// Recorridos: ids = piezas y flechas que se iluminan · red/ra = redundancia que se dibuja
+const FL=[
+ {id:"foto",t:"Un usuario sube una foto",ids:["usr","a_https","vmss","sow","a_url","blob","block","hot","gpv2"],pasos:[
+  "El usuario entra por <b>HTTPS</b> a la web, que corre en el <b>scale set</b>.",
+  "La VM <b>no guarda la foto en su disco</b>: la sube a <b>Blob</b> por URL/REST (https://stcontoso.blob.core.windows.net/fotos/…).",
+  "Queda como <b>Block blob</b> en el nivel <b>Hot</b>, porque se lee seguido.",
+  "La cuenta <b>Standard GPv2</b> la copia según su redundancia: mira las copias abajo."]},
+ {id:"ciclo",t:"La foto envejece (niveles de acceso)",ids:["blob","block","hot","cool","cold","archive","append","page"],pasos:[
+  "Entra en <b>Hot</b>. Si en 30 días nadie la abre, pasa a <b>Cool</b> (retención mínima de 30 días).",
+  "Si sigue sin uso, pasa a <b>Cold</b> (90 días) y luego a <b>Archive</b> (180 días, fuera de línea).",
+  "Para leerla desde Archive hay que <b>rehidratarla</b>: puede tardar horas.",
+  "Las reglas de <b>ciclo de vida</b> hacen estos cambios solas <span class=\"badge104\">AZ-104</span>.",
+  "<b>Append</b> (logs) y <b>Page</b> (discos) no se mueven: no tienen niveles."]},
+ {id:"pedido",t:"La web deja un pedido en la cola",ids:["vmss","a_rest","queue","table","dbvm","sodb","ultra"],pasos:[
+  "La web deja el pedido como mensaje en <b>Queue</b> (API REST) y responde al usuario al tiro.",
+  "La <b>VM de base de datos</b> lee la cola a su ritmo: la web y el proceso quedan <b>desacoplados</b>.",
+  "El pedido se guarda en el <b>disco de datos Ultra</b> de esa VM. La telemetría simple va a <b>Table</b>.",
+  "Queue y Table siempre van en <b>Standard GPv2</b>: no tienen Premium."]},
+ {id:"compartir",t:"Las VMs comparten contenido",ids:["vmss","sow","a_smb","files","gpv2"],pasos:[
+  "Las 3 VMs del scale set montan el mismo recurso compartido <b>\\\\stcontoso\\contenido</b> como Z: por <b>SMB</b>.",
+  "Un disco es de <b>una</b> VM; para que varias vean la misma carpeta → <b>Files</b>.",
+  "Si piden <b>NFS</b> o alto rendimiento → otra cuenta: <b>Premium File Shares</b>."]},
+ {id:"escala",t:"El scale set escala",ids:["vmss","sow","temp","a_url","a_smb","a_rest","blob","files","queue"],pasos:[
+  "Llega más tráfico: el scale set crea una VM nueva desde la misma imagen, <b>con su propio disco del SO</b>.",
+  "Baja el tráfico: borra una VM <b>y su disco del SO</b>.",
+  "Por eso las VMs son <b>sin estado</b>: las fotos van a <b>Blob</b>, las carpetas compartidas a <b>Files</b> y los trabajos a <b>Queue</b>.",
+  "<span class=\"badge104\">AZ-104</span> En AZ-900 basta con: scale set = VMs idénticas que escalan solas."]},
+ {id:"temporal",t:"Guardé en D: y lo perdí",ids:["temp","sow","sodb","ultra","mdisk"],pasos:[
+  "<b>D:</b> es el disco <b>temporal</b>: vive en el servidor físico, no es un disco administrado.",
+  "Al desasignar la VM, cambiarla de tamaño o moverla de servidor, <b>se borra</b>.",
+  "Lo importante va en un <b>disco administrado</b> (SO o datos) o en Storage."]},
+ {id:"disco",t:"¿Qué es un disco por dentro?",ids:["sow","sodb","ultra","hdd","mdisk","page","ppage"],pasos:[
+  "Todo disco de VM es, por dentro, un <b>page blob</b> (VHD).",
+  "<b>Hoy:</b> disco <b>administrado</b>. Azure guarda ese page blob en una cuenta suya que no ves; tú solo eliges el tipo (sección 4).",
+  "<b>Antes:</b> disco <b>no administrado</b>. Tú ponías el .vhd en tu propia cuenta <b>Premium Page Blobs</b> (sección 2). Se retiró en sept. 2025.",
+  "Los page blobs <b>no están deprecados</b>: siguen dentro de cada disco y sirven, por ejemplo, para subir un .vhd e importarlo."]},
+ {id:"region",t:"Se cae Brazil South",red:"gzrs",ra:true,ids:["gpv2","blob","gzrs","ra","premium"],pasos:[
+  "Con <b>GZRS</b> hay una copia en cada zona de Brazil South y 3 copias (LRS) en <b>South Central US</b>.",
+  "Si cae <b>una zona</b>, la cuenta sigue funcionando sin hacer nada.",
+  "Si cae <b>toda la región</b>, se hace <b>failover</b> a la secundaria. Como la copia es asíncrona, se pueden perder los últimos cambios.",
+  "Con <b>RA-GZRS</b> puedes leer la secundaria antes del failover (endpoint <b>-secondary</b>).",
+  "Las cuentas <b>Premium</b> y los discos solo tienen LRS/ZRS: no tienen copia en otra región."]},
+ {id:"backup",t:"Backup de la VM de base de datos",ids:["dbvm","sodb","ultra","a_bk","rsv"],pasos:[
+  "<span class=\"badge104\">AZ-104</span> <b>Azure Backup</b> copia los discos de la VM a un <b>almacén de Recovery Services</b>.",
+  "No va a stcontoso: el almacén es un recurso aparte.",
+  "Redundancia ≠ backup: GRS copia también un borrado o un error. El backup te deja volver a ayer."]}
+];
+
+// Escenarios tipo examen: ok = id de la pieza que hay que tocar
+const ESC=[
+ {t:"Las fotos que suben los usuarios y que se leen todo el día.",ok:"hot"},
+ {t:"Fotos que nadie abre hace 30 días, pero que deben abrirse al instante si alguien las pide.",ok:"cool"},
+ {t:"Fotos que casi no se leen, deben abrirse sin esperar y se guardan al menos 90 días.",ok:"cold"},
+ {t:"Backups que se guardan 7 años; recuperarlos puede tardar horas.",ok:"archive"},
+ {t:"Los logs de la web, a los que solo se les agregan líneas al final.",ok:"append"},
+ {t:"Subir un archivo .vhd propio para crear un disco o una imagen.",ok:"page"},
+ {t:"El único tipo de blob que admite Hot, Cool, Cold y Archive.",ok:"block"},
+ {t:"Archivos no estructurados que la web lee por URL.",ok:"blob"},
+ {t:"Una carpeta que las 3 VMs del scale set montan como Z: por SMB.",ok:"files"},
+ {t:"La web deja trabajos para que otra VM los procese después.",ok:"queue"},
+ {t:"Telemetría NoSQL clave-valor, simple y barata.",ok:"table"},
+ {t:"Una sola cuenta para blobs, archivos, colas y tablas, al menor costo.",ok:"gpv2"},
+ {t:"El mejor rendimiento para UN servicio, con SSD; solo admite LRS o ZRS.",ok:"premium"},
+ {t:"Aplicaciones Linux que necesitan un recurso compartido NFS de alto rendimiento.",ok:"pfiles"},
+ {t:"Millones de objetos pequeños de sensores IoT, con latencia muy baja.",ok:"pblock"},
+ {t:"Elegir el rendimiento de una CUENTA de almacenamiento que alojará discos VHD de VM.",ok:"ppage"},
+ {t:"El disco más rápido para la base de datos: menos de 1 ms, solo como disco de datos.",ok:"ultra"},
+ {t:"Disco del SO de una VM de producción sola con SLA de 99,9 %, sin ir al disco más caro.",ok:"sodb"},
+ {t:"Disco del SO de las VMs web: mejor que un disco magnético, sin pagar Premium.",ok:"sow"},
+ {t:"El disco de la VM de pruebas: lo más barato.",ok:"hdd"},
+ {t:"Los datos que se pierden si la VM se desasigna o se mueve de servidor.",ok:"temp"},
+ {t:"Discos de VM sin crear ni administrar cuentas de almacenamiento.",ok:"mdisk"},
+ {t:"Un grupo de VMs idénticas que crece y se achica solo según la carga.",ok:"vmss"},
+ {t:"Dónde quedan las copias de seguridad de las VMs hechas con Azure Backup.",ok:"rsv"},
+ {t:"Lo más barato: 3 copias en un solo centro de datos.",ok:"lrs"},
+ {t:"Sobrevivir a la caída de una zona sin salir de Brazil South.",ok:"zrs"},
+ {t:"Copia en South Central US; en Brazil South basta un centro de datos.",ok:"grs"},
+ {t:"Sobrevivir a la caída de una zona Y de toda la región.",ok:"gzrs"},
+ {t:"Leer la copia de South Central US sin esperar el failover.",ok:"ra"}
+];
+
+const SECC=[[0,"Todas"],[1,"1 · Servicios"],[2,"2 · Cuentas"],[3,"3 · Acceso"],[4,"4 · Discos"],[5,"5 · Redundancia"]];
+const LEY=[[1,"Servicios","Blob · Files · Queue · Table"],[2,"Tipos de cuenta","Standard GPv2 o Premium"],[3,"Datos y acceso","flechas: URL/REST · SMB · NFS"],[4,"Tipos de disco","HDD · SSD Std · SSD Prem. · Ultra"],[5,"Redundancia","LRS · ZRS · GRS · GZRS · RA-"]];
+
+const NS="http://www.w3.org/2000/svg";
+const svg=document.getElementById("svg");
+let modo="estudiar",sel=null,red="gzrs",ra=false,seccion=0,rec=null;
+let cola=[],pos=0,aciertos=0,fallo=false,ubicadas=new Set();
+
+function nodo(tag,at,padre){const n=document.createElementNS(NS,tag);for(const k in at)n.setAttribute(k,at[k]);(padre||svg).appendChild(n);return n}
+function texto(x,y,t,cls,padre,anchor){const n=nodo("text",{x,y,class:cls,"text-anchor":anchor||"start"},padre);n.textContent=t;return n}
+function numero(x,y,n,padre){const g=nodo("g",{class:"num"},padre);nodo("circle",{cx:x,cy:y,r:10},g);texto(x,y+4.2,n,"",g,"middle")}
+
+// Ids iluminados: por recorrido o por sección (null = todo)
+function activos(){
+  if(modo!=="estudiar")return null;
+  if(rec)return new Set(FL.find(f=>f.id===rec).ids);
+  if(seccion)return new Set([...EL,...AR].filter(e=>e.g.includes(seccion)).map(e=>e.id));
+  return null;
+}
+
+function dibujar(){
+  svg.innerHTML=`<defs><marker id="punta" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--muted)"/></marker><marker id="puntaA" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--accent)"/></marker><marker id="puntaR" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--rus)"/></marker></defs>`;
+  const act=activos();
+  // Regiones y zonas
+  const br=nodo("g",{class:"region br"});nodo("rect",{x:20,y:60,width:910,height:790,rx:12},br);texto(32,78,"Brazil South · región primaria · 3 zonas","",br);
+  for(let i=0;i<3;i++){const z=nodo("g",{class:"zona"});nodo("rect",{x:215+i*235,y:660,width:225,height:178,rx:8},z);texto(225+i*235,678,"Zona "+(i+1)+" · centro de datos","",z)}
+  const us=nodo("g",{class:"region us"});nodo("rect",{x:945,y:600,width:280,height:250,rx:12},us);texto(957,618,"South Central US · región emparejada","",us);
+  const dc=nodo("g",{class:"zona"});nodo("rect",{x:960,y:630,width:250,height:208,rx:8,style:"stroke:var(--rus);fill:color-mix(in srgb,var(--rus) 9%,transparent)"},dc);
+  texto(970,648,"centro de datos · copia LRS","",dc).setAttribute("style","fill:var(--rus)");
+  // VMs del scale set (la 1 lleva las piezas; la 2 y la 3 son su reflejo)
+  for(let i=0;i<3;i++){
+    const d=nodo("g",{class:"deco"+(act&&!act.has("vmss")&&!act.has("sow")?" apagado":"")});
+    nodo("rect",{x:55+i*155,y:140,width:145,height:152,rx:8},d);
+    texto(63+i*155,155,"VM web "+(i+1)+" · Zona "+(i+1),"",d);
+    if(i){nodo("rect",{class:"d",x:63+i*155,y:161,width:129,height:54,rx:8},d);texto(75+i*155,183,"Disco del SO","",d);
+      nodo("rect",{class:"d",x:63+i*155,y:221,width:129,height:54,rx:8,style:"stroke-dasharray:2 4"},d);texto(75+i*155,243,"Temporal D:","",d)}
+  }
+  copias();
+  leyenda();
+  // Piezas (en orden: los marcos antes que lo que contienen)
+  EL.forEach(e=>{
+    const cls="el "+(e.k==="marco"?"marco":"caja")+(e.rayas?" rayas":"")+(e.punteado?" punteado":"")+(act&&!act.has(e.id)?" apagado":"")+(ubicadas.has(e.id)?" ok":"");
+    const g=nodo("g",{class:cls,"data-id":e.id,tabindex:0,role:"button",style:"--c:var("+e.c+")","aria-label":e.t});
+    nodo("rect",{class:"caja",x:e.x,y:e.y,width:e.w,height:e.h,rx:e.k==="marco"?12:8},g);
+    const sub=e.s.split("|"),dx=e.n?(e.k==="marco"?40:34):(e.k==="marco"?16:12);
+    if(e.k==="marco"){texto(e.x+dx,e.y+24,e.t,"t",g);texto(e.x+dx,e.y+40,sub[0],"s",g)}
+    else if(e.h<40){texto(e.x+dx,e.y+19,e.t,"t",g);texto(e.x+e.w-10,e.y+19,sub[0],"s",g,"end")}
+    else if(e.w<=100){texto(e.x+e.w/2,e.y+22,e.t,"t",g,"middle");sub.forEach((s,i)=>texto(e.x+e.w/2,e.y+38+i*13,s,"s",g,"middle"))}
+    else{texto(e.x+dx,e.y+22,e.t,"t",g);sub.forEach((s,i)=>texto(e.x+dx,e.y+38+i*13,s,"s",g))}
+    if(e.n){if(e.k==="marco")numero(e.x+20,e.y+20,e.n,g);else numero(e.x+16,e.y+(e.h<40?14:17),e.n,g)}
+    if(e.az)texto(e.x+e.w-6,e.y+e.h-6,"AZ-104","tag",g,"end");
+    texto(e.x+e.w-12,e.y+(e.h<40?20:20),"?","q",g,"middle");
+    g.onclick=()=>tocar(e.id);
+    g.onkeydown=ev=>{if(ev.key==="Enter"||ev.key===" "){ev.preventDefault();tocar(e.id)}};
+  });
+  // Flechas de acceso, encima de las piezas
+  AR.forEach(a=>{
+    const on=act&&act.has(a.id);
+    const g=nodo("g",{class:"fl"+(act&&!on?" apagado":"")+(on?" activa":"")});
+    nodo("path",{d:a.d,class:"flecha","marker-end":on?"url(#puntaA)":"url(#punta)"},g);
+    if(a.l)texto(a.lx,a.ly,a.l,"",g,a.fin?"end":"start");
+  });
+  marcarSel();
+}
+
+// Leyenda: las 5 secciones de la guía (tocar una = ver esa sección)
+function leyenda(){
+  texto(950,30,"Las 5 secciones de la guía","titulo-ley");
+  LEY.forEach(([n,a,b],i)=>{
+    const y=58+i*50,g=nodo("g",{class:"leyenda"+(seccion===n&&modo==="estudiar"?" on":""),tabindex:0,role:"button"});
+    numero(962,y,n,g);texto(980,y+4,a,"a",g);texto(980,y+20,b,"b",g);
+    g.onclick=()=>{if(modo!=="estudiar")return;ponerSeccion(seccion===n?0:n)};
+    g.onkeydown=ev=>{if(ev.key==="Enter"||ev.key===" "){ev.preventDefault();g.onclick()}};
+  });
+  const t=texto(950,316,"","nota");t.innerHTML=`<tspan style="fill:var(--bad);font-weight:600">AZ-104</tspan> = va más allá del AZ-900`;
+}
+
+// Copias según la redundancia elegida
+function copias(){
+  const caja=(x,y,cls)=>{const g=nodo("g",{class:"copia "+(cls||"")});nodo("rect",{x,y,width:38,height:30,rx:5},g);texto(x+19,y+19,"copia","",g,"middle")};
+  const zonas=red==="zrs"||red==="gzrs",geo=red==="grs"||red==="gzrs";
+  if(zonas){for(let i=0;i<3;i++)caja(308+i*235,740)}else for(let i=0;i<3;i++)caja(240+i*46,740);
+  if(geo){for(let i=0;i<3;i++)caja(1016+i*46,740,"sec");
+    nodo("path",{d:"M"+(zonas?880:390)+" 815 L958 815",class:"flecha rayas","marker-end":"url(#puntaR)",style:"stroke:var(--rus)"});
+    texto(968,828,"copia asíncrona ←","nota");
+    texto(1085,700,ra?"RA-: se puede leer":"solo tras un failover","nota fuerte",null,"middle");
+    if(ra)texto(1085,716,"stcontoso-secondary","nota",null,"middle");}
+  else texto(1085,740,"sin copia en esta región","nota",null,"middle");
+  const nom=(geo&&ra?"RA-":"")+red.toUpperCase();
+  const info={lrs:"3 copias · 11 nueves",zrs:"3 copias · 12 nueves",grs:"6 copias · 16 nueves",gzrs:"6 copias · 16 nueves"}[red];
+  texto(950,490,"Redundancia de stcontoso: "+nom,"nota fuerte");
+  texto(950,506,info,"nota");
+  texto(950,530,"toca LRS, ZRS, GRS, GZRS o RA-","nota");
+  texto(950,546,"(abajo a la izquierda) para","nota");
+  texto(950,562,"ver dónde quedan las copias","nota");
+}
+function marcarSel(){svg.querySelectorAll(".el").forEach(g=>g.classList.toggle("sel",g.dataset.id===sel))}
+
+function htmlPieza(id){
+  const e=POR_ID[id],secs=e.g.length?"Sección "+e.g.join(" y ")+" de la guía":"Fuera de la guía (contexto)";
+  const usos=FL.filter(f=>f.ids.includes(id));
+  return `<div class="area">${secs} · Capítulo 7${e.az?' <span class="badge104">AZ-104</span>':""}</div>
+    <h2>${e.t}</h2>
+    <p><b>Qué es:</b> ${e.q}</p>
+    <p><b>Cuándo elegirlo:</b> ${e.cu}</p>
+    <p class="tr"><b>Trampa:</b> ${e.tr}</p>
+    <p class="clave">${e.cl}</p>
+    ${modo==="estudiar"&&usos.length?`<p><b>Recorridos que la usan:</b> ${usos.map(f=>`<button class="chip" type="button" data-rec="${f.id}">${f.t}</button>`).join("")}</p>`:""}`;
+}
+function htmlRecorrido(){
+  const f=FL.find(x=>x.id===rec);
+  return `<div class="area">Recorrido</div><h2>${f.t}</h2><ol>${f.pasos.map(p=>`<li>${p}</li>`).join("")}</ol>`;
+}
+function mostrarPanel(){
+  const p=document.getElementById("panel");
+  let h="";
+  if(rec)h+=htmlRecorrido();
+  if(sel)h+=(rec?'<h3>Pieza tocada</h3>':"")+htmlPieza(sel);
+  if(!h)h=`<h2>Toca cualquier pieza</h2><p>Verás qué es, cuándo elegirla, la trampa y las palabras clave. Usa <b>Sección de la guía</b> para ver solo lo de una sección (también tocando la leyenda de la derecha) y <b>Recorrido</b> para seguir un caso paso a paso.</p><p class="fb">Para practicar: <b>Memorizar</b> oculta los nombres y te pide encontrar cada pieza; <b>Escenarios</b> te da el caso y tocas la pieza que lo resuelve.</p>`;
+  p.innerHTML=h;
+  p.querySelectorAll("[data-rec]").forEach(b=>b.onclick=()=>ponerRecorrido(b.dataset.rec));
+}
+
+function tocar(id){
+  if(["lrs","zrs","grs","gzrs"].includes(id)){red=id;if(id==="lrs"||id==="zrs")ra=false}
+  if(id==="ra"){ra=true;if(red==="lrs"||red==="zrs")red=red==="zrs"?"gzrs":"grs"}
+  if(modo==="estudiar"){sel=id;dibujar();mostrarPanel();return}
+  const meta=cola[pos];if(meta==null||pos>=cola.length)return;
+  const okId=modo==="memorizar"?meta:ESC[meta].ok;
+  if(id===okId){
+    if(!fallo)aciertos++;
+    ubicadas.add(id);sel=id;dibujar();flash(id,"bien");
+    document.getElementById("panel").innerHTML=`<p><b style="color:var(--ok)">✓ ${fallo?"Ahora sí":"Correcto"}.</b></p>`+htmlPieza(id);
+    pos++;fallo=false;setTimeout(reto,350);
+  }else{
+    fallo=true;sel=null;dibujar();flash(id,"mal");
+    const e=POR_ID[id];
+    document.getElementById("panel").innerHTML=`<p><b style="color:var(--bad)">✕ Eso es ${e.t}.</b> ${e.q}</p><p class="fb">Busca otra pieza. Pista: ${pista(okId)}</p>`;
+  }
+}
+// Pista: la sección de la guía y el marco más chico que la contiene
+function pista(id){const e=POR_ID[id];
+  const m=EL.filter(o=>o.k==="marco"&&o.id!==id&&e.x>=o.x&&e.y>=o.y&&e.x+e.w<=o.x+o.w&&e.y+e.h<=o.y+o.h).sort((a,b)=>a.w*a.h-b.w*b.h)[0];
+  const s=e.g.length?"es de la sección "+e.g.join(" o ")+" de la guía":"no es de la guía: es cómputo";
+  return s+(m?", dentro de \""+m.t+"\".":".");}
+function flash(id,cls){const g=svg.querySelector(`.el[data-id="${id}"]`);if(g){g.classList.add(cls);setTimeout(()=>g.classList.remove(cls),900)}}
+
+function barajar(a){return a.map(v=>[Math.random(),v]).sort((x,y)=>x[0]-y[0]).map(v=>v[1])}
+function empezar(){
+  ubicadas=new Set();pos=0;aciertos=0;fallo=false;sel=null;
+  cola=modo==="memorizar"?barajar(EL.map(e=>e.id)):barajar(ESC.map((_,i)=>i));
+  svg.classList.toggle("ocultar",modo==="memorizar"||(modo==="escenarios"&&document.getElementById("ocultar").checked));
+  dibujar();reto();
+}
+function reto(){
+  const r=document.getElementById("reto");
+  if(modo==="estudiar"){r.hidden=true;return}
+  r.hidden=false;
+  const total=cola.length;
+  if(pos>=total){
+    guardarMejor();
+    r.innerHTML=`<div class="k">Terminado</div><div class="p">${aciertos} de ${total} al primer intento</div><div class="fila-btn"><button class="btn" type="button" id="otra">Volver a empezar ↺</button><span class="marcador">${mejorTxt()}</span></div>`;
+    document.getElementById("otra").onclick=empezar;return;
+  }
+  const meta=cola[pos];
+  const pregunta=modo==="memorizar"?`¿Dónde está <u>${POR_ID[meta].t}</u>?`:ESC[meta].t;
+  r.innerHTML=`<div class="k">${modo==="memorizar"?"Memorizar · toca la pieza":"Escenario de examen · toca la pieza que lo resuelve"} · ${pos+1} de ${total}</div>
+    <div class="p">${pregunta}</div>
+    <div class="fila-btn"><span class="marcador">${aciertos} al primer intento</span><button class="btn" type="button" id="ver">Mostrar la respuesta</button></div>`;
+  document.getElementById("ver").onclick=()=>{fallo=true;tocar(modo==="memorizar"?meta:ESC[meta].ok)};
+}
+// Mejor resultado por modo (solo en este navegador)
+const CLAVE="az900:arquitectura-storage:mejor";
+function leerMejor(){try{return JSON.parse(localStorage.getItem(CLAVE))||{}}catch(e){return {}}}
+function guardarMejor(){const m=leerMejor();if(!(m[modo]>=aciertos)){m[modo]=aciertos;try{localStorage.setItem(CLAVE,JSON.stringify(m))}catch(e){}}}
+function mejorTxt(){const m=leerMejor()[modo];return m!=null?"Tu mejor: "+m+" de "+cola.length:""}
+
+// Controles
+const MODOS=[["estudiar","Estudiar"],["memorizar","Memorizar"],["escenarios","Escenarios"]];
+const segM=document.getElementById("modos"),segS=document.getElementById("secciones"),selR=document.getElementById("recorrido");
+MODOS.forEach(([k,n])=>{const b=document.createElement("button");b.type="button";b.dataset.k=k;b.textContent=n;b.onclick=()=>ponerModo(k);segM.appendChild(b)});
+SECC.forEach(([k,n])=>{const b=document.createElement("button");b.type="button";b.dataset.k=k;b.textContent=n;b.onclick=()=>ponerSeccion(k);segS.appendChild(b)});
+selR.innerHTML=`<option value="">— ninguno —</option>`+FL.map(f=>`<option value="${f.id}">${f.t}</option>`).join("");
+selR.onchange=()=>ponerRecorrido(selR.value||null);
+function marcarCtl(){
+  segM.querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.k===modo));
+  segS.querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",+b.dataset.k===seccion));
+  selR.value=rec||"";
+}
+function ponerSeccion(n){seccion=n;rec=null;sel=null;marcarCtl();dibujar();mostrarPanel()}
+function ponerRecorrido(id){
+  rec=id;seccion=0;sel=null;
+  const f=FL.find(x=>x.id===id);if(f&&f.red){red=f.red;ra=!!f.ra}
+  marcarCtl();dibujar();mostrarPanel();
+}
+function ponerModo(k){
+  modo=k;
+  ["ctlSec","ctlRec"].forEach(c=>document.getElementById(c).hidden=k!=="estudiar");
+  document.getElementById("ctlOcultar").hidden=k!=="escenarios";
+  marcarCtl();
+  if(k==="estudiar"){svg.classList.remove("ocultar");ubicadas=new Set();sel=null;dibujar();reto();mostrarPanel()}
+  else{seccion=0;rec=null;document.getElementById("panel").innerHTML=`<p class="fb">${k==="memorizar"?"Los nombres están ocultos: guíate por el lugar, el color y la leyenda de las 5 secciones. Al acertar, la pieza muestra su nombre.":"Lee el caso y toca la pieza que lo resuelve."}</p>`;empezar()}
+}
+document.getElementById("ocultar").onchange=()=>{if(modo==="escenarios")empezar()};
+
+// Enlaces: #pieza=<id> abre su panel · #recorrido=<id> abre ese recorrido
+ponerModo("estudiar");
+const h=new URLSearchParams(location.hash.slice(1));
+if(h.get("recorrido")&&FL.some(f=>f.id===h.get("recorrido")))ponerRecorrido(h.get("recorrido"));
+else if(h.get("pieza")&&POR_ID[h.get("pieza")])tocar(h.get("pieza"));
+</script>
+</body>
+</html>
