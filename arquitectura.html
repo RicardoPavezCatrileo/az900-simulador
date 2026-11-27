@@ -46,6 +46,7 @@
 .modelo rect{fill:var(--ink)}
 .modelo text{font-family:var(--f-mono);font-size:9px;fill:var(--surface)}
 .nota text{font-family:var(--f-mono);font-size:10px;fill:var(--muted)}
+[data-id="pe_alt"] text,[data-id="se_nota"] text{paint-order:stroke;stroke:var(--surface);stroke-width:4px;stroke-linejoin:round;fill:var(--ink)}
 /* Estados */
 .el.nuevo.nodo rect.caja,.el.nuevo.marco rect{stroke:var(--accent);stroke-width:2.2}
 .el.sel.nodo rect.caja,.el.sel.marco rect{stroke:var(--ink);stroke-width:2.4;stroke-dasharray:none}
@@ -95,6 +96,7 @@
   <div class="ctl" id="ctlEntrada"><label>Entrada global (desde el cap. 6)</label><div class="seg" id="entrada"></div></div>
   <div class="ctl" id="ctlTopo"><label>Redes de Azure (desde el cap. 6)</label><div class="seg" id="topo"></div></div>
   <div class="ctl" id="ctlIdent"><label>Identidad para apps con Kerberos/NTLM (desde el cap. 8)</label><div class="seg" id="ident"></div></div>
+  <div class="ctl" id="ctlPaas"><label>Acceso a SQL y Storage (desde el cap. 9)</label><div class="seg" id="acpaas"></div></div>
   <div class="ctl" id="ctlRed"><label>Redundancia de la Storage Account (desde el cap. 7)</label><div class="seg" id="red"></div></div>
   <div class="ctl"><label>Recorrido</label><div class="seg" id="flujos"></div></div>
   <div class="leyenda" id="leyenda"></div>
@@ -304,7 +306,13 @@ const EL=[
  // Capítulo 9: seguridad
  {id:"pe",k:"nodo",a:4,cap:9,x:436,y:596,w:112,h:54,t:"Endpoint privado",s:"IP 10.1.3.4",
   q:"Interfaz de red con IP privada de tu VNet para un servicio PaaS. Permite deshabilitar el acceso público del servicio.",
-  p:"Las VMs llegan a SQL y Storage por IP privada: el tráfico no sale a Internet."},
+  p:"Las VMs llegan a SQL y Storage por IP privada: el tráfico no sale a Internet. Alternativa: service endpoint (selector \"Acceso a SQL y Storage\")."},
+ {id:"pe_alt",k:"nota",cap:9,x:642,y:596,t:"alt.: service endpoint (gratis)|solo la subred · IP pública sigue",q:"",p:""},
+ // Alternativa al endpoint privado (selector "Acceso a SQL y Storage")
+ {id:"se",k:"pill",a:4,cap:9,x:486,y:554,w:100,h:14,t:"Service endpoint",
+  q:"Service endpoint (punto de conexión de servicio): se habilita en una SUBRED para un tipo de servicio (Microsoft.Sql, Microsoft.Storage). El tráfico de esa subred llega al servicio por la red troncal de Microsoft y el firewall del servicio acepta solo esa subred.",
+  p:"Alternativa gratis al endpoint privado: SQL y Storage siguen con su IP pública (el acceso público no se puede apagar), y ni la oficina por la VPN ni otras redes por peering llegan por aquí: solo snet-app."},
+ {id:"se_nota",k:"nota",cap:9,x:504,y:606,t:"SQL y Storage siguen|con IP pública: su|firewall solo deja|entrar a snet-app",q:"",p:""},
  {id:"kv",k:"nodo",a:4,cap:9,x:562,y:700,w:100,h:54,t:"Key Vault",s:"secretos",
   q:"Almacén seguro de secretos, claves de cifrado y certificados.",
   p:"La cadena de conexión de SQL y el certificado HTTPS no quedan en el código: la app los lee de aquí."},
@@ -367,6 +375,8 @@ const AR=[
  {id:"e_be_pe",f:3,cap:9,d:[[600,556],[600,575],[492,575],[492,596]]},
  {id:"e_pe_sql",f:3,cap:9,d:[[492,650],[492,700]]},
  {id:"e_pe_st",f:3,cap:9,d:[[548,623],[776,623],[776,700]]},
+ {id:"e_se_sql",f:3,cap:9,d:[[600,556],[600,575],[492,575],[492,700]]},
+ {id:"e_se_st",f:3,cap:9,d:[[820,556],[820,700]],lab:["service endpoint",814,640,"end"]},
  {id:"e_be_kv",f:4,cap:9,d:[[634,556],[634,700]],lab:["lee secretos",638,676,"start"]},
  {id:"e_vpn",f:1,cap:6,d:[[222,523],[330,523]],lab:["VPN S2S · cifrada",228,516,"start"]},
  {id:"e_er",f:1,cap:6,cls:"rayas",d:[[222,603],[330,603]],lab:["privada, sin Internet",228,596,"start"]},
@@ -469,6 +479,8 @@ const IDENT={
  eds:{n:"Entra Domain Services",ad:"no participa"}
 };
 const SOLO_DC=new Set(["dcvm","e_ad_dc"]),SOLO_EDS=new Set(["eds","e_entra_eds"]);
+// Acceso a SQL y Storage: endpoint privado (IP privada en snet-datos) o service endpoint (en snet-app; el servicio sigue con IP pública)
+const SOLO_PE=new Set(["pe","pe_alt","e_be_pe","e_pe_sql","e_pe_st"]),SOLO_SE=new Set(["se","se_nota","e_se_sql","e_se_st"]);
 const ID_FLUJO={
  dc:{ids:["adds","e_ad_dc","dcvm","onprem","router","e_vpn","vpngw","gwsub","vnet","be","vma1","vma2","vma3","connect","e_ad_con","e_con_entra","entra","entraT"],
   pasos:["Punto de partida: las cuentas viven en el AD DS local y la app de contabilidad usa NTLM, que Entra ID no habla.",
@@ -506,7 +518,7 @@ function geoTopo(){
   [HUB_GEO,HUB_AR].forEach(t=>{for(const id in t)Object.assign(POR_ID[id],topo==="hub"?t[id]:ORIG_GEO[id])});
 }
 function excluido(id){
-  return (SOLO_HUB.has(id)&&topo!=="hub")||(SOLO_IAC.has(id)&&flujo!=="iac")||(SOLO_GEO.has(id)&&!RED[red].geo)||(SOLO_FD.has(id)&&entrada!=="fd")||(SOLO_TM.has(id)&&entrada!=="tm")||(SOLO_DC.has(id)&&ident!=="dc")||(SOLO_EDS.has(id)&&ident!=="eds");
+  return (SOLO_HUB.has(id)&&topo!=="hub")||(SOLO_IAC.has(id)&&flujo!=="iac")||(SOLO_GEO.has(id)&&!RED[red].geo)||(SOLO_FD.has(id)&&entrada!=="fd")||(SOLO_TM.has(id)&&entrada!=="tm")||(SOLO_DC.has(id)&&ident!=="dc")||(SOLO_EDS.has(id)&&ident!=="eds")||(SOLO_PE.has(id)&&paas!=="pe")||(SOLO_SE.has(id)&&paas!=="se");
 }
 
 const NS="http://www.w3.org/2000/svg";
@@ -518,7 +530,8 @@ const capId=n=>"cap"+String(n).padStart(2,"0");
 const archivo=n=>"az900/"+CAPITULOS.find(c=>c.num===n).archivo;
 const tituloCap=n=>CAPITULOS.find(c=>c.num===n).titulo;
 
-let hasta=11,resaltar=true,flujo=null,sel=null,red="GRS",entrada="fd",ident="hib",topo="una";
+let hasta=11,resaltar=true,flujo=null,sel=null,red="GRS",entrada="fd",ident="hib",topo="una",paas="pe";
+try{const v=localStorage.getItem("az900:arquitectura:paas");if(v==="pe"||v==="se")paas=v}catch(e){}
 try{const v=localStorage.getItem("az900:arquitectura:topo");if(TOPO[v])topo=v}catch(e){}
 try{const v=localStorage.getItem("az900:arquitectura:ident");if(IDENT[v])ident=v}catch(e){}
 try{const v=localStorage.getItem("az900:arquitectura:entrada");if(v==="fd"||v==="tm")entrada=v}catch(e){}
@@ -665,6 +678,9 @@ function aplicar(){
   document.getElementById("ctlIdent").hidden=cap<8;
   try{localStorage.setItem("az900:arquitectura:ident",ident)}catch(e){}
   try{localStorage.setItem("az900:arquitectura:entrada",entrada)}catch(e){}
+  document.querySelectorAll("#acpaas button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.k===paas)));
+  document.getElementById("ctlPaas").hidden=cap<9;
+  try{localStorage.setItem("az900:arquitectura:paas",paas)}catch(e){}
   try{localStorage.setItem("az900:arquitectura:red",red)}catch(e){}
   document.getElementById("ant").disabled=hasta<=2;
   document.getElementById("sig").disabled=hasta>=11;
@@ -757,8 +773,10 @@ const TM_WEB={ids:["tm","e_inet_tm","e_inet_ag2"],pasos:[
  "El navegador primero consulta el DNS: Traffic Manager responde con la IP pública del Application Gateway de Brazil South (el endpoint sano con mejor prioridad o rendimiento).",
  "Con esa IP, el navegador se conecta DIRECTO al Application Gateway: el tráfico no pasa por Traffic Manager, que no ve ni filtra las peticiones. La entrada de datos es gratis; la salida se cobra.",
  "El Application Gateway (regional, capa 7) aplica su WAF y reparte las peticiones entre las VMs web del Scale Set."]};
+const PE_A_SE={pe:["se","se_nota"],e_be_pe:[],e_pe_sql:["e_se_sql"],e_pe_st:["e_se_st"]};
 function idsFlujo(f){
-  const ids=idsFlujoBase(f);
+  let ids=idsFlujoBase(f);
+  if(paas==="se")ids=ids.flatMap(i=>PE_A_SE[i]||[i]);
   if(topo!=="hub")return ids;
   const s=new Set(ids),extra=[];
   if(s.has("vnet")||s.has("gwsub"))extra.push("hub");
@@ -772,6 +790,10 @@ function idsFlujoBase(f){
 }
 const PASO_HUB="La puerta de la VPN está en la Red 1 y la app en la Red 2: el tráfico cruza por el peering y llega al Load Balancer interno por IP privada. Para que la Red 2 use la VPN de la Red 1 se activa el \"tránsito de puerta de enlace\" en el peering (no está en el PDF).";
 function pasosFlujo(f){
+  const p=pasosFlujoBase(f);
+  return paas==="se"?p.map(t=>t.replace(/por el endpoint privado(: el tráfico no sale a Internet)?/g,"por el service endpoint de snet-app (SQL y Storage siguen con IP pública; el firewall solo deja entrar a esa subred)")):p;
+}
+function pasosFlujoBase(f){
   if(f.id==="oficina"&&topo==="hub")return [f.pasos[0],f.pasos[1],PASO_HUB,f.pasos[3]];
   if(f.id==="identidad")return ident==="hib"?f.pasos:ID_FLUJO[ident].pasos;
   if(f.id==="black")return entrada==="tm"?[f.pasos[0],f.pasoTM,...f.pasos.slice(2)]:f.pasos;
@@ -824,6 +846,31 @@ function panelTopo(){
     <p>También funciona entre regiones (peering global). No confundir: el peering une <b>redes</b>; el endpoint privado mete un <b>servicio</b> (SQL, Storage) dentro de tu red.</p>
     ${avance(6)}
     <p><a href="az900/cap06-lab-conectividad.html">Practicar en el laboratorio de conectividad →</a></p>`;
+}
+const pb=document.getElementById("acpaas");
+[["pe","Endpoint privado"],["se","Service endpoint"]].forEach(([k,n])=>{
+  const b=document.createElement("button");
+  b.type="button";b.dataset.k=k;b.textContent=n;
+  b.onclick=()=>{paas=k;sel=null;aplicar();flujo?panelFlujo():panelPaas()};
+  pb.appendChild(b);
+});
+function panelPaas(){
+  const pe=paas==="pe",td=k=>k===paas?' class="sel"':"";
+  document.getElementById("panel").innerHTML=`
+    <div class="area">Seguridad · Capítulo 9 · también cap. 6</div>
+    <h2>Acceso a SQL y Storage: ${pe?"endpoint privado":"service endpoint"}</h2>
+    <p>${pe?"El <b>endpoint privado</b> mete el servicio <b>dentro de tu VNet</b>: SQL y Storage reciben la IP 10.1.3.4 en snet-datos y se puede <b>apagar su acceso público</b>. Llegan también las redes conectadas: la oficina por la VPN y otras VNets por peering.":"El <b>service endpoint</b> se habilita en la <b>subred</b> snet-app: su tráfico llega a SQL y Storage por la red de Microsoft, pero <b>el servicio sigue con su IP pública</b> y su firewall solo deja entrar a esa subred. La <b>oficina no llega</b> por la VPN, ni otras VNets por peering."}</p>
+    <div class="tbl"><table><tr><th></th><th${td("pe")}>Endpoint privado</th><th${td("se")}>Service endpoint</th></tr>
+      <tr><td>¿Dónde queda el servicio?</td><td>Dentro de tu VNet, con IP privada</td><td>Afuera: sigue con su IP pública</td></tr>
+      <tr><td>¿Se apaga el acceso público?</td><td class="y">Sí, por completo</td><td class="n">No: el firewall solo filtra</td></tr>
+      <tr><td>¿Llega la oficina (VPN/ExpressRoute)?</td><td class="y">Sí</td><td class="n">No</td></tr>
+      <tr><td>¿Llegan otras VNets por peering?</td><td class="y">Sí</td><td class="n">No: solo la subred configurada</td></tr>
+      <tr><td>Dónde se configura</td><td>Un recurso con su NIC en una subred</td><td>En la subred + regla en el firewall del servicio</td></tr>
+      <tr><td>Costo</td><td>Por hora y por GB</td><td>Gratis</td></tr>
+    </table></div>
+    <p>Pista de examen: "desde on-premises", "deshabilitar el acceso público" o "IP privada" → endpoint privado. "Solo una subred", "gratis" o "el servicio conserva su IP pública" → service endpoint.</p>
+    ${avance(9)}
+    <p><a href="az900/cap06-lab-conectividad.html">Probar los dos en el laboratorio de conectividad (tramo 3) →</a></p>`;
 }
 const ib=document.getElementById("ident");
 Object.keys(IDENT).forEach(k=>{
